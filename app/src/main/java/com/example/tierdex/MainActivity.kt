@@ -203,7 +203,7 @@ private val AppGreenBackground = Color(0xFF51734A)
     fun TierdexApp(database: AnimalFindingDatabase) {
         val dao = database.animalFindingDao()
         val scope = rememberCoroutineScope()
-        val currentOwnerId: String? = "test-user-1"
+        val currentOwnerId = AuthSession.currentUserId()
         val findingsFlow = if (currentOwnerId == null) {
             dao.getAllFindings()
         } else {
