@@ -203,11 +203,13 @@ private val AppGreenBackground = Color(0xFF51734A)
     fun TierdexApp(database: AnimalFindingDatabase) {
         val dao = database.animalFindingDao()
         val scope = rememberCoroutineScope()
-        val currentOwnerId = AuthSession.currentUserId
-        val findingsFlow = if (currentOwnerId == null) {
+        var currentOwnerId by rememberSaveable { mutableStateOf(AuthSession.currentUserId) }
+
+        val ownerId = currentOwnerId
+        val findingsFlow = if (ownerId == null) {
             dao.getAllFindings()
         } else {
-            dao.getAllFindingsVisibleForOwner(currentOwnerId)
+            dao.getAllFindingsVisibleForOwner(ownerId)
         }
         val allFindings by findingsFlow.collectAsState(initial = emptyList())
         val findingsFromRoom = allFindings.map {
@@ -578,6 +580,11 @@ private val AppGreenBackground = Color(0xFF51734A)
                     currentTab == AppTab.PROFILE -> {
                         ProfileScreen(
                             currentUserId = currentOwnerId,
+                            currentDisplayName = AuthSession.getCurrentDisplayName(),
+                            onAuthSuccess = { userId ->
+                                AuthSession.setCurrentUserId(userId)
+                                currentOwnerId = userId
+                            },
                             collectedAnimalCount = collectedAnimalCount,
                             totalFindings = allFindings.size,
                             findings = findingsFromRoom,
@@ -1307,6 +1314,8 @@ fun FriendsScreen(
     @Composable
     fun ProfileScreen(
         currentUserId: String?,
+        currentDisplayName: String?,
+        onAuthSuccess: (String?) -> Unit,
         collectedAnimalCount: Int,
         totalFindings: Int,
         findings: List<AnimalFinding>,
@@ -1319,6 +1328,10 @@ fun FriendsScreen(
     ) {
         val favoriteAnimal = animals.find { it.id == favoriteAnimalId }
         val wishlistAnimal = animals.find { it.id == wishlistAnimalId }
+        var displayName by rememberSaveable { mutableStateOf("") }
+        var email by rememberSaveable { mutableStateOf("") }
+        var password by rememberSaveable { mutableStateOf("") }
+        var authMessage by rememberSaveable { mutableStateOf<String?>(null) }
 
         LazyColumn(
             modifier = Modifier
@@ -1338,7 +1351,7 @@ fun FriendsScreen(
         ) {
             item {
                 Text(
-                    text = "Profil",
+                    text = currentDisplayName?.takeIf { it.isNotBlank() }?.let { "Profil von $it" } ?: "Profil",
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier
                 )
@@ -1350,6 +1363,108 @@ fun FriendsScreen(
                     style = MaterialTheme.typography.bodyMedium,
                     color = TextSecondary
                 )
+            }
+
+            if (currentUserId == null) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = CardBackground,
+                            contentColor = TextPrimary
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = "Login",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = TextPrimary
+                            )
+
+                            OutlinedTextField(
+                                value = displayName,
+                                onValueChange = { displayName = it },
+                                modifier = Modifier.fillMaxWidth(),
+                                label = { Text("Name") },
+                                singleLine = true,
+                                shape = RoundedCornerShape(12.dp)
+                            )
+
+                            OutlinedTextField(
+                                value = email,
+                                onValueChange = { email = it },
+                                modifier = Modifier.fillMaxWidth(),
+                                label = { Text("E-Mail") },
+                                singleLine = true,
+                                shape = RoundedCornerShape(12.dp)
+                            )
+
+                            OutlinedTextField(
+                                value = password,
+                                onValueChange = { password = it },
+                                modifier = Modifier.fillMaxWidth(),
+                                label = { Text("Passwort") },
+                                singleLine = true,
+                                shape = RoundedCornerShape(12.dp)
+                            )
+
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Button(
+                                    onClick = {
+                                        AuthSession.registerWithEmail(displayName, email, password) { success, result ->
+                                            if (success) {
+                                                AuthSession.getCurrentFirebaseUserId()?.let { firebaseUserId ->
+                                                    onAuthSuccess(firebaseUserId)
+                                                }
+                                                authMessage = "Registrierung erfolgreich"
+                                            } else {
+                                                authMessage = result ?: "Registrierung fehlgeschlagen"
+                                            }
+                                        }
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = PrimaryGreen
+                                    )
+                                ) {
+                                    Text("Registrieren")
+                                }
+
+                                Button(
+                                    onClick = {
+                                        AuthSession.loginWithEmail(email, password) { success, result ->
+                                            if (success) {
+                                                AuthSession.getCurrentFirebaseUserId()?.let { firebaseUserId ->
+                                                    onAuthSuccess(firebaseUserId)
+                                                }
+                                                authMessage = "Login erfolgreich"
+                                            } else {
+                                                authMessage = result ?: "Login fehlgeschlagen"
+                                            }
+                                        }
+                                    },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = PrimaryGreen
+                                    )
+                                ) {
+                                    Text("Einloggen")
+                                }
+                            }
+
+                            authMessage?.let {
+                                Text(
+                                    text = it,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = TextSecondary
+                                )
+                            }
+                        }
+                    }
+                }
             }
 
             item {
