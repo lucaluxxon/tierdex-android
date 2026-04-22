@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "564147470833",
+    "project_id": "tierdex-96bee",
+    "storage_bucket": "tierdex-96bee.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:564147470833:android:2c7f49ee915bffb29f8450",
+        "android_client_info": {
+          "package_name": "com.example.tierdex"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBioz5toFo1G4bSGtoXw1tUJbQ3d9zT8Dg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
