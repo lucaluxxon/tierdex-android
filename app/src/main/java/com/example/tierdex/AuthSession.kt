@@ -1,5 +1,10 @@
 package com.example.tierdex
 
 object AuthSession {
-    fun currentUserId(): String? = "test-user-1"
+    var currentUserId: String? = "test-user-1"
+        private set
+
+    fun setCurrentUserId(userId: String?) {
+        currentUserId = userId
+    }
 }

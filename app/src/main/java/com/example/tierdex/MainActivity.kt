@@ -203,7 +203,7 @@ private val AppGreenBackground = Color(0xFF51734A)
     fun TierdexApp(database: AnimalFindingDatabase) {
         val dao = database.animalFindingDao()
         val scope = rememberCoroutineScope()
-        val currentOwnerId = AuthSession.currentUserId()
+        val currentOwnerId = AuthSession.currentUserId
         val findingsFlow = if (currentOwnerId == null) {
             dao.getAllFindings()
         } else {
@@ -577,6 +577,7 @@ private val AppGreenBackground = Color(0xFF51734A)
 
                     currentTab == AppTab.PROFILE -> {
                         ProfileScreen(
+                            currentUserId = currentOwnerId,
                             collectedAnimalCount = collectedAnimalCount,
                             totalFindings = allFindings.size,
                             findings = findingsFromRoom,
@@ -1305,6 +1306,7 @@ fun FriendsScreen(
 
     @Composable
     fun ProfileScreen(
+        currentUserId: String?,
         collectedAnimalCount: Int,
         totalFindings: Int,
         findings: List<AnimalFinding>,
@@ -1339,6 +1341,14 @@ fun FriendsScreen(
                     text = "Profil",
                     style = MaterialTheme.typography.headlineMedium,
                     modifier = Modifier
+                )
+            }
+
+            item {
+                Text(
+                    text = "Aktiver Nutzer: ${currentUserId ?: "Keiner"}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextSecondary
                 )
             }
 
