@@ -134,7 +134,9 @@ private val AppGreenBackground = Color(0xFF51734A)
                 applicationContext,
                 AnimalFindingDatabase::class.java,
                 "animal_finding_database"
-            ).build()
+            )
+                .addMigrations(AnimalFindingDatabase.MIGRATION_1_2)
+                .build()
         }
 
         private var wishAnimalId by mutableStateOf<String?>(null)
@@ -199,7 +201,13 @@ private val AppGreenBackground = Color(0xFF51734A)
     fun TierdexApp(database: AnimalFindingDatabase) {
         val dao = database.animalFindingDao()
         val scope = rememberCoroutineScope()
-        val allFindings by dao.getAllFindings().collectAsState(initial = emptyList())
+        val currentOwnerId: String? = "test-user-1"
+        val findingsFlow = if (currentOwnerId == null) {
+            dao.getAllFindings()
+        } else {
+            dao.getAllFindingsVisibleForOwner(currentOwnerId)
+        }
+        val allFindings by findingsFlow.collectAsState(initial = emptyList())
         val findingsFromRoom = allFindings.map {
             AnimalFinding(
                 animalId = it.animalId,
@@ -404,7 +412,8 @@ private val AppGreenBackground = Color(0xFF51734A)
                                             date = finding.date,
                                             location = finding.location,
                                             note = finding.note,
-                                            photoUri = finding.photoUri
+                                            photoUri = finding.photoUri,
+                                            ownerId = currentOwnerId
                                         )
                                     )
                                 }
@@ -444,7 +453,8 @@ private val AppGreenBackground = Color(0xFF51734A)
                                                 date = newFinding.date,
                                                 location = newFinding.location,
                                                 note = newFinding.note,
-                                                photoUri = newFinding.photoUri
+                                                photoUri = newFinding.photoUri,
+                                                ownerId = currentOwnerId
                                             )
                                         )
                                     }
