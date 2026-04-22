@@ -13,4 +13,36 @@ object AuthSession {
     }
 
     fun getCurrentFirebaseUserId(): String? = firebaseAuth.currentUser?.uid
+
+    fun registerWithEmail(
+        email: String,
+        password: String,
+        onResult: (Boolean, String?) -> Unit
+    ) {
+        firebaseAuth
+            .createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    onResult(true, firebaseAuth.currentUser?.uid)
+                } else {
+                    onResult(false, task.exception?.message)
+                }
+            }
+    }
+
+    fun loginWithEmail(
+        email: String,
+        password: String,
+        onResult: (Boolean, String?) -> Unit
+    ) {
+        firebaseAuth
+            .signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    onResult(true, firebaseAuth.currentUser?.uid)
+                } else {
+                    onResult(false, task.exception?.message)
+                }
+            }
+    }
 }
