@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -204,10 +205,11 @@ private val AppGreenBackground = Color(0xFF51734A)
         val dao = database.animalFindingDao()
         val scope = rememberCoroutineScope()
         var currentOwnerId by rememberSaveable { mutableStateOf(AuthSession.currentUserId) }
+        var currentDisplayName by rememberSaveable { mutableStateOf(AuthSession.getCurrentDisplayName()) }
 
         val ownerId = currentOwnerId
         val findingsFlow = if (ownerId == null) {
-            dao.getAllFindings()
+            dao.getAllGlobalFindings()
         } else {
             dao.getAllFindingsVisibleForOwner(ownerId)
         }
@@ -231,6 +233,7 @@ private val AppGreenBackground = Color(0xFF51734A)
         var storageDebug by rememberSaveable { mutableStateOf("Funde werden geladen...") }
         var showFoundOnly by rememberSaveable { mutableStateOf(false) }
         var currentTab by rememberSaveable { mutableStateOf(AppTab.HOME) }
+        var authEntryMode by rememberSaveable { mutableStateOf<String?>(null) }
         var showAnimalPicker by rememberSaveable { mutableStateOf(false) }
         var selectedFindingToEdit by remember { mutableStateOf<AnimalFinding?>(null) }
         var showSettingsScreen by rememberSaveable { mutableStateOf(false) }
@@ -243,7 +246,93 @@ private val AppGreenBackground = Color(0xFF51734A)
         var wishlistAnimalId by rememberSaveable {
             mutableStateOf<String?>(prefs.getString("wishAnimalId", null))
         }
-        LaunchedEffect(Unit) {
+        LaunchedEffect(ownerId) {
+            if (ownerId != null) {
+                val migrationKey = "global_findings_migrated_to_$ownerId"
+                val alreadyMigrated = prefs.getBoolean(migrationKey, false)
+                if (!alreadyMigrated) {
+                    dao.assignGlobalFindingsToOwner(ownerId)
+                    prefs.edit().putBoolean(migrationKey, true).apply()
+                }
+
+                FirestoreFindingRepository.loadCurrentUserFindings(
+                    onResult = { cloudFindings ->
+                        scope.launch {
+                            val localRoomFindings = dao.getAllFindingsByOwnerOnce(ownerId)
+                            val localFindings = localRoomFindings.map { entity ->
+                                AnimalFinding(
+                                    roomId = entity.id,
+                                    animalId = entity.animalId,
+                                    date = entity.date,
+                                    location = entity.location,
+                                    note = entity.note,
+                                    photoUri = entity.photoUri,
+                                    ownerId = entity.ownerId
+                                )
+                            }
+
+                            val localFingerprints = localFindings
+                                .map { FirestoreFindingRepository.findingFingerprint(it) }
+                                .toMutableSet()
+                            val cloudFingerprints = cloudFindings
+                                .map { FirestoreFindingRepository.findingFingerprint(it) }
+                                .toMutableSet()
+
+                            Log.d(
+                                "CloudSync",
+                                "Sync start: found ${localFindings.size} local findings and ${cloudFindings.size} cloud findings for user $ownerId"
+                            )
+
+                            var uploadedCount = 0
+                            var skippedDuplicateCount = 0
+                            localFindings.forEach { localFinding ->
+                                val fingerprint = FirestoreFindingRepository.findingFingerprint(localFinding)
+                                if (fingerprint in cloudFingerprints) {
+                                    skippedDuplicateCount += 1
+                                } else {
+                                    FirestoreFindingRepository.saveCurrentUserFinding(localFinding) { success, result ->
+                                        if (!success) {
+                                            Log.e("CloudSync", "Upload local finding failed: $result")
+                                        }
+                                    }
+                                    uploadedCount += 1
+                                    cloudFingerprints.add(fingerprint)
+                                }
+                            }
+
+                            var insertedCount = 0
+                            cloudFindings.forEach { cloudFinding ->
+                                val fingerprint = FirestoreFindingRepository.findingFingerprint(cloudFinding)
+                                if (fingerprint !in localFingerprints) {
+                                    dao.insertFinding(
+                                        AnimalFindingEntity(
+                                            animalId = cloudFinding.animalId,
+                                            date = cloudFinding.date,
+                                            location = cloudFinding.location,
+                                            note = cloudFinding.note,
+                                            photoUri = cloudFinding.photoUri,
+                                            ownerId = ownerId
+                                        )
+                                    )
+                                    insertedCount += 1
+                                    localFingerprints.add(fingerprint)
+                                } else {
+                                    skippedDuplicateCount += 1
+                                }
+                            }
+
+                            val finalTotalCount = localFingerprints.size
+                            Log.d(
+                                "CloudSync",
+                                "Sync result: local=${localFindings.size}, cloud=${cloudFindings.size}, uploaded=$uploadedCount, insertedIntoRoom=$insertedCount, duplicatesSkipped=$skippedDuplicateCount, finalTotal=$finalTotalCount"
+                            )
+                        }
+                    },
+                    onError = { error ->
+                        Log.e("CloudSync", "Cloud load failed: ${error ?: "Unbekannter Fehler"}")
+                    }
+                )
+            }
         }
 
 
@@ -309,6 +398,7 @@ private val AppGreenBackground = Color(0xFF51734A)
         }
 
         val selectedAnimal = animals.find { it.id == selectedAnimalId }
+        val showAuthStartScreen = ownerId == null && authEntryMode == null
 
         val groupOptions = listOf("Alle") + animals.map { it.group }.distinct().sorted()
 
@@ -333,12 +423,15 @@ private val AppGreenBackground = Color(0xFF51734A)
         BackHandler(enabled = showAnimalPicker && selectedAnimalId == null) {
             showAnimalPicker = false
         }
+        BackHandler(enabled = ownerId == null && authEntryMode != null && !showSettingsScreen) {
+            authEntryMode = null
+        }
 
         Scaffold(
             containerColor = Color.White,
             topBar = {},
             bottomBar = {
-                if (selectedAnimal == null && !showAnimalPicker) {
+                if (selectedAnimal == null && !showAnimalPicker && !showAuthStartScreen) {
                     MainBottomBar(
                         currentTab = currentTab,
                         onTabSelected = { currentTab = it }
@@ -346,7 +439,7 @@ private val AppGreenBackground = Color(0xFF51734A)
                 }
             },
             floatingActionButton = {
-                if (selectedAnimal == null && !showAnimalPicker) {
+                if (selectedAnimal == null && !showAnimalPicker && !showAuthStartScreen) {
                     FloatingActionButton(
                         onClick = { showAnimalPicker = true },
                         containerColor = PrimaryGreen,
@@ -376,9 +469,28 @@ private val AppGreenBackground = Color(0xFF51734A)
                     .fillMaxSize()
             ) {
                 when {
+                    showAuthStartScreen -> {
+                        AuthStartScreen(
+                            onLoginClick = {
+                                authEntryMode = "login"
+                                currentTab = AppTab.PROFILE
+                            },
+                            onRegisterClick = {
+                                authEntryMode = "register"
+                                currentTab = AppTab.PROFILE
+                            }
+                        )
+                    }
                     showSettingsScreen -> {
                         SettingsScreen(
                             onBack = { showSettingsScreen = false },
+                            onLogout = {
+                                currentOwnerId = null
+                                currentDisplayName = null
+                                authEntryMode = null
+                                showSettingsScreen = false
+                                currentTab = AppTab.PROFILE
+                            },
                             allFindings = findingsFromRoom,
                             onImportFindings = { importedFindings ->
                                 scope.launch {
@@ -423,6 +535,14 @@ private val AppGreenBackground = Color(0xFF51734A)
                                             ownerId = currentOwnerId
                                         )
                                     )
+
+                                    if (currentOwnerId != null) {
+                                        FirestoreFindingRepository.saveCurrentUserFinding(finding) { success, result ->
+                                            if (!success) {
+                                                Log.e("CloudWrite", "Firestore save on create failed: $result")
+                                            }
+                                        }
+                                    }
                                 }
                             },
                             onDeleteFinding = { finding ->
@@ -472,6 +592,14 @@ private val AppGreenBackground = Color(0xFF51734A)
                                                 ownerId = currentOwnerId
                                             )
                                         )
+
+                                        if (currentOwnerId != null) {
+                                            FirestoreFindingRepository.saveCurrentUserFinding(newFinding) { success, result ->
+                                                if (!success) {
+                                                    Log.e("CloudWrite", "Firestore save on update failed: $result")
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             },
@@ -580,10 +708,16 @@ private val AppGreenBackground = Color(0xFF51734A)
                     currentTab == AppTab.PROFILE -> {
                         ProfileScreen(
                             currentUserId = currentOwnerId,
-                            currentDisplayName = AuthSession.getCurrentDisplayName(),
+                            currentDisplayName = currentDisplayName,
+                            initialAuthMode = authEntryMode ?: "login",
                             onAuthSuccess = { userId ->
                                 AuthSession.setCurrentUserId(userId)
                                 currentOwnerId = userId
+                                currentDisplayName = AuthSession.getCurrentDisplayName()
+                                authEntryMode = null
+                            },
+                            onDisplayNameSaved = { newDisplayName ->
+                                currentDisplayName = newDisplayName
                             },
                             collectedAnimalCount = collectedAnimalCount,
                             totalFindings = allFindings.size,
@@ -959,6 +1093,7 @@ private val AppGreenBackground = Color(0xFF51734A)
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
+    onLogout: () -> Unit,
     allFindings: List<AnimalFinding>,
     onImportFindings: (List<AnimalFinding>) -> Unit,
     extraTopPadding: Dp = 0.dp,
@@ -1155,6 +1290,26 @@ fun SettingsScreen(
                 }
             }
         }
+
+        item {
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+
+        item {
+            Button(
+                onClick = {
+                    AuthSession.signOut()
+                    onLogout()
+                    Toast.makeText(context, "Ausgeloggt", Toast.LENGTH_SHORT).show()
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = PrimaryGreen
+                )
+            ) {
+                Text("Ausloggen")
+            }
+        }
     }
 }
 
@@ -1315,7 +1470,9 @@ fun FriendsScreen(
     fun ProfileScreen(
         currentUserId: String?,
         currentDisplayName: String?,
+        initialAuthMode: String = "login",
         onAuthSuccess: (String?) -> Unit,
+        onDisplayNameSaved: (String?) -> Unit,
         collectedAnimalCount: Int,
         totalFindings: Int,
         findings: List<AnimalFinding>,
@@ -1328,10 +1485,29 @@ fun FriendsScreen(
     ) {
         val favoriteAnimal = animals.find { it.id == favoriteAnimalId }
         val wishlistAnimal = animals.find { it.id == wishlistAnimalId }
+        var displayNameInput by rememberSaveable(currentDisplayName) {
+            mutableStateOf(currentDisplayName ?: "")
+        }
         var displayName by rememberSaveable { mutableStateOf("") }
         var email by rememberSaveable { mutableStateOf("") }
         var password by rememberSaveable { mutableStateOf("") }
+        var authMode by rememberSaveable(initialAuthMode) { mutableStateOf(initialAuthMode) }
         var authMessage by rememberSaveable { mutableStateOf<String?>(null) }
+
+        LaunchedEffect(currentUserId) {
+            if (currentUserId != null) {
+                Log.d("ProfileScreen", "Firestore test call started")
+                Log.d("ProfileScreen", "Firestore test current AuthSession.currentUserId = ${AuthSession.currentUserId}")
+                FirestoreFindingRepository.loadCurrentUserFindings(
+                    onResult = { findings ->
+                        Log.d("ProfileScreen", "Firestore test load: ${findings.size} findings")
+                    },
+                    onError = { error ->
+                        Log.e("ProfileScreen", "Firestore test load failed: $error")
+                    }
+                )
+            }
+        }
 
         LazyColumn(
             modifier = Modifier
@@ -1357,12 +1533,56 @@ fun FriendsScreen(
                 )
             }
 
-            item {
-                Text(
-                    text = "Aktiver Nutzer: ${currentUserId ?: "Keiner"}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary
-                )
+            if (currentUserId != null && currentDisplayName.isNullOrBlank()) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = CardBackground,
+                            contentColor = TextPrimary
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = "Sichtbarer Name",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = TextPrimary
+                            )
+
+                            OutlinedTextField(
+                                value = displayNameInput,
+                                onValueChange = { displayNameInput = it },
+                                modifier = Modifier.fillMaxWidth(),
+                                label = { Text("Name") },
+                                singleLine = true,
+                                shape = RoundedCornerShape(12.dp)
+                            )
+
+                            Button(
+                                onClick = {
+                                    AuthSession.updateCurrentDisplayName(displayNameInput) { success, result ->
+                                        if (success) {
+                                            onDisplayNameSaved(AuthSession.getCurrentDisplayName())
+                                            authMessage = "Name gespeichert"
+                                        } else {
+                                            authMessage = result ?: "Name konnte nicht gespeichert werden"
+                                        }
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = PrimaryGreen
+                                )
+                            ) {
+                                Text("Name speichern")
+                            }
+                        }
+                    }
+                }
             }
 
             if (currentUserId == null) {
@@ -1381,19 +1601,65 @@ fun FriendsScreen(
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Text(
-                                text = "Login",
+                                text = if (authMode == "register") "Registrieren" else "Einloggen",
                                 style = MaterialTheme.typography.titleMedium,
                                 color = TextPrimary
                             )
 
-                            OutlinedTextField(
-                                value = displayName,
-                                onValueChange = { displayName = it },
-                                modifier = Modifier.fillMaxWidth(),
-                                label = { Text("Name") },
-                                singleLine = true,
-                                shape = RoundedCornerShape(12.dp)
-                            )
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                OutlinedButton(
+                                    onClick = {
+                                        authMode = "login"
+                                        authMessage = null
+                                    },
+                                    colors = ButtonDefaults.outlinedButtonColors(
+                                        containerColor = if (authMode == "login") {
+                                            PrimaryGreen.copy(alpha = 0.1f)
+                                        } else {
+                                            Color.Transparent
+                                        },
+                                        contentColor = if (authMode == "login") PrimaryGreen else TextPrimary
+                                    ),
+                                    border = BorderStroke(
+                                        1.dp,
+                                        if (authMode == "login") PrimaryGreen else BorderColor
+                                    )
+                                ) {
+                                    Text("Einloggen")
+                                }
+
+                                OutlinedButton(
+                                    onClick = {
+                                        authMode = "register"
+                                        authMessage = null
+                                    },
+                                    colors = ButtonDefaults.outlinedButtonColors(
+                                        containerColor = if (authMode == "register") {
+                                            PrimaryGreen.copy(alpha = 0.1f)
+                                        } else {
+                                            Color.Transparent
+                                        },
+                                        contentColor = if (authMode == "register") PrimaryGreen else TextPrimary
+                                    ),
+                                    border = BorderStroke(
+                                        1.dp,
+                                        if (authMode == "register") PrimaryGreen else BorderColor
+                                    )
+                                ) {
+                                    Text("Registrieren")
+                                }
+                            }
+
+                            if (authMode == "register") {
+                                OutlinedTextField(
+                                    value = displayName,
+                                    onValueChange = { displayName = it },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    label = { Text("Name") },
+                                    singleLine = true,
+                                    shape = RoundedCornerShape(12.dp)
+                                )
+                            }
 
                             OutlinedTextField(
                                 value = email,
@@ -1413,9 +1679,9 @@ fun FriendsScreen(
                                 shape = RoundedCornerShape(12.dp)
                             )
 
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Button(
-                                    onClick = {
+                            Button(
+                                onClick = {
+                                    if (authMode == "register") {
                                         AuthSession.registerWithEmail(displayName, email, password) { success, result ->
                                             if (success) {
                                                 AuthSession.getCurrentFirebaseUserId()?.let { firebaseUserId ->
@@ -1426,16 +1692,7 @@ fun FriendsScreen(
                                                 authMessage = result ?: "Registrierung fehlgeschlagen"
                                             }
                                         }
-                                    },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = PrimaryGreen
-                                    )
-                                ) {
-                                    Text("Registrieren")
-                                }
-
-                                Button(
-                                    onClick = {
+                                    } else {
                                         AuthSession.loginWithEmail(email, password) { success, result ->
                                             if (success) {
                                                 AuthSession.getCurrentFirebaseUserId()?.let { firebaseUserId ->
@@ -1446,13 +1703,13 @@ fun FriendsScreen(
                                                 authMessage = result ?: "Login fehlgeschlagen"
                                             }
                                         }
-                                    },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = PrimaryGreen
-                                    )
-                                ) {
-                                    Text("Einloggen")
-                                }
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = PrimaryGreen
+                                )
+                            ) {
+                                Text(if (authMode == "register") "Registrieren" else "Einloggen")
                             }
 
                             authMessage?.let {
@@ -1492,6 +1749,28 @@ fun FriendsScreen(
                             style = MaterialTheme.typography.bodyMedium,
                             color = TextSecondary
                         )
+                    }
+                }
+            }
+
+            if (findings.isNotEmpty()) {
+                item {
+                    Button(
+                        onClick = {
+                            FirestoreFindingRepository.saveCurrentUserFinding(findings.first()) { success, result ->
+                                if (success) {
+                                    Log.d("ProfileScreen", "Firestore save test successful: $result")
+                                } else {
+                                    Log.e("ProfileScreen", "Firestore save test failed: $result")
+                                }
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = PrimaryGreen
+                        )
+                    ) {
+                        Text("Ersten Fund in Firestore testen")
                     }
                 }
             }
@@ -1641,6 +1920,61 @@ fun FriendsScreen(
                         }
                     }
                 }
+            }
+        }
+    }
+
+    @Composable
+    fun AuthStartScreen(
+        onLoginClick: () -> Unit,
+        onRegisterClick: () -> Unit
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .statusBarsPadding()
+                .padding(24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Willkommen bei Tierdex",
+                style = MaterialTheme.typography.headlineMedium,
+                color = TextPrimary
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = "Bitte logge dich ein oder registriere dich, um fortzufahren.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = TextSecondary
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = onLoginClick,
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = PrimaryGreen
+                )
+            ) {
+                Text("Einloggen")
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            OutlinedButton(
+                onClick = onRegisterClick,
+                modifier = Modifier.fillMaxWidth(),
+                border = BorderStroke(1.dp, PrimaryGreen),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    contentColor = PrimaryGreen
+                )
+            ) {
+                Text("Registrieren")
             }
         }
     }

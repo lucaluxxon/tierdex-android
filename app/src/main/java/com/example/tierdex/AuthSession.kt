@@ -6,16 +6,50 @@ import com.google.firebase.auth.UserProfileChangeRequest
 object AuthSession {
     private val firebaseAuth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
 
-    var currentUserId: String? = firebaseAuth.currentUser?.uid ?: "test-user-1"
+    var currentUserId: String? = firebaseAuth.currentUser?.uid
         private set
 
     fun setCurrentUserId(userId: String?) {
         currentUserId = userId
     }
 
+    fun signOut() {
+        firebaseAuth.signOut()
+        setCurrentUserId(null)
+    }
+
     fun getCurrentFirebaseUserId(): String? = firebaseAuth.currentUser?.uid
 
     fun getCurrentDisplayName(): String? = firebaseAuth.currentUser?.displayName
+
+    fun updateCurrentDisplayName(
+        displayName: String,
+        onResult: (Boolean, String?) -> Unit
+    ) {
+        val currentUser = firebaseAuth.currentUser
+        if (currentUser == null) {
+            onResult(false, "Kein Nutzer eingeloggt")
+            return
+        }
+
+        try {
+            val profileUpdates = UserProfileChangeRequest.Builder()
+                .setDisplayName(displayName.takeIf { it.isNotBlank() })
+                .build()
+
+            currentUser
+                .updateProfile(profileUpdates)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        onResult(true, currentUser.displayName)
+                    } else {
+                        onResult(false, task.exception?.message)
+                    }
+                }
+        } catch (e: Exception) {
+            onResult(false, e.message ?: "Name konnte nicht gespeichert werden")
+        }
+    }
 
     fun registerWithEmail(
         displayName: String,

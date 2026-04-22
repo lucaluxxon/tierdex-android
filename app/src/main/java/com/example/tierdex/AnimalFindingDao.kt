@@ -13,6 +13,9 @@ interface AnimalFindingDao {
     @Query("SELECT * FROM animal_findings ORDER BY id DESC")
     fun getAllFindings(): Flow<List<AnimalFindingEntity>>
 
+    @Query("SELECT * FROM animal_findings WHERE ownerId IS NULL ORDER BY id DESC")
+    fun getAllGlobalFindings(): Flow<List<AnimalFindingEntity>>
+
     @Query("SELECT * FROM animal_findings WHERE ownerId = :ownerId ORDER BY id DESC")
     fun getAllFindingsByOwner(ownerId: String): Flow<List<AnimalFindingEntity>>
 
@@ -33,6 +36,9 @@ interface AnimalFindingDao {
 
     @Query("SELECT * FROM animal_findings WHERE ownerId = :ownerId")
     suspend fun getAllFindingsByOwnerOnce(ownerId: String): List<AnimalFindingEntity>
+
+    @Query("UPDATE animal_findings SET ownerId = :ownerId WHERE ownerId IS NULL")
+    suspend fun assignGlobalFindingsToOwner(ownerId: String): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFinding(finding: AnimalFindingEntity)
