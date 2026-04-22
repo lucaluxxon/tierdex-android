@@ -75,6 +75,100 @@ object FirestoreFindingRepository {
             }
     }
 
+    fun deleteCurrentUserFinding(
+        finding: AnimalFinding,
+        onResult: (Boolean, String?) -> Unit
+    ) {
+        val uid = AuthSession.getCurrentFirebaseUserId()
+        if (uid.isNullOrBlank()) {
+            onResult(false, "Kein Firebase-Nutzer eingeloggt")
+            return
+        }
+
+        val fingerprint = findingFingerprint(finding)
+        val documentId = hashedDocumentId(fingerprint)
+        val findingsCollection = firestore.collection("users")
+            .document(uid)
+            .collection("findings")
+
+        Log.d("CloudSyncDelete", "Hash-delete attempted: $documentId")
+
+        findingsCollection
+            .document(documentId)
+            .delete()
+            .addOnSuccessListener {
+                findingsCollection
+                    .get()
+                    .addOnSuccessListener { snapshot ->
+                        val legacyMatches = snapshot.documents.filter { document ->
+                            document.getString("animalId").orEmpty() == finding.animalId &&
+                                    document.getString("date").orEmpty() == finding.date &&
+                                    document.getString("location").orEmpty() == finding.location &&
+                                    document.getString("note").orEmpty() == finding.note &&
+                                    document.getString("photoUri").orEmpty() == finding.photoUri
+                        }
+
+                        Log.d("CloudSyncDelete", "Legacy cloud matches found: ${legacyMatches.size}")
+
+                        if (legacyMatches.isEmpty()) {
+                            Log.d("CloudSyncDelete", "No matching legacy cloud documents found")
+                            Log.d("CloudSyncDelete", "Delete finished for finding $documentId")
+                            onResult(true, documentId)
+                            return@addOnSuccessListener
+                        }
+
+                        var pendingDeletes = legacyMatches.size
+                        var hasFailure = false
+
+                        legacyMatches.forEach { document ->
+                            findingsCollection
+                                .document(document.id)
+                                .delete()
+                                .addOnSuccessListener {
+                                    Log.d(
+                                        "CloudSyncDelete",
+                                        "Legacy cloud document deleted: ${document.id}"
+                                    )
+                                    pendingDeletes -= 1
+                                    if (pendingDeletes == 0) {
+                                        Log.d("CloudSyncDelete", "Delete finished for finding $documentId")
+                                        onResult(!hasFailure, documentId)
+                                    }
+                                }
+                                .addOnFailureListener { exception ->
+                                    hasFailure = true
+                                    pendingDeletes -= 1
+                                    Log.e(
+                                        "CloudSyncDelete",
+                                        "Legacy cloud delete failed for ${document.id}: ${exception.message ?: "Unbekannter Fehler"}",
+                                        exception
+                                    )
+                                    if (pendingDeletes == 0) {
+                                        Log.d("CloudSyncDelete", "Delete finished for finding $documentId")
+                                        onResult(false, exception.message)
+                                    }
+                                }
+                        }
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.e(
+                            "CloudSyncDelete",
+                            "Legacy cloud lookup failed: ${exception.message ?: "Unbekannter Fehler"}",
+                            exception
+                        )
+                        onResult(false, exception.message)
+                    }
+            }
+            .addOnFailureListener { exception ->
+                Log.e(
+                    TAG,
+                    "Failed to delete finding from Firestore: ${exception.message ?: "Unbekannter Fehler"}",
+                    exception
+                )
+                onResult(false, exception.message)
+            }
+    }
+
     fun loadCurrentUserFindings(
         onResult: (List<AnimalFinding>) -> Unit,
         onError: (String?) -> Unit = {}

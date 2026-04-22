@@ -561,6 +561,36 @@ private val AppGreenBackground = Color(0xFF51734A)
 
                                     if (roomMatch != null) {
                                         dao.deleteFinding(roomMatch)
+                                        Log.d(
+                                            "CloudSyncDelete",
+                                            "Deleted local finding: animalId=${finding.animalId}, date=${finding.date}, location=${finding.location}"
+                                        )
+
+                                        if (currentOwnerId != null) {
+                                            FirestoreFindingRepository.deleteCurrentUserFinding(finding) { success, result ->
+                                                if (success) {
+                                                    Log.d(
+                                                        "CloudSyncDelete",
+                                                        "Deleted Firestore finding: documentId=$result"
+                                                    )
+                                                } else {
+                                                    Log.e(
+                                                        "CloudSyncDelete",
+                                                        "Delete in Firestore failed: $result"
+                                                    )
+                                                }
+                                            }
+                                        } else {
+                                            Log.d(
+                                                "CloudSyncDelete",
+                                                "Skipped Firestore delete because no user is logged in"
+                                            )
+                                        }
+                                    } else {
+                                        Log.d(
+                                            "CloudSyncDelete",
+                                            "Skipped local delete because no matching Room finding was found"
+                                        )
                                     }
                                 }
                             },
