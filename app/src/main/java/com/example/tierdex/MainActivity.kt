@@ -176,6 +176,7 @@ private val AppGreenBackground = Color(0xFF51734A)
     )
 
     data class AnimalFinding(
+        val roomId: Int? = null,
         val animalId: String,
         val date: String,
         val location: String,
@@ -210,6 +211,7 @@ private val AppGreenBackground = Color(0xFF51734A)
         val allFindings by findingsFlow.collectAsState(initial = emptyList())
         val findingsFromRoom = allFindings.map {
             AnimalFinding(
+                roomId = it.id,
                 animalId = it.animalId,
                 date = it.date,
                 location = it.location,
