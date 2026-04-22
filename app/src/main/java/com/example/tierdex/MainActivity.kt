@@ -181,7 +181,8 @@ private val AppGreenBackground = Color(0xFF51734A)
         val date: String,
         val location: String,
         val note: String,
-        val photoUri: String = ""
+        val photoUri: String = "",
+        val ownerId: String? = null
     )
 
     data class CsvLoadResult(
@@ -216,7 +217,8 @@ private val AppGreenBackground = Color(0xFF51734A)
                 date = it.date,
                 location = it.location,
                 note = it.note,
-                photoUri = it.photoUri
+                photoUri = it.photoUri,
+                ownerId = it.ownerId
             )
         }
         val context = LocalContext.current
