@@ -10,5 +10,6 @@ data class AnimalFindingEntity(
     val date: String,
     val location: String,
     val note: String,
-    val photoUri: String
+    val photoUri: String,
+    val ownerId: String? = null
 )
