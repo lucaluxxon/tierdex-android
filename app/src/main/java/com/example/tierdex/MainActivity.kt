@@ -387,7 +387,8 @@ private val AppGreenBackground = Color(0xFF51734A)
                                                 date = finding.date,
                                                 location = finding.location,
                                                 note = finding.note,
-                                                photoUri = finding.photoUri
+                                                photoUri = finding.photoUri,
+                                                ownerId = finding.ownerId
                                             )
                                         )
                                     }
