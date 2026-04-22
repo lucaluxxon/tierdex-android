@@ -114,6 +114,10 @@ import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material.icons.filled.SetMeal
 import androidx.compose.material.icons.filled.WaterDrop
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Collections
+import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.ui.graphics.vector.ImageVector
 
 
 private const val ANIMALS_FILE_NAME = "tierlistegesamt.csv"
@@ -239,6 +243,9 @@ private val AppGreenBackground = Color(0xFF51734A)
         var showSettingsScreen by rememberSaveable { mutableStateOf(false) }
         var selectedGroupFilter by rememberSaveable { mutableStateOf("Alle") }
         var selectedSubgroupFilter by rememberSaveable { mutableStateOf("Alle") }
+        val resetSearchState = {
+            searchText = ""
+        }
         var favoriteAnimalId by rememberSaveable {
             mutableStateOf<String?>(prefs.getString("favoriteAnimalId", null))
         }
@@ -414,16 +421,20 @@ private val AppGreenBackground = Color(0xFF51734A)
             }
 
         BackHandler(enabled = showSettingsScreen) {
+            resetSearchState()
             showSettingsScreen = false
         }
         BackHandler(enabled = selectedAnimalId != null) {
+            resetSearchState()
             selectedAnimalId = null
         }
 
         BackHandler(enabled = showAnimalPicker && selectedAnimalId == null) {
+            resetSearchState()
             showAnimalPicker = false
         }
         BackHandler(enabled = ownerId == null && authEntryMode != null && !showSettingsScreen) {
+            resetSearchState()
             authEntryMode = null
         }
 
@@ -434,14 +445,20 @@ private val AppGreenBackground = Color(0xFF51734A)
                 if (selectedAnimal == null && !showAnimalPicker && !showAuthStartScreen) {
                     MainBottomBar(
                         currentTab = currentTab,
-                        onTabSelected = { currentTab = it }
+                        onTabSelected = {
+                            resetSearchState()
+                            currentTab = it
+                        }
                     )
                 }
             },
             floatingActionButton = {
                 if (selectedAnimal == null && !showAnimalPicker && !showAuthStartScreen) {
                     FloatingActionButton(
-                        onClick = { showAnimalPicker = true },
+                        onClick = {
+                            resetSearchState()
+                            showAnimalPicker = true
+                        },
                         containerColor = PrimaryGreen,
                         contentColor = Color.White,
                         shape = RoundedCornerShape(16.dp)
@@ -472,10 +489,12 @@ private val AppGreenBackground = Color(0xFF51734A)
                     showAuthStartScreen -> {
                         AuthStartScreen(
                             onLoginClick = {
+                                resetSearchState()
                                 authEntryMode = "login"
                                 currentTab = AppTab.PROFILE
                             },
                             onRegisterClick = {
+                                resetSearchState()
                                 authEntryMode = "register"
                                 currentTab = AppTab.PROFILE
                             }
@@ -483,8 +502,12 @@ private val AppGreenBackground = Color(0xFF51734A)
                     }
                     showSettingsScreen -> {
                         SettingsScreen(
-                            onBack = { showSettingsScreen = false },
+                            onBack = {
+                                resetSearchState()
+                                showSettingsScreen = false
+                            },
                             onLogout = {
+                                resetSearchState()
                                 currentOwnerId = null
                                 currentDisplayName = null
                                 authEntryMode = null
@@ -520,6 +543,7 @@ private val AppGreenBackground = Color(0xFF51734A)
                             storageDebug = storageDebug,
                             initialFinding = selectedFindingToEdit,
                             onBackClick = {
+                                resetSearchState()
                                 selectedAnimalId = null
                                 selectedFindingToEdit = null
                             },
@@ -649,7 +673,10 @@ private val AppGreenBackground = Color(0xFF51734A)
 
                     showAnimalPicker -> {
                         AnimalListScreen(
-                            onOpenSettings = { showSettingsScreen = true },
+                            onOpenSettings = {
+                                resetSearchState()
+                                showSettingsScreen = true
+                            },
                             debugMessage = "Wähle ein Tier für einen neuen Fund",
                             searchText = searchText,
                             onSearchTextChange = { searchText = it },
@@ -671,6 +698,7 @@ private val AppGreenBackground = Color(0xFF51734A)
                             onSelectedSubgroupChange = { selectedSubgroupFilter = it },
                             findingCountByAnimalId = findingCountByAnimalId,
                             onAnimalClick = { animal ->
+                                resetSearchState()
                                 selectedAnimalId = animal.id
                                 showAnimalPicker = false
                             },
@@ -706,7 +734,10 @@ private val AppGreenBackground = Color(0xFF51734A)
 
                     currentTab == AppTab.STATS -> {
                         AnimalListScreen(
-                            onOpenSettings = { showSettingsScreen = true },
+                            onOpenSettings = {
+                                resetSearchState()
+                                showSettingsScreen = true
+                            },
                             debugMessage = "Mein Tierdex",
                             searchText = searchText,
                             onSearchTextChange = { searchText = it },
@@ -728,6 +759,7 @@ private val AppGreenBackground = Color(0xFF51734A)
                             onSelectedSubgroupChange = { selectedSubgroupFilter = it },
                             findingCountByAnimalId = findingCountByAnimalId,
                             onAnimalClick = { animal ->
+                                resetSearchState()
                                 selectedAnimalId = animal.id
                             },
                             extraTopPadding = innerPadding.calculateTopPadding(),
@@ -770,7 +802,10 @@ private val AppGreenBackground = Color(0xFF51734A)
                     !showSettingsScreen
                 ) {
                     IconButton(
-                        onClick = { showSettingsScreen = true },
+                        onClick = {
+                            resetSearchState()
+                            showSettingsScreen = true
+                        },
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .statusBarsPadding()
@@ -863,28 +898,7 @@ private val AppGreenBackground = Color(0xFF51734A)
             it.id.trim().lowercase() == latestFinding?.animalId?.trim()?.lowercase()
         }
 
-        val collectedAnimalIds = findings.map { it.animalId }.toSet()
-
-        val collectedBirdSpeciesCount = animals
-            .filter { it.group.equals("Vogel", ignoreCase = true) && it.id in collectedAnimalIds }
-            .size
-
         val photoFindingCount = findings.count { it.photoUri.isNotBlank() }
-
-        val birdQuestGoal = getNextQuestGoal(
-            progress = collectedBirdSpeciesCount,
-            goals = listOf(3, 10, 25)
-        )
-
-        val photoQuestGoal = getNextQuestGoal(
-            progress = photoFindingCount,
-            goals = listOf(5, 15, 30)
-        )
-
-        val speciesQuestGoal = getNextQuestGoal(
-            progress = collectedAnimalCount,
-            goals = listOf(10, 25, 50)
-        )
         val collectionPercent = if (totalAnimalCount > 0) {
             (collectedAnimalCount.toFloat() / totalAnimalCount.toFloat()) * 100f
         } else {
@@ -895,6 +909,15 @@ private val AppGreenBackground = Color(0xFF51734A)
             collectedAnimalCount.toFloat() / totalAnimalCount.toFloat()
         } else {
             0f
+        }
+        val quests = remember(findings, animals, collectedAnimalCount, totalFindings, photoFindingCount) {
+            buildHomeQuests(
+                findings = findings,
+                animals = animals,
+                collectedAnimalCount = collectedAnimalCount,
+                totalFindings = totalFindings,
+                photoFindingCount = photoFindingCount
+            )
         }
 
         LazyColumn(
@@ -914,68 +937,28 @@ private val AppGreenBackground = Color(0xFF51734A)
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
-                Text(
-                    text = "Startseite",
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier
-                )
-            }
-
-            item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = Color.White
+                        containerColor = CardBackground,
+                        contentColor = TextPrimary
                     )
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
+                    Column(
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
                         Text(
-                            text = "Fortschritt",
-                            style = MaterialTheme.typography.titleMedium
+                            text = "Startseite",
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = TextPrimary
                         )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
                         Text(
-                            text = "Gesammelt: $collectedAnimalCount von $totalAnimalCount Arten",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(16.dp)
-                                .clip(RoundedCornerShape(8.dp))
-                                .background(Color.White)
-                                .border(
-                                    width = 1.dp,
-                                    color = TextSecondary.copy(alpha = 0.35f),
-                                    shape = RoundedCornerShape(8.dp)
-                                )
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .fillMaxWidth(collectionProgress)
-                                    .background(PrimaryGreen)
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(6.dp))
-
-                        Text(
-                            text = String.format("%.1f %%", collectionPercent),
-                            style = MaterialTheme.typography.bodySmall
-                        )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text(
-                            text = "Gesamte Funde: $totalFindings",
-                            style = MaterialTheme.typography.bodyMedium
+                            text = "Dein letzter Fund, dein Fortschritt und deine nächsten Ziele an einem Ort.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextSecondary
                         )
                     }
                 }
@@ -996,10 +979,14 @@ private val AppGreenBackground = Color(0xFF51734A)
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         Text(
+                            text = "Zuletzt entdeckt",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = TextSecondary
+                        )
+                        Text(
                             text = "Letzter Fund",
                             style = MaterialTheme.typography.titleMedium,
                         )
-                        Spacer(modifier = Modifier.height(8.dp))
 
                         if (latestFinding == null) {
                             Text("Noch kein Fund gespeichert.")
@@ -1061,49 +1048,106 @@ private val AppGreenBackground = Color(0xFF51734A)
             }
 
             item {
-                Text(
-                    text = "Quests",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = TextPrimary
-                )
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = CardBackground,
+                        contentColor = TextPrimary
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = "Sammlungsstand",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = TextSecondary
+                        )
+                        Text(
+                            text = "Fortschritt",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = TextPrimary
+                        )
+                        Text(
+                            text = "Gesammelt: $collectedAnimalCount von $totalAnimalCount Arten",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextPrimary
+                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(16.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(Color.White)
+                                .border(
+                                    width = 1.dp,
+                                    color = TextSecondary.copy(alpha = 0.35f),
+                                    shape = RoundedCornerShape(10.dp)
+                                )
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .fillMaxWidth(collectionProgress)
+                                    .background(PrimaryGreen)
+                            )
+                        }
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = String.format("%.1f %%", collectionPercent),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = TextSecondary
+                            )
+                            Text(
+                                text = "Gesamte Funde: $totalFindings",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = TextSecondary
+                            )
+                        }
+                    }
+                }
             }
 
             item {
-                QuestCard(
-                    title = "Vogelarten sammeln",
-                    progress = collectedBirdSpeciesCount,
-                    goal = birdQuestGoal,
-                    color = TextPrimary
-                )
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(
+                        text = "Quests",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = TextPrimary
+                    )
+                    Text(
+                        text = "Deine nächsten kleinen Ziele auf einen Blick.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextSecondary
+                    )
+                }
             }
 
-            item {
-                QuestCard(
-                    title = "Funde mit Foto",
-                    progress = photoFindingCount,
-                    goal = photoQuestGoal,
-                    color = TextPrimary
-                )
-            }
-
-            item {
-                QuestCard(
-                    title = "Arten sammeln",
-                    progress = collectedAnimalCount,
-                    goal = speciesQuestGoal,
-                    color = TextPrimary
-                )
+            items(quests, key = { it.id }) { quest ->
+                QuestCard(quest = quest)
             }
 
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = Color.White
+                        containerColor = CardBackground,
+                        contentColor = TextPrimary
                     )
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
+                    Column(
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
                         Text(
                             text = "Aktive Challenges",
                             style = MaterialTheme.typography.titleMedium,
@@ -1399,48 +1443,176 @@ private fun SettingsContentCard(
     }
 }
 
-    @Composable
-    fun QuestCard(
-        title: String,
-        progress: Int,
-        goal: Int,
-        color: Color
-    ) {
-        val isDone = progress >= goal
-        val shownProgress = if (progress > goal) goal else progress
+    enum class QuestType {
+        TOTAL_FINDINGS,
+        PHOTO_FINDINGS,
+        BIRDS,
+        FISH,
+        MAMMALS,
+        AMPHIBIANS,
+        REPTILES
+    }
 
+    data class QuestUiModel(
+        val id: String,
+        val type: QuestType,
+        val title: String,
+        val description: String,
+        val progress: Int,
+        val goal: Int,
+        val isCompleted: Boolean
+    ) {
+        val shownProgress: Int
+            get() = progress.coerceAtMost(goal)
+
+        val progressFraction: Float
+            get() = if (goal > 0) shownProgress.toFloat() / goal.toFloat() else 0f
+
+        val percentLabel: String
+            get() = "${(progressFraction * 100f).toInt()}%"
+
+        val remainingToGoal: Int
+            get() = (goal - progress).coerceAtLeast(0)
+
+        val nextStageLabel: String
+            get() = if (isCompleted) {
+                "Stufe gemeistert"
+            } else {
+                "Nächste Stufe: $goal"
+            }
+
+        val encouragementLabel: String
+            get() = if (isCompleted) {
+                "Belohnung freigeschaltet"
+            } else if (remainingToGoal == 1) {
+                "Noch 1 Fund bis zum Ziel"
+            } else {
+                "Noch $remainingToGoal bis zum Ziel"
+            }
+
+        val icon: ImageVector
+            get() = when (type) {
+                QuestType.TOTAL_FINDINGS -> Icons.Filled.Collections
+                QuestType.PHOTO_FINDINGS -> Icons.Filled.PhotoCamera
+                QuestType.BIRDS -> Icons.Filled.Air
+                QuestType.FISH -> Icons.Filled.SetMeal
+                QuestType.MAMMALS -> Icons.Filled.Pets
+                QuestType.AMPHIBIANS -> Icons.Filled.WaterDrop
+                QuestType.REPTILES -> Icons.Filled.BugReport
+            }
+    }
+
+    @Composable
+    fun QuestCard(quest: QuestUiModel) {
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
             colors = CardDefaults.cardColors(
-                containerColor = CardBackground,
+                containerColor = if (quest.isCompleted) PrimaryGreenSoft.copy(alpha = 0.45f) else CardBackground,
                 contentColor = TextPrimary
             )
         ) {
             Column(
                 modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = quest.icon,
+                            contentDescription = null,
+                            tint = if (quest.isCompleted) PrimaryGreen else TextSecondary
+                        )
+                        Text(
+                            text = quest.title,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = TextPrimary
+                        )
+                    }
+
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        if (quest.isCompleted) {
+                            Icon(
+                                imageVector = Icons.Filled.CheckCircle,
+                                contentDescription = null,
+                                tint = PrimaryGreen,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                        Text(
+                            text = if (quest.isCompleted) "Geschafft" else "Aktiv",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = if (quest.isCompleted) PrimaryGreen else TextSecondary
+                        )
+                    }
+                }
+
                 Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    color = color
+                    text = when (quest.type) {
+                        QuestType.TOTAL_FINDINGS -> "Gesamtfunde"
+                        QuestType.PHOTO_FINDINGS -> "Fotoquest"
+                        QuestType.BIRDS -> "Vögel"
+                        QuestType.FISH -> "Fische"
+                        QuestType.MAMMALS -> "Säugetiere"
+                        QuestType.AMPHIBIANS -> "Amphibien"
+                        QuestType.REPTILES -> "Reptilien"
+                    },
+                    style = MaterialTheme.typography.labelSmall,
+                    color = TextSecondary
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
-
                 Text(
-                    text = "Fortschritt: $shownProgress / $goal",
-                    style = MaterialTheme.typography.bodyMedium
+                    text = quest.description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextSecondary
                 )
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Fortschritt: ${quest.shownProgress} / ${quest.goal}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextPrimary
+                )
+
+                LinearProgressIndicator(
+                    progress = { quest.progressFraction },
+                    modifier = Modifier.fillMaxWidth(),
+                    color = PrimaryGreen,
+                    trackColor = PrimaryGreenSoft
+                )
 
                 Text(
-                    text = if (isDone) "Stufe abgeschlossen" else "Aktuelle Stufe",
-                    style = MaterialTheme.typography.bodyMedium
+                    text = quest.nextStageLabel,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextSecondary
                 )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = quest.percentLabel,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextSecondary
+                    )
+                    Text(
+                        text = quest.encouragementLabel,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (quest.isCompleted) PrimaryGreen else TextSecondary
+                    )
+                }
             }
         }
     }
@@ -1455,6 +1627,82 @@ private fun SettingsContentCard(
             }
         }
         return goals.last()
+    }
+
+    fun buildHomeQuests(
+        findings: List<AnimalFinding>,
+        animals: List<AnimalEntry>,
+        collectedAnimalCount: Int,
+        totalFindings: Int,
+        photoFindingCount: Int
+    ): List<QuestUiModel> {
+        val animalById = animals.associateBy { it.id }
+        val findingsByGroup = findings
+            .mapNotNull { finding -> animalById[finding.animalId]?.group }
+            .groupingBy { normalizeQuestGroupName(it) }
+            .eachCount()
+
+        val totalQuest = QuestUiModel(
+            id = "total_findings",
+            type = QuestType.TOTAL_FINDINGS,
+            title = "Funde sammeln",
+            description = "Erreiche die nächste Stufe über alle gespeicherten Funde hinweg.",
+            progress = totalFindings,
+            goal = getNextQuestGoal(totalFindings, listOf(1, 5, 10, 25, 50)),
+            isCompleted = totalFindings >= 50
+        )
+
+        val photoQuest = QuestUiModel(
+            id = "photo_findings",
+            type = QuestType.PHOTO_FINDINGS,
+            title = "Funde mit Foto",
+            description = "Dokumentiere deine Beobachtungen mit Bildern.",
+            progress = photoFindingCount,
+            goal = getNextQuestGoal(photoFindingCount, listOf(1, 3, 5, 10, 20)),
+            isCompleted = photoFindingCount >= 20
+        )
+
+        val groupQuestConfigs = listOf(
+            Triple("Vögel", QuestType.BIRDS, listOf("Vogel", "Vögel")),
+            Triple("Fische", QuestType.FISH, listOf("Fisch", "Fische")),
+            Triple("Säugetiere", QuestType.MAMMALS, listOf("Säugetier", "Säugetiere")),
+            Triple("Amphibien", QuestType.AMPHIBIANS, listOf("Amphibie", "Amphibien")),
+            Triple("Reptilien", QuestType.REPTILES, listOf("Reptil", "Reptilien"))
+        )
+
+        val groupQuests = groupQuestConfigs.map { (label, type, aliases) ->
+            val progress = findingsByGroup
+                .filterKeys { key -> key in aliases.map { normalizeQuestGroupName(it) } }
+                .values
+                .sum()
+            QuestUiModel(
+                id = "group_$label",
+                type = type,
+                title = "$label entdecken",
+                description = "Sammle Funde aus der Tiergruppe $label.",
+                progress = progress,
+                goal = getNextQuestGoal(progress, listOf(1, 3, 5, 10)),
+                isCompleted = progress >= 10
+            )
+        }
+
+        return buildList {
+            add(totalQuest)
+            add(photoQuest)
+            addAll(
+                groupQuests
+                    .sortedWith(
+                        compareBy<QuestUiModel> { it.isCompleted }
+                            .thenByDescending { it.progressFraction }
+                            .thenByDescending { it.progress }
+                    )
+                    .take(3)
+            )
+        }
+    }
+
+    fun normalizeQuestGroupName(group: String): String {
+        return group.trim().lowercase()
     }
 
 @Composable
@@ -1513,8 +1761,10 @@ fun FriendsScreen(
         extraTopPadding: Dp = 0.dp,
         extraBottomPadding: Dp = 0.dp
     ) {
-        val favoriteAnimal = animals.find { it.id == favoriteAnimalId }
-        val wishlistAnimal = animals.find { it.id == wishlistAnimalId }
+        val animalById = remember(animals) { animals.associateBy { it.id } }
+        val favoriteAnimal = animalById[favoriteAnimalId]
+        val wishlistAnimal = animalById[wishlistAnimalId]
+        val reversedFindings = remember(findings) { findings.asReversed() }
         var displayNameInput by rememberSaveable(currentDisplayName) {
             mutableStateOf(currentDisplayName ?: "")
         }
@@ -1890,8 +2140,13 @@ fun FriendsScreen(
                     Text("Noch keine Funde gespeichert.")
                 }
             } else {
-                items(findings.asReversed()) { finding ->
-                    val animal = animals.find { it.id == finding.animalId }
+                items(
+                    items = reversedFindings,
+                    key = { finding ->
+                        finding.roomId ?: FirestoreFindingRepository.findingFingerprint(finding)
+                    }
+                ) { finding ->
+                    val animal = animalById[finding.animalId]
 
                     Card(
                         onClick = { onEditFinding(finding) },
@@ -1941,6 +2196,7 @@ fun FriendsScreen(
                                 Spacer(modifier = Modifier.height(12.dp))
                                 UriImage(
                                     uriString = finding.photoUri,
+                                    maxImageSizePx = 1024,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .heightIn(max = 220.dp)
@@ -2690,14 +2946,22 @@ fun FriendsScreen(
     @Composable
     fun UriImage(
         uriString: String,
+        maxImageSizePx: Int? = null,
         modifier: Modifier = Modifier
     ) {
         val context = LocalContext.current
-        var bitmap by remember(uriString) { mutableStateOf<Bitmap?>(null) }
+        var bitmap by remember(uriString, maxImageSizePx) { mutableStateOf<Bitmap?>(null) }
 
-        LaunchedEffect(uriString) {
+        LaunchedEffect(uriString, maxImageSizePx) {
+            if (maxImageSizePx != null) {
+                Log.d("ProfilePerformance", "Loading preview image for $uriString with maxSize=$maxImageSizePx")
+            }
             bitmap = withContext(Dispatchers.IO) {
-                loadCorrectlyOrientedBitmapFromUriString(context, uriString)
+                loadCorrectlyOrientedBitmapFromUriString(
+                    context = context,
+                    uriString = uriString,
+                    maxImageSizePx = maxImageSizePx
+                )
             }
         }
 
@@ -2826,21 +3090,29 @@ fun FriendsScreen(
             .replace(" ", "")
     }
 
-    fun loadCorrectlyOrientedBitmapFromUriString(context: Context, uriString: String): Bitmap? {
+    fun loadCorrectlyOrientedBitmapFromUriString(
+        context: Context,
+        uriString: String,
+        maxImageSizePx: Int? = null
+    ): Bitmap? {
         if (uriString.isBlank()) return null
 
         return if (uriString.startsWith("internal://")) {
             val fileName = uriString.removePrefix("internal://")
             val file = File(File(context.filesDir, FINDING_IMAGES_DIR), fileName)
-            loadCorrectlyOrientedBitmapFromFile(file)
+            loadCorrectlyOrientedBitmapFromFile(file, maxImageSizePx)
         } else {
-            loadCorrectlyOrientedBitmapFromUri(context, Uri.parse(uriString))
+            loadCorrectlyOrientedBitmapFromUri(context, Uri.parse(uriString), maxImageSizePx)
         }
     }
 
-    fun loadCorrectlyOrientedBitmapFromUri(context: Context, uri: Uri): Bitmap? {
+    fun loadCorrectlyOrientedBitmapFromUri(
+        context: Context,
+        uri: Uri,
+        maxImageSizePx: Int? = null
+    ): Bitmap? {
         val bitmap = context.contentResolver.openInputStream(uri)?.use { input ->
-            BitmapFactory.decodeStream(input)
+            decodeSampledBitmapFromStream(input, maxImageSizePx)
         } ?: return null
 
         val orientation = context.contentResolver.openInputStream(uri)?.use { input ->
@@ -2853,10 +3125,10 @@ fun FriendsScreen(
         return applyExifOrientation(bitmap, orientation)
     }
 
-    fun loadCorrectlyOrientedBitmapFromFile(file: File): Bitmap? {
+    fun loadCorrectlyOrientedBitmapFromFile(file: File, maxImageSizePx: Int? = null): Bitmap? {
         if (!file.exists()) return null
 
-        val bitmap = BitmapFactory.decodeFile(file.absolutePath) ?: return null
+        val bitmap = decodeSampledBitmapFromFile(file.absolutePath, maxImageSizePx) ?: return null
 
         val orientation = file.inputStream().use { input ->
             ExifInterface(input).getAttributeInt(
@@ -2904,6 +3176,66 @@ fun FriendsScreen(
             postScale(if (horizontalFlip) -1f else 1f, 1f)
         }
         return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+    }
+
+    fun decodeSampledBitmapFromStream(
+        inputStream: java.io.InputStream,
+        maxImageSizePx: Int?
+    ): Bitmap? {
+        if (maxImageSizePx == null) {
+            return BitmapFactory.decodeStream(inputStream)
+        }
+
+        val imageBytes = inputStream.readBytes()
+        val boundsOptions = BitmapFactory.Options().apply {
+            inJustDecodeBounds = true
+        }
+        BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size, boundsOptions)
+
+        val decodeOptions = BitmapFactory.Options().apply {
+            inSampleSize = calculateInSampleSize(
+                boundsOptions.outWidth,
+                boundsOptions.outHeight,
+                maxImageSizePx
+            )
+        }
+
+        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size, decodeOptions)
+    }
+
+    fun decodeSampledBitmapFromFile(filePath: String, maxImageSizePx: Int?): Bitmap? {
+        if (maxImageSizePx == null) {
+            return BitmapFactory.decodeFile(filePath)
+        }
+
+        val boundsOptions = BitmapFactory.Options().apply {
+            inJustDecodeBounds = true
+        }
+        BitmapFactory.decodeFile(filePath, boundsOptions)
+
+        val decodeOptions = BitmapFactory.Options().apply {
+            inSampleSize = calculateInSampleSize(
+                boundsOptions.outWidth,
+                boundsOptions.outHeight,
+                maxImageSizePx
+            )
+        }
+
+        return BitmapFactory.decodeFile(filePath, decodeOptions)
+    }
+
+    fun calculateInSampleSize(width: Int, height: Int, maxImageSizePx: Int): Int {
+        var inSampleSize = 1
+        var currentWidth = width
+        var currentHeight = height
+
+        while (currentWidth > maxImageSizePx || currentHeight > maxImageSizePx) {
+            currentWidth /= 2
+            currentHeight /= 2
+            inSampleSize *= 2
+        }
+
+        return inSampleSize.coerceAtLeast(1)
     }
 
     private val LightColorScheme = lightColorScheme(
