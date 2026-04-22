@@ -422,12 +422,16 @@ private val AppGreenBackground = Color(0xFF51734A)
                             },
                             onDeleteFinding = { finding ->
                                 scope.launch {
-                                    val roomMatch = allFindings.lastOrNull {
-                                        it.animalId == finding.animalId &&
-                                                it.date == finding.date &&
-                                                it.location == finding.location &&
-                                                it.note == finding.note &&
-                                                it.photoUri == finding.photoUri
+                                    val roomMatch = if (finding.roomId != null) {
+                                        allFindings.lastOrNull { it.id == finding.roomId }
+                                    } else {
+                                        allFindings.lastOrNull {
+                                            it.animalId == finding.animalId &&
+                                                    it.date == finding.date &&
+                                                    it.location == finding.location &&
+                                                    it.note == finding.note &&
+                                                    it.photoUri == finding.photoUri
+                                        }
                                     }
 
                                     if (roomMatch != null) {
@@ -439,12 +443,16 @@ private val AppGreenBackground = Color(0xFF51734A)
                                 selectedFindingToEdit = null
 
                                 scope.launch {
-                                    val roomMatch = allFindings.lastOrNull {
-                                        it.animalId == oldFinding.animalId &&
-                                                it.date == oldFinding.date &&
-                                                it.location == oldFinding.location &&
-                                                it.note == oldFinding.note &&
-                                                it.photoUri == oldFinding.photoUri
+                                    val roomMatch = if (oldFinding.roomId != null) {
+                                        allFindings.lastOrNull { it.id == oldFinding.roomId }
+                                    } else {
+                                        allFindings.lastOrNull {
+                                            it.animalId == oldFinding.animalId &&
+                                                    it.date == oldFinding.date &&
+                                                    it.location == oldFinding.location &&
+                                                    it.note == oldFinding.note &&
+                                                    it.photoUri == oldFinding.photoUri
+                                        }
                                     }
 
                                     if (roomMatch != null) {
