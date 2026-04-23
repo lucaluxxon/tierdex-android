@@ -129,6 +129,8 @@ import androidx.compose.foundation.layout.widthIn
 private const val ANIMALS_FILE_NAME = "tierlistegesamt.csv"
 private const val FINDING_IMAGES_DIR = "finding_images"
 private const val STARTUP_HINT_SHOWN_KEY_PREFIX = "startup_hint_shown_"
+private const val INTRO_PENDING_KEY_PREFIX = "intro_pending_"
+private const val INTRO_SEEN_KEY_PREFIX = "intro_seen_"
 private const val WISHLIST_ANIMAL_KEY_PREFIX = "wishAnimalId_"
 private const val FAVORITE_ANIMAL_KEY_PREFIX = "favoriteAnimalId_"
 private val AppGreenBackground = Color(0xFF51734A)
@@ -136,6 +138,10 @@ private val AppGreenBackground = Color(0xFF51734A)
 private fun favoriteAnimalKey(ownerId: String): String = "$FAVORITE_ANIMAL_KEY_PREFIX$ownerId"
 
 private fun wishlistAnimalKey(ownerId: String): String = "$WISHLIST_ANIMAL_KEY_PREFIX$ownerId"
+
+private fun introPendingKey(ownerId: String): String = "$INTRO_PENDING_KEY_PREFIX$ownerId"
+
+private fun introSeenKey(ownerId: String): String = "$INTRO_SEEN_KEY_PREFIX$ownerId"
 
 private val uriImageMemoryCache = object : LruCache<String, Bitmap>(20 * 1024 * 1024) {
     override fun sizeOf(key: String, value: Bitmap): Int = value.byteCount
@@ -234,6 +240,11 @@ private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
         PROFILE
     }
 
+    private enum class IntroLaunchSource {
+        AUTOMATIC,
+        SETTINGS
+    }
+
     @Composable
     fun AppSplashScreen() {
         Box(
@@ -299,6 +310,8 @@ private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
         var selectedFindingToEdit by remember { mutableStateOf<AnimalFinding?>(null) }
         var showSettingsScreen by rememberSaveable { mutableStateOf(false) }
         var showStartupHintDialog by rememberSaveable { mutableStateOf(false) }
+        var showIntroScreen by rememberSaveable { mutableStateOf(false) }
+        var introLaunchSource by rememberSaveable { mutableStateOf(IntroLaunchSource.AUTOMATIC.name) }
         var selectedGroupFilter by rememberSaveable { mutableStateOf("Alle") }
         var selectedSubgroupFilter by rememberSaveable { mutableStateOf("Alle") }
         val resetSearchState = {
@@ -312,13 +325,29 @@ private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
             favoriteAnimalId = ownerId?.let { prefs.getString(favoriteAnimalKey(it), null) }
             wishlistAnimalId = ownerId?.let { prefs.getString(wishlistAnimalKey(it), null) }
 
+            val hasPendingIntro = ownerId?.let {
+                val pending = prefs.getBoolean(introPendingKey(it), false)
+                val seen = prefs.getBoolean(introSeenKey(it), false)
+                pending && !seen
+            } ?: false
+
             if (previousOwnerId == null && ownerId != null) {
-                val startupHintKey = "$STARTUP_HINT_SHOWN_KEY_PREFIX$ownerId"
-                val alreadyShown = prefs.getBoolean(startupHintKey, false)
-                if (!alreadyShown) {
-                    showStartupHintDialog = true
-                    prefs.edit().putBoolean(startupHintKey, true).apply()
+                if (hasPendingIntro) {
+                    showIntroScreen = true
+                    introLaunchSource = IntroLaunchSource.AUTOMATIC.name
+                    showStartupHintDialog = false
+                } else {
+                    val startupHintKey = "$STARTUP_HINT_SHOWN_KEY_PREFIX$ownerId"
+                    val alreadyShown = prefs.getBoolean(startupHintKey, false)
+                    if (!alreadyShown) {
+                        showStartupHintDialog = true
+                        prefs.edit().putBoolean(startupHintKey, true).apply()
+                    }
                 }
+            } else if (ownerId != null && hasPendingIntro) {
+                showIntroScreen = true
+                introLaunchSource = IntroLaunchSource.AUTOMATIC.name
+                showStartupHintDialog = false
             }
             previousOwnerId = ownerId
 
@@ -475,6 +504,7 @@ private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
         val selectedAnimal = animals.find { it.id == selectedAnimalId }
         val showAuthStartScreen = ownerId == null && authEntryMode == null
         val showAuthEntryScreen = ownerId == null && authEntryMode != null
+        val isIntroFromSettings = introLaunchSource == IntroLaunchSource.SETTINGS.name
 
         val groupOptions = listOf("Alle") + animals.map { it.group }.distinct().sorted()
 
@@ -489,7 +519,7 @@ private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
                     .sorted()
             }
 
-        BackHandler(enabled = showSettingsScreen) {
+        BackHandler(enabled = showSettingsScreen && !showIntroScreen) {
             resetSearchState()
             showSettingsScreen = false
         }
@@ -506,12 +536,26 @@ private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
             resetSearchState()
             authEntryMode = null
         }
+        BackHandler(enabled = showIntroScreen) {
+            if (isIntroFromSettings) {
+                showIntroScreen = false
+            } else {
+                ownerId?.let {
+                    prefs.edit()
+                        .putBoolean(introSeenKey(it), true)
+                        .putBoolean(introPendingKey(it), false)
+                        .apply()
+                }
+                showIntroScreen = false
+                currentTab = AppTab.PROFILE
+            }
+        }
 
         Scaffold(
             containerColor = Color.White,
             topBar = {},
             bottomBar = {
-                if (selectedAnimal == null && !showAnimalPicker && !showAuthStartScreen && !showAuthEntryScreen) {
+                if (selectedAnimal == null && !showAnimalPicker && !showAuthStartScreen && !showAuthEntryScreen && !showIntroScreen && !showSettingsScreen) {
                     MainBottomBar(
                         currentTab = currentTab,
                         onTabSelected = {
@@ -522,7 +566,7 @@ private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
                 }
             },
             floatingActionButton = {
-                if (selectedAnimal == null && !showAnimalPicker && !showAuthStartScreen && !showAuthEntryScreen) {
+                if (selectedAnimal == null && !showAnimalPicker && !showAuthStartScreen && !showAuthEntryScreen && !showIntroScreen && !showSettingsScreen) {
                     FloatingActionButton(
                         onClick = {
                             resetSearchState()
@@ -574,12 +618,39 @@ private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
                                 resetSearchState()
                                 authEntryMode = null
                             },
-                            onAuthSuccess = { userId ->
+                            onAuthSuccess = { userId, fromRegistration ->
                                 AuthSession.setCurrentUserId(userId)
                                 currentOwnerId = userId
                                 currentDisplayName = AuthSession.getCurrentDisplayName()
                                 authEntryMode = null
                                 currentTab = AppTab.PROFILE
+                                if (fromRegistration && userId != null) {
+                                    prefs.edit()
+                                        .putBoolean(introPendingKey(userId), true)
+                                        .putBoolean(introSeenKey(userId), false)
+                                        .apply()
+                                    introLaunchSource = IntroLaunchSource.AUTOMATIC.name
+                                    showIntroScreen = true
+                                    showStartupHintDialog = false
+                                }
+                            }
+                        )
+                    }
+                    showIntroScreen -> {
+                        IntroScreen(
+                            onClose = {
+                                if (isIntroFromSettings) {
+                                    showIntroScreen = false
+                                } else {
+                                    ownerId?.let {
+                                        prefs.edit()
+                                            .putBoolean(introSeenKey(it), true)
+                                            .putBoolean(introPendingKey(it), false)
+                                            .apply()
+                                    }
+                                    showIntroScreen = false
+                                    currentTab = AppTab.PROFILE
+                                }
                             }
                         )
                     }
@@ -596,6 +667,11 @@ private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
                                 authEntryMode = null
                                 showSettingsScreen = false
                                 currentTab = AppTab.PROFILE
+                            },
+                            onShowIntro = {
+                                introLaunchSource = IntroLaunchSource.SETTINGS.name
+                                showIntroScreen = true
+                                showStartupHintDialog = false
                             },
                             allFindings = findingsFromRoom,
                             onImportFindings = { importedFindings ->
@@ -876,7 +952,7 @@ private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
                         )
                     }
                 }
-                if (showStartupHintDialog) {
+                if (showStartupHintDialog && !showIntroScreen) {
                     StartupHintDialog(
                         onDismiss = { showStartupHintDialog = false }
                     )
@@ -884,6 +960,7 @@ private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
                 if (
                     selectedAnimalId == null &&
                     !showAnimalPicker &&
+                    !showIntroScreen &&
                     !showSettingsScreen &&
                     !showAuthStartScreen &&
                     !showAuthEntryScreen
@@ -1256,6 +1333,7 @@ private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
 fun SettingsScreen(
     onBack: () -> Unit,
     onLogout: () -> Unit,
+    onShowIntro: () -> Unit,
     allFindings: List<AnimalFinding>,
     onImportFindings: (List<AnimalFinding>) -> Unit,
     extraTopPadding: Dp = 0.dp,
@@ -1287,7 +1365,7 @@ fun SettingsScreen(
         ),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        item {
+        if (false) item {
             Button(
                 onClick = {
                     if (selectedSettingsPage == "menu") {
@@ -1322,6 +1400,14 @@ fun SettingsScreen(
 
         when (selectedSettingsPage) {
             "menu" -> {
+                item {
+                    SettingsMenuCard(
+                        title = "Einführung",
+                        description = "Die kurze Einführung zur App erneut ansehen",
+                        onClick = onShowIntro
+                    )
+                }
+
                 item {
                     SettingsMenuCard(
                         title = "Regelliste",
@@ -1833,6 +1919,94 @@ fun FriendsScreen(
 }
 
 @Composable
+private fun IntroScreen(
+    onClose: () -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .statusBarsPadding()
+            .padding(horizontal = 16.dp),
+        contentPadding = PaddingValues(top = 16.dp, bottom = 24.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        item {
+            Text(
+                text = "Willkommen bei Tierdex",
+                style = MaterialTheme.typography.headlineMedium,
+                color = TextPrimary
+            )
+        }
+
+        item {
+            Text(
+                text = "Hier bekommst du einen kurzen Überblick, damit du direkt gut starten kannst.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = TextSecondary
+            )
+        }
+
+        item {
+            SettingsContentCard {
+                Text(
+                    text = "Was die App kann",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = TextPrimary
+                )
+                Text(
+                    text = "Tierdex hilft dir dabei, Tierfunde festzuhalten, deine Sammlung aufzubauen und deinen Fortschritt in deiner persönlichen Übersicht zu sehen.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextSecondary
+                )
+            }
+        }
+
+        item {
+            SettingsContentCard {
+                Text(
+                    text = "So benutzt du sie",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = TextPrimary
+                )
+                Text(
+                    text = "Lege über \"Neuer Fund\" einen Eintrag an, wähle ein Tier aus und ergänze Datum, Ort, Notiz oder Foto. Deine Funde findest du später in deinem Profil und in deinem Tierdex wieder.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextSecondary
+                )
+            }
+        }
+
+        item {
+            SettingsContentCard {
+                Text(
+                    text = "Wofür sie gedacht ist",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = TextPrimary
+                )
+                Text(
+                    text = "Die App ist für eigene Naturbeobachtungen gedacht und soll dir helfen, besondere Begegnungen mit wild lebenden Tieren übersichtlich zu sammeln.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextSecondary
+                )
+            }
+        }
+
+        item {
+            Button(
+                onClick = onClose,
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = PrimaryGreen
+                )
+            ) {
+                Text("Verstanden")
+            }
+        }
+    }
+}
+
+@Composable
 private fun StartupHintDialog(
     onDismiss: () -> Unit
 ) {
@@ -1879,7 +2053,7 @@ private fun StartupHintRulesContent() {
 fun AuthEntryScreen(
     initialAuthMode: String = "login",
     onBack: () -> Unit,
-    onAuthSuccess: (String?) -> Unit
+    onAuthSuccess: (String?, Boolean) -> Unit
 ) {
     var displayName by rememberSaveable { mutableStateOf("") }
     var email by rememberSaveable { mutableStateOf("") }
@@ -2002,7 +2176,7 @@ fun AuthEntryScreen(
                                 AuthSession.registerWithEmail(displayName, email, password) { success, result ->
                                     if (success) {
                                         AuthSession.getCurrentFirebaseUserId()?.let { firebaseUserId ->
-                                            onAuthSuccess(firebaseUserId)
+                                            onAuthSuccess(firebaseUserId, true)
                                         }
                                         authMessage = "Registrierung erfolgreich"
                                     } else {
@@ -2013,7 +2187,7 @@ fun AuthEntryScreen(
                                 AuthSession.loginWithEmail(email, password) { success, result ->
                                     if (success) {
                                         AuthSession.getCurrentFirebaseUserId()?.let { firebaseUserId ->
-                                            onAuthSuccess(firebaseUserId)
+                                            onAuthSuccess(firebaseUserId, false)
                                         }
                                         authMessage = "Login erfolgreich"
                                     } else {
