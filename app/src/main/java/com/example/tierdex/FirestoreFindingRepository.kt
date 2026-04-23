@@ -34,6 +34,10 @@ object FirestoreFindingRepository {
         return digest.joinToString("") { byte -> "%02x".format(byte) }
     }
 
+    private fun documentIdForFinding(finding: AnimalFinding): String {
+        return hashedDocumentId(findingFingerprint(finding))
+    }
+
     fun saveCurrentUserFinding(
         finding: AnimalFinding,
         onResult: (Boolean, String?) -> Unit
@@ -52,8 +56,7 @@ object FirestoreFindingRepository {
             "photoUri" to finding.photoUri
         )
 
-        val fingerprint = findingFingerprint(finding)
-        val documentId = hashedDocumentId(fingerprint)
+        val documentId = documentIdForFinding(finding)
         Log.d(TAG, "Generated hashed Firestore documentId for finding: $documentId")
 
         firestore.collection("users")
@@ -85,8 +88,7 @@ object FirestoreFindingRepository {
             return
         }
 
-        val fingerprint = findingFingerprint(finding)
-        val documentId = hashedDocumentId(fingerprint)
+        val documentId = documentIdForFinding(finding)
         val findingsCollection = firestore.collection("users")
             .document(uid)
             .collection("findings")
@@ -167,6 +169,29 @@ object FirestoreFindingRepository {
                 )
                 onResult(false, exception.message)
             }
+    }
+
+    fun updateCurrentUserFinding(
+        oldFinding: AnimalFinding,
+        newFinding: AnimalFinding,
+        onResult: (Boolean, String?) -> Unit
+    ) {
+        val oldDocumentId = documentIdForFinding(oldFinding)
+        val newDocumentId = documentIdForFinding(newFinding)
+
+        if (oldDocumentId == newDocumentId) {
+            saveCurrentUserFinding(newFinding, onResult)
+            return
+        }
+
+        deleteCurrentUserFinding(oldFinding) { deleteSuccess, deleteResult ->
+            if (!deleteSuccess) {
+                onResult(false, deleteResult)
+                return@deleteCurrentUserFinding
+            }
+
+            saveCurrentUserFinding(newFinding, onResult)
+        }
     }
 
     fun loadCurrentUserFindings(

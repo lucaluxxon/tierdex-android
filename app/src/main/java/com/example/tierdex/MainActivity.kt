@@ -539,6 +539,7 @@ private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
         BackHandler(enabled = selectedAnimalId != null) {
             resetSearchState()
             selectedAnimalId = null
+            selectedFindingToEdit = null
         }
 
         BackHandler(enabled = showAnimalPicker && selectedAnimalId == null) {
@@ -820,9 +821,9 @@ private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
                                         )
 
                                         if (currentOwnerId != null) {
-                                            FirestoreFindingRepository.saveCurrentUserFinding(newFinding) { success, result ->
+                                            FirestoreFindingRepository.updateCurrentUserFinding(oldFinding, newFinding) { success, result ->
                                                 if (!success) {
-                                                    Log.e("CloudWrite", "Firestore save on update failed: $result")
+                                                    Log.e("CloudWrite", "Firestore update on edit failed: $result")
                                                 }
                                             }
                                         }
@@ -3923,10 +3924,10 @@ fun AuthEntryScreen(
     fun normalizeSearchText(text: String): String {
         return text
             .lowercase()
-            .replace("Ã¤", "ae")
-            .replace("Ã¶", "oe")
-            .replace("Ã¼", "ue")
-            .replace("ÃŸ", "ss")
+            .replace("ä", "ae")
+            .replace("ö", "oe")
+            .replace("ü", "ue")
+            .replace("ß", "ss")
             .replace("-", "")
             .replace(" ", "")
     }
