@@ -135,6 +135,7 @@ import androidx.compose.material.icons.filled.Collections
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 
@@ -1491,7 +1492,7 @@ fun SettingsScreen(
                                 color = TextPrimary
                             )
                             Text(
-                                text = "Bei Neuinstallation gehen Daten ohne Backup verloren.",
+                                text = "Backups und Sync sichern aktuell nur Funddaten. Fotos bleiben lokal auf diesem Gerät.",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = TextSecondary
                             )
@@ -1533,7 +1534,7 @@ fun SettingsScreen(
 
                 item {
                     Text(
-                        text = "âš ï¸ Bei Neuinstallation gehen Daten verloren. Bitte vorher Backup erstellen.",
+                        text = "Bei Gerätewechsel oder Neuinstallation können Fundfotos fehlen, auch wenn ein Backup oder Sync vorhanden ist.",
                         style = MaterialTheme.typography.bodySmall,
                         color = TextSecondary
                     )
@@ -3691,6 +3692,9 @@ fun AuthEntryScreen(
         var bitmap by remember(cacheKey) {
             mutableStateOf(uriImageMemoryCache.get(cacheKey))
         }
+        var loadFinished by remember(cacheKey) {
+            mutableStateOf(bitmap != null)
+        }
 
         LaunchedEffect(cacheKey) {
             if (bitmap == null) {
@@ -3707,6 +3711,7 @@ fun AuthEntryScreen(
                     uriImageMemoryCache.put(cacheKey, loadedBitmap)
                 }
             }
+            loadFinished = true
         }
 
         bitmap?.let { loadedBitmap ->
@@ -3718,6 +3723,21 @@ fun AuthEntryScreen(
                 },
                 contentScale = ContentScale.Crop
             )
+        }
+
+        if (bitmap == null && loadFinished && uriString.startsWith("internal://")) {
+            Box(
+                modifier = modifier.background(Color(0xFFF3F4F6)),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Foto auf diesem Gerät nicht verfügbar",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextSecondary,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(12.dp)
+                )
+            }
         }
 
         if (showFullscreenZoom) {
