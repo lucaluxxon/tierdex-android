@@ -1,4 +1,4 @@
-package com.example.tierdex
+﻿package com.example.tierdex
 
 import android.content.Context
 import android.content.Intent
@@ -1143,6 +1143,9 @@ private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
 
             item {
                 Card(
+                    onClick = {
+                        latestFinding?.let(onEditFinding)
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -1203,21 +1206,6 @@ private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(180.dp)
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(12.dp))
-
-                            Button(
-                                onClick = { onEditFinding(latestFinding) },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = PrimaryGreen
-                                )
-                            ) {
-                                Text(
-                                    "Bearbeiten",
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = Color.White
                                 )
                             }
                         }
@@ -1458,11 +1446,11 @@ fun SettingsScreen(
                 item {
                     SettingsContentCard {
                         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Text("• Keine Haustiere", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
-                            Text("• Keine Nutztiere", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
-                            Text("• Keine in Gefangenschaft lebenden Tiere", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
+                            Text("â€¢ Keine Haustiere", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
+                            Text("â€¢ Keine Nutztiere", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
+                            Text("â€¢ Keine in Gefangenschaft lebenden Tiere", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
                             Text("• Nur eigene Fotos dürfen eingereicht werden", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
-                            Text("• Bitte keine Fotos von toten oder verletzten Tieren", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
+                            Text("â€¢ Bitte keine Fotos von toten oder verletzten Tieren", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
                         }
                     }
                 }
@@ -1544,7 +1532,7 @@ fun SettingsScreen(
 
                 item {
                     Text(
-                        text = "⚠️ Bei Neuinstallation gehen Daten verloren. Bitte vorher Backup erstellen.",
+                        text = "âš ï¸ Bei Neuinstallation gehen Daten verloren. Bitte vorher Backup erstellen.",
                         style = MaterialTheme.typography.bodySmall,
                         color = TextSecondary
                     )
@@ -2674,7 +2662,6 @@ fun AuthEntryScreen(
             }
         }
     }
-
     @Composable
     fun AnimalDetailScreen(
         modifier: Modifier = Modifier,
@@ -2700,7 +2687,9 @@ fun AuthEntryScreen(
         var cropPhotoUri by remember { mutableStateOf<String?>(null) }
         val isWishlistSelected = animal.id == currentWishlistAnimalId
         var editingFinding by remember { mutableStateOf<AnimalFinding?>(null) }
+        var isEditMode by rememberSaveable { mutableStateOf(initialFinding == null) }
         val hasAnyFinding = findings.isNotEmpty()
+
         LaunchedEffect(initialFinding) {
             if (initialFinding != null) {
                 date = initialFinding.date
@@ -2708,8 +2697,12 @@ fun AuthEntryScreen(
                 note = initialFinding.note
                 selectedPhotoUri = initialFinding.photoUri
                 editingFinding = initialFinding
+                isEditMode = false
+            } else {
+                isEditMode = true
             }
         }
+
         val pickMedia = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.PickVisualMedia()
         ) { uri ->
@@ -2718,21 +2711,22 @@ fun AuthEntryScreen(
                 selectedPhotoUri = uri.toString()
             }
         }
+
         val currentFinding = editingFinding ?: initialFinding
         val editablePhotoUri = selectedPhotoUri.takeIf { it.isNotBlank() } ?: currentFinding?.photoUri
         val hasFindingDetails =
             !currentFinding?.date.isNullOrBlank() ||
-            !currentFinding?.location.isNullOrBlank() ||
-            !currentFinding?.note.isNullOrBlank() ||
-            !currentFinding?.photoUri.isNullOrBlank() ||
-            selectedPhotoUri.isNotBlank()
+                !currentFinding?.location.isNullOrBlank() ||
+                !currentFinding?.note.isNullOrBlank() ||
+                !currentFinding?.photoUri.isNullOrBlank() ||
+                selectedPhotoUri.isNotBlank()
 
         LazyColumn(
             modifier = modifier
                 .fillMaxSize()
                 .padding(horizontal = 16.dp),
             contentPadding = PaddingValues(
-                top = 0.dp + extraTopPadding,
+                top = extraTopPadding,
                 bottom = 24.dp + extraBottomPadding
             ),
             verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -2891,17 +2885,21 @@ fun AuthEntryScreen(
                                         .height(220.dp),
                                     maxImageSizePx = 1280
                                 )
-                                OutlinedButton(
-                                    onClick = {
-                                        pickMedia.launch(
-                                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                                        )
-                                    },
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Text("Anderes Foto auswaehlen")
+
+                                if (isEditMode) {
+                                    OutlinedButton(
+                                        onClick = {
+                                            pickMedia.launch(
+                                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                            )
+                                        },
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Text("Anderes Foto auswaehlen")
+                                    }
                                 }
-                                if (editingFinding != null) {
+
+                                if (editingFinding != null && isEditMode) {
                                     OutlinedButton(
                                         onClick = {
                                             cropPhotoUri = it
@@ -2912,161 +2910,206 @@ fun AuthEntryScreen(
                                     }
                                 }
                             }
-                        }
-                    }
-                }
-            }
 
-            item {
-                Text(
-                    text = if (editingFinding == null) "Neuen Fund eintragen" else "Fund bearbeiten",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-
-            item {
-                OutlinedTextField(
-                    value = date,
-                    onValueChange = { date = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Datum, z. B. 03.04.2026") },
-                    singleLine = true
-                )
-            }
-
-            item {
-                OutlinedTextField(
-                    value = location,
-                    onValueChange = { location = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Fundort") },
-                    singleLine = true,
-                )
-            }
-
-            item {
-                OutlinedTextField(
-                    value = note,
-                    onValueChange = { note = it },
-                    modifier = Modifier.fillMaxWidth(),
-                    label = { Text("Notiz") },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = PrimaryGreen,
-                        unfocusedBorderColor = BorderColor,
-                        focusedTextColor = TextPrimary,
-                        unfocusedTextColor = TextPrimary,
-                        cursorColor = PrimaryGreen
-                    )
-                )
-            }
-
-            if (currentFinding?.photoUri.isNullOrBlank()) {
-                item {
-                    OutlinedButton(
-                    onClick = {
-                        pickMedia.launch(
-                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                        )
-                    }
-                ) {
-                    Text(
-                        if (selectedPhotoUri.isBlank()) "Foto auswählen"
-                        else "Anderes Foto auswählen"
-                    )
-                    }
-                }
-            }
-
-            if (selectedPhotoUri.isBlank()) {
-                item {
-                    Text(
-                        text = "Noch kein Foto ausgewählt.",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            } else if (selectedPhotoUri != currentFinding?.photoUri && currentFinding == null) {
-                item {
-                    Text(
-                        text = "Foto ausgewählt",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-
-                item {
-                    UriImage(
-                        uriString = selectedPhotoUri,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(220.dp),
-                        maxImageSizePx = 1280
-                    )
-                }
-            }
-
-            item {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Button(
-                        onClick = {
-                            if (
-                                date.isNotBlank() ||
-                                location.isNotBlank() ||
-                                note.isNotBlank() ||
-                                selectedPhotoUri.isNotBlank()
-                            ) {
-                                val storedPhotoUri = persistPhotoForFinding(context, selectedPhotoUri)
-
-                                val newFinding = AnimalFinding(
-                                    animalId = animal.id,
-                                    date = date.trim(),
-                                    location = location.trim(),
-                                    note = note.trim(),
-                                    photoUri = storedPhotoUri
-                                )
-
-                                if (editingFinding == null) {
-                                    onSaveFinding(newFinding)
-                                } else {
-                                    onUpdateFinding(editingFinding!!, newFinding)
+                            if (editingFinding != null && !isEditMode) {
+                                Button(
+                                    onClick = {
+                                        date = currentFinding?.date.orEmpty()
+                                        location = currentFinding?.location.orEmpty()
+                                        note = currentFinding?.note.orEmpty()
+                                        selectedPhotoUri = currentFinding?.photoUri.orEmpty()
+                                        isEditMode = true
+                                    },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = PrimaryGreen
+                                    )
+                                ) {
+                                    Text("Bearbeiten")
                                 }
-
-                                onBackClick()
-
-                                date = ""
-                                location = ""
-                                note = ""
-                                selectedPhotoUri = ""
-                                editingFinding = null
                             }
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            if (editingFinding == null) "Fund speichern"
-                            else "Änderungen speichern"
-                        )
+                        }
                     }
                 }
             }
-            item {
-                    Spacer(modifier = Modifier.height(8.dp))
 
-                OutlinedButton(
-                    onClick = {
-                        editingFinding?.let {
-                            onDeleteFinding(it)
-                            onBackClick()
+            if (isEditMode) {
+                item {
+                    Text(
+                        text = if (editingFinding == null) "Neuen Fund eintragen" else "Fund bearbeiten",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
+
+                item {
+                    OutlinedTextField(
+                        value = date,
+                        onValueChange = { date = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = { Text("Datum, z. B. 03.04.2026") },
+                        singleLine = true
+                    )
+                }
+
+                item {
+                    OutlinedTextField(
+                        value = location,
+                        onValueChange = { location = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = { Text("Fundort") },
+                        singleLine = true,
+                    )
+                }
+
+                item {
+                    OutlinedTextField(
+                        value = note,
+                        onValueChange = { note = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = { Text("Notiz") },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = PrimaryGreen,
+                            unfocusedBorderColor = BorderColor,
+                            focusedTextColor = TextPrimary,
+                            unfocusedTextColor = TextPrimary,
+                            cursorColor = PrimaryGreen
+                        )
+                    )
+                }
+
+                if (currentFinding?.photoUri.isNullOrBlank()) {
+                    item {
+                        OutlinedButton(
+                            onClick = {
+                                pickMedia.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
+                            }
+                        ) {
+                            Text(
+                                if (selectedPhotoUri.isBlank()) "Foto auswählen"
+                                else "Anderes Foto auswählen"
+                            )
                         }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    border = BorderStroke(1.dp, BorderColor)
-                ) {
-                    Text("Fund löschen")
+                    }
+                }
+
+                if (selectedPhotoUri.isBlank()) {
+                    item {
+                        Text(
+                            text = "Noch kein Foto ausgewählt.",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                } else if (selectedPhotoUri != currentFinding?.photoUri && currentFinding == null) {
+                    item {
+                        Text(
+                            text = "Foto ausgewählt",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+
+                    item {
+                        UriImage(
+                            uriString = selectedPhotoUri,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(220.dp),
+                            maxImageSizePx = 1280
+                        )
+                    }
+                }
+
+                item {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Button(
+                            onClick = {
+                                if (
+                                    date.isNotBlank() ||
+                                    location.isNotBlank() ||
+                                    note.isNotBlank() ||
+                                    selectedPhotoUri.isNotBlank()
+                                ) {
+                                    val storedPhotoUri = persistPhotoForFinding(context, selectedPhotoUri)
+
+                                    val newFinding = AnimalFinding(
+                                        roomId = editingFinding?.roomId,
+                                        animalId = animal.id,
+                                        date = date.trim(),
+                                        location = location.trim(),
+                                        note = note.trim(),
+                                        photoUri = storedPhotoUri,
+                                        ownerId = editingFinding?.ownerId
+                                    )
+
+                                    if (editingFinding == null) {
+                                        onSaveFinding(newFinding)
+                                        onBackClick()
+
+                                        date = ""
+                                        location = ""
+                                        note = ""
+                                        selectedPhotoUri = ""
+                                        editingFinding = null
+                                    } else {
+                                        onUpdateFinding(editingFinding!!, newFinding)
+                                        editingFinding = newFinding
+                                        selectedPhotoUri = storedPhotoUri
+                                        isEditMode = false
+                                    }
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                if (editingFinding == null) "Fund speichern"
+                                else "Änderungen speichern"
+                            )
+                        }
+
+                        if (editingFinding != null) {
+                            OutlinedButton(
+                                onClick = {
+                                    date = currentFinding?.date.orEmpty()
+                                    location = currentFinding?.location.orEmpty()
+                                    note = currentFinding?.note.orEmpty()
+                                    selectedPhotoUri = currentFinding?.photoUri.orEmpty()
+                                    cropPhotoUri = null
+                                    isEditMode = false
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                border = BorderStroke(1.dp, BorderColor)
+                            ) {
+                                Text("Abbrechen")
+                            }
+                        }
+                    }
+                }
+
+                if (editingFinding != null) {
+                    item {
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        OutlinedButton(
+                            onClick = {
+                                editingFinding?.let {
+                                    onDeleteFinding(it)
+                                    onBackClick()
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            border = BorderStroke(1.dp, BorderColor)
+                        ) {
+                            Text("Fund löschen")
+                        }
+                    }
                 }
             }
         }
+
         cropPhotoUri?.let { photoUriToCrop ->
             CropPhotoDialog(
                 uriString = photoUriToCrop,
@@ -3385,7 +3428,7 @@ fun AuthEntryScreen(
                     )
 
                     Text(
-                        text = if (findingCount > 0) "✓ Gefunden ($findingCount)" else "Nicht gefunden",
+                        text = if (findingCount > 0) "âœ“ Gefunden ($findingCount)" else "Nicht gefunden",
                         style = MaterialTheme.typography.labelSmall,
                         color = if (findingCount > 0) PrimaryGreen else TextSecondary
                     )
@@ -3880,10 +3923,10 @@ fun AuthEntryScreen(
     fun normalizeSearchText(text: String): String {
         return text
             .lowercase()
-            .replace("ä", "ae")
-            .replace("ö", "oe")
-            .replace("ü", "ue")
-            .replace("ß", "ss")
+            .replace("Ã¤", "ae")
+            .replace("Ã¶", "oe")
+            .replace("Ã¼", "ue")
+            .replace("ÃŸ", "ss")
             .replace("-", "")
             .replace(" ", "")
     }
@@ -4048,5 +4091,7 @@ fun AuthEntryScreen(
         onBackground = TextPrimary,
         onSurface = TextPrimary,
         onSurfaceVariant = TextSecondary,
-        outline = BorderColor // Nutzt dein definiertes Grau-Grün für Umrandungen
+        outline = BorderColor // Nutzt dein definiertes Grau-Grün fÃ¼r Umrandungen
     )
+
+
