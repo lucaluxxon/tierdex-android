@@ -19,6 +19,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -49,17 +51,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.exifinterface.media.ExifInterface
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.File
 import java.util.UUID
+import kotlin.math.max
+import kotlin.math.min
+import kotlin.math.roundToInt
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.graphics.Color
 import androidx.compose.material3.FloatingActionButton
@@ -114,6 +124,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.Pets
@@ -124,6 +135,8 @@ import androidx.compose.material.icons.filled.Collections
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 
 
 private const val ANIMALS_FILE_NAME = "tierlistegesamt.csv"
@@ -2684,6 +2697,7 @@ fun AuthEntryScreen(
         var location by rememberSaveable { mutableStateOf("") }
         var note by rememberSaveable { mutableStateOf("") }
         var selectedPhotoUri by rememberSaveable { mutableStateOf("") }
+        var cropPhotoUri by remember { mutableStateOf<String?>(null) }
         val isWishlistSelected = animal.id == currentWishlistAnimalId
         var editingFinding by remember { mutableStateOf<AnimalFinding?>(null) }
         val hasAnyFinding = findings.isNotEmpty()
@@ -2705,11 +2719,13 @@ fun AuthEntryScreen(
             }
         }
         val currentFinding = editingFinding ?: initialFinding
+        val editablePhotoUri = selectedPhotoUri.takeIf { it.isNotBlank() } ?: currentFinding?.photoUri
         val hasFindingDetails =
             !currentFinding?.date.isNullOrBlank() ||
             !currentFinding?.location.isNullOrBlank() ||
             !currentFinding?.note.isNullOrBlank() ||
-            !currentFinding?.photoUri.isNullOrBlank()
+            !currentFinding?.photoUri.isNullOrBlank() ||
+            selectedPhotoUri.isNotBlank()
 
         LazyColumn(
             modifier = modifier
@@ -2862,7 +2878,7 @@ fun AuthEntryScreen(
                                 )
                             }
 
-                            currentFinding?.photoUri?.takeIf { it.isNotBlank() }?.let {
+                            editablePhotoUri?.takeIf { it.isNotBlank() }?.let {
                                 Text(
                                     text = "Foto",
                                     style = MaterialTheme.typography.labelLarge,
@@ -2884,6 +2900,16 @@ fun AuthEntryScreen(
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
                                     Text("Anderes Foto auswaehlen")
+                                }
+                                if (editingFinding != null) {
+                                    OutlinedButton(
+                                        onClick = {
+                                            cropPhotoUri = it
+                                        },
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Text("Foto zuschneiden")
+                                    }
                                 }
                             }
                         }
@@ -2958,7 +2984,7 @@ fun AuthEntryScreen(
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
-            } else if (selectedPhotoUri != currentFinding?.photoUri) {
+            } else if (selectedPhotoUri != currentFinding?.photoUri && currentFinding == null) {
                 item {
                     Text(
                         text = "Foto ausgewählt",
@@ -3040,6 +3066,16 @@ fun AuthEntryScreen(
                     Text("Fund löschen")
                 }
             }
+        }
+        cropPhotoUri?.let { photoUriToCrop ->
+            CropPhotoDialog(
+                uriString = photoUriToCrop,
+                onDismiss = { cropPhotoUri = null },
+                onCropComplete = { croppedPhotoUri ->
+                    selectedPhotoUri = croppedPhotoUri
+                    cropPhotoUri = null
+                }
+            )
         }
     }
 
@@ -3360,12 +3396,251 @@ fun AuthEntryScreen(
 
 
     @Composable
+    private fun CropPhotoDialog(
+        uriString: String,
+        onDismiss: () -> Unit,
+        onCropComplete: (String) -> Unit
+    ) {
+        Dialog(
+            onDismissRequest = onDismiss,
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            val context = LocalContext.current
+            val density = LocalDensity.current
+            var bitmap by remember(uriString) { mutableStateOf<Bitmap?>(null) }
+            var containerSize by remember { mutableStateOf(IntSize.Zero) }
+            var scale by remember { mutableStateOf(1f) }
+            var offset by remember { mutableStateOf(Offset.Zero) }
+
+            LaunchedEffect(uriString) {
+                bitmap = withContext(Dispatchers.IO) {
+                    loadCorrectlyOrientedBitmapFromUriString(
+                        context = context,
+                        uriString = uriString,
+                        maxImageSizePx = null
+                    )
+                }
+            }
+
+            val loadedBitmap = bitmap
+            val cropSizePx = remember(containerSize) {
+                min(containerSize.width, containerSize.height) * 0.72f
+            }
+            val baseImageSize = remember(loadedBitmap, containerSize) {
+                if (loadedBitmap == null || containerSize == IntSize.Zero) {
+                    Pair(0f, 0f)
+                } else {
+                    val widthScale = containerSize.width.toFloat() / loadedBitmap.width.toFloat()
+                    val heightScale = containerSize.height.toFloat() / loadedBitmap.height.toFloat()
+                    val fitScale = min(widthScale, heightScale)
+                    Pair(
+                        loadedBitmap.width * fitScale,
+                        loadedBitmap.height * fitScale
+                    )
+                }
+            }
+            val minScale = remember(baseImageSize, cropSizePx) {
+                val baseWidth = baseImageSize.first
+                val baseHeight = baseImageSize.second
+                if (baseWidth <= 0f || baseHeight <= 0f || cropSizePx <= 0f) {
+                    1f
+                } else {
+                    max(1f, max(cropSizePx / baseWidth, cropSizePx / baseHeight))
+                }
+            }
+            val maxScale = max(5f, minScale)
+
+            LaunchedEffect(minScale) {
+                if (scale < minScale) {
+                    scale = minScale
+                    offset = Offset.Zero
+                }
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.92f))
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .pointerInput(Unit) {
+                            detectTapGestures(onTap = { onDismiss() })
+                        }
+                )
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 24.dp, vertical = 96.dp)
+                        .onSizeChanged { containerSize = it },
+                    contentAlignment = Alignment.Center
+                ) {
+                    loadedBitmap?.let { safeBitmap ->
+                        Image(
+                            bitmap = safeBitmap.asImageBitmap(),
+                            contentDescription = null,
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .pointerInput(safeBitmap, minScale, cropSizePx, containerSize) {
+                                    detectTransformGestures { _, pan, zoom, _ ->
+                                        val baseWidth = baseImageSize.first
+                                        val baseHeight = baseImageSize.second
+                                        if (baseWidth <= 0f || baseHeight <= 0f || cropSizePx <= 0f) return@detectTransformGestures
+
+                                        val newScale = (scale * zoom).coerceIn(minScale, maxScale)
+                                        val scaledWidth = baseWidth * newScale
+                                        val scaledHeight = baseHeight * newScale
+                                        val maxOffsetX = max(0f, (scaledWidth - cropSizePx) / 2f)
+                                        val maxOffsetY = max(0f, (scaledHeight - cropSizePx) / 2f)
+                                        val newOffset = offset + pan
+
+                                        scale = newScale
+                                        offset = Offset(
+                                            x = newOffset.x.coerceIn(-maxOffsetX, maxOffsetX),
+                                            y = newOffset.y.coerceIn(-maxOffsetY, maxOffsetY)
+                                        )
+                                    }
+                                }
+                                .graphicsLayer {
+                                    scaleX = scale
+                                    scaleY = scale
+                                    translationX = offset.x
+                                    translationY = offset.y
+                                }
+                        )
+
+                        if (cropSizePx > 0f) {
+                            Box(
+                                modifier = Modifier
+                                    .size(with(density) { cropSizePx.toDp() })
+                                    .border(2.dp, Color.White, RoundedCornerShape(12.dp))
+                            )
+                        }
+                    }
+                }
+
+                Row(
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .statusBarsPadding()
+                        .padding(horizontal = 12.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    TextButton(onClick = onDismiss) {
+                        Text("Abbrechen", color = Color.White)
+                    }
+                    IconButton(onClick = onDismiss) {
+                        Icon(
+                            imageVector = Icons.Filled.Close,
+                            contentDescription = "Schließen",
+                            tint = Color.White
+                        )
+                    }
+                }
+
+                Button(
+                    onClick = {
+                        val safeBitmap = loadedBitmap ?: return@Button
+                        val croppedBitmap = cropBitmapToCenterFrame(
+                            bitmap = safeBitmap,
+                            containerSize = containerSize,
+                            baseImageWidth = baseImageSize.first,
+                            baseImageHeight = baseImageSize.second,
+                            cropSizePx = cropSizePx,
+                            scale = scale,
+                            offset = offset
+                        ) ?: return@Button
+
+                        val croppedUri = saveBitmapForFinding(context, croppedBitmap)
+                        if (croppedUri.isNotBlank()) {
+                            onCropComplete(croppedUri)
+                        }
+                    },
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .safeDrawingPadding()
+                        .padding(24.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = PrimaryGreen
+                    ),
+                    enabled = loadedBitmap != null && containerSize != IntSize.Zero
+                ) {
+                    Text("Zuschneiden")
+                }
+            }
+        }
+    }
+
+    private fun cropBitmapToCenterFrame(
+        bitmap: Bitmap,
+        containerSize: IntSize,
+        baseImageWidth: Float,
+        baseImageHeight: Float,
+        cropSizePx: Float,
+        scale: Float,
+        offset: Offset
+    ): Bitmap? {
+        if (containerSize == IntSize.Zero || baseImageWidth <= 0f || baseImageHeight <= 0f || cropSizePx <= 0f) {
+            return null
+        }
+
+        val scaledWidth = baseImageWidth * scale
+        val scaledHeight = baseImageHeight * scale
+        val imageLeft = (containerSize.width / 2f) + offset.x - (scaledWidth / 2f)
+        val imageTop = (containerSize.height / 2f) + offset.y - (scaledHeight / 2f)
+        val cropLeft = (containerSize.width - cropSizePx) / 2f
+        val cropTop = (containerSize.height - cropSizePx) / 2f
+
+        val bitmapLeft = (((cropLeft - imageLeft) / scaledWidth) * bitmap.width).roundToInt()
+            .coerceIn(0, bitmap.width - 1)
+        val bitmapTop = (((cropTop - imageTop) / scaledHeight) * bitmap.height).roundToInt()
+            .coerceIn(0, bitmap.height - 1)
+        val bitmapRight = ((((cropLeft + cropSizePx) - imageLeft) / scaledWidth) * bitmap.width).roundToInt()
+            .coerceIn(bitmapLeft + 1, bitmap.width)
+        val bitmapBottom = ((((cropTop + cropSizePx) - imageTop) / scaledHeight) * bitmap.height).roundToInt()
+            .coerceIn(bitmapTop + 1, bitmap.height)
+
+        return try {
+            Bitmap.createBitmap(
+                bitmap,
+                bitmapLeft,
+                bitmapTop,
+                bitmapRight - bitmapLeft,
+                bitmapBottom - bitmapTop
+            )
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    fun saveBitmapForFinding(context: Context, bitmap: Bitmap): String {
+        return try {
+            val imagesDir = File(context.filesDir, FINDING_IMAGES_DIR).apply { mkdirs() }
+            val fileName = "${UUID.randomUUID()}.jpg"
+            val targetFile = File(imagesDir, fileName)
+
+            targetFile.outputStream().use { output ->
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 95, output)
+            }
+
+            "internal://$fileName"
+        } catch (_: Exception) {
+            ""
+        }
+    }
+
+    @Composable
     fun UriImage(
         uriString: String,
         maxImageSizePx: Int? = null,
         modifier: Modifier = Modifier
     ) {
         val context = LocalContext.current
+        var showFullscreenZoom by rememberSaveable(uriString) { mutableStateOf(false) }
         val cacheKey = remember(uriString, maxImageSizePx) {
             uriImageCacheKey(uriString, maxImageSizePx)
         }
@@ -3394,9 +3669,107 @@ fun AuthEntryScreen(
             Image(
                 bitmap = loadedBitmap.asImageBitmap(),
                 contentDescription = null,
-                modifier = modifier,
+                modifier = modifier.clickable {
+                    showFullscreenZoom = true
+                },
                 contentScale = ContentScale.Crop
             )
+        }
+
+        if (showFullscreenZoom) {
+            FullscreenZoomImageDialog(
+                uriString = uriString,
+                onDismiss = { showFullscreenZoom = false }
+            )
+        }
+    }
+
+    @Composable
+    private fun FullscreenZoomImageDialog(
+        uriString: String,
+        onDismiss: () -> Unit
+    ) {
+        Dialog(
+            onDismissRequest = onDismiss,
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            val context = LocalContext.current
+            var scale by remember { mutableStateOf(1f) }
+            var offset by remember { mutableStateOf(Offset.Zero) }
+            var bitmap by remember(uriString) {
+                mutableStateOf<Bitmap?>(uriImageMemoryCache.get(uriImageCacheKey(uriString, null)))
+            }
+
+            LaunchedEffect(uriString) {
+                if (bitmap == null) {
+                    bitmap = withContext(Dispatchers.IO) {
+                        loadCorrectlyOrientedBitmapFromUriString(
+                            context = context,
+                            uriString = uriString,
+                            maxImageSizePx = null
+                        )
+                    }?.also { loadedBitmap ->
+                        uriImageMemoryCache.put(uriImageCacheKey(uriString, null), loadedBitmap)
+                    }
+                }
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.9f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .pointerInput(Unit) {
+                            detectTapGestures(onTap = { onDismiss() })
+                        }
+                )
+
+                bitmap?.let { loadedBitmap ->
+                    Image(
+                        bitmap = loadedBitmap.asImageBitmap(),
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(24.dp)
+                            .pointerInput(uriString) {
+                                detectTransformGestures { _, pan, zoom, _ ->
+                                    val newScale = (scale * zoom).coerceIn(1f, 5f)
+                                    scale = newScale
+                                    offset = if (newScale <= 1f) {
+                                        Offset.Zero
+                                    } else {
+                                        offset + pan
+                                    }
+                                }
+                            }
+                            .graphicsLayer {
+                                scaleX = scale
+                                scaleY = scale
+                                translationX = offset.x
+                                translationY = offset.y
+                            }
+                    )
+                }
+
+                IconButton(
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .statusBarsPadding()
+                        .padding(12.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Close,
+                        contentDescription = "Schließen",
+                        tint = Color.White
+                    )
+                }
+            }
         }
     }
 
