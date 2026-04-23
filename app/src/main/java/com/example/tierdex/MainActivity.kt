@@ -699,7 +699,7 @@ private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
                                                 location = finding.location,
                                                 note = finding.note,
                                                 photoUri = finding.photoUri,
-                                                ownerId = finding.ownerId
+                                                ownerId = currentOwnerId ?: finding.ownerId
                                             )
                                         )
                                     }
@@ -4114,5 +4114,4 @@ fun AuthEntryScreen(
         onSurfaceVariant = TextSecondary,
         outline = BorderColor // Nutzt dein definiertes Grau-Grün fÃ¼r Umrandungen
     )
-
 
