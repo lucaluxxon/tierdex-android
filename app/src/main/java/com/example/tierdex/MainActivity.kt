@@ -934,7 +934,7 @@ private val AppGreenBackground = Color(0xFF51734A)
                 top = 0.dp,
                 bottom = extraBottomPadding + 24.dp
             ),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             item {
                 Card(
@@ -2398,85 +2398,191 @@ fun FriendsScreen(
                 selectedPhotoUri = uri.toString()
             }
         }
+        val currentFinding = editingFinding ?: initialFinding
+        val hasFindingDetails =
+            !currentFinding?.date.isNullOrBlank() ||
+            !currentFinding?.location.isNullOrBlank() ||
+            !currentFinding?.note.isNullOrBlank() ||
+            !currentFinding?.photoUri.isNullOrBlank()
 
         LazyColumn(
             modifier = modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(horizontal = 16.dp),
+            contentPadding = PaddingValues(
+                top = 8.dp + extraTopPadding,
+                bottom = 24.dp + extraBottomPadding
+            ),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
-                Button(onClick = onBackClick) {
+                OutlinedButton(onClick = onBackClick) {
                     Text("Zurück")
                 }
             }
 
             item {
-                Text(
-                    text = animal.germanName,
-                    style = MaterialTheme.typography.headlineMedium
-                )
-            }
-            item {
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Column(
+                Card(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = CardBackground)
                 ) {
-                    if (!hasAnyFinding) {
-                        OutlinedButton(
-                            onClick = {
-                                onSetWishlistAnimal(animal)
-                                onBackClick()
-                            }
-                        ) {
-                            Text("Als Wunsch-Fund")
-                        }
-                    }
-
-                    if (hasAnyFinding) {
-                        Button(
-                            onClick = {
-                                onSetFavoriteFindingAnimal(animal)
-                                onBackClick()
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = PrimaryGreen
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Text(
+                            text = if (currentFinding != null) "Fundansicht" else "Tierdetails",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = TextSecondary
+                        )
+                        Text(
+                            text = animal.germanName,
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = TextPrimary
+                        )
+                        Text(
+                            text = animal.latinName,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = TextSecondary
+                        )
+                        Text(
+                            text = animal.group,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = TextPrimary
+                        )
+                        animal.subgroup.takeIf { it.isNotBlank() }?.let {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
                             )
-                        ) {
-                            Text("Als liebsten Fund")
                         }
                     }
                 }
             }
-            item {
-                Text(
-                    text = animal.latinName,
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
 
             item {
-                Text(
-                    text = "Gruppe: ${animal.group}",
-                    style = MaterialTheme.typography.bodyLarge
-                )
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = CardBackground)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Text(
+                            text = "Aktionen",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = TextPrimary
+                        )
+
+                        if (!hasAnyFinding) {
+                            OutlinedButton(
+                                onClick = {
+                                    onSetWishlistAnimal(animal)
+                                    onBackClick()
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = if (isWishlistSelected) "Schon als Wunsch-Fund markiert" else "Als Wunsch-Fund"
+                                )
+                            }
+                        }
+
+                        if (hasAnyFinding) {
+                            Button(
+                                onClick = {
+                                    onSetFavoriteFindingAnimal(animal)
+                                    onBackClick()
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = PrimaryGreen
+                                )
+                            ) {
+                                Text("Als liebsten Fund")
+                            }
+                        }
+                    }
+                }
             }
 
-            item {
-                Text(
-                    text = "ID: ${animal.id}",
-                    style = MaterialTheme.typography.bodyLarge
-                )
-            }
+            if (hasFindingDetails) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(containerColor = CardBackground)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text = "Fundinfos",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = TextPrimary
+                            )
 
-            item {
-                Text(
-                    text = storageDebug,
-                    style = MaterialTheme.typography.bodySmall
-                )
+                            currentFinding?.date?.takeIf { it.isNotBlank() }?.let {
+                                Text(
+                                    text = "Datum: $it",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = TextPrimary
+                                )
+                            }
+
+                            currentFinding?.location?.takeIf { it.isNotBlank() }?.let {
+                                Text(
+                                    text = "Fundort: $it",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = TextPrimary
+                                )
+                            }
+
+                            currentFinding?.note?.takeIf { it.isNotBlank() }?.let {
+                                Text(
+                                    text = "Notiz",
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = TextSecondary
+                                )
+                                Text(
+                                    text = it,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = TextPrimary
+                                )
+                            }
+
+                            currentFinding?.photoUri?.takeIf { it.isNotBlank() }?.let {
+                                Text(
+                                    text = "Foto",
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = TextSecondary
+                                )
+                                UriImage(
+                                    uriString = it,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(220.dp),
+                                    maxImageSizePx = 1280
+                                )
+                                OutlinedButton(
+                                    onClick = {
+                                        pickMedia.launch(
+                                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                        )
+                                    },
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text("Anderes Foto auswaehlen")
+                                }
+                            }
+                        }
+                    }
+                }
             }
 
             item {
@@ -2511,6 +2617,7 @@ fun FriendsScreen(
                     value = note,
                     onValueChange = { note = it },
                     modifier = Modifier.fillMaxWidth(),
+                    label = { Text("Notiz") },
                     colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = PrimaryGreen,
                         unfocusedBorderColor = BorderColor,
@@ -2521,8 +2628,9 @@ fun FriendsScreen(
                 )
             }
 
-            item {
-                Button(
+            if (currentFinding?.photoUri.isNullOrBlank()) {
+                item {
+                    OutlinedButton(
                     onClick = {
                         pickMedia.launch(
                             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
@@ -2533,6 +2641,7 @@ fun FriendsScreen(
                         if (selectedPhotoUri.isBlank()) "Foto auswählen"
                         else "Anderes Foto auswählen"
                     )
+                    }
                 }
             }
 
@@ -2556,7 +2665,8 @@ fun FriendsScreen(
                         uriString = selectedPhotoUri,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(220.dp)
+                            .height(220.dp),
+                        maxImageSizePx = 1280
                     )
                 }
             }
@@ -2564,7 +2674,7 @@ fun FriendsScreen(
             item {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
                     Button(
                         onClick = {
@@ -2609,9 +2719,9 @@ fun FriendsScreen(
                 }
             }
             item {
-                Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                Button(
+                OutlinedButton(
                     onClick = {
                         editingFinding?.let {
                             onDeleteFinding(it)
@@ -2619,7 +2729,7 @@ fun FriendsScreen(
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
+                    border = BorderStroke(1.dp, BorderColor)
                 ) {
                     Text("Fund löschen")
                 }
