@@ -107,7 +107,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.filled.Air
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MenuDefaults
+import androidx.compose.material3.TextButton
 import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Help
@@ -122,6 +124,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 
 private const val ANIMALS_FILE_NAME = "tierlistegesamt.csv"
 private const val FINDING_IMAGES_DIR = "finding_images"
+private const val STARTUP_HINT_SHOWN_KEY_PREFIX = "startup_hint_shown_"
 private val AppGreenBackground = Color(0xFF51734A)
 
 
@@ -241,6 +244,7 @@ private val AppGreenBackground = Color(0xFF51734A)
         var showAnimalPicker by rememberSaveable { mutableStateOf(false) }
         var selectedFindingToEdit by remember { mutableStateOf<AnimalFinding?>(null) }
         var showSettingsScreen by rememberSaveable { mutableStateOf(false) }
+        var showStartupHintDialog by rememberSaveable { mutableStateOf(false) }
         var selectedGroupFilter by rememberSaveable { mutableStateOf("Alle") }
         var selectedSubgroupFilter by rememberSaveable { mutableStateOf("Alle") }
         val resetSearchState = {
@@ -253,7 +257,18 @@ private val AppGreenBackground = Color(0xFF51734A)
         var wishlistAnimalId by rememberSaveable {
             mutableStateOf<String?>(prefs.getString("wishAnimalId", null))
         }
+        var previousOwnerId by rememberSaveable { mutableStateOf(ownerId) }
         LaunchedEffect(ownerId) {
+            if (previousOwnerId == null && ownerId != null) {
+                val startupHintKey = "$STARTUP_HINT_SHOWN_KEY_PREFIX$ownerId"
+                val alreadyShown = prefs.getBoolean(startupHintKey, false)
+                if (!alreadyShown) {
+                    showStartupHintDialog = true
+                    prefs.edit().putBoolean(startupHintKey, true).apply()
+                }
+            }
+            previousOwnerId = ownerId
+
             if (ownerId != null) {
                 val migrationKey = "global_findings_migrated_to_$ownerId"
                 val alreadyMigrated = prefs.getBoolean(migrationKey, false)
@@ -795,6 +810,11 @@ private val AppGreenBackground = Color(0xFF51734A)
                             extraBottomPadding = innerPadding.calculateBottomPadding()
                         )
                     }
+                }
+                if (showStartupHintDialog) {
+                    StartupHintDialog(
+                        onDismiss = { showStartupHintDialog = false }
+                    )
                 }
                 if (
                     selectedAnimalId == null &&
@@ -1744,6 +1764,49 @@ fun FriendsScreen(
     }
 }
 
+@Composable
+private fun StartupHintDialog(
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        confirmButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Verstanden", color = PrimaryGreen)
+            }
+        },
+        title = {
+            Text(
+                text = "Kurz vor dem Start",
+                style = MaterialTheme.typography.titleLarge,
+                color = TextPrimary
+            )
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text(
+                    text = "Bitte beachte kurz diese Regeln:",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextPrimary
+                )
+                StartupHintRulesContent()
+            }
+        },
+        containerColor = Color.White
+    )
+}
+
+@Composable
+private fun StartupHintRulesContent() {
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Text("- Keine Haustiere", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
+        Text("- Keine Nutztiere", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
+        Text("- Keine in Gefangenschaft lebenden Tiere", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
+        Text("- Nur eigene Fotos duerfen eingereicht werden", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
+        Text("- Bitte keine Fotos von toten oder verletzten Tieren", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
+    }
+}
+
     @Composable
     fun ProfileScreen(
         currentUserId: String?,
@@ -2410,7 +2473,7 @@ fun FriendsScreen(
                 .fillMaxSize()
                 .padding(horizontal = 16.dp),
             contentPadding = PaddingValues(
-                top = 4.dp + extraTopPadding,
+                top = 0.dp + extraTopPadding,
                 bottom = 24.dp + extraBottomPadding
             ),
             verticalArrangement = Arrangement.spacedBy(10.dp)
