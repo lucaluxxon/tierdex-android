@@ -120,6 +120,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Collections
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.foundation.layout.widthIn
 
 
 private const val ANIMALS_FILE_NAME = "tierlistegesamt.csv"
@@ -421,6 +422,7 @@ private val AppGreenBackground = Color(0xFF51734A)
 
         val selectedAnimal = animals.find { it.id == selectedAnimalId }
         val showAuthStartScreen = ownerId == null && authEntryMode == null
+        val showAuthEntryScreen = ownerId == null && authEntryMode != null
 
         val groupOptions = listOf("Alle") + animals.map { it.group }.distinct().sorted()
 
@@ -448,7 +450,7 @@ private val AppGreenBackground = Color(0xFF51734A)
             resetSearchState()
             showAnimalPicker = false
         }
-        BackHandler(enabled = ownerId == null && authEntryMode != null && !showSettingsScreen) {
+        BackHandler(enabled = showAuthEntryScreen && !showSettingsScreen) {
             resetSearchState()
             authEntryMode = null
         }
@@ -457,7 +459,7 @@ private val AppGreenBackground = Color(0xFF51734A)
             containerColor = Color.White,
             topBar = {},
             bottomBar = {
-                if (selectedAnimal == null && !showAnimalPicker && !showAuthStartScreen) {
+                if (selectedAnimal == null && !showAnimalPicker && !showAuthStartScreen && !showAuthEntryScreen) {
                     MainBottomBar(
                         currentTab = currentTab,
                         onTabSelected = {
@@ -468,7 +470,7 @@ private val AppGreenBackground = Color(0xFF51734A)
                 }
             },
             floatingActionButton = {
-                if (selectedAnimal == null && !showAnimalPicker && !showAuthStartScreen) {
+                if (selectedAnimal == null && !showAnimalPicker && !showAuthStartScreen && !showAuthEntryScreen) {
                     FloatingActionButton(
                         onClick = {
                             resetSearchState()
@@ -506,11 +508,25 @@ private val AppGreenBackground = Color(0xFF51734A)
                             onLoginClick = {
                                 resetSearchState()
                                 authEntryMode = "login"
-                                currentTab = AppTab.PROFILE
                             },
                             onRegisterClick = {
                                 resetSearchState()
                                 authEntryMode = "register"
+                            }
+                        )
+                    }
+                    showAuthEntryScreen -> {
+                        AuthEntryScreen(
+                            initialAuthMode = authEntryMode ?: "login",
+                            onBack = {
+                                resetSearchState()
+                                authEntryMode = null
+                            },
+                            onAuthSuccess = { userId ->
+                                AuthSession.setCurrentUserId(userId)
+                                currentOwnerId = userId
+                                currentDisplayName = AuthSession.getCurrentDisplayName()
+                                authEntryMode = null
                                 currentTab = AppTab.PROFILE
                             }
                         )
@@ -786,13 +802,6 @@ private val AppGreenBackground = Color(0xFF51734A)
                         ProfileScreen(
                             currentUserId = currentOwnerId,
                             currentDisplayName = currentDisplayName,
-                            initialAuthMode = authEntryMode ?: "login",
-                            onAuthSuccess = { userId ->
-                                AuthSession.setCurrentUserId(userId)
-                                currentOwnerId = userId
-                                currentDisplayName = AuthSession.getCurrentDisplayName()
-                                authEntryMode = null
-                            },
                             onDisplayNameSaved = { newDisplayName ->
                                 currentDisplayName = newDisplayName
                             },
@@ -819,7 +828,9 @@ private val AppGreenBackground = Color(0xFF51734A)
                 if (
                     selectedAnimalId == null &&
                     !showAnimalPicker &&
-                    !showSettingsScreen
+                    !showSettingsScreen &&
+                    !showAuthStartScreen &&
+                    !showAuthEntryScreen
                 ) {
                     IconButton(
                         onClick = {
@@ -1807,12 +1818,177 @@ private fun StartupHintRulesContent() {
     }
 }
 
+@Composable
+fun AuthEntryScreen(
+    initialAuthMode: String = "login",
+    onBack: () -> Unit,
+    onAuthSuccess: (String?) -> Unit
+) {
+    var displayName by rememberSaveable { mutableStateOf("") }
+    var email by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    var authMode by rememberSaveable(initialAuthMode) { mutableStateOf(initialAuthMode) }
+    var authMessage by rememberSaveable { mutableStateOf<String?>(null) }
+
+    BackHandler(onBack = onBack)
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .statusBarsPadding()
+            .padding(horizontal = 16.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .widthIn(max = 420.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = if (authMode == "register") "Registrieren" else "Einloggen",
+                style = MaterialTheme.typography.headlineMedium,
+                color = TextPrimary
+            )
+
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = CardBackground,
+                    contentColor = TextPrimary
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        OutlinedButton(
+                            onClick = {
+                                authMode = "login"
+                                authMessage = null
+                            },
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                containerColor = if (authMode == "login") {
+                                    PrimaryGreen.copy(alpha = 0.1f)
+                                } else {
+                                    Color.Transparent
+                                },
+                                contentColor = if (authMode == "login") PrimaryGreen else TextPrimary
+                            ),
+                            border = BorderStroke(
+                                1.dp,
+                                if (authMode == "login") PrimaryGreen else BorderColor
+                            )
+                        ) {
+                            Text("Einloggen")
+                        }
+
+                        OutlinedButton(
+                            onClick = {
+                                authMode = "register"
+                                authMessage = null
+                            },
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                containerColor = if (authMode == "register") {
+                                    PrimaryGreen.copy(alpha = 0.1f)
+                                } else {
+                                    Color.Transparent
+                                },
+                                contentColor = if (authMode == "register") PrimaryGreen else TextPrimary
+                            ),
+                            border = BorderStroke(
+                                1.dp,
+                                if (authMode == "register") PrimaryGreen else BorderColor
+                            )
+                        ) {
+                            Text("Registrieren")
+                        }
+                    }
+
+                    if (authMode == "register") {
+                        OutlinedTextField(
+                            value = displayName,
+                            onValueChange = { displayName = it },
+                            modifier = Modifier.fillMaxWidth(),
+                            label = { Text("Name") },
+                            singleLine = true,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                    }
+
+                    OutlinedTextField(
+                        value = email,
+                        onValueChange = { email = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = { Text("E-Mail") },
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+
+                    OutlinedTextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        modifier = Modifier.fillMaxWidth(),
+                        label = { Text("Passwort") },
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+
+                    Button(
+                        onClick = {
+                            if (authMode == "register") {
+                                AuthSession.registerWithEmail(displayName, email, password) { success, result ->
+                                    if (success) {
+                                        AuthSession.getCurrentFirebaseUserId()?.let { firebaseUserId ->
+                                            onAuthSuccess(firebaseUserId)
+                                        }
+                                        authMessage = "Registrierung erfolgreich"
+                                    } else {
+                                        authMessage = result ?: "Registrierung fehlgeschlagen"
+                                    }
+                                }
+                            } else {
+                                AuthSession.loginWithEmail(email, password) { success, result ->
+                                    if (success) {
+                                        AuthSession.getCurrentFirebaseUserId()?.let { firebaseUserId ->
+                                            onAuthSuccess(firebaseUserId)
+                                        }
+                                        authMessage = "Login erfolgreich"
+                                    } else {
+                                        authMessage = result ?: "Login fehlgeschlagen"
+                                    }
+                                }
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = PrimaryGreen
+                        )
+                    ) {
+                        Text(if (authMode == "register") "Registrieren" else "Einloggen")
+                    }
+
+                    authMessage?.let {
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = TextSecondary
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
     @Composable
     fun ProfileScreen(
         currentUserId: String?,
         currentDisplayName: String?,
-        initialAuthMode: String = "login",
-        onAuthSuccess: (String?) -> Unit,
         onDisplayNameSaved: (String?) -> Unit,
         collectedAnimalCount: Int,
         totalFindings: Int,
@@ -1831,10 +2007,6 @@ private fun StartupHintRulesContent() {
         var displayNameInput by rememberSaveable(currentDisplayName) {
             mutableStateOf(currentDisplayName ?: "")
         }
-        var displayName by rememberSaveable { mutableStateOf("") }
-        var email by rememberSaveable { mutableStateOf("") }
-        var password by rememberSaveable { mutableStateOf("") }
-        var authMode by rememberSaveable(initialAuthMode) { mutableStateOf(initialAuthMode) }
         var authMessage by rememberSaveable { mutableStateOf<String?>(null) }
 
         LaunchedEffect(currentUserId) {
@@ -1922,145 +2094,6 @@ private fun StartupHintRulesContent() {
                                 )
                             ) {
                                 Text("Name speichern")
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (currentUserId == null) {
-                item {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = CardBackground,
-                            contentColor = TextPrimary
-                        )
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Text(
-                                text = if (authMode == "register") "Registrieren" else "Einloggen",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = TextPrimary
-                            )
-
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                OutlinedButton(
-                                    onClick = {
-                                        authMode = "login"
-                                        authMessage = null
-                                    },
-                                    colors = ButtonDefaults.outlinedButtonColors(
-                                        containerColor = if (authMode == "login") {
-                                            PrimaryGreen.copy(alpha = 0.1f)
-                                        } else {
-                                            Color.Transparent
-                                        },
-                                        contentColor = if (authMode == "login") PrimaryGreen else TextPrimary
-                                    ),
-                                    border = BorderStroke(
-                                        1.dp,
-                                        if (authMode == "login") PrimaryGreen else BorderColor
-                                    )
-                                ) {
-                                    Text("Einloggen")
-                                }
-
-                                OutlinedButton(
-                                    onClick = {
-                                        authMode = "register"
-                                        authMessage = null
-                                    },
-                                    colors = ButtonDefaults.outlinedButtonColors(
-                                        containerColor = if (authMode == "register") {
-                                            PrimaryGreen.copy(alpha = 0.1f)
-                                        } else {
-                                            Color.Transparent
-                                        },
-                                        contentColor = if (authMode == "register") PrimaryGreen else TextPrimary
-                                    ),
-                                    border = BorderStroke(
-                                        1.dp,
-                                        if (authMode == "register") PrimaryGreen else BorderColor
-                                    )
-                                ) {
-                                    Text("Registrieren")
-                                }
-                            }
-
-                            if (authMode == "register") {
-                                OutlinedTextField(
-                                    value = displayName,
-                                    onValueChange = { displayName = it },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    label = { Text("Name") },
-                                    singleLine = true,
-                                    shape = RoundedCornerShape(12.dp)
-                                )
-                            }
-
-                            OutlinedTextField(
-                                value = email,
-                                onValueChange = { email = it },
-                                modifier = Modifier.fillMaxWidth(),
-                                label = { Text("E-Mail") },
-                                singleLine = true,
-                                shape = RoundedCornerShape(12.dp)
-                            )
-
-                            OutlinedTextField(
-                                value = password,
-                                onValueChange = { password = it },
-                                modifier = Modifier.fillMaxWidth(),
-                                label = { Text("Passwort") },
-                                singleLine = true,
-                                shape = RoundedCornerShape(12.dp)
-                            )
-
-                            Button(
-                                onClick = {
-                                    if (authMode == "register") {
-                                        AuthSession.registerWithEmail(displayName, email, password) { success, result ->
-                                            if (success) {
-                                                AuthSession.getCurrentFirebaseUserId()?.let { firebaseUserId ->
-                                                    onAuthSuccess(firebaseUserId)
-                                                }
-                                                authMessage = "Registrierung erfolgreich"
-                                            } else {
-                                                authMessage = result ?: "Registrierung fehlgeschlagen"
-                                            }
-                                        }
-                                    } else {
-                                        AuthSession.loginWithEmail(email, password) { success, result ->
-                                            if (success) {
-                                                AuthSession.getCurrentFirebaseUserId()?.let { firebaseUserId ->
-                                                    onAuthSuccess(firebaseUserId)
-                                                }
-                                                authMessage = "Login erfolgreich"
-                                            } else {
-                                                authMessage = result ?: "Login fehlgeschlagen"
-                                            }
-                                        }
-                                    }
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = PrimaryGreen
-                                )
-                            ) {
-                                Text(if (authMode == "register") "Registrieren" else "Einloggen")
-                            }
-
-                            authMessage?.let {
-                                Text(
-                                    text = it,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = TextSecondary
-                                )
                             }
                         }
                     }
