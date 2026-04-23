@@ -8,6 +8,7 @@ import android.graphics.Matrix
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
+import android.util.LruCache
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
@@ -51,6 +52,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.exifinterface.media.ExifInterface
@@ -105,6 +107,7 @@ import androidx.room.Room
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.delay
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.filled.Air
 import androidx.compose.material3.AlertDialog
@@ -126,7 +129,20 @@ import androidx.compose.foundation.layout.widthIn
 private const val ANIMALS_FILE_NAME = "tierlistegesamt.csv"
 private const val FINDING_IMAGES_DIR = "finding_images"
 private const val STARTUP_HINT_SHOWN_KEY_PREFIX = "startup_hint_shown_"
+private const val WISHLIST_ANIMAL_KEY_PREFIX = "wishAnimalId_"
+private const val FAVORITE_ANIMAL_KEY_PREFIX = "favoriteAnimalId_"
 private val AppGreenBackground = Color(0xFF51734A)
+
+private fun favoriteAnimalKey(ownerId: String): String = "$FAVORITE_ANIMAL_KEY_PREFIX$ownerId"
+
+private fun wishlistAnimalKey(ownerId: String): String = "$WISHLIST_ANIMAL_KEY_PREFIX$ownerId"
+
+private val uriImageMemoryCache = object : LruCache<String, Bitmap>(20 * 1024 * 1024) {
+    override fun sizeOf(key: String, value: Bitmap): Int = value.byteCount
+}
+
+private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
+    "$uriString|${maxImageSizePx ?: -1}"
 
 
     private var wishAnimalId by mutableStateOf<String?>(null)
@@ -153,10 +169,17 @@ private val AppGreenBackground = Color(0xFF51734A)
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
-            wishAnimalId = prefs.getString("wishAnimalId", null)
-            favoriteAnimalId = prefs.getString("favoriteAnimalId", null)
+            wishAnimalId = null
+            favoriteAnimalId = null
 
             setContent {
+                var showSplashScreen by remember { mutableStateOf(true) }
+
+                LaunchedEffect(Unit) {
+                    delay(1600)
+                    showSplashScreen = false
+                }
+
                 TierdexTheme(
                     darkTheme = false,
                     dynamicColor = false
@@ -165,7 +188,11 @@ private val AppGreenBackground = Color(0xFF51734A)
                         modifier = Modifier.fillMaxSize(),
                         color = Color.White
                     ) {
-                        TierdexApp(database = database)
+                        if (showSplashScreen) {
+                            AppSplashScreen()
+                        } else {
+                            TierdexApp(database = database)
+                        }
                     }
                 }
             }
@@ -205,6 +232,32 @@ private val AppGreenBackground = Color(0xFF51734A)
         FRIENDS,
         STATS,
         PROFILE
+    }
+
+    @Composable
+    fun AppSplashScreen() {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(AppBackground),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.tierdex01_playstore),
+                    contentDescription = "Tierdex Logo",
+                    modifier = Modifier.size(232.dp)
+                )
+                Text(
+                    text = "Tierdex",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = TextSecondary
+                )
+            }
+        }
     }
 
     @OptIn(ExperimentalMaterial3Api::class)
@@ -251,15 +304,14 @@ private val AppGreenBackground = Color(0xFF51734A)
         val resetSearchState = {
             searchText = ""
         }
-        var favoriteAnimalId by rememberSaveable {
-            mutableStateOf<String?>(prefs.getString("favoriteAnimalId", null))
-        }
+        var favoriteAnimalId by rememberSaveable { mutableStateOf<String?>(null) }
 
-        var wishlistAnimalId by rememberSaveable {
-            mutableStateOf<String?>(prefs.getString("wishAnimalId", null))
-        }
+        var wishlistAnimalId by rememberSaveable { mutableStateOf<String?>(null) }
         var previousOwnerId by rememberSaveable { mutableStateOf(ownerId) }
         LaunchedEffect(ownerId) {
+            favoriteAnimalId = ownerId?.let { prefs.getString(favoriteAnimalKey(it), null) }
+            wishlistAnimalId = ownerId?.let { prefs.getString(wishlistAnimalKey(it), null) }
+
             if (previousOwnerId == null && ownerId != null) {
                 val startupHintKey = "$STARTUP_HINT_SHOWN_KEY_PREFIX$ownerId"
                 val alreadyShown = prefs.getBoolean(startupHintKey, false)
@@ -690,12 +742,16 @@ private val AppGreenBackground = Color(0xFF51734A)
                             },
                             onSetFavoriteFindingAnimal = { animal ->
                                 favoriteAnimalId = animal.id
-                                prefs.edit().putString("favoriteAnimalId", animal.id).apply()
+                                currentOwnerId?.let { ownerId ->
+                                    prefs.edit().putString(favoriteAnimalKey(ownerId), animal.id).apply()
+                                }
                             },
                             onSetWishlistAnimal = { animal ->
                                 wishlistAnimalId =
                                     if (wishlistAnimalId == animal.id) null else animal.id
-                                prefs.edit().putString("wishAnimalId", wishlistAnimalId).apply()
+                                currentOwnerId?.let { ownerId ->
+                                    prefs.edit().putString(wishlistAnimalKey(ownerId), wishlistAnimalId).apply()
+                                }
                             },
                             currentWishlistAnimalId = wishlistAnimalId,
                         )
@@ -1053,6 +1109,7 @@ private val AppGreenBackground = Color(0xFF51734A)
                                 Spacer(modifier = Modifier.height(12.dp))
                                 UriImage(
                                     uriString = latestFinding.photoUri,
+                                    maxImageSizePx = 1024,
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(180.dp)
@@ -2129,27 +2186,6 @@ fun AuthEntryScreen(
                 }
             }
 
-            if (findings.isNotEmpty()) {
-                item {
-                    Button(
-                        onClick = {
-                            FirestoreFindingRepository.saveCurrentUserFinding(findings.first()) { success, result ->
-                                if (success) {
-                                    Log.d("ProfileScreen", "Firestore save test successful: $result")
-                                } else {
-                                    Log.e("ProfileScreen", "Firestore save test failed: $result")
-                                }
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = PrimaryGreen
-                        )
-                    ) {
-                        Text("Ersten Fund in Firestore testen")
-                    }
-                }
-            }
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -3156,18 +3192,27 @@ fun AuthEntryScreen(
         modifier: Modifier = Modifier
     ) {
         val context = LocalContext.current
-        var bitmap by remember(uriString, maxImageSizePx) { mutableStateOf<Bitmap?>(null) }
+        val cacheKey = remember(uriString, maxImageSizePx) {
+            uriImageCacheKey(uriString, maxImageSizePx)
+        }
+        var bitmap by remember(cacheKey) {
+            mutableStateOf(uriImageMemoryCache.get(cacheKey))
+        }
 
-        LaunchedEffect(uriString, maxImageSizePx) {
-            if (maxImageSizePx != null) {
-                Log.d("ProfilePerformance", "Loading preview image for $uriString with maxSize=$maxImageSizePx")
-            }
-            bitmap = withContext(Dispatchers.IO) {
-                loadCorrectlyOrientedBitmapFromUriString(
-                    context = context,
-                    uriString = uriString,
-                    maxImageSizePx = maxImageSizePx
-                )
+        LaunchedEffect(cacheKey) {
+            if (bitmap == null) {
+                if (maxImageSizePx != null) {
+                    Log.d("ProfilePerformance", "Loading preview image for $uriString with maxSize=$maxImageSizePx")
+                }
+                bitmap = withContext(Dispatchers.IO) {
+                    loadCorrectlyOrientedBitmapFromUriString(
+                        context = context,
+                        uriString = uriString,
+                        maxImageSizePx = maxImageSizePx
+                    )
+                }?.also { loadedBitmap ->
+                    uriImageMemoryCache.put(cacheKey, loadedBitmap)
+                }
             }
         }
 
