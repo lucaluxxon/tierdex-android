@@ -2410,10 +2410,10 @@ fun FriendsScreen(
                 .fillMaxSize()
                 .padding(horizontal = 16.dp),
             contentPadding = PaddingValues(
-                top = 8.dp + extraTopPadding,
+                top = 4.dp + extraTopPadding,
                 bottom = 24.dp + extraBottomPadding
             ),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             item {
                 OutlinedButton(onClick = onBackClick) {
@@ -2652,7 +2652,7 @@ fun FriendsScreen(
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
-            } else {
+            } else if (selectedPhotoUri != currentFinding?.photoUri) {
                 item {
                     Text(
                         text = "Foto ausgewählt",
