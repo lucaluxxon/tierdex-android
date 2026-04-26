@@ -1258,39 +1258,46 @@ private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
                             style = MaterialTheme.typography.bodyMedium,
                             color = TextPrimary
                         )
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(16.dp)
-                                .clip(RoundedCornerShape(10.dp))
-                                .background(Color.White)
-                                .border(
-                                    width = 1.dp,
-                                    color = TextSecondary.copy(alpha = 0.35f),
-                                    shape = RoundedCornerShape(10.dp)
-                                )
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .fillMaxWidth(collectionProgress)
-                                    .background(PrimaryGreen)
-                            )
-                        }
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
-                                text = String.format("%.1f %%", collectionPercent),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = TextSecondary
-                            )
+                            Row(
+                                modifier = Modifier.weight(1f),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                Text(
+                                    text = String.format("%.1f %%", collectionPercent),
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = TextSecondary
+                                )
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .height(8.dp)
+                                        .clip(RoundedCornerShape(999.dp))
+                                        .background(Color.White)
+                                        .border(
+                                            width = 1.dp,
+                                            color = TextSecondary.copy(alpha = 0.25f),
+                                            shape = RoundedCornerShape(999.dp)
+                                        )
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxHeight()
+                                            .fillMaxWidth(collectionProgress)
+                                            .background(PrimaryGreen)
+                                    )
+                                }
+                            }
                             Text(
                                 text = "Gesamte Funde: $totalFindings",
                                 style = MaterialTheme.typography.bodySmall,
-                                color = TextSecondary
+                                color = TextSecondary,
+                                modifier = Modifier.padding(start = 12.dp)
                             )
                         }
                     }
@@ -2456,16 +2463,21 @@ fun AuthEntryScreen(
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                     colors = CardDefaults.cardColors(containerColor = CardBackground, contentColor = TextPrimary)
                 ) {
-                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
                         Text(
-                            text = "Lieblings-Fund",
+                            text = "Lieblingstier aus deinen Funden",
                             style = MaterialTheme.typography.titleMedium,
                             color = TextPrimary
+                        )
+                        Text(
+                            text = "Gespeichert wird aktuell das Tier aus einem deiner bisherigen Funde.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = TextSecondary
                         )
 
                         if (favoriteAnimal == null) {
                             Text(
-                                text = "Noch kein Lieblingsfund gewählt",
+                                text = "Noch kein Lieblingstier gewählt",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = TextSecondary
                             )
@@ -2493,12 +2505,17 @@ fun AuthEntryScreen(
                 ) {
                     Column(
                         modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         Text(
                             text = "Wunsch-Fund",
                             style = MaterialTheme.typography.titleMedium,
                             color = TextPrimary
+                        )
+                        Text(
+                            text = "Hier erscheint das Tier, das du als nächsten Fund gerne entdecken möchtest.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = TextSecondary
                         )
                         if (wishlistAnimal == null) {
                             Text(
@@ -2906,7 +2923,7 @@ fun AuthEntryScreen(
                                     containerColor = PrimaryGreen
                                 )
                             ) {
-                                Text("Als liebsten Fund")
+                                Text("Als Lieblingstier speichern")
                             }
                         }
                     }
