@@ -81,6 +81,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Edit
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import androidx.compose.foundation.layout.Box
@@ -2880,13 +2881,45 @@ fun AuthEntryScreen(
                                     style = MaterialTheme.typography.labelLarge,
                                     color = TextSecondary
                                 )
-                                UriImage(
-                                    uriString = it,
+                                Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .height(220.dp),
-                                    maxImageSizePx = 1280
-                                )
+                                        .height(220.dp)
+                                ) {
+                                    UriImage(
+                                        uriString = it,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(220.dp),
+                                        maxImageSizePx = 1280
+                                    )
+
+                                    if (editingFinding != null && isEditMode) {
+                                        Surface(
+                                            modifier = Modifier
+                                                .align(Alignment.TopEnd)
+                                                .padding(8.dp),
+                                            shape = RoundedCornerShape(999.dp),
+                                            color = Color.White.copy(alpha = 0.92f),
+                                            shadowElevation = 4.dp
+                                        ) {
+                                            IconButton(
+                                                onClick = {
+                                                    cropPhotoUri = it
+                                                },
+                                                modifier = Modifier
+                                                    .width(40.dp)
+                                                    .height(40.dp)
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Filled.Edit,
+                                                    contentDescription = "Foto zuschneiden",
+                                                    tint = TextPrimary
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
 
                                 if (isEditMode) {
                                     OutlinedButton(
@@ -2898,17 +2931,6 @@ fun AuthEntryScreen(
                                         modifier = Modifier.fillMaxWidth()
                                     ) {
                                         Text("Anderes Foto auswaehlen")
-                                    }
-                                }
-
-                                if (editingFinding != null && isEditMode) {
-                                    OutlinedButton(
-                                        onClick = {
-                                            cropPhotoUri = it
-                                        },
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Text("Foto zuschneiden")
                                     }
                                 }
                             }
@@ -4114,4 +4136,3 @@ fun AuthEntryScreen(
         onSurfaceVariant = TextSecondary,
         outline = BorderColor // Nutzt dein definiertes Grau-Grün fÃ¼r Umrandungen
     )
-
