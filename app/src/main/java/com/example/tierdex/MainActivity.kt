@@ -1481,17 +1481,40 @@ fun SettingsScreen(
             "rules" -> {
                 item {
                     SettingsContentCard {
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                             Text(
                                 text = "Was im Tierdex gilt",
                                 style = MaterialTheme.typography.titleMedium,
                                 color = TextPrimary
                             )
-                            Text("• Keine Haustiere", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
-                            Text("• Keine Nutztiere", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
-                            Text("• Keine in Gefangenschaft lebenden Tiere", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
-                            Text("• Nur eigene Fotos dürfen eingereicht werden", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
-                            Text("• Bitte keine Fotos von toten oder verletzten Tieren", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
+                            Text(
+                                text = "Damit Funde fair und nachvollziehbar bleiben, gelten diese einfachen Regeln:",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
+                            )
+
+                            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                                Text(
+                                    text = "• Keine Haustiere oder Nutztiere",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = TextPrimary
+                                )
+                                Text(
+                                    text = "• Keine Tiere, die in Gefangenschaft leben",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = TextPrimary
+                                )
+                                Text(
+                                    text = "• Es dürfen nur eigene Fotos eingereicht werden",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = TextPrimary
+                                )
+                                Text(
+                                    text = "• Bitte keine Fotos von toten oder verletzten Tieren",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = TextPrimary
+                                )
+                            }
                         }
                     }
                 }
@@ -1603,23 +1626,25 @@ fun SettingsScreen(
             }
         }
 
-        item {
-            Spacer(modifier = Modifier.height(12.dp))
-        }
+        if (selectedSettingsPage == "menu") {
+            item {
+                Spacer(modifier = Modifier.height(12.dp))
+            }
 
-        item {
-            Button(
-                onClick = {
-                    AuthSession.signOut()
-                    onLogout()
-                    Toast.makeText(context, "Ausgeloggt", Toast.LENGTH_SHORT).show()
-                },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = PrimaryGreen
-                )
-            ) {
-                Text("Ausloggen")
+            item {
+                Button(
+                    onClick = {
+                        AuthSession.signOut()
+                        onLogout()
+                        Toast.makeText(context, "Ausgeloggt", Toast.LENGTH_SHORT).show()
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = PrimaryGreen
+                    )
+                ) {
+                    Text("Ausloggen")
+                }
             }
         }
     }
@@ -2777,12 +2802,11 @@ fun AuthEntryScreen(
 
         val currentFinding = editingFinding ?: initialFinding
         val editablePhotoUri = selectedPhotoUri.takeIf { it.isNotBlank() } ?: currentFinding?.photoUri
-        val hasFindingDetails =
+        val hasTextualFindingDetails =
             !currentFinding?.date.isNullOrBlank() ||
                 !currentFinding?.location.isNullOrBlank() ||
-                !currentFinding?.note.isNullOrBlank() ||
-                !currentFinding?.photoUri.isNullOrBlank() ||
-                selectedPhotoUri.isNotBlank()
+                !currentFinding?.note.isNullOrBlank()
+        val hasFindingPhoto = !editablePhotoUri.isNullOrBlank()
 
         LazyColumn(
             modifier = modifier
@@ -2792,7 +2816,7 @@ fun AuthEntryScreen(
                 top = extraTopPadding,
                 bottom = 24.dp + extraBottomPadding
             ),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             item {
                 OutlinedButton(onClick = onBackClick) {
@@ -2807,8 +2831,8 @@ fun AuthEntryScreen(
                     colors = CardDefaults.cardColors(containerColor = CardBackground)
                 ) {
                     Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                        modifier = Modifier.padding(18.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
                             text = if (currentFinding != null) "Fundansicht" else "Tierdetails",
@@ -2848,8 +2872,8 @@ fun AuthEntryScreen(
                     colors = CardDefaults.cardColors(containerColor = CardBackground)
                 ) {
                     Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                        modifier = Modifier.padding(18.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Text(
                             text = "Aktionen",
@@ -2889,7 +2913,7 @@ fun AuthEntryScreen(
                 }
             }
 
-            if (hasFindingDetails) {
+            if (hasTextualFindingDetails) {
                 item {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -2897,8 +2921,8 @@ fun AuthEntryScreen(
                         colors = CardDefaults.cardColors(containerColor = CardBackground)
                     ) {
                         Column(
-                            modifier = Modifier.padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                            modifier = Modifier.padding(18.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             Text(
                                 text = "Fundinfos",
@@ -2907,40 +2931,72 @@ fun AuthEntryScreen(
                             )
 
                             currentFinding?.date?.takeIf { it.isNotBlank() }?.let {
-                                Text(
-                                    text = "Datum: $it",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = TextPrimary
-                                )
+                                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                    Text(
+                                        text = "Datum",
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = TextSecondary
+                                    )
+                                    Text(
+                                        text = it,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = TextPrimary
+                                    )
+                                }
                             }
 
                             currentFinding?.location?.takeIf { it.isNotBlank() }?.let {
-                                Text(
-                                    text = "Fundort: $it",
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = TextPrimary
-                                )
+                                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                    Text(
+                                        text = "Fundort",
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = TextSecondary
+                                    )
+                                    Text(
+                                        text = it,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = TextPrimary
+                                    )
+                                }
                             }
 
                             currentFinding?.note?.takeIf { it.isNotBlank() }?.let {
-                                Text(
-                                    text = "Notiz",
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = TextSecondary
-                                )
-                                Text(
-                                    text = it,
-                                    style = MaterialTheme.typography.bodyLarge,
-                                    color = TextPrimary
-                                )
+                                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Text(
+                                        text = "Notiz",
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = TextSecondary
+                                    )
+                                    Text(
+                                        text = it,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = TextPrimary
+                                    )
+                                }
                             }
+                        }
+                    }
+                }
+            }
+
+            if (hasFindingPhoto) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(containerColor = CardBackground)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(18.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Text(
+                                text = "Foto",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = TextPrimary
+                            )
 
                             editablePhotoUri?.takeIf { it.isNotBlank() }?.let {
-                                Text(
-                                    text = "Foto",
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = TextSecondary
-                                )
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -2990,26 +3046,8 @@ fun AuthEntryScreen(
                                         },
                                         modifier = Modifier.fillMaxWidth()
                                     ) {
-                                        Text("Anderes Foto auswaehlen")
+                                        Text("Anderes Foto auswählen")
                                     }
-                                }
-                            }
-
-                            if (editingFinding != null && !isEditMode) {
-                                Button(
-                                    onClick = {
-                                        date = currentFinding?.date.orEmpty()
-                                        location = currentFinding?.location.orEmpty()
-                                        note = currentFinding?.note.orEmpty()
-                                        selectedPhotoUri = currentFinding?.photoUri.orEmpty()
-                                        isEditMode = true
-                                    },
-                                    modifier = Modifier.fillMaxWidth(),
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = PrimaryGreen
-                                    )
-                                ) {
-                                    Text("Bearbeiten")
                                 }
                             }
                         }
@@ -3017,178 +3055,186 @@ fun AuthEntryScreen(
                 }
             }
 
+            if (editingFinding != null && !isEditMode) {
+                item {
+                    Button(
+                        onClick = {
+                            date = currentFinding?.date.orEmpty()
+                            location = currentFinding?.location.orEmpty()
+                            note = currentFinding?.note.orEmpty()
+                            selectedPhotoUri = currentFinding?.photoUri.orEmpty()
+                            isEditMode = true
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = PrimaryGreen
+                        )
+                    ) {
+                        Text("Bearbeiten")
+                    }
+                }
+            }
+
             if (isEditMode) {
                 item {
-                    Text(
-                        text = if (editingFinding == null) "Neuen Fund eintragen" else "Fund bearbeiten",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                }
-
-                item {
-                    OutlinedTextField(
-                        value = date,
-                        onValueChange = { date = it },
+                    Card(
                         modifier = Modifier.fillMaxWidth(),
-                        label = { Text("Datum, z. B. 03.04.2026") },
-                        singleLine = true
-                    )
-                }
+                        shape = RoundedCornerShape(20.dp),
+                        colors = CardDefaults.cardColors(containerColor = CardBackground)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(18.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Text(
+                                text = if (editingFinding == null) "Neuen Fund eintragen" else "Fund bearbeiten",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = TextPrimary
+                            )
 
-                item {
-                    OutlinedTextField(
-                        value = location,
-                        onValueChange = { location = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        label = { Text("Fundort") },
-                        singleLine = true,
-                    )
-                }
+                            OutlinedTextField(
+                                value = date,
+                                onValueChange = { date = it },
+                                modifier = Modifier.fillMaxWidth(),
+                                label = { Text("Datum, z. B. 03.04.2026") },
+                                singleLine = true
+                            )
 
-                item {
-                    OutlinedTextField(
-                        value = note,
-                        onValueChange = { note = it },
-                        modifier = Modifier.fillMaxWidth(),
-                        label = { Text("Notiz") },
-                        colors = OutlinedTextFieldDefaults.colors(
-                            focusedBorderColor = PrimaryGreen,
-                            unfocusedBorderColor = BorderColor,
-                            focusedTextColor = TextPrimary,
-                            unfocusedTextColor = TextPrimary,
-                            cursorColor = PrimaryGreen
-                        )
-                    )
-                }
+                            OutlinedTextField(
+                                value = location,
+                                onValueChange = { location = it },
+                                modifier = Modifier.fillMaxWidth(),
+                                label = { Text("Fundort") },
+                                singleLine = true,
+                            )
 
-                if (currentFinding?.photoUri.isNullOrBlank()) {
-                    item {
-                        OutlinedButton(
-                            onClick = {
-                                pickMedia.launch(
-                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            OutlinedTextField(
+                                value = note,
+                                onValueChange = { note = it },
+                                modifier = Modifier.fillMaxWidth(),
+                                label = { Text("Notiz") },
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = PrimaryGreen,
+                                    unfocusedBorderColor = BorderColor,
+                                    focusedTextColor = TextPrimary,
+                                    unfocusedTextColor = TextPrimary,
+                                    cursorColor = PrimaryGreen
+                                )
+                            )
+
+                            if (currentFinding?.photoUri.isNullOrBlank()) {
+                                OutlinedButton(
+                                    onClick = {
+                                        pickMedia.launch(
+                                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                        )
+                                    }
+                                ) {
+                                    Text(
+                                        if (selectedPhotoUri.isBlank()) "Foto auswählen"
+                                        else "Anderes Foto auswählen"
+                                    )
+                                }
+                            }
+
+                            if (selectedPhotoUri.isNotBlank() && selectedPhotoUri != currentFinding?.photoUri && currentFinding == null) {
+                                Text(
+                                    text = "Foto",
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = TextSecondary
+                                )
+                                UriImage(
+                                    uriString = selectedPhotoUri,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(220.dp),
+                                    maxImageSizePx = 1280
                                 )
                             }
-                        ) {
-                            Text(
-                                if (selectedPhotoUri.isBlank()) "Foto auswählen"
-                                else "Anderes Foto auswählen"
-                            )
-                        }
-                    }
-                }
 
-                if (selectedPhotoUri.isBlank()) {
-                    item {
-                        Text(
-                            text = "Noch kein Foto ausgewählt.",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                } else if (selectedPhotoUri != currentFinding?.photoUri && currentFinding == null) {
-                    item {
-                        Text(
-                            text = "Foto ausgewählt",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Button(
+                                    onClick = {
+                                        if (
+                                            date.isNotBlank() ||
+                                            location.isNotBlank() ||
+                                            note.isNotBlank() ||
+                                            selectedPhotoUri.isNotBlank()
+                                        ) {
+                                            val storedPhotoUri = persistPhotoForFinding(context, selectedPhotoUri)
 
-                    item {
-                        UriImage(
-                            uriString = selectedPhotoUri,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(220.dp),
-                            maxImageSizePx = 1280
-                        )
-                    }
-                }
+                                            val newFinding = AnimalFinding(
+                                                roomId = editingFinding?.roomId,
+                                                animalId = animal.id,
+                                                date = date.trim(),
+                                                location = location.trim(),
+                                                note = note.trim(),
+                                                photoUri = storedPhotoUri,
+                                                ownerId = editingFinding?.ownerId
+                                            )
 
-                item {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        Button(
-                            onClick = {
-                                if (
-                                    date.isNotBlank() ||
-                                    location.isNotBlank() ||
-                                    note.isNotBlank() ||
-                                    selectedPhotoUri.isNotBlank()
+                                            if (editingFinding == null) {
+                                                onSaveFinding(newFinding)
+                                                onBackClick()
+
+                                                date = ""
+                                                location = ""
+                                                note = ""
+                                                selectedPhotoUri = ""
+                                                editingFinding = null
+                                            } else {
+                                                onUpdateFinding(editingFinding!!, newFinding)
+                                                editingFinding = newFinding
+                                                selectedPhotoUri = storedPhotoUri
+                                                isEditMode = false
+                                            }
+                                        }
+                                    },
+                                    modifier = Modifier.fillMaxWidth()
                                 ) {
-                                    val storedPhotoUri = persistPhotoForFinding(context, selectedPhotoUri)
-
-                                    val newFinding = AnimalFinding(
-                                        roomId = editingFinding?.roomId,
-                                        animalId = animal.id,
-                                        date = date.trim(),
-                                        location = location.trim(),
-                                        note = note.trim(),
-                                        photoUri = storedPhotoUri,
-                                        ownerId = editingFinding?.ownerId
+                                    Text(
+                                        if (editingFinding == null) "Fund speichern"
+                                        else "Änderungen speichern"
                                     )
+                                }
 
-                                    if (editingFinding == null) {
-                                        onSaveFinding(newFinding)
-                                        onBackClick()
-
-                                        date = ""
-                                        location = ""
-                                        note = ""
-                                        selectedPhotoUri = ""
-                                        editingFinding = null
-                                    } else {
-                                        onUpdateFinding(editingFinding!!, newFinding)
-                                        editingFinding = newFinding
-                                        selectedPhotoUri = storedPhotoUri
-                                        isEditMode = false
+                                if (editingFinding != null) {
+                                    OutlinedButton(
+                                        onClick = {
+                                            date = currentFinding?.date.orEmpty()
+                                            location = currentFinding?.location.orEmpty()
+                                            note = currentFinding?.note.orEmpty()
+                                            selectedPhotoUri = currentFinding?.photoUri.orEmpty()
+                                            cropPhotoUri = null
+                                            isEditMode = false
+                                        },
+                                        modifier = Modifier.fillMaxWidth(),
+                                        border = BorderStroke(1.dp, BorderColor)
+                                    ) {
+                                        Text("Abbrechen")
                                     }
                                 }
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                if (editingFinding == null) "Fund speichern"
-                                else "Änderungen speichern"
-                            )
-                        }
-
-                        if (editingFinding != null) {
-                            OutlinedButton(
-                                onClick = {
-                                    date = currentFinding?.date.orEmpty()
-                                    location = currentFinding?.location.orEmpty()
-                                    note = currentFinding?.note.orEmpty()
-                                    selectedPhotoUri = currentFinding?.photoUri.orEmpty()
-                                    cropPhotoUri = null
-                                    isEditMode = false
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                border = BorderStroke(1.dp, BorderColor)
-                            ) {
-                                Text("Abbrechen")
                             }
                         }
                     }
                 }
-
-                if (editingFinding != null) {
-                    item {
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        OutlinedButton(
-                            onClick = {
-                                editingFinding?.let {
-                                    onDeleteFinding(it)
-                                    onBackClick()
-                                }
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                            border = BorderStroke(1.dp, BorderColor)
-                        ) {
-                            Text("Fund löschen")
-                        }
+            }
+            if (isEditMode && editingFinding != null) {
+                item {
+                    OutlinedButton(
+                        onClick = {
+                            editingFinding?.let {
+                                onDeleteFinding(it)
+                                onBackClick()
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        border = BorderStroke(1.dp, BorderColor)
+                    ) {
+                        Text("Fund löschen")
                     }
                 }
             }
@@ -3341,7 +3387,7 @@ fun AuthEntryScreen(
                         }
 
                         FilterDropdown(
-                            label = if (subgroupEnabled) "Untergr.: $selectedSubgroup" else "Untergr.: zuerst Gruppe",
+                            label = if (subgroupEnabled) "Untergr.: $selectedSubgroup" else "Untergr.: Gruppe auswählen",
                             expanded = subgroupMenuExpanded,
                             onDismiss = { subgroupMenuExpanded = false },
                             onClick = { subgroupMenuExpanded = true },
