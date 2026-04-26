@@ -16,6 +16,12 @@ private const val LEGACY_BACKUP_JSON_FILE_NAME = "tierdex_backup.json"
 private const val BACKUP_IMAGES_DIR = "images/"
 private const val BACKUP_FINDING_IMAGES_DIR = "finding_images"
 
+data class BackupImportResult(
+    val findings: List<AnimalFinding>,
+    val success: Boolean,
+    val message: String
+)
+
 fun shareBackup(context: Context, file: File) {
     val uri = FileProvider.getUriForFile(
         context,
@@ -67,63 +73,159 @@ fun exportFindings(context: Context, findings: List<AnimalFinding>): File {
     return backupFile
 }
 
-fun importFindings(context: Context): List<AnimalFinding> {
+fun importFindings(context: Context): BackupImportResult {
     val zipFile = File(context.getExternalFilesDir(null), BACKUP_ZIP_FILE_NAME)
     if (zipFile.exists()) {
         val importedFromZip = runCatching {
             importZipBackup(context, zipFile)
-        }.getOrNull()
+        }.getOrElse {
+            BackupImportResult(
+                findings = emptyList(),
+                success = false,
+                message = "ZIP-Backup konnte nicht gelesen werden."
+            )
+        }
 
-        if (importedFromZip != null) {
+        if (importedFromZip.success) {
             return importedFromZip
         }
+
+        val legacyFallback = importLegacyJsonBackup(context)
+        if (legacyFallback.success) {
+            return legacyFallback.copy(
+                message = "ZIP-Backup unvollständig. JSON-Backup wurde stattdessen geladen."
+            )
+        }
+
+        return importedFromZip
     }
 
-    val legacyJsonFile = File(context.getExternalFilesDir(null), LEGACY_BACKUP_JSON_FILE_NAME)
-    if (!legacyJsonFile.exists()) return emptyList()
-
-    return runCatching {
-        parseFindingsJson(legacyJsonFile.readText())
-    }.getOrDefault(emptyList())
+    return importLegacyJsonBackup(context)
 }
 
-private fun importZipBackup(context: Context, zipFile: File): List<AnimalFinding> {
-    val imagesDir = File(context.filesDir, BACKUP_FINDING_IMAGES_DIR).apply { mkdirs() }
+private fun importZipBackup(context: Context, zipFile: File): BackupImportResult {
+    val stagingDir = File(context.cacheDir, "backup_import_staging").apply {
+        deleteRecursively()
+        mkdirs()
+    }
+    val extractedImageNames = mutableSetOf<String>()
+    var zipReadHadErrors = false
     var findingsJson: String? = null
 
-    ZipInputStream(zipFile.inputStream().buffered()).use { zip ->
-        var entry = zip.nextEntry
-        while (entry != null) {
-            when {
-                entry.isDirectory -> Unit
-                entry.name == BACKUP_JSON_FILE_NAME -> {
-                    findingsJson = zip.readBytes().toString(Charsets.UTF_8)
-                }
-                entry.name.startsWith(BACKUP_IMAGES_DIR) -> {
-                    val fileName = entry.name.removePrefix(BACKUP_IMAGES_DIR)
-                    if (fileName.isNotBlank() && !fileName.contains("..") && !fileName.contains("/") && !fileName.contains("\\")) {
-                        runCatching {
-                            val targetFile = File(imagesDir, fileName)
-                            targetFile.outputStream().use { output ->
-                                zip.copyTo(output)
+    try {
+        ZipInputStream(zipFile.inputStream().buffered()).use { zip ->
+            var entry = zip.nextEntry
+            while (entry != null) {
+                when {
+                    entry.isDirectory -> Unit
+                    entry.name == BACKUP_JSON_FILE_NAME -> {
+                        findingsJson = zip.readBytes().toString(Charsets.UTF_8)
+                    }
+                    entry.name.startsWith(BACKUP_IMAGES_DIR) -> {
+                        val fileName = entry.name.removePrefix(BACKUP_IMAGES_DIR)
+                        if (fileName.isNotBlank() && !fileName.contains("..") && !fileName.contains("/") && !fileName.contains("\\")) {
+                            runCatching {
+                                val targetFile = File(stagingDir, fileName)
+                                targetFile.outputStream().use { output ->
+                                    zip.copyTo(output)
+                                }
+                                extractedImageNames.add(fileName)
+                            }.onFailure {
+                                zipReadHadErrors = true
                             }
                         }
                     }
                 }
+                zip.closeEntry()
+                entry = zip.nextEntry
             }
-            zip.closeEntry()
-            entry = zip.nextEntry
+        }
+    } catch (_: Exception) {
+        zipReadHadErrors = true
+    }
+
+    val safeJson = findingsJson?.takeIf { it.isNotBlank() }
+        ?: return BackupImportResult(
+            findings = emptyList(),
+            success = false,
+            message = "Backup ist unvollständig. Die Funddaten-Datei fehlt."
+        )
+
+    val findings = parseFindingsJsonOrNull(safeJson)
+        ?: return BackupImportResult(
+            findings = emptyList(),
+            success = false,
+            message = "Backup ist ungültig. Die Funddaten konnten nicht gelesen werden."
+        )
+
+    val imagesDir = File(context.filesDir, BACKUP_FINDING_IMAGES_DIR).apply { mkdirs() }
+    extractedImageNames.forEach { fileName ->
+        runCatching {
+            val sourceFile = File(stagingDir, fileName)
+            val targetFile = File(imagesDir, fileName)
+            sourceFile.inputStream().use { input ->
+                targetFile.outputStream().use { output ->
+                    input.copyTo(output)
+                }
+            }
+        }.onFailure {
+            zipReadHadErrors = true
         }
     }
 
-    return findingsJson?.let { parseFindingsJson(it) }.orEmpty()
+    val expectedImageNames = findings.mapNotNull { finding ->
+        internalBackupFileName(finding.photoUri)
+    }.distinct()
+    val missingImageCount = expectedImageNames.count { it !in extractedImageNames }
+    val isPartialImport = zipReadHadErrors || missingImageCount > 0
+
+    stagingDir.deleteRecursively()
+
+    return BackupImportResult(
+        findings = findings,
+        success = true,
+        message = if (isPartialImport) {
+            "Backup geladen. Einige Fotos fehlen oder konnten nicht vollständig wiederhergestellt werden."
+        } else {
+            "Backup geladen"
+        }
+    )
 }
 
-private fun parseFindingsJson(json: String): List<AnimalFinding> {
+private fun importLegacyJsonBackup(context: Context): BackupImportResult {
+    val legacyJsonFile = File(context.getExternalFilesDir(null), LEGACY_BACKUP_JSON_FILE_NAME)
+    if (!legacyJsonFile.exists()) {
+        return BackupImportResult(
+            findings = emptyList(),
+            success = false,
+            message = "Kein Backup gefunden."
+        )
+    }
+
+    val findings = runCatching {
+        parseFindingsJsonOrNull(legacyJsonFile.readText())
+    }.getOrNull()
+
+    return if (findings != null) {
+        BackupImportResult(
+            findings = findings,
+            success = true,
+            message = "JSON-Backup geladen"
+        )
+    } else {
+        BackupImportResult(
+            findings = emptyList(),
+            success = false,
+            message = "JSON-Backup ist ungültig und konnte nicht geladen werden."
+        )
+    }
+}
+
+private fun parseFindingsJsonOrNull(json: String): List<AnimalFinding>? {
     val type = object : TypeToken<List<AnimalFinding>>() {}.type
     return runCatching {
-        Gson().fromJson<List<AnimalFinding>>(json, type) ?: emptyList()
-    }.getOrDefault(emptyList())
+        Gson().fromJson<List<AnimalFinding>>(json, type)
+    }.getOrNull()
 }
 
 private fun internalBackupFileName(photoUri: String): String? {

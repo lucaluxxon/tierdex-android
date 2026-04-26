@@ -694,16 +694,27 @@ private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
                             onImportFindings = { importedFindings ->
                                 scope.launch {
                                     importedFindings.forEach { finding ->
+                                        val importedFindingForCurrentOwner = finding.copy(
+                                            ownerId = currentOwnerId ?: finding.ownerId
+                                        )
                                         dao.insertFinding(
                                             AnimalFindingEntity(
-                                                animalId = finding.animalId,
-                                                date = finding.date,
-                                                location = finding.location,
-                                                note = finding.note,
-                                                photoUri = finding.photoUri,
-                                                ownerId = currentOwnerId ?: finding.ownerId
+                                                animalId = importedFindingForCurrentOwner.animalId,
+                                                date = importedFindingForCurrentOwner.date,
+                                                location = importedFindingForCurrentOwner.location,
+                                                note = importedFindingForCurrentOwner.note,
+                                                photoUri = importedFindingForCurrentOwner.photoUri,
+                                                ownerId = importedFindingForCurrentOwner.ownerId
                                             )
                                         )
+
+                                        if (currentOwnerId != null) {
+                                            FirestoreFindingRepository.saveCurrentUserFinding(importedFindingForCurrentOwner) { success, result ->
+                                                if (!success) {
+                                                    Log.e("CloudWrite", "Firestore save on import failed: $result")
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             },
@@ -1611,9 +1622,11 @@ fun SettingsScreen(
                             }
                             Button(
                                 onClick = {
-                                    val imported = importFindings(context)
-                                    onImportFindings(imported)
-                                    Toast.makeText(context, "Backup geladen", Toast.LENGTH_SHORT).show()
+                                    val importResult = importFindings(context)
+                                    if (importResult.success) {
+                                        onImportFindings(importResult.findings)
+                                    }
+                                    Toast.makeText(context, importResult.message, Toast.LENGTH_SHORT).show()
                                 },
                                 modifier = Modifier.fillMaxWidth(),
                                 colors = ButtonDefaults.buttonColors(
