@@ -66,8 +66,9 @@ import androidx.exifinterface.media.ExifInterface
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.File
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.UUID
 import kotlin.math.max
 import kotlin.math.min
@@ -160,9 +161,8 @@ private fun introPendingKey(ownerId: String): String = "$INTRO_PENDING_KEY_PREFI
 
 private fun introSeenKey(ownerId: String): String = "$INTRO_SEEN_KEY_PREFIX$ownerId"
 
-private val appDateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
-
-private fun currentAppDateText(): String = LocalDate.now().format(appDateFormatter)
+private fun currentAppDateText(): String =
+    SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
 
 private val uriImageMemoryCache = object : LruCache<String, Bitmap>(20 * 1024 * 1024) {
     override fun sizeOf(key: String, value: Bitmap): Int = value.byteCount
@@ -172,955 +172,978 @@ private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
     "$uriString|${maxImageSizePx ?: -1}"
 
 
+private var wishAnimalId by mutableStateOf<String?>(null)
+private var favoriteAnimalId by mutableStateOf<String?>(null)
+
+class MainActivity : ComponentActivity() {
+
+    private val prefs by lazy {
+        getSharedPreferences("tierdex_prefs", MODE_PRIVATE)
+    }
+
+    private val database by lazy {
+        Room.databaseBuilder(
+            applicationContext,
+            AnimalFindingDatabase::class.java,
+            "animal_finding_database"
+        )
+            .addMigrations(AnimalFindingDatabase.MIGRATION_1_2)
+            .build()
+    }
+
     private var wishAnimalId by mutableStateOf<String?>(null)
     private var favoriteAnimalId by mutableStateOf<String?>(null)
 
-    class MainActivity : ComponentActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        wishAnimalId = null
+        favoriteAnimalId = null
 
-        private val prefs by lazy {
-            getSharedPreferences("tierdex_prefs", MODE_PRIVATE)
-        }
+        setContent {
+            var showSplashScreen by remember { mutableStateOf(true) }
 
-        private val database by lazy {
-            Room.databaseBuilder(
-                applicationContext,
-                AnimalFindingDatabase::class.java,
-                "animal_finding_database"
-            )
-                .addMigrations(AnimalFindingDatabase.MIGRATION_1_2)
-                .build()
-        }
-
-        private var wishAnimalId by mutableStateOf<String?>(null)
-        private var favoriteAnimalId by mutableStateOf<String?>(null)
-
-        override fun onCreate(savedInstanceState: Bundle?) {
-            super.onCreate(savedInstanceState)
-            wishAnimalId = null
-            favoriteAnimalId = null
-
-            setContent {
-                var showSplashScreen by remember { mutableStateOf(true) }
-
-                LaunchedEffect(Unit) {
-                    delay(1600)
-                    showSplashScreen = false
-                }
-
-                TierdexTheme(
-                    darkTheme = false,
-                    dynamicColor = false
-                ) {
-                    Surface(
-                        modifier = Modifier.fillMaxSize(),
-                        color = Color.White
-                    ) {
-                        if (showSplashScreen) {
-                            AppSplashScreen()
-                        } else {
-                            TierdexApp(database = database)
-                        }
-                    }
-                }
+            LaunchedEffect(Unit) {
+                delay(1600)
+                showSplashScreen = false
             }
-        }
-    }
 
-
-    data class AnimalEntry(
-        val id: String,
-        val group: String,
-        val subgroup: String,
-        val germanName: String,
-        val latinName: String,
-        val habitat: String,
-        val distribution: String,
-        val rarity: String
-    )
-
-    data class AnimalFinding(
-        val roomId: Int? = null,
-        val animalId: String,
-        val date: String,
-        val location: String,
-        val note: String,
-        val photoUri: String = "",
-        val ownerId: String? = null
-    )
-
-    data class CsvLoadResult(
-        val animals: List<AnimalEntry>,
-        val debugMessage: String
-    )
-
-
-    enum class AppTab {
-        HOME,
-        FRIENDS,
-        STATS,
-        PROFILE
-    }
-
-    private enum class IntroLaunchSource {
-        AUTOMATIC,
-        SETTINGS
-    }
-
-    @Composable
-    fun AppSplashScreen() {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(AppBackground),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+            TierdexTheme(
+                darkTheme = false,
+                dynamicColor = false
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.tierdex01_playstore),
-                    contentDescription = "Tierdex Logo",
-                    modifier = Modifier.size(232.dp)
-                )
-                Text(
-                    text = "Tierdex",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = TextSecondary
-                )
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = Color.White
+                ) {
+                    if (showSplashScreen) {
+                        AppSplashScreen()
+                    } else {
+                        TierdexApp(database = database)
+                    }
+                }
             }
         }
     }
+}
 
-    @OptIn(ExperimentalMaterial3Api::class)
-    @Composable
-    fun TierdexApp(database: AnimalFindingDatabase) {
-        val dao = database.animalFindingDao()
-        val scope = rememberCoroutineScope()
-        var currentOwnerId by rememberSaveable { mutableStateOf(AuthSession.currentUserId) }
-        var currentDisplayName by rememberSaveable { mutableStateOf(AuthSession.getCurrentDisplayName()) }
 
-        val ownerId = currentOwnerId
-        val findingsFlow = if (ownerId == null) {
-            dao.getAllGlobalFindings()
-        } else {
-            dao.getAllFindingsVisibleForOwner(ownerId)
-        }
-        val allFindings by findingsFlow.collectAsState(initial = emptyList())
-        val findingsFromRoom = allFindings.map {
-            AnimalFinding(
-                roomId = it.id,
-                animalId = it.animalId,
-                date = it.date,
-                location = it.location,
-                note = it.note,
-                photoUri = it.photoUri,
-                ownerId = it.ownerId
+data class AnimalEntry(
+    val id: String,
+    val group: String,
+    val subgroup: String,
+    val germanName: String,
+    val latinName: String,
+    val habitat: String,
+    val distribution: String,
+    val rarity: String
+)
+
+data class AnimalFinding(
+    val roomId: Int? = null,
+    val animalId: String,
+    val date: String,
+    val location: String,
+    val note: String,
+    val photoUri: String = "",
+    val ownerId: String? = null
+)
+
+data class CsvLoadResult(
+    val animals: List<AnimalEntry>,
+    val debugMessage: String
+)
+
+
+enum class AppTab {
+    HOME,
+    FRIENDS,
+    STATS,
+    PROFILE
+}
+
+private enum class IntroLaunchSource {
+    AUTOMATIC,
+    SETTINGS
+}
+
+@Composable
+fun AppSplashScreen() {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(AppBackground),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.tierdex01_playstore),
+                contentDescription = "Tierdex Logo",
+                modifier = Modifier.size(232.dp)
+            )
+            Text(
+                text = "Tierdex",
+                style = MaterialTheme.typography.titleMedium,
+                color = TextSecondary
             )
         }
-        val context = LocalContext.current
-        val prefs =
-            context.getSharedPreferences("tierdex_prefs", android.content.Context.MODE_PRIVATE)
-        var searchText by rememberSaveable { mutableStateOf("") }
-        var selectedAnimalId by rememberSaveable { mutableStateOf<String?>(null) }
-        var storageDebug by rememberSaveable { mutableStateOf("Funde werden geladen...") }
-        var showFoundOnly by rememberSaveable { mutableStateOf(false) }
-        var currentTab by rememberSaveable { mutableStateOf(AppTab.HOME) }
-        var authEntryMode by rememberSaveable { mutableStateOf<String?>(null) }
-        var showAnimalPicker by rememberSaveable { mutableStateOf(false) }
-        var selectedFindingToEdit by remember { mutableStateOf<AnimalFinding?>(null) }
-        var showSettingsScreen by rememberSaveable { mutableStateOf(false) }
-        var showStartupHintDialog by rememberSaveable { mutableStateOf(false) }
-        var showIntroScreen by rememberSaveable { mutableStateOf(false) }
-        var introLaunchSource by rememberSaveable { mutableStateOf(IntroLaunchSource.AUTOMATIC.name) }
-        var selectedGroupFilter by rememberSaveable { mutableStateOf("Alle") }
-        var selectedSubgroupFilter by rememberSaveable { mutableStateOf("Alle") }
-        val resetSearchState = {
-            searchText = ""
-        }
-        var favoriteAnimalId by rememberSaveable { mutableStateOf<String?>(null) }
+    }
+}
 
-        var wishlistAnimalId by rememberSaveable { mutableStateOf<String?>(null) }
-        var previousOwnerId by rememberSaveable { mutableStateOf(ownerId) }
-        LaunchedEffect(ownerId) {
-            favoriteAnimalId = ownerId?.let { prefs.getString(favoriteAnimalKey(it), null) }
-            wishlistAnimalId = ownerId?.let { prefs.getString(wishlistAnimalKey(it), null) }
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TierdexApp(database: AnimalFindingDatabase) {
+    val dao = database.animalFindingDao()
+    val scope = rememberCoroutineScope()
+    var currentOwnerId by rememberSaveable { mutableStateOf(AuthSession.currentUserId) }
+    var currentDisplayName by rememberSaveable { mutableStateOf(AuthSession.getCurrentDisplayName()) }
 
-            val hasPendingIntro = ownerId?.let {
-                val pending = prefs.getBoolean(introPendingKey(it), false)
-                val seen = prefs.getBoolean(introSeenKey(it), false)
-                pending && !seen
-            } ?: false
+    val ownerId = currentOwnerId
+    val findingsFlow = if (ownerId == null) {
+        dao.getAllGlobalFindings()
+    } else {
+        dao.getAllFindingsVisibleForOwner(ownerId)
+    }
+    val allFindings by findingsFlow.collectAsState(initial = emptyList())
+    val findingsFromRoom = allFindings.map {
+        AnimalFinding(
+            roomId = it.id,
+            animalId = it.animalId,
+            date = it.date,
+            location = it.location,
+            note = it.note,
+            photoUri = it.photoUri,
+            ownerId = it.ownerId
+        )
+    }
+    val context = LocalContext.current
+    val prefs =
+        context.getSharedPreferences("tierdex_prefs", android.content.Context.MODE_PRIVATE)
+    var searchText by rememberSaveable { mutableStateOf("") }
+    var selectedAnimalId by rememberSaveable { mutableStateOf<String?>(null) }
+    var storageDebug by rememberSaveable { mutableStateOf("Funde werden geladen...") }
+    var showFoundOnly by rememberSaveable { mutableStateOf(false) }
+    var currentTab by rememberSaveable { mutableStateOf(AppTab.HOME) }
+    var authEntryMode by rememberSaveable { mutableStateOf<String?>(null) }
+    var showAnimalPicker by rememberSaveable { mutableStateOf(false) }
+    var selectedFindingToEdit by remember { mutableStateOf<AnimalFinding?>(null) }
+    var showSettingsScreen by rememberSaveable { mutableStateOf(false) }
+    var showStartupHintDialog by rememberSaveable { mutableStateOf(false) }
+    var showIntroScreen by rememberSaveable { mutableStateOf(false) }
+    var introLaunchSource by rememberSaveable { mutableStateOf(IntroLaunchSource.AUTOMATIC.name) }
+    var selectedGroupFilter by rememberSaveable { mutableStateOf("Alle") }
+    var selectedSubgroupFilter by rememberSaveable { mutableStateOf("Alle") }
+    val resetSearchState = {
+        searchText = ""
+    }
+    var favoriteAnimalId by rememberSaveable { mutableStateOf<String?>(null) }
 
-            if (previousOwnerId == null && ownerId != null) {
-                if (hasPendingIntro) {
-                    showIntroScreen = true
-                    introLaunchSource = IntroLaunchSource.AUTOMATIC.name
-                    showStartupHintDialog = false
-                } else {
-                    val startupHintKey = "$STARTUP_HINT_SHOWN_KEY_PREFIX$ownerId"
-                    val alreadyShown = prefs.getBoolean(startupHintKey, false)
-                    if (!alreadyShown) {
-                        showStartupHintDialog = true
-                        prefs.edit().putBoolean(startupHintKey, true).apply()
-                    }
-                }
-            } else if (ownerId != null && hasPendingIntro) {
+    var wishlistAnimalId by rememberSaveable { mutableStateOf<String?>(null) }
+    var previousOwnerId by rememberSaveable { mutableStateOf(ownerId) }
+    LaunchedEffect(ownerId) {
+        favoriteAnimalId = ownerId?.let { prefs.getString(favoriteAnimalKey(it), null) }
+        wishlistAnimalId = ownerId?.let { prefs.getString(wishlistAnimalKey(it), null) }
+
+        val hasPendingIntro = ownerId?.let {
+            val pending = prefs.getBoolean(introPendingKey(it), false)
+            val seen = prefs.getBoolean(introSeenKey(it), false)
+            pending && !seen
+        } ?: false
+
+        if (previousOwnerId == null && ownerId != null) {
+            if (hasPendingIntro) {
                 showIntroScreen = true
                 introLaunchSource = IntroLaunchSource.AUTOMATIC.name
                 showStartupHintDialog = false
-            }
-            previousOwnerId = ownerId
-
-            if (ownerId != null) {
-                val migrationKey = "global_findings_migrated_to_$ownerId"
-                val alreadyMigrated = prefs.getBoolean(migrationKey, false)
-                if (!alreadyMigrated) {
-                    dao.assignGlobalFindingsToOwner(ownerId)
-                    prefs.edit().putBoolean(migrationKey, true).apply()
+            } else {
+                val startupHintKey = "$STARTUP_HINT_SHOWN_KEY_PREFIX$ownerId"
+                val alreadyShown = prefs.getBoolean(startupHintKey, false)
+                if (!alreadyShown) {
+                    showStartupHintDialog = true
+                    prefs.edit().putBoolean(startupHintKey, true).apply()
                 }
+            }
+        } else if (ownerId != null && hasPendingIntro) {
+            showIntroScreen = true
+            introLaunchSource = IntroLaunchSource.AUTOMATIC.name
+            showStartupHintDialog = false
+        }
+        previousOwnerId = ownerId
 
-                FirestoreFindingRepository.loadCurrentUserFindings(
-                    onResult = { cloudFindings ->
-                        scope.launch {
-                            val localRoomFindings = dao.getAllFindingsByOwnerOnce(ownerId)
-                            val localFindings = localRoomFindings.map { entity ->
-                                AnimalFinding(
-                                    roomId = entity.id,
-                                    animalId = entity.animalId,
-                                    date = entity.date,
-                                    location = entity.location,
-                                    note = entity.note,
-                                    photoUri = entity.photoUri,
-                                    ownerId = entity.ownerId
-                                )
-                            }
+        if (ownerId != null) {
+            val migrationKey = "global_findings_migrated_to_$ownerId"
+            val alreadyMigrated = prefs.getBoolean(migrationKey, false)
+            if (!alreadyMigrated) {
+                dao.assignGlobalFindingsToOwner(ownerId)
+                prefs.edit().putBoolean(migrationKey, true).apply()
+            }
 
-                            val localFingerprints = localFindings
-                                .map { FirestoreFindingRepository.findingFingerprint(it) }
-                                .toMutableSet()
-                            val cloudFingerprints = cloudFindings
-                                .map { FirestoreFindingRepository.findingFingerprint(it) }
-                                .toMutableSet()
-
-                            Log.d(
-                                "CloudSync",
-                                "Sync start: found ${localFindings.size} local findings and ${cloudFindings.size} cloud findings for user $ownerId"
-                            )
-
-                            var uploadedCount = 0
-                            var skippedDuplicateCount = 0
-                            localFindings.forEach { localFinding ->
-                                val fingerprint = FirestoreFindingRepository.findingFingerprint(localFinding)
-                                if (fingerprint in cloudFingerprints) {
-                                    skippedDuplicateCount += 1
-                                } else {
-                                    FirestoreFindingRepository.saveCurrentUserFinding(localFinding) { success, result ->
-                                        if (!success) {
-                                            Log.e("CloudSync", "Upload local finding failed: $result")
-                                        }
-                                    }
-                                    uploadedCount += 1
-                                    cloudFingerprints.add(fingerprint)
-                                }
-                            }
-
-                            var insertedCount = 0
-                            cloudFindings.forEach { cloudFinding ->
-                                val fingerprint = FirestoreFindingRepository.findingFingerprint(cloudFinding)
-                                if (fingerprint !in localFingerprints) {
-                                    dao.insertFinding(
-                                        AnimalFindingEntity(
-                                            animalId = cloudFinding.animalId,
-                                            date = cloudFinding.date,
-                                            location = cloudFinding.location,
-                                            note = cloudFinding.note,
-                                            photoUri = cloudFinding.photoUri,
-                                            ownerId = ownerId
-                                        )
-                                    )
-                                    insertedCount += 1
-                                    localFingerprints.add(fingerprint)
-                                } else {
-                                    skippedDuplicateCount += 1
-                                }
-                            }
-
-                            val finalTotalCount = localFingerprints.size
-                            Log.d(
-                                "CloudSync",
-                                "Sync result: local=${localFindings.size}, cloud=${cloudFindings.size}, uploaded=$uploadedCount, insertedIntoRoom=$insertedCount, duplicatesSkipped=$skippedDuplicateCount, finalTotal=$finalTotalCount"
+            FirestoreFindingRepository.loadCurrentUserFindings(
+                onResult = { cloudFindings ->
+                    scope.launch {
+                        val localRoomFindings = dao.getAllFindingsByOwnerOnce(ownerId)
+                        val localFindings = localRoomFindings.map { entity ->
+                            AnimalFinding(
+                                roomId = entity.id,
+                                animalId = entity.animalId,
+                                date = entity.date,
+                                location = entity.location,
+                                note = entity.note,
+                                photoUri = entity.photoUri,
+                                ownerId = entity.ownerId
                             )
                         }
-                    },
-                    onError = { error ->
-                        Log.e("CloudSync", "Cloud load failed: ${error ?: "Unbekannter Fehler"}")
+
+                        val localFingerprints = localFindings
+                            .map { FirestoreFindingRepository.findingFingerprint(it) }
+                            .toMutableSet()
+                        val cloudFingerprints = cloudFindings
+                            .map { FirestoreFindingRepository.findingFingerprint(it) }
+                            .toMutableSet()
+
+                        Log.d(
+                            "CloudSync",
+                            "Sync start: found ${localFindings.size} local findings and ${cloudFindings.size} cloud findings for user $ownerId"
+                        )
+
+                        var uploadedCount = 0
+                        var skippedDuplicateCount = 0
+                        localFindings.forEach { localFinding ->
+                            val fingerprint =
+                                FirestoreFindingRepository.findingFingerprint(localFinding)
+                            if (fingerprint in cloudFingerprints) {
+                                skippedDuplicateCount += 1
+                            } else {
+                                FirestoreFindingRepository.saveCurrentUserFinding(localFinding) { success, result ->
+                                    if (!success) {
+                                        Log.e("CloudSync", "Upload local finding failed: $result")
+                                    }
+                                }
+                                uploadedCount += 1
+                                cloudFingerprints.add(fingerprint)
+                            }
+                        }
+
+                        var insertedCount = 0
+                        cloudFindings.forEach { cloudFinding ->
+                            val fingerprint =
+                                FirestoreFindingRepository.findingFingerprint(cloudFinding)
+                            if (fingerprint !in localFingerprints) {
+                                dao.insertFinding(
+                                    AnimalFindingEntity(
+                                        animalId = cloudFinding.animalId,
+                                        date = cloudFinding.date,
+                                        location = cloudFinding.location,
+                                        note = cloudFinding.note,
+                                        photoUri = cloudFinding.photoUri,
+                                        ownerId = ownerId
+                                    )
+                                )
+                                insertedCount += 1
+                                localFingerprints.add(fingerprint)
+                            } else {
+                                skippedDuplicateCount += 1
+                            }
+                        }
+
+                        val finalTotalCount = localFingerprints.size
+                        Log.d(
+                            "CloudSync",
+                            "Sync result: local=${localFindings.size}, cloud=${cloudFindings.size}, uploaded=$uploadedCount, insertedIntoRoom=$insertedCount, duplicatesSkipped=$skippedDuplicateCount, finalTotal=$finalTotalCount"
+                        )
+                    }
+                },
+                onError = { error ->
+                    Log.e("CloudSync", "Cloud load failed: ${error ?: "Unbekannter Fehler"}")
+                }
+            )
+        }
+    }
+
+
+    val animalLoadResult: CsvLoadResult = remember(context) {
+        loadAnimalsFromCsvWithDebug(context, ANIMALS_FILE_NAME)
+    }
+
+    val animals: List<AnimalEntry> = animalLoadResult.animals
+
+    val findingCountByAnimalId = allFindings
+        .groupingBy { it.animalId }
+        .eachCount()
+
+    val collectedAnimalIds = findingCountByAnimalId.keys
+    val collectedAnimalCount = animals.count { it.id in collectedAnimalIds }
+
+    var selectedSortOption by rememberSaveable { mutableStateOf("A_Z") }
+
+    val filteredAnimals = animals.filter { animal: AnimalEntry ->
+        val searchTokens = tokenizeSearchText(searchText)
+        val searchableText = listOf(
+            animal.germanName,
+            animal.latinName,
+            animal.group,
+            animal.subgroup
+        ).joinToString(" ")
+        val normalizedSearchableText = normalizeSearchText(searchableText)
+        val compactSearchableText = normalizedSearchableText.replace(" ", "")
+
+        val matchesSearch =
+            searchTokens.isEmpty() ||
+                    searchTokens.all { token: String ->
+                        normalizedSearchableText.contains(token) ||
+                                compactSearchableText.contains(token.replace(" ", ""))
+                    }
+
+        val matchesFound =
+            !showFoundOnly || (findingCountByAnimalId[animal.id] ?: 0) > 0
+
+        val matchesGroup =
+            selectedGroupFilter == "Alle" || animal.group == selectedGroupFilter
+
+        val matchesSubgroup =
+            selectedSubgroupFilter == "Alle" || animal.subgroup == selectedSubgroupFilter
+
+        matchesSearch && matchesFound && matchesGroup && matchesSubgroup
+    }
+    val foundAnimalIds = findingsFromRoom.map { it.animalId }.toSet()
+
+    val sortedAnimals = when (selectedSortOption) {
+        "A_Z" -> filteredAnimals.sortedBy { it.germanName.lowercase() }
+        "Z_A" -> filteredAnimals.sortedByDescending { it.germanName.lowercase() }
+        "FOUND_FIRST" -> filteredAnimals.sortedWith(
+            compareByDescending<AnimalEntry> { it.id in foundAnimalIds }
+                .thenBy { it.germanName.lowercase() }
+        )
+
+        "NOT_FOUND_FIRST" -> filteredAnimals.sortedWith(
+            compareBy<AnimalEntry> { it.id in foundAnimalIds }
+                .thenBy { it.germanName.lowercase() }
+        )
+
+        else -> filteredAnimals.sortedBy { it.germanName.lowercase() }
+    }
+
+    val selectedAnimal = animals.find { it.id == selectedAnimalId }
+    val showAuthStartScreen = ownerId == null && authEntryMode == null
+    val showAuthEntryScreen = ownerId == null && authEntryMode != null
+    val isIntroFromSettings = introLaunchSource == IntroLaunchSource.SETTINGS.name
+
+    val groupOptions = listOf("Alle") + animals.map { it.group }.distinct().sorted()
+
+    val subgroupOptions =
+        if (selectedGroupFilter == "Alle") {
+            listOf("Alle")
+        } else {
+            listOf("Alle") + animals
+                .filter { it.group == selectedGroupFilter }
+                .map { it.subgroup }
+                .distinct()
+                .sorted()
+        }
+
+    BackHandler(enabled = showSettingsScreen && !showIntroScreen) {
+        resetSearchState()
+        showSettingsScreen = false
+    }
+    BackHandler(enabled = selectedAnimalId != null) {
+        resetSearchState()
+        selectedAnimalId = null
+        selectedFindingToEdit = null
+    }
+
+    BackHandler(enabled = showAnimalPicker && selectedAnimalId == null) {
+        resetSearchState()
+        showAnimalPicker = false
+    }
+    BackHandler(enabled = showAuthEntryScreen && !showSettingsScreen) {
+        resetSearchState()
+        authEntryMode = null
+    }
+    BackHandler(enabled = showIntroScreen) {
+        if (isIntroFromSettings) {
+            showIntroScreen = false
+        } else {
+            ownerId?.let {
+                prefs.edit()
+                    .putBoolean(introSeenKey(it), true)
+                    .putBoolean(introPendingKey(it), false)
+                    .apply()
+            }
+            showIntroScreen = false
+            currentTab = AppTab.PROFILE
+        }
+    }
+
+    Scaffold(
+        containerColor = Color.White,
+        topBar = {},
+        bottomBar = {
+            if (selectedAnimal == null && !showAnimalPicker && !showAuthStartScreen && !showAuthEntryScreen && !showIntroScreen && !showSettingsScreen) {
+                MainBottomBar(
+                    currentTab = currentTab,
+                    onTabSelected = {
+                        resetSearchState()
+                        currentTab = it
                     }
                 )
             }
-        }
+        },
+        floatingActionButton = {
+            if (selectedAnimal == null && !showAnimalPicker && !showAuthStartScreen && !showAuthEntryScreen && !showIntroScreen && !showSettingsScreen) {
+                FloatingActionButton(
+                    onClick = {
+                        resetSearchState()
+                        showAnimalPicker = true
+                    },
+                    containerColor = PrimaryGreen,
+                    contentColor = Color.White,
+                    shape = RoundedCornerShape(16.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Add,
+                            contentDescription = null
+                        )
 
+                        Spacer(modifier = Modifier.width(8.dp))
 
-        val animalLoadResult = remember(context) {
-            loadAnimalsFromCsvWithDebug(context, ANIMALS_FILE_NAME)
-        }
-
-        val animals = animalLoadResult.animals
-
-        val findingCountByAnimalId = allFindings
-            .groupingBy { it.animalId }
-            .eachCount()
-
-        val collectedAnimalIds = findingCountByAnimalId.keys
-        val collectedAnimalCount = animals.count { it.id in collectedAnimalIds }
-
-        var selectedSortOption by rememberSaveable { mutableStateOf("A_Z") }
-
-        val filteredAnimals = animals.filter { animal ->
-            val searchTokens = tokenizeSearchText(searchText)
-            val searchableText = listOf(
-                animal.germanName,
-                animal.latinName,
-                animal.group,
-                animal.subgroup
-            ).joinToString(" ")
-            val normalizedSearchableText = normalizeSearchText(searchableText)
-            val compactSearchableText = normalizedSearchableText.replace(" ", "")
-
-            val matchesSearch =
-                searchTokens.isEmpty() ||
-                        searchTokens.all { token ->
-                            normalizedSearchableText.contains(token) ||
-                                    compactSearchableText.contains(token.replace(" ", ""))
-                        }
-
-            val matchesFound =
-                !showFoundOnly || (findingCountByAnimalId[animal.id] ?: 0) > 0
-
-            val matchesGroup =
-                selectedGroupFilter == "Alle" || animal.group == selectedGroupFilter
-
-            val matchesSubgroup =
-                selectedSubgroupFilter == "Alle" || animal.subgroup == selectedSubgroupFilter
-
-            matchesSearch && matchesFound && matchesGroup && matchesSubgroup
-        }
-        val foundAnimalIds = findingsFromRoom.map { it.animalId }.toSet()
-
-        val sortedAnimals = when (selectedSortOption) {
-            "A_Z" -> filteredAnimals.sortedBy { it.germanName.lowercase() }
-            "Z_A" -> filteredAnimals.sortedByDescending { it.germanName.lowercase() }
-            "FOUND_FIRST" -> filteredAnimals.sortedWith(
-                compareByDescending<AnimalEntry> { it.id in foundAnimalIds }
-                    .thenBy { it.germanName.lowercase() }
-            )
-
-            "NOT_FOUND_FIRST" -> filteredAnimals.sortedWith(
-                compareBy<AnimalEntry> { it.id in foundAnimalIds }
-                    .thenBy { it.germanName.lowercase() }
-            )
-
-            else -> filteredAnimals.sortedBy { it.germanName.lowercase() }
-        }
-
-        val selectedAnimal = animals.find { it.id == selectedAnimalId }
-        val showAuthStartScreen = ownerId == null && authEntryMode == null
-        val showAuthEntryScreen = ownerId == null && authEntryMode != null
-        val isIntroFromSettings = introLaunchSource == IntroLaunchSource.SETTINGS.name
-
-        val groupOptions = listOf("Alle") + animals.map { it.group }.distinct().sorted()
-
-        val subgroupOptions =
-            if (selectedGroupFilter == "Alle") {
-                listOf("Alle")
-            } else {
-                listOf("Alle") + animals
-                    .filter { it.group == selectedGroupFilter }
-                    .map { it.subgroup }
-                    .distinct()
-                    .sorted()
-            }
-
-        BackHandler(enabled = showSettingsScreen && !showIntroScreen) {
-            resetSearchState()
-            showSettingsScreen = false
-        }
-        BackHandler(enabled = selectedAnimalId != null) {
-            resetSearchState()
-            selectedAnimalId = null
-            selectedFindingToEdit = null
-        }
-
-        BackHandler(enabled = showAnimalPicker && selectedAnimalId == null) {
-            resetSearchState()
-            showAnimalPicker = false
-        }
-        BackHandler(enabled = showAuthEntryScreen && !showSettingsScreen) {
-            resetSearchState()
-            authEntryMode = null
-        }
-        BackHandler(enabled = showIntroScreen) {
-            if (isIntroFromSettings) {
-                showIntroScreen = false
-            } else {
-                ownerId?.let {
-                    prefs.edit()
-                        .putBoolean(introSeenKey(it), true)
-                        .putBoolean(introPendingKey(it), false)
-                        .apply()
+                        Text("Neuer Fund")
+                    }
                 }
-                showIntroScreen = false
-                currentTab = AppTab.PROFILE
             }
-        }
-
-        Scaffold(
-            containerColor = Color.White,
-            topBar = {},
-            bottomBar = {
-                if (selectedAnimal == null && !showAnimalPicker && !showAuthStartScreen && !showAuthEntryScreen && !showIntroScreen && !showSettingsScreen) {
-                    MainBottomBar(
-                        currentTab = currentTab,
-                        onTabSelected = {
+        },
+        floatingActionButtonPosition = FabPosition.Center
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            when {
+                showAuthStartScreen -> {
+                    AuthStartScreen(
+                        onLoginClick = {
                             resetSearchState()
-                            currentTab = it
+                            authEntryMode = "login"
+                        },
+                        onRegisterClick = {
+                            resetSearchState()
+                            authEntryMode = "register"
                         }
                     )
                 }
-            },
-            floatingActionButton = {
-                if (selectedAnimal == null && !showAnimalPicker && !showAuthStartScreen && !showAuthEntryScreen && !showIntroScreen && !showSettingsScreen) {
-                    FloatingActionButton(
-                        onClick = {
+
+                showAuthEntryScreen -> {
+                    AuthEntryScreen(
+                        initialAuthMode = authEntryMode ?: "login",
+                        onBack = {
                             resetSearchState()
-                            showAnimalPicker = true
+                            authEntryMode = null
                         },
-                        containerColor = PrimaryGreen,
-                        contentColor = Color.White,
-                        shape = RoundedCornerShape(16.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(horizontal = 16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Add,
-                                contentDescription = null
-                            )
-
-                            Spacer(modifier = Modifier.width(8.dp))
-
-                            Text("Neuer Fund")
-                        }
-                    }
-                }
-            },
-            floatingActionButtonPosition = FabPosition.Center
-        ) { innerPadding ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                when {
-                    showAuthStartScreen -> {
-                        AuthStartScreen(
-                            onLoginClick = {
-                                resetSearchState()
-                                authEntryMode = "login"
-                            },
-                            onRegisterClick = {
-                                resetSearchState()
-                                authEntryMode = "register"
-                            }
-                        )
-                    }
-                    showAuthEntryScreen -> {
-                        AuthEntryScreen(
-                            initialAuthMode = authEntryMode ?: "login",
-                            onBack = {
-                                resetSearchState()
-                                authEntryMode = null
-                            },
-                            onAuthSuccess = { userId, fromRegistration ->
-                                AuthSession.setCurrentUserId(userId)
-                                currentOwnerId = userId
-                                currentDisplayName = AuthSession.getCurrentDisplayName()
-                                authEntryMode = null
-                                currentTab = AppTab.PROFILE
-                                if (fromRegistration && userId != null) {
-                                    prefs.edit()
-                                        .putBoolean(introPendingKey(userId), true)
-                                        .putBoolean(introSeenKey(userId), false)
-                                        .apply()
-                                    introLaunchSource = IntroLaunchSource.AUTOMATIC.name
-                                    showIntroScreen = true
-                                    showStartupHintDialog = false
-                                }
-                            }
-                        )
-                    }
-                    showIntroScreen -> {
-                        IntroScreen(
-                            onClose = {
-                                if (isIntroFromSettings) {
-                                    showIntroScreen = false
-                                } else {
-                                    ownerId?.let {
-                                        prefs.edit()
-                                            .putBoolean(introSeenKey(it), true)
-                                            .putBoolean(introPendingKey(it), false)
-                                            .apply()
-                                    }
-                                    showIntroScreen = false
-                                    currentTab = AppTab.PROFILE
-                                }
-                            }
-                        )
-                    }
-                    showSettingsScreen -> {
-                        SettingsScreen(
-                            onBack = {
-                                resetSearchState()
-                                showSettingsScreen = false
-                            },
-                            onLogout = {
-                                resetSearchState()
-                                currentOwnerId = null
-                                currentDisplayName = null
-                                authEntryMode = null
-                                showSettingsScreen = false
-                                currentTab = AppTab.PROFILE
-                            },
-                            onShowIntro = {
-                                introLaunchSource = IntroLaunchSource.SETTINGS.name
+                        onAuthSuccess = { userId, fromRegistration ->
+                            AuthSession.setCurrentUserId(userId)
+                            currentOwnerId = userId
+                            currentDisplayName = AuthSession.getCurrentDisplayName()
+                            authEntryMode = null
+                            currentTab = AppTab.PROFILE
+                            if (fromRegistration && userId != null) {
+                                prefs.edit()
+                                    .putBoolean(introPendingKey(userId), true)
+                                    .putBoolean(introSeenKey(userId), false)
+                                    .apply()
+                                introLaunchSource = IntroLaunchSource.AUTOMATIC.name
                                 showIntroScreen = true
                                 showStartupHintDialog = false
-                            },
-                            allFindings = findingsFromRoom,
-                            onImportFindings = { importedFindings ->
-                                scope.launch {
-                                    importedFindings.forEach { finding ->
-                                        val importedFindingForCurrentOwner = finding.copy(
-                                            ownerId = currentOwnerId ?: finding.ownerId
-                                        )
-                                        dao.insertFinding(
-                                            AnimalFindingEntity(
-                                                animalId = importedFindingForCurrentOwner.animalId,
-                                                date = importedFindingForCurrentOwner.date,
-                                                location = importedFindingForCurrentOwner.location,
-                                                note = importedFindingForCurrentOwner.note,
-                                                photoUri = importedFindingForCurrentOwner.photoUri,
-                                                ownerId = importedFindingForCurrentOwner.ownerId
-                                            )
-                                        )
+                            }
+                        }
+                    )
+                }
 
-                                        if (currentOwnerId != null) {
-                                            FirestoreFindingRepository.saveCurrentUserFinding(importedFindingForCurrentOwner) { success, result ->
-                                                if (!success) {
-                                                    Log.e("CloudWrite", "Firestore save on import failed: $result")
-                                                }
+                showIntroScreen -> {
+                    IntroScreen(
+                        onClose = {
+                            if (isIntroFromSettings) {
+                                showIntroScreen = false
+                            } else {
+                                ownerId?.let {
+                                    prefs.edit()
+                                        .putBoolean(introSeenKey(it), true)
+                                        .putBoolean(introPendingKey(it), false)
+                                        .apply()
+                                }
+                                showIntroScreen = false
+                                currentTab = AppTab.PROFILE
+                            }
+                        }
+                    )
+                }
+
+                showSettingsScreen -> {
+                    SettingsScreen(
+                        onBack = {
+                            resetSearchState()
+                            showSettingsScreen = false
+                        },
+                        onLogout = {
+                            resetSearchState()
+                            currentOwnerId = null
+                            currentDisplayName = null
+                            authEntryMode = null
+                            showSettingsScreen = false
+                            currentTab = AppTab.PROFILE
+                        },
+                        onShowIntro = {
+                            introLaunchSource = IntroLaunchSource.SETTINGS.name
+                            showIntroScreen = true
+                            showStartupHintDialog = false
+                        },
+                        allFindings = findingsFromRoom,
+                        onImportFindings = { importedFindings ->
+                            scope.launch {
+                                importedFindings.forEach { finding ->
+                                    val importedFindingForCurrentOwner = finding.copy(
+                                        ownerId = currentOwnerId ?: finding.ownerId
+                                    )
+                                    dao.insertFinding(
+                                        AnimalFindingEntity(
+                                            animalId = importedFindingForCurrentOwner.animalId,
+                                            date = importedFindingForCurrentOwner.date,
+                                            location = importedFindingForCurrentOwner.location,
+                                            note = importedFindingForCurrentOwner.note,
+                                            photoUri = importedFindingForCurrentOwner.photoUri,
+                                            ownerId = importedFindingForCurrentOwner.ownerId
+                                        )
+                                    )
+
+                                    if (currentOwnerId != null) {
+                                        FirestoreFindingRepository.saveCurrentUserFinding(
+                                            importedFindingForCurrentOwner
+                                        ) { success, result ->
+                                            if (!success) {
+                                                Log.e(
+                                                    "CloudWrite",
+                                                    "Firestore save on import failed: $result"
+                                                )
                                             }
                                         }
                                     }
                                 }
-                            },
-                            extraTopPadding = innerPadding.calculateTopPadding(),
-                            extraBottomPadding = innerPadding.calculateBottomPadding()
-                        )
-                    }
-                    selectedAnimal != null -> {
-                        AnimalDetailScreen(
-                            modifier = Modifier.padding(innerPadding),
-                            animal = selectedAnimal,
-                            findings = findingsFromRoom.filter { it.animalId == selectedAnimal.id },
-                            storageDebug = storageDebug,
-                            initialFinding = selectedFindingToEdit,
-                            onBackClick = {
-                                resetSearchState()
-                                selectedAnimalId = null
-                                selectedFindingToEdit = null
-                            },
-                            onSaveFinding = { finding ->
-                                scope.launch {
-                                    dao.insertFinding(
+                            }
+                        },
+                        extraTopPadding = innerPadding.calculateTopPadding(),
+                        extraBottomPadding = innerPadding.calculateBottomPadding()
+                    )
+                }
+
+                selectedAnimal != null -> {
+                    AnimalDetailScreen(
+                        modifier = Modifier.padding(innerPadding),
+                        animal = selectedAnimal,
+                        findings = findingsFromRoom.filter { it.animalId == selectedAnimal.id },
+                        storageDebug = storageDebug,
+                        initialFinding = selectedFindingToEdit,
+                        onBackClick = {
+                            resetSearchState()
+                            selectedAnimalId = null
+                            selectedFindingToEdit = null
+                        },
+                        onSaveFinding = { finding ->
+                            scope.launch {
+                                dao.insertFinding(
+                                    AnimalFindingEntity(
+                                        animalId = finding.animalId,
+                                        date = finding.date,
+                                        location = finding.location,
+                                        note = finding.note,
+                                        photoUri = finding.photoUri,
+                                        ownerId = currentOwnerId
+                                    )
+                                )
+
+                                if (currentOwnerId != null) {
+                                    FirestoreFindingRepository.saveCurrentUserFinding(finding) { success, result ->
+                                        if (!success) {
+                                            Log.e(
+                                                "CloudWrite",
+                                                "Firestore save on create failed: $result"
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        onDeleteFinding = { finding ->
+                            scope.launch {
+                                val roomMatch = if (finding.roomId != null) {
+                                    allFindings.lastOrNull { it.id == finding.roomId }
+                                } else {
+                                    allFindings.lastOrNull {
+                                        it.animalId == finding.animalId &&
+                                                it.date == finding.date &&
+                                                it.location == finding.location &&
+                                                it.note == finding.note &&
+                                                it.photoUri == finding.photoUri
+                                    }
+                                }
+
+                                if (roomMatch != null) {
+                                    dao.deleteFinding(roomMatch)
+                                    Log.d(
+                                        "CloudSyncDelete",
+                                        "Deleted local finding: animalId=${finding.animalId}, date=${finding.date}, location=${finding.location}"
+                                    )
+
+                                    if (currentOwnerId != null) {
+                                        FirestoreFindingRepository.deleteCurrentUserFinding(finding) { success, result ->
+                                            if (success) {
+                                                Log.d(
+                                                    "CloudSyncDelete",
+                                                    "Deleted Firestore finding: documentId=$result"
+                                                )
+                                            } else {
+                                                Log.e(
+                                                    "CloudSyncDelete",
+                                                    "Delete in Firestore failed: $result"
+                                                )
+                                            }
+                                        }
+                                    } else {
+                                        Log.d(
+                                            "CloudSyncDelete",
+                                            "Skipped Firestore delete because no user is logged in"
+                                        )
+                                    }
+                                } else {
+                                    Log.d(
+                                        "CloudSyncDelete",
+                                        "Skipped local delete because no matching Room finding was found"
+                                    )
+                                }
+                            }
+                        },
+                        onUpdateFinding = { oldFinding, newFinding ->
+                            selectedFindingToEdit = null
+
+                            scope.launch {
+                                val roomMatch = if (oldFinding.roomId != null) {
+                                    allFindings.lastOrNull { it.id == oldFinding.roomId }
+                                } else {
+                                    allFindings.lastOrNull {
+                                        it.animalId == oldFinding.animalId &&
+                                                it.date == oldFinding.date &&
+                                                it.location == oldFinding.location &&
+                                                it.note == oldFinding.note &&
+                                                it.photoUri == oldFinding.photoUri
+                                    }
+                                }
+
+                                if (roomMatch != null) {
+                                    dao.updateFinding(
                                         AnimalFindingEntity(
-                                            animalId = finding.animalId,
-                                            date = finding.date,
-                                            location = finding.location,
-                                            note = finding.note,
-                                            photoUri = finding.photoUri,
+                                            id = roomMatch.id,
+                                            animalId = newFinding.animalId,
+                                            date = newFinding.date,
+                                            location = newFinding.location,
+                                            note = newFinding.note,
+                                            photoUri = newFinding.photoUri,
                                             ownerId = currentOwnerId
                                         )
                                     )
 
                                     if (currentOwnerId != null) {
-                                        FirestoreFindingRepository.saveCurrentUserFinding(finding) { success, result ->
+                                        FirestoreFindingRepository.updateCurrentUserFinding(
+                                            oldFinding,
+                                            newFinding
+                                        ) { success, result ->
                                             if (!success) {
-                                                Log.e("CloudWrite", "Firestore save on create failed: $result")
+                                                Log.e(
+                                                    "CloudWrite",
+                                                    "Firestore update on edit failed: $result"
+                                                )
                                             }
                                         }
                                     }
                                 }
-                            },
-                            onDeleteFinding = { finding ->
-                                scope.launch {
-                                    val roomMatch = if (finding.roomId != null) {
-                                        allFindings.lastOrNull { it.id == finding.roomId }
-                                    } else {
-                                        allFindings.lastOrNull {
-                                            it.animalId == finding.animalId &&
-                                                    it.date == finding.date &&
-                                                    it.location == finding.location &&
-                                                    it.note == finding.note &&
-                                                    it.photoUri == finding.photoUri
-                                        }
-                                    }
-
-                                    if (roomMatch != null) {
-                                        dao.deleteFinding(roomMatch)
-                                        Log.d(
-                                            "CloudSyncDelete",
-                                            "Deleted local finding: animalId=${finding.animalId}, date=${finding.date}, location=${finding.location}"
-                                        )
-
-                                        if (currentOwnerId != null) {
-                                            FirestoreFindingRepository.deleteCurrentUserFinding(finding) { success, result ->
-                                                if (success) {
-                                                    Log.d(
-                                                        "CloudSyncDelete",
-                                                        "Deleted Firestore finding: documentId=$result"
-                                                    )
-                                                } else {
-                                                    Log.e(
-                                                        "CloudSyncDelete",
-                                                        "Delete in Firestore failed: $result"
-                                                    )
-                                                }
-                                            }
-                                        } else {
-                                            Log.d(
-                                                "CloudSyncDelete",
-                                                "Skipped Firestore delete because no user is logged in"
-                                            )
-                                        }
-                                    } else {
-                                        Log.d(
-                                            "CloudSyncDelete",
-                                            "Skipped local delete because no matching Room finding was found"
-                                        )
-                                    }
-                                }
-                            },
-                            onUpdateFinding = { oldFinding, newFinding ->
-                                selectedFindingToEdit = null
-
-                                scope.launch {
-                                    val roomMatch = if (oldFinding.roomId != null) {
-                                        allFindings.lastOrNull { it.id == oldFinding.roomId }
-                                    } else {
-                                        allFindings.lastOrNull {
-                                            it.animalId == oldFinding.animalId &&
-                                                    it.date == oldFinding.date &&
-                                                    it.location == oldFinding.location &&
-                                                    it.note == oldFinding.note &&
-                                                    it.photoUri == oldFinding.photoUri
-                                        }
-                                    }
-
-                                    if (roomMatch != null) {
-                                        dao.updateFinding(
-                                            AnimalFindingEntity(
-                                                id = roomMatch.id,
-                                                animalId = newFinding.animalId,
-                                                date = newFinding.date,
-                                                location = newFinding.location,
-                                                note = newFinding.note,
-                                                photoUri = newFinding.photoUri,
-                                                ownerId = currentOwnerId
-                                            )
-                                        )
-
-                                        if (currentOwnerId != null) {
-                                            FirestoreFindingRepository.updateCurrentUserFinding(oldFinding, newFinding) { success, result ->
-                                                if (!success) {
-                                                    Log.e("CloudWrite", "Firestore update on edit failed: $result")
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            },
-                            onSetFavoriteFindingAnimal = { animal ->
-                                favoriteAnimalId = animal.id
-                                currentOwnerId?.let { ownerId ->
-                                    prefs.edit().putString(favoriteAnimalKey(ownerId), animal.id).apply()
-                                }
-                            },
-                            onSetWishlistAnimal = { animal ->
-                                wishlistAnimalId =
-                                    if (wishlistAnimalId == animal.id) null else animal.id
-                                currentOwnerId?.let { ownerId ->
-                                    prefs.edit().putString(wishlistAnimalKey(ownerId), wishlistAnimalId).apply()
-                                }
-                            },
-                            currentWishlistAnimalId = wishlistAnimalId,
-                        )
-                    }
-
-
-                    showAnimalPicker -> {
-                        AnimalListScreen(
-                            onOpenSettings = {
-                                resetSearchState()
-                                showSettingsScreen = true
-                            },
-                            debugMessage = "Wähle ein Tier für einen neuen Fund",
-                            searchText = searchText,
-                            onSearchTextChange = { searchText = it },
-                            animals = sortedAnimals,
-                            totalAnimalCount = animals.size,
-                            collectedAnimalCount = collectedAnimalCount,
-                            showFoundOnly = showFoundOnly,
-                            onToggleShowFoundOnly = { showFoundOnly = !showFoundOnly },
-                            currentSortOption = selectedSortOption,
-                            onSortOptionChange = { selectedSortOption = it },
-                            onResetFiltersAndSort = {
-                                showFoundOnly = false
-                                selectedSortOption = "A_Z"
-                                selectedGroupFilter = "Alle"
-                                selectedSubgroupFilter = "Alle"
-                            },
-                            availableGroups = groupOptions,
-                            selectedGroup = selectedGroupFilter,
-                            onSelectedGroupChange = {
-                                selectedGroupFilter = it
-                                selectedSubgroupFilter = "Alle"
-                            },
-                            availableSubgroups = subgroupOptions,
-                            selectedSubgroup = selectedSubgroupFilter,
-                            onSelectedSubgroupChange = { selectedSubgroupFilter = it },
-                            findingCountByAnimalId = findingCountByAnimalId,
-                            onAnimalClick = { animal ->
-                                resetSearchState()
-                                selectedAnimalId = animal.id
-                                showAnimalPicker = false
-                            },
-                            isPickerMode = true,
-                            extraTopPadding = innerPadding.calculateTopPadding(),
-                            extraBottomPadding = innerPadding.calculateBottomPadding()
-                        )
-                    }
-
-                    currentTab == AppTab.HOME -> {
-                        HomeScreen(
-                            collectedAnimalCount = collectedAnimalCount,
-                            totalAnimalCount = animals.size,
-                            totalFindings = findingsFromRoom.size,
-                            findings = findingsFromRoom,
-                            animals = animals,
-                            roomFindingsCount = allFindings.size,
-                            onEditFinding = { finding ->
-                                selectedFindingToEdit = finding
-                                selectedAnimalId = finding.animalId
-                            },
-                            extraTopPadding = 0.dp,
-                            extraBottomPadding = innerPadding.calculateBottomPadding()
-                        )
-                    }
-
-                    currentTab == AppTab.FRIENDS -> {
-                        FriendsScreen(
-                            extraTopPadding = 0.dp,
-                            extraBottomPadding = innerPadding.calculateBottomPadding()
-                        )
-                    }
-
-                    currentTab == AppTab.STATS -> {
-                        AnimalListScreen(
-                            onOpenSettings = {
-                                resetSearchState()
-                                showSettingsScreen = true
-                            },
-                            debugMessage = "Mein Tierdex",
-                            searchText = searchText,
-                            onSearchTextChange = { searchText = it },
-                            animals = sortedAnimals,
-                            totalAnimalCount = animals.size,
-                            collectedAnimalCount = collectedAnimalCount,
-                            showFoundOnly = showFoundOnly,
-                            onToggleShowFoundOnly = { showFoundOnly = !showFoundOnly },
-                            currentSortOption = selectedSortOption,
-                            onSortOptionChange = { selectedSortOption = it },
-                            onResetFiltersAndSort = {
-                                showFoundOnly = false
-                                selectedSortOption = "A_Z"
-                                selectedGroupFilter = "Alle"
-                                selectedSubgroupFilter = "Alle"
-                            },
-                            availableGroups = groupOptions,
-                            selectedGroup = selectedGroupFilter,
-                            onSelectedGroupChange = {
-                                selectedGroupFilter = it
-                                selectedSubgroupFilter = "Alle"
-                            },
-                            availableSubgroups = subgroupOptions,
-                            selectedSubgroup = selectedSubgroupFilter,
-                            onSelectedSubgroupChange = { selectedSubgroupFilter = it },
-                            findingCountByAnimalId = findingCountByAnimalId,
-                            onAnimalClick = { animal ->
-                                resetSearchState()
-                                selectedAnimalId = animal.id
-                            },
-                            extraTopPadding = innerPadding.calculateTopPadding(),
-                            extraBottomPadding = innerPadding.calculateBottomPadding()
-                        )
-                    }
-
-                    currentTab == AppTab.PROFILE -> {
-                        ProfileScreen(
-                            currentUserId = currentOwnerId,
-                            currentDisplayName = currentDisplayName,
-                            onDisplayNameSaved = { newDisplayName ->
-                                currentDisplayName = newDisplayName
-                            },
-                            collectedAnimalCount = collectedAnimalCount,
-                            totalFindings = allFindings.size,
-                            findings = findingsFromRoom,
-                            animals = animals,
-                            onEditFinding = { finding ->
-                                selectedFindingToEdit = finding
-                                selectedAnimalId = finding.animalId
-                            },
-                            favoriteAnimalId = favoriteAnimalId,
-                            wishlistAnimalId = wishlistAnimalId,
-                            extraTopPadding = 0.dp,
-                            extraBottomPadding = innerPadding.calculateBottomPadding()
-                        )
-                    }
-                }
-                if (showStartupHintDialog && !showIntroScreen) {
-                    StartupHintDialog(
-                        onDismiss = { showStartupHintDialog = false }
+                            }
+                        },
+                        onSetFavoriteFindingAnimal = { animal ->
+                            favoriteAnimalId = animal.id
+                            currentOwnerId?.let { ownerId ->
+                                prefs.edit().putString(favoriteAnimalKey(ownerId), animal.id)
+                                    .apply()
+                            }
+                        },
+                        onSetWishlistAnimal = { animal ->
+                            wishlistAnimalId =
+                                if (wishlistAnimalId == animal.id) null else animal.id
+                            currentOwnerId?.let { ownerId ->
+                                prefs.edit().putString(wishlistAnimalKey(ownerId), wishlistAnimalId)
+                                    .apply()
+                            }
+                        },
+                        currentWishlistAnimalId = wishlistAnimalId,
                     )
                 }
-                if (
-                    selectedAnimalId == null &&
-                    !showAnimalPicker &&
-                    !showIntroScreen &&
-                    !showSettingsScreen &&
-                    !showAuthStartScreen &&
-                    !showAuthEntryScreen
-                ) {
-                    IconButton(
-                        onClick = {
+
+
+                showAnimalPicker -> {
+                    AnimalListScreen(
+                        onOpenSettings = {
                             resetSearchState()
                             showSettingsScreen = true
                         },
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .statusBarsPadding()
-                            .offset(y = 2.dp)
-                            .padding(top = 8.dp, end = 16.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.Settings,
-                            contentDescription = "Einstellungen"
-                        )
-                    }
+                        debugMessage = "Wähle ein Tier für einen neuen Fund",
+                        searchText = searchText,
+                        onSearchTextChange = { searchText = it },
+                        animals = sortedAnimals,
+                        totalAnimalCount = animals.size,
+                        collectedAnimalCount = collectedAnimalCount,
+                        showFoundOnly = showFoundOnly,
+                        onToggleShowFoundOnly = { showFoundOnly = !showFoundOnly },
+                        currentSortOption = selectedSortOption,
+                        onSortOptionChange = { selectedSortOption = it },
+                        onResetFiltersAndSort = {
+                            showFoundOnly = false
+                            selectedSortOption = "A_Z"
+                            selectedGroupFilter = "Alle"
+                            selectedSubgroupFilter = "Alle"
+                        },
+                        availableGroups = groupOptions,
+                        selectedGroup = selectedGroupFilter,
+                        onSelectedGroupChange = {
+                            selectedGroupFilter = it
+                            selectedSubgroupFilter = "Alle"
+                        },
+                        availableSubgroups = subgroupOptions,
+                        selectedSubgroup = selectedSubgroupFilter,
+                        onSelectedSubgroupChange = { selectedSubgroupFilter = it },
+                        findingCountByAnimalId = findingCountByAnimalId,
+                        onAnimalClick = { animal ->
+                            resetSearchState()
+                            selectedAnimalId = animal.id
+                            showAnimalPicker = false
+                        },
+                        isPickerMode = true,
+                        extraTopPadding = innerPadding.calculateTopPadding(),
+                        extraBottomPadding = innerPadding.calculateBottomPadding()
+                    )
+                }
+
+                currentTab == AppTab.HOME -> {
+                    HomeScreen(
+                        collectedAnimalCount = collectedAnimalCount,
+                        totalAnimalCount = animals.size,
+                        totalFindings = findingsFromRoom.size,
+                        findings = findingsFromRoom,
+                        animals = animals,
+                        roomFindingsCount = allFindings.size,
+                        onEditFinding = { finding ->
+                            selectedFindingToEdit = finding
+                            selectedAnimalId = finding.animalId
+                        },
+                        extraTopPadding = 0.dp,
+                        extraBottomPadding = innerPadding.calculateBottomPadding()
+                    )
+                }
+
+                currentTab == AppTab.FRIENDS -> {
+                    FriendsScreen(
+                        extraTopPadding = 0.dp,
+                        extraBottomPadding = innerPadding.calculateBottomPadding()
+                    )
+                }
+
+                currentTab == AppTab.STATS -> {
+                    AnimalListScreen(
+                        onOpenSettings = {
+                            resetSearchState()
+                            showSettingsScreen = true
+                        },
+                        debugMessage = "Mein Tierdex",
+                        searchText = searchText,
+                        onSearchTextChange = { searchText = it },
+                        animals = sortedAnimals,
+                        totalAnimalCount = animals.size,
+                        collectedAnimalCount = collectedAnimalCount,
+                        showFoundOnly = showFoundOnly,
+                        onToggleShowFoundOnly = { showFoundOnly = !showFoundOnly },
+                        currentSortOption = selectedSortOption,
+                        onSortOptionChange = { selectedSortOption = it },
+                        onResetFiltersAndSort = {
+                            showFoundOnly = false
+                            selectedSortOption = "A_Z"
+                            selectedGroupFilter = "Alle"
+                            selectedSubgroupFilter = "Alle"
+                        },
+                        availableGroups = groupOptions,
+                        selectedGroup = selectedGroupFilter,
+                        onSelectedGroupChange = {
+                            selectedGroupFilter = it
+                            selectedSubgroupFilter = "Alle"
+                        },
+                        availableSubgroups = subgroupOptions,
+                        selectedSubgroup = selectedSubgroupFilter,
+                        onSelectedSubgroupChange = { selectedSubgroupFilter = it },
+                        findingCountByAnimalId = findingCountByAnimalId,
+                        onAnimalClick = { animal ->
+                            resetSearchState()
+                            selectedAnimalId = animal.id
+                        },
+                        extraTopPadding = innerPadding.calculateTopPadding(),
+                        extraBottomPadding = innerPadding.calculateBottomPadding()
+                    )
+                }
+
+                currentTab == AppTab.PROFILE -> {
+                    ProfileScreen(
+                        currentUserId = currentOwnerId,
+                        currentDisplayName = currentDisplayName,
+                        onDisplayNameSaved = { newDisplayName ->
+                            currentDisplayName = newDisplayName
+                        },
+                        collectedAnimalCount = collectedAnimalCount,
+                        totalFindings = allFindings.size,
+                        findings = findingsFromRoom,
+                        animals = animals,
+                        onEditFinding = { finding ->
+                            selectedFindingToEdit = finding
+                            selectedAnimalId = finding.animalId
+                        },
+                        favoriteAnimalId = favoriteAnimalId,
+                        wishlistAnimalId = wishlistAnimalId,
+                        extraTopPadding = 0.dp,
+                        extraBottomPadding = innerPadding.calculateBottomPadding()
+                    )
+                }
+            }
+            if (showStartupHintDialog && !showIntroScreen) {
+                StartupHintDialog(
+                    onDismiss = { showStartupHintDialog = false }
+                )
+            }
+            if (
+                selectedAnimalId == null &&
+                !showAnimalPicker &&
+                !showIntroScreen &&
+                !showSettingsScreen &&
+                !showAuthStartScreen &&
+                !showAuthEntryScreen
+            ) {
+                IconButton(
+                    onClick = {
+                        resetSearchState()
+                        showSettingsScreen = true
+                    },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .statusBarsPadding()
+                        .offset(y = 2.dp)
+                        .padding(top = 8.dp, end = 16.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Settings,
+                        contentDescription = "Einstellungen"
+                    )
                 }
             }
         }
     }
+}
 
-    @Composable
-    fun MainBottomBar(
-        currentTab: AppTab,
-        onTabSelected: (AppTab) -> Unit
+@Composable
+fun MainBottomBar(
+    currentTab: AppTab,
+    onTabSelected: (AppTab) -> Unit
+) {
+    NavigationBar(
+        containerColor = Color.White
     ) {
-        NavigationBar(
-            containerColor = Color.White
-        ) {
-            NavigationBarItem(
-                selected = currentTab == AppTab.HOME,
-                onClick = { onTabSelected(AppTab.HOME) },
-                icon = {},
-                label = { Text("Start") },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = PrimaryGreen,
-                    selectedTextColor = PrimaryGreen,
-                    unselectedIconColor = TextSecondary,
-                    unselectedTextColor = TextSecondary
-                )
+        NavigationBarItem(
+            selected = currentTab == AppTab.HOME,
+            onClick = { onTabSelected(AppTab.HOME) },
+            icon = {},
+            label = { Text("Start") },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = PrimaryGreen,
+                selectedTextColor = PrimaryGreen,
+                unselectedIconColor = TextSecondary,
+                unselectedTextColor = TextSecondary
             )
-            NavigationBarItem(
-                selected = currentTab == AppTab.FRIENDS,
-                onClick = { onTabSelected(AppTab.FRIENDS) },
-                icon = {},
-                label = { Text("Freunde") },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = PrimaryGreen,
-                    selectedTextColor = PrimaryGreen,
-                    unselectedIconColor = TextSecondary,
-                    unselectedTextColor = TextSecondary
-                )
+        )
+        NavigationBarItem(
+            selected = currentTab == AppTab.FRIENDS,
+            onClick = { onTabSelected(AppTab.FRIENDS) },
+            icon = {},
+            label = { Text("Freunde") },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = PrimaryGreen,
+                selectedTextColor = PrimaryGreen,
+                unselectedIconColor = TextSecondary,
+                unselectedTextColor = TextSecondary
             )
-            NavigationBarItem(
-                selected = currentTab == AppTab.STATS,
-                onClick = { onTabSelected(AppTab.STATS) },
-                icon = {},
-                label = { Text("Mein Tierdex") },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = PrimaryGreen,
-                    selectedTextColor = PrimaryGreen,
-                    unselectedIconColor = TextSecondary,
-                    unselectedTextColor = TextSecondary
-                )
+        )
+        NavigationBarItem(
+            selected = currentTab == AppTab.STATS,
+            onClick = { onTabSelected(AppTab.STATS) },
+            icon = {},
+            label = { Text("Mein Tierdex") },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = PrimaryGreen,
+                selectedTextColor = PrimaryGreen,
+                unselectedIconColor = TextSecondary,
+                unselectedTextColor = TextSecondary
             )
-            NavigationBarItem(
-                selected = currentTab == AppTab.PROFILE,
-                onClick = { onTabSelected(AppTab.PROFILE) },
-                icon = {},
-                label = { Text("Profil") },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = PrimaryGreen,
-                    selectedTextColor = PrimaryGreen,
-                    unselectedIconColor = TextSecondary,
-                    unselectedTextColor = TextSecondary
-                )
+        )
+        NavigationBarItem(
+            selected = currentTab == AppTab.PROFILE,
+            onClick = { onTabSelected(AppTab.PROFILE) },
+            icon = {},
+            label = { Text("Profil") },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = PrimaryGreen,
+                selectedTextColor = PrimaryGreen,
+                unselectedIconColor = TextSecondary,
+                unselectedTextColor = TextSecondary
             )
-        }
+        )
+    }
+}
+
+@Composable
+fun HomeScreen(
+    collectedAnimalCount: Int,
+    totalAnimalCount: Int,
+    totalFindings: Int,
+    findings: List<AnimalFinding>,
+    animals: List<AnimalEntry>,
+    onEditFinding: (AnimalFinding) -> Unit,
+    roomFindingsCount: Int,
+    extraTopPadding: Dp = 0.dp,
+    extraBottomPadding: Dp = 0.dp
+) {
+    val latestFinding = findings.firstOrNull()
+    val latestAnimal = animals.find {
+        it.id.trim().lowercase() == latestFinding?.animalId?.trim()?.lowercase()
     }
 
-    @Composable
-    fun HomeScreen(
-        collectedAnimalCount: Int,
-        totalAnimalCount: Int,
-        totalFindings: Int,
-        findings: List<AnimalFinding>,
-        animals: List<AnimalEntry>,
-        onEditFinding: (AnimalFinding) -> Unit,
-        roomFindingsCount: Int,
-        extraTopPadding: Dp = 0.dp,
-        extraBottomPadding: Dp = 0.dp
-    ) {
-        val latestFinding = findings.firstOrNull()
-        val latestAnimal = animals.find {
-            it.id.trim().lowercase() == latestFinding?.animalId?.trim()?.lowercase()
-        }
+    val photoFindingCount = findings.count { it.photoUri.isNotBlank() }
+    val collectionPercent = if (totalAnimalCount > 0) {
+        (collectedAnimalCount.toFloat() / totalAnimalCount.toFloat()) * 100f
+    } else {
+        0f
+    }
 
-        val photoFindingCount = findings.count { it.photoUri.isNotBlank() }
-        val collectionPercent = if (totalAnimalCount > 0) {
-            (collectedAnimalCount.toFloat() / totalAnimalCount.toFloat()) * 100f
-        } else {
-            0f
-        }
-
-        val collectionProgress = if (totalAnimalCount > 0) {
-            collectedAnimalCount.toFloat() / totalAnimalCount.toFloat()
-        } else {
-            0f
-        }
-        val quests = remember(findings, animals, collectedAnimalCount, totalFindings, photoFindingCount) {
+    val collectionProgress = if (totalAnimalCount > 0) {
+        collectedAnimalCount.toFloat() / totalAnimalCount.toFloat()
+    } else {
+        0f
+    }
+    val quests =
+        remember(findings, animals, collectedAnimalCount, totalFindings, photoFindingCount) {
             buildHomeQuests(
                 findings = findings,
                 animals = animals,
@@ -1130,245 +1153,245 @@ private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
             )
         }
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White)
-                .statusBarsPadding()
-                .padding(
-                    start = 16.dp,
-                    top = 16.dp + extraTopPadding,
-                    end = 16.dp
-                ),
-            contentPadding = PaddingValues(
-                top = 0.dp,
-                bottom = extraBottomPadding + 24.dp
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .statusBarsPadding()
+            .padding(
+                start = 16.dp,
+                top = 16.dp + extraTopPadding,
+                end = 16.dp
             ),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = CardBackground,
-                        contentColor = TextPrimary
-                    )
+        contentPadding = PaddingValues(
+            top = 0.dp,
+            bottom = extraBottomPadding + 24.dp
+        ),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = CardBackground,
+                    contentColor = TextPrimary
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Text(
-                            text = "Startseite",
-                            style = MaterialTheme.typography.headlineMedium,
-                            color = TextPrimary
-                        )
-                        Text(
-                            text = "Dein letzter Fund, dein Fortschritt und deine nächsten Ziele an einem Ort.",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = TextSecondary
-                        )
-                    }
+                    Text(
+                        text = "Startseite",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = TextPrimary
+                    )
+                    Text(
+                        text = "Dein letzter Fund, dein Fortschritt und deine nächsten Ziele an einem Ort.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
                 }
             }
+        }
 
-            item {
-                Card(
-                    onClick = {
-                        latestFinding?.let(onEditFinding)
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = CardBackground,
-                        contentColor = TextPrimary
+        item {
+            Card(
+                onClick = {
+                    latestFinding?.let(onEditFinding)
+                },
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = CardBackground,
+                    contentColor = TextPrimary
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Text(
+                        text = "Zuletzt entdeckt",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = TextSecondary
                     )
-                ){
-                    Column(
-                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Text(
-                            text = "Zuletzt entdeckt",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = TextSecondary
-                        )
-                        Text(
-                            text = "Letzter Fund",
-                            style = MaterialTheme.typography.titleMedium,
-                        )
+                    Text(
+                        text = "Letzter Fund",
+                        style = MaterialTheme.typography.titleMedium,
+                    )
 
-                        if (latestFinding == null) {
-                            Text("Noch kein Fund gespeichert.")
-                        } else {
-                            if (latestFinding.date.isNotBlank()) {
+                    if (latestFinding == null) {
+                        Text("Noch kein Fund gespeichert.")
+                    } else {
+                        if (latestFinding.date.isNotBlank()) {
+                            Text(
+                                text = latestAnimal?.germanName ?: "Unbekanntes Tier",
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                            Text(
+                                text = "Datum: ${latestFinding.date}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
+                            )
+                            if (latestFinding.location.isNotBlank()) {
                                 Text(
-                                    text = latestAnimal?.germanName ?: "Unbekanntes Tier",
-                                    style = MaterialTheme.typography.titleMedium
-                                )
-                                Text(
-                                    text = "Datum: ${latestFinding.date}",
+                                    text = "Fundort: ${latestFinding.location}",
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = TextSecondary
-                                )
-                                if (latestFinding.location.isNotBlank()) {
-                                    Text(
-                                        text = "Fundort: ${latestFinding.location}",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = TextSecondary
-                                    )
-                                }
-                            }
-
-                            if (latestFinding.note.isNotBlank()) {
-                                Text(
-                                    text = "Notiz: ${latestFinding.note}",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = TextSecondary
-                                )
-                            }
-
-                            if (latestFinding.photoUri.isNotBlank()) {
-                                Spacer(modifier = Modifier.height(12.dp))
-                                UriImage(
-                                    uriString = latestFinding.photoUri,
-                                    maxImageSizePx = 1024,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(180.dp)
                                 )
                             }
                         }
-                    }
-                }
-            }
 
-            item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = CardBackground,
-                        contentColor = TextPrimary
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(
-                            text = "Sammlungsstand",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = TextSecondary
-                        )
-                        Text(
-                            text = "Fortschritt",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = TextPrimary
-                        )
-                        Text(
-                            text = "Gesammelt: $collectedAnimalCount von $totalAnimalCount Arten",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = TextPrimary
-                        )
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(
-                                modifier = Modifier.weight(1f),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(10.dp)
-                            ) {
-                                Text(
-                                    text = String.format("%.1f %%", collectionPercent),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = TextSecondary
-                                )
-                                Box(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .height(8.dp)
-                                        .clip(RoundedCornerShape(999.dp))
-                                        .background(Color.White)
-                                        .border(
-                                            width = 1.dp,
-                                            color = TextSecondary.copy(alpha = 0.25f),
-                                            shape = RoundedCornerShape(999.dp)
-                                        )
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxHeight()
-                                            .fillMaxWidth(collectionProgress)
-                                            .background(PrimaryGreen)
-                                    )
-                                }
-                            }
+                        if (latestFinding.note.isNotBlank()) {
                             Text(
-                                text = "Gesamte Funde: $totalFindings",
-                                style = MaterialTheme.typography.bodySmall,
-                                color = TextSecondary,
-                                modifier = Modifier.padding(start = 12.dp)
+                                text = "Notiz: ${latestFinding.note}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
+                            )
+                        }
+
+                        if (latestFinding.photoUri.isNotBlank()) {
+                            Spacer(modifier = Modifier.height(12.dp))
+                            UriImage(
+                                uriString = latestFinding.photoUri,
+                                maxImageSizePx = 1024,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(180.dp)
                             )
                         }
                     }
                 }
             }
+        }
 
-            item {
-                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = CardBackground,
+                    contentColor = TextPrimary
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     Text(
-                        text = "Quests",
+                        text = "Sammlungsstand",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = TextSecondary
+                    )
+                    Text(
+                        text = "Fortschritt",
                         style = MaterialTheme.typography.titleMedium,
                         color = TextPrimary
                     )
                     Text(
-                        text = "Deine nächsten kleinen Ziele auf einen Blick.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = TextSecondary
+                        text = "Gesammelt: $collectedAnimalCount von $totalAnimalCount Arten",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextPrimary
                     )
-                }
-            }
-
-            items(quests, key = { it.id }) { quest ->
-                QuestCard(quest = quest)
-            }
-
-            item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = CardBackground,
-                        contentColor = TextPrimary
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
+                        Row(
+                            modifier = Modifier.weight(1f),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Text(
+                                text = String.format("%.1f %%", collectionPercent),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = TextSecondary
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(8.dp)
+                                    .clip(RoundedCornerShape(999.dp))
+                                    .background(Color.White)
+                                    .border(
+                                        width = 1.dp,
+                                        color = TextSecondary.copy(alpha = 0.25f),
+                                        shape = RoundedCornerShape(999.dp)
+                                    )
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .fillMaxWidth(collectionProgress)
+                                        .background(PrimaryGreen)
+                                )
+                            }
+                        }
                         Text(
-                            text = "Aktive Challenges",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = TextPrimary
+                            text = "Gesamte Funde: $totalFindings",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = TextSecondary,
+                            modifier = Modifier.padding(start = 12.dp)
                         )
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
-                        Text("Hier kommen später wechselnde zeitlich begrenzte Aufgaben hin.")
-                        Text("Beispiel: Finde in den nächsten 24 Stunden 2 Vogelarten.")
                     }
                 }
             }
         }
+
+        item {
+            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(
+                    text = "Quests",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = TextPrimary
+                )
+                Text(
+                    text = "Deine nächsten kleinen Ziele auf einen Blick.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextSecondary
+                )
+            }
+        }
+
+        items(quests, key = { it.id }) { quest ->
+            QuestCard(quest = quest)
+        }
+
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = CardBackground,
+                    contentColor = TextPrimary
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Text(
+                        text = "Aktive Challenges",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = TextPrimary
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Text("Hier kommen später wechselnde zeitlich begrenzte Aufgaben hin.")
+                    Text("Beispiel: Finde in den nächsten 24 Stunden 2 Vogelarten.")
+                }
+            }
+        }
     }
+}
 
 @Composable
 fun SettingsScreen(
@@ -1379,30 +1402,30 @@ fun SettingsScreen(
     onImportFindings: (List<AnimalFinding>) -> Unit,
     extraTopPadding: Dp = 0.dp,
     extraBottomPadding: Dp = 0.dp
-    ) {
-        val context = LocalContext.current
-        var selectedSettingsPage by rememberSaveable { mutableStateOf("menu") }
-        val pageTitle = when (selectedSettingsPage) {
-            "menu" -> "Einstellungen"
-            "rules" -> "Regeln"
-            "display" -> "Darstellung"
-            "features" -> "App-Funktionen"
-            "info" -> "Info"
-            else -> "Einstellungen"
-        }
-        val pageSubtitle = when (selectedSettingsPage) {
-            "menu" -> "Einführung, Hinweise und wichtige App-Bereiche an einem Ort."
-            "rules" -> "Kurz und klar zusammengefasst, was im Tierdex als Fund zählt."
-            "display" -> "Gestaltung und visuelle Optionen werden hier später ergänzt."
-            "features" -> "Quests, Challenges und weitere Bereiche werden hier gebündelt."
-            "info" -> "Backup, Hinweise zur Datensicherheit und Informationen zur App."
-            else -> ""
-        }
-        BackHandler {
-            if (selectedSettingsPage == "menu") {
-                onBack()
-            } else {
-                selectedSettingsPage = "menu"
+) {
+    val context = LocalContext.current
+    var selectedSettingsPage by rememberSaveable { mutableStateOf("menu") }
+    val pageTitle = when (selectedSettingsPage) {
+        "menu" -> "Einstellungen"
+        "rules" -> "Regeln"
+        "display" -> "Darstellung"
+        "features" -> "App-Funktionen"
+        "info" -> "Info"
+        else -> "Einstellungen"
+    }
+    val pageSubtitle = when (selectedSettingsPage) {
+        "menu" -> "Einführung, Hinweise und wichtige App-Bereiche an einem Ort."
+        "rules" -> "Kurz und klar zusammengefasst, was im Tierdex als Fund zählt."
+        "display" -> "Gestaltung und visuelle Optionen werden hier später ergänzt."
+        "features" -> "Quests, Challenges und weitere Bereiche werden hier gebündelt."
+        "info" -> "Backup, Hinweise zur Datensicherheit und Informationen zur App."
+        else -> ""
+    }
+    BackHandler {
+        if (selectedSettingsPage == "menu") {
+            onBack()
+        } else {
+            selectedSettingsPage = "menu"
         }
     }
 
@@ -1422,24 +1445,6 @@ fun SettingsScreen(
         ),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        if (false) item {
-            Button(
-                onClick = {
-                    if (selectedSettingsPage == "menu") {
-                        onBack()
-                    } else {
-                        selectedSettingsPage = "menu"
-                    }
-                },
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = PrimaryGreen
-                )
-            ) {
-                Text("Zurück")
-            }
-        }
-
         item {
             SettingsContentCard {
                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -1617,7 +1622,8 @@ fun SettingsScreen(
                                 onClick = {
                                     val file = exportFindings(context, allFindings)
                                     shareBackup(context, file)
-                                    Toast.makeText(context, "Backup erstellt", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, "Backup erstellt", Toast.LENGTH_SHORT)
+                                        .show()
                                 },
                                 modifier = Modifier.fillMaxWidth(),
                                 colors = ButtonDefaults.buttonColors(
@@ -1632,7 +1638,11 @@ fun SettingsScreen(
                                     if (importResult.success) {
                                         onImportFindings(importResult.findings)
                                     }
-                                    Toast.makeText(context, importResult.message, Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        importResult.message,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 },
                                 modifier = Modifier.fillMaxWidth(),
                                 colors = ButtonDefaults.buttonColors(
@@ -1732,267 +1742,267 @@ private fun SettingsContentCard(
     }
 }
 
-    enum class QuestType {
-        TOTAL_FINDINGS,
-        PHOTO_FINDINGS,
-        BIRDS,
-        FISH,
-        MAMMALS,
-        AMPHIBIANS,
-        REPTILES
-    }
+enum class QuestType {
+    TOTAL_FINDINGS,
+    PHOTO_FINDINGS,
+    BIRDS,
+    FISH,
+    MAMMALS,
+    AMPHIBIANS,
+    REPTILES
+}
 
-    data class QuestUiModel(
-        val id: String,
-        val type: QuestType,
-        val title: String,
-        val description: String,
-        val progress: Int,
-        val goal: Int,
-        val isCompleted: Boolean
+data class QuestUiModel(
+    val id: String,
+    val type: QuestType,
+    val title: String,
+    val description: String,
+    val progress: Int,
+    val goal: Int,
+    val isCompleted: Boolean
+) {
+    val shownProgress: Int
+        get() = progress.coerceAtMost(goal)
+
+    val progressFraction: Float
+        get() = if (goal > 0) shownProgress.toFloat() / goal.toFloat() else 0f
+
+    val percentLabel: String
+        get() = "${(progressFraction * 100f).toInt()}%"
+
+    val remainingToGoal: Int
+        get() = (goal - progress).coerceAtLeast(0)
+
+    val nextStageLabel: String
+        get() = if (isCompleted) {
+            "Stufe gemeistert"
+        } else {
+            "Nächste Stufe: $goal"
+        }
+
+    val encouragementLabel: String
+        get() = if (isCompleted) {
+            "Belohnung freigeschaltet"
+        } else if (remainingToGoal == 1) {
+            "Noch 1 Fund bis zum Ziel"
+        } else {
+            "Noch $remainingToGoal bis zum Ziel"
+        }
+
+    val icon: ImageVector
+        get() = when (type) {
+            QuestType.TOTAL_FINDINGS -> Icons.Filled.Collections
+            QuestType.PHOTO_FINDINGS -> Icons.Filled.PhotoCamera
+            QuestType.BIRDS -> Icons.Filled.Air
+            QuestType.FISH -> Icons.Filled.SetMeal
+            QuestType.MAMMALS -> Icons.Filled.Pets
+            QuestType.AMPHIBIANS -> Icons.Filled.WaterDrop
+            QuestType.REPTILES -> Icons.Filled.BugReport
+        }
+}
+
+@Composable
+fun QuestCard(quest: QuestUiModel) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (quest.isCompleted) PrimaryGreenSoft.copy(alpha = 0.45f) else CardBackground,
+            contentColor = TextPrimary
+        )
     ) {
-        val shownProgress: Int
-            get() = progress.coerceAtMost(goal)
-
-        val progressFraction: Float
-            get() = if (goal > 0) shownProgress.toFloat() / goal.toFloat() else 0f
-
-        val percentLabel: String
-            get() = "${(progressFraction * 100f).toInt()}%"
-
-        val remainingToGoal: Int
-            get() = (goal - progress).coerceAtLeast(0)
-
-        val nextStageLabel: String
-            get() = if (isCompleted) {
-                "Stufe gemeistert"
-            } else {
-                "Nächste Stufe: $goal"
-            }
-
-        val encouragementLabel: String
-            get() = if (isCompleted) {
-                "Belohnung freigeschaltet"
-            } else if (remainingToGoal == 1) {
-                "Noch 1 Fund bis zum Ziel"
-            } else {
-                "Noch $remainingToGoal bis zum Ziel"
-            }
-
-        val icon: ImageVector
-            get() = when (type) {
-                QuestType.TOTAL_FINDINGS -> Icons.Filled.Collections
-                QuestType.PHOTO_FINDINGS -> Icons.Filled.PhotoCamera
-                QuestType.BIRDS -> Icons.Filled.Air
-                QuestType.FISH -> Icons.Filled.SetMeal
-                QuestType.MAMMALS -> Icons.Filled.Pets
-                QuestType.AMPHIBIANS -> Icons.Filled.WaterDrop
-                QuestType.REPTILES -> Icons.Filled.BugReport
-            }
-    }
-
-    @Composable
-    fun QuestCard(quest: QuestUiModel) {
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = if (quest.isCompleted) PrimaryGreenSoft.copy(alpha = 0.45f) else CardBackground,
-                contentColor = TextPrimary
-            )
+        Column(
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Column(
-                modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = quest.icon,
-                            contentDescription = null,
-                            tint = if (quest.isCompleted) PrimaryGreen else TextSecondary
-                        )
-                        Text(
-                            text = quest.title,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = TextPrimary
-                        )
-                    }
-
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        if (quest.isCompleted) {
-                            Icon(
-                                imageVector = Icons.Filled.CheckCircle,
-                                contentDescription = null,
-                                tint = PrimaryGreen,
-                                modifier = Modifier.size(18.dp)
-                            )
-                        }
-                        Text(
-                            text = if (quest.isCompleted) "Geschafft" else "Aktiv",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = if (quest.isCompleted) PrimaryGreen else TextSecondary
-                        )
-                    }
-                }
-
-                Text(
-                    text = when (quest.type) {
-                        QuestType.TOTAL_FINDINGS -> "Gesamtfunde"
-                        QuestType.PHOTO_FINDINGS -> "Fotoquest"
-                        QuestType.BIRDS -> "Vögel"
-                        QuestType.FISH -> "Fische"
-                        QuestType.MAMMALS -> "Säugetiere"
-                        QuestType.AMPHIBIANS -> "Amphibien"
-                        QuestType.REPTILES -> "Reptilien"
-                    },
-                    style = MaterialTheme.typography.labelSmall,
-                    color = TextSecondary
-                )
-
-                Text(
-                    text = quest.description,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary
-                )
-
-                Text(
-                    text = "Fortschritt: ${quest.shownProgress} / ${quest.goal}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextPrimary
-                )
-
-                LinearProgressIndicator(
-                    progress = { quest.progressFraction },
-                    modifier = Modifier.fillMaxWidth(),
-                    color = PrimaryGreen,
-                    trackColor = PrimaryGreenSoft
-                )
-
-                Text(
-                    text = quest.nextStageLabel,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = TextSecondary
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = quest.percentLabel,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = TextSecondary
+                    Icon(
+                        imageVector = quest.icon,
+                        contentDescription = null,
+                        tint = if (quest.isCompleted) PrimaryGreen else TextSecondary
                     )
                     Text(
-                        text = quest.encouragementLabel,
-                        style = MaterialTheme.typography.bodySmall,
+                        text = quest.title,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = TextPrimary
+                    )
+                }
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (quest.isCompleted) {
+                        Icon(
+                            imageVector = Icons.Filled.CheckCircle,
+                            contentDescription = null,
+                            tint = PrimaryGreen,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                    Text(
+                        text = if (quest.isCompleted) "Geschafft" else "Aktiv",
+                        style = MaterialTheme.typography.labelMedium,
                         color = if (quest.isCompleted) PrimaryGreen else TextSecondary
                     )
                 }
             }
-        }
-    }
 
-    fun getNextQuestGoal(
-        progress: Int,
-        goals: List<Int>
-    ): Int {
-        for (goal in goals) {
-            if (progress < goal) {
-                return goal
+            Text(
+                text = when (quest.type) {
+                    QuestType.TOTAL_FINDINGS -> "Gesamtfunde"
+                    QuestType.PHOTO_FINDINGS -> "Fotoquest"
+                    QuestType.BIRDS -> "Vögel"
+                    QuestType.FISH -> "Fische"
+                    QuestType.MAMMALS -> "Säugetiere"
+                    QuestType.AMPHIBIANS -> "Amphibien"
+                    QuestType.REPTILES -> "Reptilien"
+                },
+                style = MaterialTheme.typography.labelSmall,
+                color = TextSecondary
+            )
+
+            Text(
+                text = quest.description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = TextSecondary
+            )
+
+            Text(
+                text = "Fortschritt: ${quest.shownProgress} / ${quest.goal}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = TextPrimary
+            )
+
+            LinearProgressIndicator(
+                progress = { quest.progressFraction },
+                modifier = Modifier.fillMaxWidth(),
+                color = PrimaryGreen,
+                trackColor = PrimaryGreenSoft
+            )
+
+            Text(
+                text = quest.nextStageLabel,
+                style = MaterialTheme.typography.bodySmall,
+                color = TextSecondary
+            )
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = quest.percentLabel,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextSecondary
+                )
+                Text(
+                    text = quest.encouragementLabel,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (quest.isCompleted) PrimaryGreen else TextSecondary
+                )
             }
         }
-        return goals.last()
     }
+}
 
-    fun buildHomeQuests(
-        findings: List<AnimalFinding>,
-        animals: List<AnimalEntry>,
-        collectedAnimalCount: Int,
-        totalFindings: Int,
-        photoFindingCount: Int
-    ): List<QuestUiModel> {
-        val animalById = animals.associateBy { it.id }
-        val findingsByGroup = findings
-            .mapNotNull { finding -> animalById[finding.animalId]?.group }
-            .groupingBy { normalizeQuestGroupName(it) }
-            .eachCount()
-
-        val totalQuest = QuestUiModel(
-            id = "total_findings",
-            type = QuestType.TOTAL_FINDINGS,
-            title = "Funde sammeln",
-            description = "Erreiche die nächste Stufe über alle gespeicherten Funde hinweg.",
-            progress = totalFindings,
-            goal = getNextQuestGoal(totalFindings, listOf(1, 5, 10, 25, 50)),
-            isCompleted = totalFindings >= 50
-        )
-
-        val photoQuest = QuestUiModel(
-            id = "photo_findings",
-            type = QuestType.PHOTO_FINDINGS,
-            title = "Funde mit Foto",
-            description = "Dokumentiere deine Beobachtungen mit Bildern.",
-            progress = photoFindingCount,
-            goal = getNextQuestGoal(photoFindingCount, listOf(1, 3, 5, 10, 20)),
-            isCompleted = photoFindingCount >= 20
-        )
-
-        val groupQuestConfigs = listOf(
-            Triple("Vögel", QuestType.BIRDS, listOf("Vogel", "Vögel")),
-            Triple("Fische", QuestType.FISH, listOf("Fisch", "Fische")),
-            Triple("Säugetiere", QuestType.MAMMALS, listOf("Säugetier", "Säugetiere")),
-            Triple("Amphibien", QuestType.AMPHIBIANS, listOf("Amphibie", "Amphibien")),
-            Triple("Reptilien", QuestType.REPTILES, listOf("Reptil", "Reptilien"))
-        )
-
-        val groupQuests = groupQuestConfigs.map { (label, type, aliases) ->
-            val progress = findingsByGroup
-                .filterKeys { key -> key in aliases.map { normalizeQuestGroupName(it) } }
-                .values
-                .sum()
-            QuestUiModel(
-                id = "group_$label",
-                type = type,
-                title = "$label entdecken",
-                description = "Sammle Funde aus der Tiergruppe $label.",
-                progress = progress,
-                goal = getNextQuestGoal(progress, listOf(1, 3, 5, 10)),
-                isCompleted = progress >= 10
-            )
-        }
-
-        return buildList {
-            add(totalQuest)
-            add(photoQuest)
-            addAll(
-                groupQuests
-                    .sortedWith(
-                        compareBy<QuestUiModel> { it.isCompleted }
-                            .thenByDescending { it.progressFraction }
-                            .thenByDescending { it.progress }
-                    )
-                    .take(3)
-            )
+fun getNextQuestGoal(
+    progress: Int,
+    goals: List<Int>
+): Int {
+    for (goal in goals) {
+        if (progress < goal) {
+            return goal
         }
     }
+    return goals.last()
+}
 
-    fun normalizeQuestGroupName(group: String): String {
-        return group.trim().lowercase()
+fun buildHomeQuests(
+    findings: List<AnimalFinding>,
+    animals: List<AnimalEntry>,
+    collectedAnimalCount: Int,
+    totalFindings: Int,
+    photoFindingCount: Int
+): List<QuestUiModel> {
+    val animalById = animals.associateBy { it.id }
+    val findingsByGroup = findings
+        .mapNotNull { finding -> animalById[finding.animalId]?.group }
+        .groupingBy { normalizeQuestGroupName(it) }
+        .eachCount()
+
+    val totalQuest = QuestUiModel(
+        id = "total_findings",
+        type = QuestType.TOTAL_FINDINGS,
+        title = "Funde sammeln",
+        description = "Erreiche die nächste Stufe über alle gespeicherten Funde hinweg.",
+        progress = totalFindings,
+        goal = getNextQuestGoal(totalFindings, listOf(1, 5, 10, 25, 50)),
+        isCompleted = totalFindings >= 50
+    )
+
+    val photoQuest = QuestUiModel(
+        id = "photo_findings",
+        type = QuestType.PHOTO_FINDINGS,
+        title = "Funde mit Foto",
+        description = "Dokumentiere deine Beobachtungen mit Bildern.",
+        progress = photoFindingCount,
+        goal = getNextQuestGoal(photoFindingCount, listOf(1, 3, 5, 10, 20)),
+        isCompleted = photoFindingCount >= 20
+    )
+
+    val groupQuestConfigs = listOf(
+        Triple("Vögel", QuestType.BIRDS, listOf("Vogel", "Vögel")),
+        Triple("Fische", QuestType.FISH, listOf("Fisch", "Fische")),
+        Triple("Säugetiere", QuestType.MAMMALS, listOf("Säugetier", "Säugetiere")),
+        Triple("Amphibien", QuestType.AMPHIBIANS, listOf("Amphibie", "Amphibien")),
+        Triple("Reptilien", QuestType.REPTILES, listOf("Reptil", "Reptilien"))
+    )
+
+    val groupQuests = groupQuestConfigs.map { (label, type, aliases) ->
+        val progress = findingsByGroup
+            .filterKeys { key -> key in aliases.map { normalizeQuestGroupName(it) } }
+            .values
+            .sum()
+        QuestUiModel(
+            id = "group_$label",
+            type = type,
+            title = "$label entdecken",
+            description = "Sammle Funde aus der Tiergruppe $label.",
+            progress = progress,
+            goal = getNextQuestGoal(progress, listOf(1, 3, 5, 10)),
+            isCompleted = progress >= 10
+        )
     }
+
+    return buildList {
+        add(totalQuest)
+        add(photoQuest)
+        addAll(
+            groupQuests
+                .sortedWith(
+                    compareBy<QuestUiModel> { it.isCompleted }
+                        .thenByDescending { it.progressFraction }
+                        .thenByDescending { it.progress }
+                )
+                .take(3)
+        )
+    }
+}
+
+fun normalizeQuestGroupName(group: String): String {
+    return group.trim().lowercase()
+}
 
 @Composable
 fun FriendsScreen(
@@ -2156,11 +2166,31 @@ private fun StartupHintDialog(
 @Composable
 private fun StartupHintRulesContent() {
     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text("- Keine Haustiere", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
-        Text("- Keine Nutztiere", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
-        Text("- Keine in Gefangenschaft lebenden Tiere", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
-        Text("- Nur eigene Fotos duerfen eingereicht werden", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
-        Text("- Bitte keine Fotos von toten oder verletzten Tieren", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
+        Text(
+            "- Keine Haustiere",
+            style = MaterialTheme.typography.bodyMedium,
+            color = TextSecondary
+        )
+        Text(
+            "- Keine Nutztiere",
+            style = MaterialTheme.typography.bodyMedium,
+            color = TextSecondary
+        )
+        Text(
+            "- Keine in Gefangenschaft lebenden Tiere",
+            style = MaterialTheme.typography.bodyMedium,
+            color = TextSecondary
+        )
+        Text(
+            "- Nur eigene Fotos duerfen eingereicht werden",
+            style = MaterialTheme.typography.bodyMedium,
+            color = TextSecondary
+        )
+        Text(
+            "- Bitte keine Fotos von toten oder verletzten Tieren",
+            style = MaterialTheme.typography.bodyMedium,
+            color = TextSecondary
+        )
     }
 }
 
@@ -2288,11 +2318,16 @@ fun AuthEntryScreen(
                     Button(
                         onClick = {
                             if (authMode == "register") {
-                                AuthSession.registerWithEmail(displayName, email, password) { success, result ->
+                                AuthSession.registerWithEmail(
+                                    displayName,
+                                    email,
+                                    password
+                                ) { success, result ->
                                     if (success) {
-                                        AuthSession.getCurrentFirebaseUserId()?.let { firebaseUserId ->
-                                            onAuthSuccess(firebaseUserId, true)
-                                        }
+                                        AuthSession.getCurrentFirebaseUserId()
+                                            ?.let { firebaseUserId ->
+                                                onAuthSuccess(firebaseUserId, true)
+                                            }
                                         authMessage = "Registrierung erfolgreich"
                                     } else {
                                         authMessage = result ?: "Registrierung fehlgeschlagen"
@@ -2301,9 +2336,10 @@ fun AuthEntryScreen(
                             } else {
                                 AuthSession.loginWithEmail(email, password) { success, result ->
                                     if (success) {
-                                        AuthSession.getCurrentFirebaseUserId()?.let { firebaseUserId ->
-                                            onAuthSuccess(firebaseUserId, false)
-                                        }
+                                        AuthSession.getCurrentFirebaseUserId()
+                                            ?.let { firebaseUserId ->
+                                                onAuthSuccess(firebaseUserId, false)
+                                            }
                                         authMessage = "Login erfolgreich"
                                     } else {
                                         authMessage = result ?: "Login fehlgeschlagen"
@@ -2331,642 +2367,653 @@ fun AuthEntryScreen(
     }
 }
 
-    @Composable
-    fun ProfileScreen(
-        currentUserId: String?,
-        currentDisplayName: String?,
-        onDisplayNameSaved: (String?) -> Unit,
-        collectedAnimalCount: Int,
-        totalFindings: Int,
-        findings: List<AnimalFinding>,
-        animals: List<AnimalEntry>,
-        favoriteAnimalId: String?,
-        wishlistAnimalId: String?,
-        onEditFinding: (AnimalFinding) -> Unit,
-        extraTopPadding: Dp = 0.dp,
-        extraBottomPadding: Dp = 0.dp
-    ) {
-        val animalById = remember(animals) { animals.associateBy { it.id } }
-        val favoriteAnimal = animalById[favoriteAnimalId]
-        val wishlistAnimal = animalById[wishlistAnimalId]
-        val reversedFindings = remember(findings) { findings.asReversed() }
-        var displayNameInput by rememberSaveable(currentDisplayName) {
-            mutableStateOf(currentDisplayName ?: "")
-        }
-        var authMessage by rememberSaveable { mutableStateOf<String?>(null) }
+@Composable
+fun ProfileScreen(
+    currentUserId: String?,
+    currentDisplayName: String?,
+    onDisplayNameSaved: (String?) -> Unit,
+    collectedAnimalCount: Int,
+    totalFindings: Int,
+    findings: List<AnimalFinding>,
+    animals: List<AnimalEntry>,
+    favoriteAnimalId: String?,
+    wishlistAnimalId: String?,
+    onEditFinding: (AnimalFinding) -> Unit,
+    extraTopPadding: Dp = 0.dp,
+    extraBottomPadding: Dp = 0.dp
+) {
+    val animalById = remember(animals) { animals.associateBy { it.id } }
+    val favoriteAnimal = animalById[favoriteAnimalId]
+    val wishlistAnimal = animalById[wishlistAnimalId]
+    val reversedFindings = remember(findings) { findings.asReversed() }
+    var displayNameInput by rememberSaveable(currentDisplayName) {
+        mutableStateOf(currentDisplayName ?: "")
+    }
+    var authMessage by rememberSaveable { mutableStateOf<String?>(null) }
 
-        LaunchedEffect(currentUserId) {
-            if (currentUserId != null) {
-                Log.d("ProfileScreen", "Firestore test call started")
-                Log.d("ProfileScreen", "Firestore test current AuthSession.currentUserId = ${AuthSession.currentUserId}")
-                FirestoreFindingRepository.loadCurrentUserFindings(
-                    onResult = { findings ->
-                        Log.d("ProfileScreen", "Firestore test load: ${findings.size} findings")
-                    },
-                    onError = { error ->
-                        Log.e("ProfileScreen", "Firestore test load failed: $error")
-                    }
-                )
-            }
+    LaunchedEffect(currentUserId) {
+        if (currentUserId != null) {
+            Log.d("ProfileScreen", "Firestore test call started")
+            Log.d(
+                "ProfileScreen",
+                "Firestore test current AuthSession.currentUserId = ${AuthSession.currentUserId}"
+            )
+            FirestoreFindingRepository.loadCurrentUserFindings(
+                onResult = { findings ->
+                    Log.d("ProfileScreen", "Firestore test load: ${findings.size} findings")
+                },
+                onError = { error ->
+                    Log.e("ProfileScreen", "Firestore test load failed: $error")
+                }
+            )
         }
+    }
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White)
-                .statusBarsPadding()
-                .padding(
-                    start = 16.dp,
-                    top = 16.dp + extraTopPadding,
-                    end = 16.dp
-                ),
-            contentPadding = PaddingValues(
-                top = 0.dp,
-                bottom = extraBottomPadding + 24.dp
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .statusBarsPadding()
+            .padding(
+                start = 16.dp,
+                top = 16.dp + extraTopPadding,
+                end = 16.dp
             ),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            item {
-                Text(
-                    text = currentDisplayName?.takeIf { it.isNotBlank() }?.let { "Profil von $it" } ?: "Profil",
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier
-                )
-            }
+        contentPadding = PaddingValues(
+            top = 0.dp,
+            bottom = extraBottomPadding + 24.dp
+        ),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        item {
+            Text(
+                text = currentDisplayName?.takeIf { it.isNotBlank() }?.let { "Profil von $it" }
+                    ?: "Profil",
+                style = MaterialTheme.typography.headlineMedium,
+                modifier = Modifier
+            )
+        }
 
-            if (currentUserId != null && currentDisplayName.isNullOrBlank()) {
-                item {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = CardBackground,
-                            contentColor = TextPrimary
-                        )
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Text(
-                                text = "Sichtbarer Name",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = TextPrimary
-                            )
-
-                            OutlinedTextField(
-                                value = displayNameInput,
-                                onValueChange = { displayNameInput = it },
-                                modifier = Modifier.fillMaxWidth(),
-                                label = { Text("Name") },
-                                singleLine = true,
-                                shape = RoundedCornerShape(12.dp)
-                            )
-
-                            Button(
-                                onClick = {
-                                    AuthSession.updateCurrentDisplayName(displayNameInput) { success, result ->
-                                        if (success) {
-                                            onDisplayNameSaved(AuthSession.getCurrentDisplayName())
-                                            authMessage = "Name gespeichert"
-                                        } else {
-                                            authMessage = result ?: "Name konnte nicht gespeichert werden"
-                                        }
-                                    }
-                                },
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = PrimaryGreen
-                                )
-                            ) {
-                                Text("Name speichern")
-                            }
-                        }
-                    }
-                }
-            }
-
+        if (currentUserId != null && currentDisplayName.isNullOrBlank()) {
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(16.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                    colors = CardDefaults.cardColors(containerColor = CardBackground, contentColor = TextPrimary)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text(
-                            text = "Deine Übersicht",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = TextPrimary
-                        )
-                        Spacer(modifier = Modifier.height(8.dp)
-                        )
-                        Text(
-                            "Gesammelte Arten: $collectedAnimalCount",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = TextSecondary
-                        )
-                        Text(
-                            "Gesammelte Funde: $totalFindings",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = TextSecondary
-                        )
-                    }
-                }
-            }
-
-            item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                    colors = CardDefaults.cardColors(containerColor = CardBackground, contentColor = TextPrimary)
-                ) {
-                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                        Text(
-                            text = "Lieblingstier aus deinen Funden",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = TextPrimary
-                        )
-                        Text(
-                            text = "Gespeichert wird aktuell das Tier aus einem deiner bisherigen Funde.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = TextSecondary
-                        )
-
-                        if (favoriteAnimal == null) {
-                            Text(
-                                text = "Noch kein Lieblingstier gewählt",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = TextSecondary
-                            )
-                        } else {
-                            Text(
-                                text = favoriteAnimal.germanName,
-                                style = MaterialTheme.typography.titleMedium,
-                                color = TextPrimary
-                            )
-                            Text(
-                                text = favoriteAnimal.latinName,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = TextSecondary
-                            )
-                        }
-                    }
-                }
-            }
-            item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                    colors = CardDefaults.cardColors(containerColor = CardBackground, contentColor = TextPrimary)
+                    colors = CardDefaults.cardColors(
+                        containerColor = CardBackground,
+                        contentColor = TextPrimary
+                    )
                 ) {
                     Column(
                         modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
-                            text = "Wunsch-Fund",
+                            text = "Sichtbarer Name",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = TextPrimary
+                        )
+
+                        OutlinedTextField(
+                            value = displayNameInput,
+                            onValueChange = { displayNameInput = it },
+                            modifier = Modifier.fillMaxWidth(),
+                            label = { Text("Name") },
+                            singleLine = true,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+
+                        Button(
+                            onClick = {
+                                AuthSession.updateCurrentDisplayName(displayNameInput) { success, result ->
+                                    if (success) {
+                                        onDisplayNameSaved(AuthSession.getCurrentDisplayName())
+                                        authMessage = "Name gespeichert"
+                                    } else {
+                                        authMessage =
+                                            result ?: "Name konnte nicht gespeichert werden"
+                                    }
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = PrimaryGreen
+                            )
+                        ) {
+                            Text("Name speichern")
+                        }
+                    }
+                }
+            }
+        }
+
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = CardBackground,
+                    contentColor = TextPrimary
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(
+                        text = "Deine Übersicht",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = TextPrimary
+                    )
+                    Spacer(
+                        modifier = Modifier.height(8.dp)
+                    )
+                    Text(
+                        "Gesammelte Arten: $collectedAnimalCount",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
+                    Text(
+                        "Gesammelte Funde: $totalFindings",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
+                }
+            }
+        }
+
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = CardBackground,
+                    contentColor = TextPrimary
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Text(
+                        text = "Lieblingstier aus deinen Funden",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = TextPrimary
+                    )
+                    Text(
+                        text = "Gespeichert wird aktuell das Tier aus einem deiner bisherigen Funde.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextSecondary
+                    )
+
+                    if (favoriteAnimal == null) {
+                        Text(
+                            text = "Noch kein Lieblingstier gewählt",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextSecondary
+                        )
+                    } else {
+                        Text(
+                            text = favoriteAnimal.germanName,
                             style = MaterialTheme.typography.titleMedium,
                             color = TextPrimary
                         )
                         Text(
-                            text = "Hier erscheint das Tier, das du als nächsten Fund gerne entdecken möchtest.",
-                            style = MaterialTheme.typography.bodySmall,
+                            text = favoriteAnimal.latinName,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = TextSecondary
                         )
-                        if (wishlistAnimal == null) {
-                            Text(
-                                text = "Nicht gewählt",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = TextSecondary
-                            )
-                        } else {
-                            Text(
-                                text = wishlistAnimal.germanName,
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                            Text(
-                                text = wishlistAnimal.latinName,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = TextSecondary
-                            )
-                        }
-                    }
-                }
-            }
-
-            item {
-                Text(
-                    text = "Gesamtsammlung",
-                    modifier = Modifier.padding(top = 8.dp),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = TextPrimary
-                )
-            }
-
-            if (findings.isEmpty()) {
-                item {
-                    Text("Noch keine Funde gespeichert.")
-                }
-            } else {
-                items(
-                    items = reversedFindings,
-                    key = { finding ->
-                        finding.roomId ?: FirestoreFindingRepository.findingFingerprint(finding)
-                    }
-                ) { finding ->
-                    val animal = animalById[finding.animalId]
-
-                    Card(
-                        onClick = { onEditFinding(finding) },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = CardBackground,
-                            contentColor = TextPrimary
-                        )
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Text(
-                                text = animal?.germanName ?: "Unbekanntes Tier",
-                                style = MaterialTheme.typography.titleMedium
-                            )
-
-                            Spacer(modifier = Modifier.height(4.dp))
-
-                            if (finding.date.isNotBlank()) {
-                                Text(
-                                    text = "Datum: ${finding.date}",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = TextSecondary
-                                )
-                            }
-
-                            if (finding.location.isNotBlank()) {
-                                Text(
-                                    text = "Fundort: ${finding.location}",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = TextSecondary
-                                )
-                            }
-
-                            if (finding.note.isNotBlank()) {
-                                Text(
-                                    text = "Notiz: ${finding.note}",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = TextSecondary
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            if (finding.photoUri.isNotBlank()) {
-                                Spacer(modifier = Modifier.height(12.dp))
-                                UriImage(
-                                    uriString = finding.photoUri,
-                                    maxImageSizePx = 1024,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .heightIn(max = 220.dp)
-                                        .clip(RoundedCornerShape(12.dp))
-                                )
-                            }
-                        }
                     }
                 }
             }
         }
-    }
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = CardBackground,
+                    contentColor = TextPrimary
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Text(
+                        text = "Wunsch-Fund",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = TextPrimary
+                    )
+                    Text(
+                        text = "Hier erscheint das Tier, das du als nächsten Fund gerne entdecken möchtest.",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextSecondary
+                    )
+                    if (wishlistAnimal == null) {
+                        Text(
+                            text = "Nicht gewählt",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextSecondary
+                        )
+                    } else {
+                        Text(
+                            text = wishlistAnimal.germanName,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Text(
+                            text = wishlistAnimal.latinName,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextSecondary
+                        )
+                    }
+                }
+            }
+        }
 
-    @Composable
-    fun AuthStartScreen(
-        onLoginClick: () -> Unit,
-        onRegisterClick: () -> Unit
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.White)
-                .statusBarsPadding()
-                .padding(24.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        item {
             Text(
-                text = "Willkommen bei Tierdex",
-                style = MaterialTheme.typography.headlineMedium,
+                text = "Gesamtsammlung",
+                modifier = Modifier.padding(top = 8.dp),
+                style = MaterialTheme.typography.titleMedium,
                 color = TextPrimary
             )
+        }
 
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Text(
-                text = "Bitte logge dich ein oder registriere dich, um fortzufahren.",
-                style = MaterialTheme.typography.bodyMedium,
-                color = TextSecondary
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = onLoginClick,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = PrimaryGreen
-                )
-            ) {
-                Text("Einloggen")
+        if (findings.isEmpty()) {
+            item {
+                Text("Noch keine Funde gespeichert.")
             }
+        } else {
+            items(
+                items = reversedFindings,
+                key = { finding ->
+                    finding.roomId ?: FirestoreFindingRepository.findingFingerprint(finding)
+                }
+            ) { finding ->
+                val animal = animalById[finding.animalId]
 
-            Spacer(modifier = Modifier.height(12.dp))
+                Card(
+                    onClick = { onEditFinding(finding) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = CardBackground,
+                        contentColor = TextPrimary
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = animal?.germanName ?: "Unbekanntes Tier",
+                            style = MaterialTheme.typography.titleMedium
+                        )
 
-            OutlinedButton(
-                onClick = onRegisterClick,
-                modifier = Modifier.fillMaxWidth(),
-                border = BorderStroke(1.dp, PrimaryGreen),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    contentColor = PrimaryGreen
-                )
-            ) {
-                Text("Registrieren")
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        if (finding.date.isNotBlank()) {
+                            Text(
+                                text = "Datum: ${finding.date}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
+                            )
+                        }
+
+                        if (finding.location.isNotBlank()) {
+                            Text(
+                                text = "Fundort: ${finding.location}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
+                            )
+                        }
+
+                        if (finding.note.isNotBlank()) {
+                            Text(
+                                text = "Notiz: ${finding.note}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        if (finding.photoUri.isNotBlank()) {
+                            Spacer(modifier = Modifier.height(12.dp))
+                            UriImage(
+                                uriString = finding.photoUri,
+                                maxImageSizePx = 1024,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .heightIn(max = 220.dp)
+                                    .clip(RoundedCornerShape(12.dp))
+                            )
+                        }
+                    }
+                }
             }
         }
     }
+}
 
-    @Composable
-    fun StatisticsScreen(
-        animals: List<AnimalEntry>,
-        findings: List<AnimalFinding>,
-        extraTopPadding: Dp = 0.dp,
-        extraBottomPadding: Dp = 0.dp
+@Composable
+fun AuthStartScreen(
+    onLoginClick: () -> Unit,
+    onRegisterClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .statusBarsPadding()
+            .padding(24.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val collectedAnimalIds = findings.map { it.animalId }.toSet()
-        val collectedAnimalCount = animals.count { it.id in collectedAnimalIds }
-        val totalFindings = findings.size
+        Text(
+            text = "Willkommen bei Tierdex",
+            style = MaterialTheme.typography.headlineMedium,
+            color = TextPrimary
+        )
 
-        val groupStats = animals
-            .filter { it.id in collectedAnimalIds }
-            .groupingBy { it.group }
-            .eachCount()
-            .toList()
-            .sortedByDescending { it.second }
+        Spacer(modifier = Modifier.height(12.dp))
 
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .safeDrawingPadding()
-                .padding(
-                    start = 16.dp,
-                    top = 16.dp + extraTopPadding,
-                    end = 16.dp,
-                    bottom = 16.dp + extraBottomPadding
-                ),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+        Text(
+            text = "Bitte logge dich ein oder registriere dich, um fortzufahren.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = TextSecondary
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(
+            onClick = onLoginClick,
+            modifier = Modifier.fillMaxWidth(),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = PrimaryGreen
+            )
         ) {
+            Text("Einloggen")
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        OutlinedButton(
+            onClick = onRegisterClick,
+            modifier = Modifier.fillMaxWidth(),
+            border = BorderStroke(1.dp, PrimaryGreen),
+            colors = ButtonDefaults.outlinedButtonColors(
+                contentColor = PrimaryGreen
+            )
+        ) {
+            Text("Registrieren")
+        }
+    }
+}
+
+@Composable
+fun StatisticsScreen(
+    animals: List<AnimalEntry>,
+    findings: List<AnimalFinding>,
+    extraTopPadding: Dp = 0.dp,
+    extraBottomPadding: Dp = 0.dp
+) {
+    val collectedAnimalIds = findings.map { it.animalId }.toSet()
+    val collectedAnimalCount = animals.count { it.id in collectedAnimalIds }
+    val totalFindings = findings.size
+
+    val groupStats = animals
+        .filter { it.id in collectedAnimalIds }
+        .groupingBy { it.group }
+        .eachCount()
+        .toList()
+        .sortedByDescending { it.second }
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .safeDrawingPadding()
+            .padding(
+                start = 16.dp,
+                top = 16.dp + extraTopPadding,
+                end = 16.dp,
+                bottom = 16.dp + extraBottomPadding
+            ),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        item {
+            Text(
+                text = "Statistik",
+                style = MaterialTheme.typography.headlineMedium
+            )
+        }
+
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "Gesammelte Arten: $collectedAnimalCount von ${animals.size}",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                    Text(
+                        text = "Gesamte Funde: $totalFindings",
+                        style = MaterialTheme.typography.bodyLarge
+                    )
+                }
+            }
+        }
+
+        item {
+            Text(
+                text = "Gefundene Tiergruppen",
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
+
+        if (groupStats.isEmpty()) {
             item {
                 Text(
-                    text = "Statistik",
-                    style = MaterialTheme.typography.headlineMedium
+                    text = "Noch keine Statistik vorhanden, weil noch keine Funde gespeichert wurden.",
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
-
-            item {
+        } else {
+            items(groupStats) { (group, count) ->
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
                     Column(modifier = Modifier.padding(16.dp)) {
                         Text(
-                            text = "Gesammelte Arten: $collectedAnimalCount von ${animals.size}",
-                            style = MaterialTheme.typography.bodyLarge
+                            text = group,
+                            style = MaterialTheme.typography.titleMedium
                         )
                         Text(
-                            text = "Gesamte Funde: $totalFindings",
-                            style = MaterialTheme.typography.bodyLarge
+                            text = "$count gesammelte Art(en)",
+                            style = MaterialTheme.typography.bodyMedium
                         )
-                    }
-                }
-            }
-
-            item {
-                Text(
-                    text = "Gefundene Tiergruppen",
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
-
-            if (groupStats.isEmpty()) {
-                item {
-                    Text(
-                        text = "Noch keine Statistik vorhanden, weil noch keine Funde gespeichert wurden.",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            } else {
-                items(groupStats) { (group, count) ->
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(
-                                text = group,
-                                style = MaterialTheme.typography.titleMedium
-                            )
-                            Text(
-                                text = "$count gesammelte Art(en)",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
                     }
                 }
             }
         }
     }
-    @Composable
-    fun AnimalDetailScreen(
-        modifier: Modifier = Modifier,
-        animal: AnimalEntry,
-        findings: List<AnimalFinding>,
-        storageDebug: String,
-        initialFinding: AnimalFinding?,
-        onBackClick: () -> Unit,
-        onSaveFinding: (AnimalFinding) -> Unit,
-        onDeleteFinding: (AnimalFinding) -> Unit,
-        onUpdateFinding: (AnimalFinding, AnimalFinding) -> Unit,
-        onSetFavoriteFindingAnimal: (AnimalEntry) -> Unit,
-        onSetWishlistAnimal: (AnimalEntry) -> Unit,
-        currentWishlistAnimalId: String?,
-        extraTopPadding: Dp = 0.dp,
-        extraBottomPadding: Dp = 0.dp
+}
+
+@Composable
+fun AnimalDetailScreen(
+    modifier: Modifier = Modifier,
+    animal: AnimalEntry,
+    findings: List<AnimalFinding>,
+    storageDebug: String,
+    initialFinding: AnimalFinding?,
+    onBackClick: () -> Unit,
+    onSaveFinding: (AnimalFinding) -> Unit,
+    onDeleteFinding: (AnimalFinding) -> Unit,
+    onUpdateFinding: (AnimalFinding, AnimalFinding) -> Unit,
+    onSetFavoriteFindingAnimal: (AnimalEntry) -> Unit,
+    onSetWishlistAnimal: (AnimalEntry) -> Unit,
+    currentWishlistAnimalId: String?,
+    extraTopPadding: Dp = 0.dp,
+    extraBottomPadding: Dp = 0.dp
+) {
+    val context = LocalContext.current
+    var date by rememberSaveable { mutableStateOf("") }
+    var location by rememberSaveable { mutableStateOf("") }
+    var note by rememberSaveable { mutableStateOf("") }
+    var selectedPhotoUri by rememberSaveable { mutableStateOf("") }
+    var cropPhotoUri by remember { mutableStateOf<String?>(null) }
+    val isWishlistSelected = animal.id == currentWishlistAnimalId
+    var editingFinding by remember { mutableStateOf<AnimalFinding?>(null) }
+    var isEditMode by rememberSaveable { mutableStateOf(initialFinding == null) }
+    val hasAnyFinding = findings.isNotEmpty()
+
+    LaunchedEffect(initialFinding) {
+        if (initialFinding != null) {
+            date = initialFinding.date
+            location = initialFinding.location
+            note = initialFinding.note
+            selectedPhotoUri = initialFinding.photoUri
+            editingFinding = initialFinding
+            isEditMode = false
+        } else {
+            date = currentAppDateText()
+            isEditMode = true
+        }
+    }
+
+    val pickMedia = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        if (uri != null) {
+            persistReadPermission(context, uri)
+            selectedPhotoUri = uri.toString()
+        }
+    }
+
+    val currentFinding = editingFinding ?: initialFinding
+    val editablePhotoUri = selectedPhotoUri.takeIf { it.isNotBlank() } ?: currentFinding?.photoUri
+    val hasTextualFindingDetails =
+        !currentFinding?.date.isNullOrBlank() ||
+            !currentFinding?.location.isNullOrBlank() ||
+            !currentFinding?.note.isNullOrBlank()
+    val hasFindingPhoto = !editablePhotoUri.isNullOrBlank()
+
+    LazyColumn(
+        modifier = modifier
+            .fillMaxSize()
+            .background(AppBackground)
+            .padding(horizontal = 16.dp),
+        contentPadding = PaddingValues(
+            top = extraTopPadding + 12.dp,
+            bottom = 24.dp + extraBottomPadding
+        ),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        val context = LocalContext.current
-        var date by rememberSaveable { mutableStateOf("") }
-        var location by rememberSaveable { mutableStateOf("") }
-        var note by rememberSaveable { mutableStateOf("") }
-        var selectedPhotoUri by rememberSaveable { mutableStateOf("") }
-        var cropPhotoUri by remember { mutableStateOf<String?>(null) }
-        val isWishlistSelected = animal.id == currentWishlistAnimalId
-        var editingFinding by remember { mutableStateOf<AnimalFinding?>(null) }
-        var isEditMode by rememberSaveable { mutableStateOf(initialFinding == null) }
-        val hasAnyFinding = findings.isNotEmpty()
-
-        LaunchedEffect(initialFinding) {
-            if (initialFinding != null) {
-                date = initialFinding.date
-                location = initialFinding.location
-                note = initialFinding.note
-                selectedPhotoUri = initialFinding.photoUri
-                editingFinding = initialFinding
-                isEditMode = false
-            } else {
-                date = currentAppDateText()
-                isEditMode = true
-            }
-        }
-
-        val pickMedia = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.PickVisualMedia()
-        ) { uri ->
-            if (uri != null) {
-                persistReadPermission(context, uri)
-                selectedPhotoUri = uri.toString()
-            }
-        }
-
-        val currentFinding = editingFinding ?: initialFinding
-        val editablePhotoUri = selectedPhotoUri.takeIf { it.isNotBlank() } ?: currentFinding?.photoUri
-        val hasTextualFindingDetails =
-            !currentFinding?.date.isNullOrBlank() ||
-                !currentFinding?.location.isNullOrBlank() ||
-                !currentFinding?.note.isNullOrBlank()
-        val hasFindingPhoto = !editablePhotoUri.isNullOrBlank()
-
-        LazyColumn(
-            modifier = modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            contentPadding = PaddingValues(
-                top = extraTopPadding,
-                bottom = 24.dp + extraBottomPadding
-            ),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            item {
-                OutlinedButton(onClick = onBackClick) {
-                    Text("Zurück")
-                }
-            }
-
-            item {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = CardBackground)
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(containerColor = CardBackground)
+            ) {
+                Column(
+                    modifier = Modifier.padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.padding(18.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
+                    Text(
+                        text = if (currentFinding != null) "Fundansicht" else "Tierdetails",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = TextSecondary
+                    )
+                    Text(
+                        text = animal.germanName,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = TextPrimary
+                    )
+                    Text(
+                        text = animal.latinName,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = TextSecondary
+                    )
+                    Text(
+                        text = animal.group,
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = TextPrimary
+                    )
+                    animal.subgroup.takeIf { it.isNotBlank() }?.let {
                         Text(
-                            text = if (currentFinding != null) "Fundansicht" else "Tierdetails",
-                            style = MaterialTheme.typography.labelLarge,
+                            text = it,
+                            style = MaterialTheme.typography.bodyMedium,
                             color = TextSecondary
                         )
-                        Text(
-                            text = animal.germanName,
-                            style = MaterialTheme.typography.headlineMedium,
-                            color = TextPrimary
-                        )
-                        Text(
-                            text = animal.latinName,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = TextSecondary
-                        )
-                        Text(
-                            text = animal.group,
-                            style = MaterialTheme.typography.bodyLarge,
-                            color = TextPrimary
-                        )
-                        animal.subgroup.takeIf { it.isNotBlank() }?.let {
-                            Text(
-                                text = it,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = TextSecondary
+                    }
+                    Text(
+                        text = if (currentFinding != null) {
+                            "Tierinfos und dein gespeicherter Fund in einer Übersicht."
+                        } else {
+                            "Alle wichtigen Angaben zu diesem Tier auf einen Blick."
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
+
+                    if (!hasAnyFinding) {
+                        OutlinedButton(
+                            onClick = {
+                                onSetFavoriteFindingAnimal(animal)
+                                onBackClick()
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Als Lieblingstier speichern")
+                        }
+                    }
+
+                    if (hasAnyFinding) {
+                        Button(
+                            onClick = {
+                                onSetFavoriteFindingAnimal(animal)
+                                onBackClick()
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = PrimaryGreen
                             )
+                        ) {
+                            Text("Als Lieblingstier speichern")
                         }
                     }
                 }
             }
+        }
 
+        if (hasTextualFindingDetails || hasFindingPhoto) {
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(20.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                     colors = CardDefaults.cardColors(containerColor = CardBackground)
                 ) {
                     Column(
-                        modifier = Modifier.padding(18.dp),
+                        modifier = Modifier.padding(20.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         Text(
-                            text = "Aktionen",
+                            text = "Fundinfos",
                             style = MaterialTheme.typography.titleMedium,
                             color = TextPrimary
                         )
 
-                        if (!hasAnyFinding) {
-                            OutlinedButton(
-                                onClick = {
-                                    onSetWishlistAnimal(animal)
-                                    onBackClick()
-                                },
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(
-                                    text = if (isWishlistSelected) "Schon als Wunsch-Fund markiert" else "Als Wunsch-Fund"
-                                )
-                            }
-                        }
-
-                        if (hasAnyFinding) {
-                            Button(
-                                onClick = {
-                                    onSetFavoriteFindingAnimal(animal)
-                                    onBackClick()
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = PrimaryGreen
-                                )
-                            ) {
-                                Text("Als Lieblingstier speichern")
-                            }
-                        }
-                    }
-                }
-            }
-
-            if (hasTextualFindingDetails) {
-                item {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(containerColor = CardBackground)
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(18.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            Text(
-                                text = "Fundinfos",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = TextPrimary
-                            )
-
+                        if (hasTextualFindingDetails) {
                             currentFinding?.date?.takeIf { it.isNotBlank() }?.let {
                                 Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                                     Text(
@@ -3012,32 +3059,24 @@ fun AuthEntryScreen(
                                 }
                             }
                         }
-                    }
-                }
-            }
 
-            if (hasFindingPhoto) {
-                item {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(containerColor = CardBackground)
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(18.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            Text(
-                                text = "Foto",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = TextPrimary
-                            )
+                        if (hasFindingPhoto) {
+                            if (hasTextualFindingDetails) {
+                                Spacer(modifier = Modifier.height(4.dp))
+                            }
 
                             editablePhotoUri?.takeIf { it.isNotBlank() }?.let {
+                                Text(
+                                    text = "Foto",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = TextPrimary
+                                )
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .height(220.dp)
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .background(Color.White)
                                 ) {
                                     UriImage(
                                         uriString = it,
@@ -3078,7 +3117,9 @@ fun AuthEntryScreen(
                                     OutlinedButton(
                                         onClick = {
                                             pickMedia.launch(
-                                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                                PickVisualMediaRequest(
+                                                    ActivityResultContracts.PickVisualMedia.ImageOnly
+                                                )
                                             )
                                         },
                                         modifier = Modifier.fillMaxWidth()
@@ -3091,1245 +3132,1308 @@ fun AuthEntryScreen(
                     }
                 }
             }
-
-            if (editingFinding != null && !isEditMode) {
-                item {
-                    Button(
-                        onClick = {
-                            date = currentFinding?.date.orEmpty()
-                            location = currentFinding?.location.orEmpty()
-                            note = currentFinding?.note.orEmpty()
-                            selectedPhotoUri = currentFinding?.photoUri.orEmpty()
-                            isEditMode = true
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = PrimaryGreen
-                        )
-                    ) {
-                        Text("Bearbeiten")
-                    }
-                }
-            }
-
-            if (isEditMode) {
-                item {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(containerColor = CardBackground)
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(18.dp),
-                            verticalArrangement = Arrangement.spacedBy(12.dp)
-                        ) {
-                            Text(
-                                text = if (editingFinding == null) "Neuen Fund eintragen" else "Fund bearbeiten",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = TextPrimary
-                            )
-
-                            OutlinedTextField(
-                                value = date,
-                                onValueChange = { date = it },
-                                modifier = Modifier.fillMaxWidth(),
-                                label = { Text("Datum, z. B. 03.04.2026") },
-                                singleLine = true
-                            )
-
-                            OutlinedTextField(
-                                value = location,
-                                onValueChange = { location = it },
-                                modifier = Modifier.fillMaxWidth(),
-                                label = { Text("Fundort") },
-                                singleLine = true,
-                            )
-
-                            OutlinedTextField(
-                                value = note,
-                                onValueChange = { note = it },
-                                modifier = Modifier.fillMaxWidth(),
-                                label = { Text("Notiz") },
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    focusedBorderColor = PrimaryGreen,
-                                    unfocusedBorderColor = BorderColor,
-                                    focusedTextColor = TextPrimary,
-                                    unfocusedTextColor = TextPrimary,
-                                    cursorColor = PrimaryGreen
-                                )
-                            )
-
-                            if (currentFinding?.photoUri.isNullOrBlank()) {
-                                OutlinedButton(
-                                    onClick = {
-                                        pickMedia.launch(
-                                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                                        )
-                                    }
-                                ) {
-                                    Text(
-                                        if (selectedPhotoUri.isBlank()) "Foto auswählen"
-                                        else "Anderes Foto auswählen"
-                                    )
-                                }
-                            }
-
-                            if (selectedPhotoUri.isNotBlank() && selectedPhotoUri != currentFinding?.photoUri && currentFinding == null) {
-                                Text(
-                                    text = "Foto",
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = TextSecondary
-                                )
-                                UriImage(
-                                    uriString = selectedPhotoUri,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(220.dp),
-                                    maxImageSizePx = 1280
-                                )
-                            }
-
-                            Column(
-                                modifier = Modifier.fillMaxWidth(),
-                                verticalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                Button(
-                                    onClick = {
-                                        if (
-                                            date.isNotBlank() ||
-                                            location.isNotBlank() ||
-                                            note.isNotBlank() ||
-                                            selectedPhotoUri.isNotBlank()
-                                        ) {
-                                            val storedPhotoUri = persistPhotoForFinding(context, selectedPhotoUri)
-
-                                            val newFinding = AnimalFinding(
-                                                roomId = editingFinding?.roomId,
-                                                animalId = animal.id,
-                                                date = date.trim(),
-                                                location = location.trim(),
-                                                note = note.trim(),
-                                                photoUri = storedPhotoUri,
-                                                ownerId = editingFinding?.ownerId
-                                            )
-
-                                            if (editingFinding == null) {
-                                                onSaveFinding(newFinding)
-                                                onBackClick()
-
-                                                date = ""
-                                                location = ""
-                                                note = ""
-                                                selectedPhotoUri = ""
-                                                editingFinding = null
-                                            } else {
-                                                onUpdateFinding(editingFinding!!, newFinding)
-                                                editingFinding = newFinding
-                                                selectedPhotoUri = storedPhotoUri
-                                                isEditMode = false
-                                            }
-                                        }
-                                    },
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Text(
-                                        if (editingFinding == null) "Fund speichern"
-                                        else "Änderungen speichern"
-                                    )
-                                }
-
-                                if (editingFinding != null) {
-                                    OutlinedButton(
-                                        onClick = {
-                                            date = currentFinding?.date.orEmpty()
-                                            location = currentFinding?.location.orEmpty()
-                                            note = currentFinding?.note.orEmpty()
-                                            selectedPhotoUri = currentFinding?.photoUri.orEmpty()
-                                            cropPhotoUri = null
-                                            isEditMode = false
-                                        },
-                                        modifier = Modifier.fillMaxWidth(),
-                                        border = BorderStroke(1.dp, BorderColor)
-                                    ) {
-                                        Text("Abbrechen")
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            if (isEditMode && editingFinding != null) {
-                item {
-                    OutlinedButton(
-                        onClick = {
-                            editingFinding?.let {
-                                onDeleteFinding(it)
-                                onBackClick()
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        border = BorderStroke(1.dp, BorderColor)
-                    ) {
-                        Text("Fund löschen")
-                    }
-                }
-            }
         }
 
-        cropPhotoUri?.let { photoUriToCrop ->
-            CropPhotoDialog(
-                uriString = photoUriToCrop,
-                onDismiss = { cropPhotoUri = null },
-                onCropComplete = { croppedPhotoUri ->
-                    selectedPhotoUri = croppedPhotoUri
-                    cropPhotoUri = null
-                }
-            )
-        }
-    }
-
-    @Composable
-    fun AnimalListScreen(
-        debugMessage: String,
-        onOpenSettings: () -> Unit,
-        searchText: String,
-        onSearchTextChange: (String) -> Unit,
-        animals: List<AnimalEntry>,
-        totalAnimalCount: Int,
-        collectedAnimalCount: Int,
-        showFoundOnly: Boolean,
-        onToggleShowFoundOnly: () -> Unit,
-        onResetFiltersAndSort: () -> Unit,
-        availableGroups: List<String>,
-        selectedGroup: String,
-        onSelectedGroupChange: (String) -> Unit,
-        availableSubgroups: List<String>,
-        selectedSubgroup: String,
-        onSelectedSubgroupChange: (String) -> Unit,
-        findingCountByAnimalId: Map<String, Int>,
-        onAnimalClick: (AnimalEntry) -> Unit,
-        currentSortOption: String,
-        onSortOptionChange: (String) -> Unit,
-        isPickerMode: Boolean = false,
-        extraTopPadding: Dp = 0.dp,
-        extraBottomPadding: Dp = 0.dp
-    ) {
-        val sortLabel = when (currentSortOption) {
-            "A_Z" -> "A-Z"
-            "Z_A" -> "Z-A"
-            "FOUND_FIRST" -> "Gefundene zuerst"
-            "NOT_FOUND_FIRST" -> "Offene zuerst"
-            else -> "A-Z"
-        }
-        var groupMenuExpanded by remember { mutableStateOf(false) }
-        var subgroupMenuExpanded by remember { mutableStateOf(false) }
-        var sortMenuExpanded by remember { mutableStateOf(false) }
-        val subgroupEnabled = selectedGroup != "Alle"
-        val hasActiveFiltersOrSort = showFoundOnly ||
-            selectedGroup != "Alle" ||
-            selectedSubgroup != "Alle" ||
-            currentSortOption != "A_Z"
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            contentPadding = PaddingValues(
-                top = extraTopPadding + 16.dp,
-                bottom = extraBottomPadding + 16.dp
-            ),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
+        if (editingFinding != null && !isEditMode) {
             item {
-                Row(
+                Button(
+                    onClick = {
+                        date = currentFinding?.date.orEmpty()
+                        location = currentFinding?.location.orEmpty()
+                        note = currentFinding?.note.orEmpty()
+                        selectedPhotoUri = currentFinding?.photoUri.orEmpty()
+                        isEditMode = true
+                    },
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = PrimaryGreen
+                    )
                 ) {
-                    Column {
+                    Text("Bearbeiten")
+                }
+            }
+        }
+
+        if (isEditMode) {
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    colors = CardDefaults.cardColors(containerColor = CardBackground)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
                         Text(
-                            text = if (isPickerMode) debugMessage else "Tierdex",
-                            style = MaterialTheme.typography.headlineMedium,
+                            text = if (editingFinding == null) "Neuen Fund eintragen" else "Fund bearbeiten",
+                            style = MaterialTheme.typography.titleMedium,
                             color = TextPrimary
                         )
 
-                        if (!isPickerMode) {
+                        OutlinedTextField(
+                            value = date,
+                            onValueChange = { date = it },
+                            modifier = Modifier.fillMaxWidth(),
+                            label = { Text("Datum") },
+                            singleLine = true
+                        )
+
+                        OutlinedTextField(
+                            value = location,
+                            onValueChange = { location = it },
+                            modifier = Modifier.fillMaxWidth(),
+                            label = { Text("Fundort") },
+                            singleLine = true,
+                        )
+
+                        OutlinedTextField(
+                            value = note,
+                            onValueChange = { note = it },
+                            modifier = Modifier.fillMaxWidth(),
+                            label = { Text("Notiz") },
+                            colors = OutlinedTextFieldDefaults.colors(
+                                focusedBorderColor = PrimaryGreen,
+                                unfocusedBorderColor = BorderColor,
+                                focusedTextColor = TextPrimary,
+                                unfocusedTextColor = TextPrimary,
+                                cursorColor = PrimaryGreen
+                            )
+                        )
+
+                        if (currentFinding?.photoUri.isNullOrBlank()) {
+                            OutlinedButton(
+                                onClick = {
+                                    pickMedia.launch(
+                                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                    )
+                                }
+                            ) {
+                                Text(
+                                    if (selectedPhotoUri.isBlank()) "Foto auswählen"
+                                    else "Anderes Foto auswählen"
+                                )
+                            }
+                        }
+
+                        if (selectedPhotoUri.isNotBlank() && selectedPhotoUri != currentFinding?.photoUri && currentFinding == null) {
                             Text(
-                                text = "Gesammelt: $collectedAnimalCount von $totalAnimalCount Arten",
+                                text = "Foto",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = TextSecondary
+                            )
+                            UriImage(
+                                uriString = selectedPhotoUri,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(220.dp),
+                                maxImageSizePx = 1280
+                            )
+                        }
+
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Button(
+                                onClick = {
+                                    if (
+                                        date.isNotBlank() ||
+                                        location.isNotBlank() ||
+                                        note.isNotBlank() ||
+                                        selectedPhotoUri.isNotBlank()
+                                    ) {
+                                        val storedPhotoUri = persistPhotoForFinding(
+                                            context,
+                                            selectedPhotoUri
+                                        )
+
+                                        val newFinding = AnimalFinding(
+                                            roomId = editingFinding?.roomId,
+                                            animalId = animal.id,
+                                            date = date.trim(),
+                                            location = location.trim(),
+                                            note = note.trim(),
+                                            photoUri = storedPhotoUri,
+                                            ownerId = editingFinding?.ownerId
+                                        )
+
+                                        if (editingFinding == null) {
+                                            onSaveFinding(newFinding)
+                                            onBackClick()
+
+                                            date = ""
+                                            location = ""
+                                            note = ""
+                                            selectedPhotoUri = ""
+                                            editingFinding = null
+                                        } else {
+                                            onUpdateFinding(
+                                                editingFinding!!,
+                                                newFinding
+                                            )
+                                            editingFinding = newFinding
+                                            selectedPhotoUri = storedPhotoUri
+                                            isEditMode = false
+                                        }
+                                    }
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    if (editingFinding == null) "Fund speichern"
+                                    else "Änderungen speichern"
+                                )
+                            }
+
+                            if (editingFinding != null) {
+                                OutlinedButton(
+                                    onClick = {
+                                        date = currentFinding?.date.orEmpty()
+                                        location = currentFinding?.location.orEmpty()
+                                        note = currentFinding?.note.orEmpty()
+                                        selectedPhotoUri =
+                                            currentFinding?.photoUri.orEmpty()
+                                        cropPhotoUri = null
+                                        isEditMode = false
+                                    },
+                                    modifier = Modifier.fillMaxWidth(),
+                                    border = BorderStroke(1.dp, BorderColor)
+                                ) {
+                                    Text("Abbrechen")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (isEditMode && editingFinding != null) {
+            item {
+                OutlinedButton(
+                    onClick = {
+                        editingFinding?.let {
+                            onDeleteFinding(it)
+                            onBackClick()
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    border = BorderStroke(1.dp, BorderColor)
+                ) {
+                    Text("Fund löschen")
+                }
+            }
+        }
+    }
+
+    cropPhotoUri?.let { photoUriToCrop ->
+        CropPhotoDialog(
+            uriString = photoUriToCrop,
+            onDismiss = { cropPhotoUri = null },
+            onCropComplete = { croppedPhotoUri ->
+                selectedPhotoUri = croppedPhotoUri
+                cropPhotoUri = null
+            }
+        )
+    }
+}
+
+            @Composable
+            private fun AnimalListScreen(
+                debugMessage: String,
+                onOpenSettings: () -> Unit,
+                searchText: String,
+                onSearchTextChange: (String) -> Unit,
+                animals: List<AnimalEntry>,
+                totalAnimalCount: Int,
+                collectedAnimalCount: Int,
+                showFoundOnly: Boolean,
+                onToggleShowFoundOnly: () -> Unit,
+                onResetFiltersAndSort: () -> Unit,
+                availableGroups: List<String>,
+                selectedGroup: String,
+                onSelectedGroupChange: (String) -> Unit,
+                availableSubgroups: List<String>,
+                selectedSubgroup: String,
+                onSelectedSubgroupChange: (String) -> Unit,
+                findingCountByAnimalId: Map<String, Int>,
+                onAnimalClick: (AnimalEntry) -> Unit,
+                currentSortOption: String,
+                onSortOptionChange: (String) -> Unit,
+                isPickerMode: Boolean = false,
+                extraTopPadding: Dp = 0.dp,
+                extraBottomPadding: Dp = 0.dp
+            ) {
+                val sortLabel = when (currentSortOption) {
+                    "A_Z" -> "A-Z"
+                    "Z_A" -> "Z-A"
+                    "FOUND_FIRST" -> "Gefundene zuerst"
+                    "NOT_FOUND_FIRST" -> "Offene zuerst"
+                    else -> "A-Z"
+                }
+                var groupMenuExpanded by remember { mutableStateOf(false) }
+                var subgroupMenuExpanded by remember { mutableStateOf(false) }
+                var sortMenuExpanded by remember { mutableStateOf(false) }
+                val subgroupEnabled = selectedGroup != "Alle"
+                val hasActiveFiltersOrSort = showFoundOnly ||
+                        selectedGroup != "Alle" ||
+                        selectedSubgroup != "Alle" ||
+                        currentSortOption != "A_Z"
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    contentPadding = PaddingValues(
+                        top = extraTopPadding + 16.dp,
+                        bottom = extraBottomPadding + 16.dp
+                    ),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column {
+                                Text(
+                                    text = if (isPickerMode) debugMessage else "Tierdex",
+                                    style = MaterialTheme.typography.headlineMedium,
+                                    color = TextPrimary
+                                )
+
+                                if (!isPickerMode) {
+                                    Text(
+                                        text = "Gesammelt: $collectedAnimalCount von $totalAnimalCount Arten",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = TextSecondary
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    item {
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            OutlinedTextField(
+                                value = searchText,
+                                onValueChange = onSearchTextChange,
+                                modifier = Modifier.fillMaxWidth(),
+                                label = { Text("Tier suchen") },
+                                singleLine = true,
+                                shape = RoundedCornerShape(12.dp),
+                                trailingIcon = {
+                                    if (searchText.isNotEmpty()) {
+                                        IconButton(onClick = { onSearchTextChange("") }) {
+                                            Icon(Icons.Default.Close, "Suche löschen")
+                                        }
+                                    }
+                                }
+                            )
+
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .horizontalScroll(rememberScrollState()),
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                if (!isPickerMode) {
+                                    FilterChip(
+                                        label = if (showFoundOnly) "Nur gefundene" else "Alle anzeigen",
+                                        onClick = onToggleShowFoundOnly,
+                                        active = showFoundOnly
+                                    )
+                                }
+
+                                FilterDropdown(
+                                    label = "Gruppe: $selectedGroup",
+                                    expanded = groupMenuExpanded,
+                                    onDismiss = { groupMenuExpanded = false },
+                                    onClick = { groupMenuExpanded = true },
+                                    active = selectedGroup != "Alle"
+                                ) {
+                                    availableGroups.forEach { group ->
+                                        DropdownMenuItem(
+                                            text = {
+                                                Text(
+                                                    text = group,
+                                                    color = TextPrimary
+                                                )
+                                            },
+                                            colors = MenuDefaults.itemColors(
+                                                textColor = TextPrimary
+                                            ),
+                                            onClick = {
+                                                onSelectedGroupChange(group)
+                                                groupMenuExpanded = false
+                                            }
+                                        )
+                                    }
+                                }
+
+                                FilterDropdown(
+                                    label = if (subgroupEnabled) "Untergr.: $selectedSubgroup" else "Untergr.: Gruppe auswählen",
+                                    expanded = subgroupMenuExpanded,
+                                    onDismiss = { subgroupMenuExpanded = false },
+                                    onClick = { subgroupMenuExpanded = true },
+                                    enabled = subgroupEnabled,
+                                    active = subgroupEnabled && selectedSubgroup != "Alle"
+                                ) {
+                                    availableSubgroups.forEach { subgroup ->
+                                        DropdownMenuItem(
+                                            text = {
+                                                Text(
+                                                    text = subgroup,
+                                                    color = TextPrimary
+                                                )
+                                            },
+                                            colors = MenuDefaults.itemColors(
+                                                textColor = TextPrimary
+                                            ),
+                                            onClick = {
+                                                onSelectedSubgroupChange(subgroup)
+                                                subgroupMenuExpanded = false
+                                            }
+                                        )
+                                    }
+                                }
+
+                                FilterDropdown(
+                                    label = "Sort.: $sortLabel",
+                                    expanded = sortMenuExpanded,
+                                    onDismiss = { sortMenuExpanded = false },
+                                    onClick = { sortMenuExpanded = true },
+                                    active = currentSortOption != "A_Z"
+                                ) {
+                                    listOf(
+                                        "A_Z" to "A-Z",
+                                        "Z_A" to "Z-A",
+                                        "FOUND_FIRST" to "Gefundene zuerst",
+                                        "NOT_FOUND_FIRST" to "Offene zuerst"
+                                    ).forEach { (option, label) ->
+                                        DropdownMenuItem(
+                                            text = {
+                                                Text(
+                                                    text = label,
+                                                    color = TextPrimary
+                                                )
+                                            },
+                                            colors = MenuDefaults.itemColors(
+                                                textColor = TextPrimary
+                                            ),
+                                            onClick = {
+                                                onSortOptionChange(option)
+                                                sortMenuExpanded = false
+                                            }
+                                        )
+                                    }
+                                }
+
+                                if (hasActiveFiltersOrSort) {
+                                    OutlinedButton(
+                                        onClick = onResetFiltersAndSort,
+                                        modifier = Modifier.height(40.dp),
+                                        contentPadding = PaddingValues(horizontal = 12.dp),
+                                        shape = RoundedCornerShape(8.dp),
+                                        border = BorderStroke(1.dp, BorderColor),
+                                        colors = ButtonDefaults.outlinedButtonColors(
+                                            containerColor = CardBackground,
+                                            contentColor = TextPrimary
+                                        )
+                                    ) {
+                                        Text(
+                                            "Zurücksetzen",
+                                            style = MaterialTheme.typography.bodySmall
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (animals.isEmpty()) {
+                        item {
+                            Text(
+                                text = "Keine Tiere gefunden.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(top = 16.dp)
+                            )
+                        }
+                    } else {
+                        items(animals) { animal ->
+                            val findingCount = findingCountByAnimalId[animal.id] ?: 0
+                            AnimalListItem(
+                                animal = animal,
+                                findingCount = findingCount,
+                                onClick = { onAnimalClick(animal) }
+                            )
+                        }
+                    }
+                }
+            }
+
+            @Composable
+            fun FilterChip(label: String, onClick: () -> Unit, active: Boolean) {
+                OutlinedButton(
+                    onClick = onClick,
+                    modifier = Modifier.height(40.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = if (active) PrimaryGreen.copy(alpha = 0.1f) else Color.Transparent,
+                        contentColor = if (active) PrimaryGreen else TextPrimary
+                    ),
+                    border = if (active) BorderStroke(1.dp, PrimaryGreen) else BorderStroke(
+                        1.dp,
+                        BorderColor
+                    ),
+                    shape = RoundedCornerShape(8.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp)
+                ) {
+                    Text(label, style = MaterialTheme.typography.bodySmall)
+                }
+            }
+
+            @Composable
+            fun FilterDropdown(
+                label: String,
+                expanded: Boolean,
+                onDismiss: () -> Unit,
+                onClick: () -> Unit,
+                enabled: Boolean = true,
+                active: Boolean = false,
+                content: @Composable () -> Unit
+            ) {
+                Box {
+                    OutlinedButton(
+                        onClick = onClick,
+                        enabled = enabled,
+                        modifier = Modifier.height(40.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp),
+                        border = if (active) BorderStroke(
+                            1.dp,
+                            PrimaryGreen
+                        ) else BorderStroke(1.dp, BorderColor),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = if (active) PrimaryGreen.copy(alpha = 0.1f) else CardBackground,
+                            contentColor = if (active) PrimaryGreen else TextPrimary
+                        )
+                    ) {
+                        Text(
+                            text = label,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = if (active) PrimaryGreen else TextPrimary,
+                            maxLines = 1
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = onDismiss,
+                        modifier = Modifier.background(CardBackground)
+                    ) {
+                        content()
+                    }
+                }
+            }
+
+            @Composable
+            fun AnimalListItem(animal: AnimalEntry, findingCount: Int, onClick: () -> Unit) {
+
+                val isFound = findingCount > 0
+
+                val icon = when (animal.group) {
+                    "Vögel" -> Icons.Filled.Air
+                    "Fische" -> Icons.Filled.SetMeal
+                    "Säugetiere" -> Icons.Filled.Pets
+                    "Reptilien" -> Icons.Filled.BugReport
+                    "Amphibien" -> Icons.Filled.WaterDrop
+                    else -> Icons.Filled.Help
+                }
+
+                val backgroundColor by animateColorAsState(
+                    targetValue = if (isFound) PrimaryGreenSoft else CardBackground,
+                    label = "CardBackgroundAnimation"
+                )
+
+                Card(
+                    onClick = onClick,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = backgroundColor,
+                        contentColor = TextPrimary
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = null,
+                            tint = TextSecondary,
+                            modifier = Modifier.size(24.dp)
+                        )
+
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Text(
+                                text = animal.germanName,
+                                style = MaterialTheme.typography.titleMedium
+                            )
+
+                            Text(
+                                text = animal.latinName,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = TextSecondary
                             )
-                        }
-                    }
-                }
-            }
-            item {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(
-                        value = searchText,
-                        onValueChange = onSearchTextChange,
-                        modifier = Modifier.fillMaxWidth(),
-                        label = { Text("Tier suchen") },
-                        singleLine = true,
-                        shape = RoundedCornerShape(12.dp),
-                        trailingIcon = {
-                            if (searchText.isNotEmpty()) {
-                                IconButton(onClick = { onSearchTextChange("") }) {
-                                    Icon(Icons.Default.Close, "Suche löschen")
-                                }
-                            }
-                        }
-                    )
 
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        if (!isPickerMode) {
-                            FilterChip(
-                                label = if (showFoundOnly) "Nur gefundene" else "Alle anzeigen",
-                                onClick = onToggleShowFoundOnly,
-                                active = showFoundOnly
+                            Text(
+                                text = if (findingCount > 0) "âœ“ Gefunden ($findingCount)" else "Nicht gefunden",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = if (findingCount > 0) PrimaryGreen else TextSecondary
                             )
                         }
-
-                        FilterDropdown(
-                            label = "Gruppe: $selectedGroup",
-                            expanded = groupMenuExpanded,
-                            onDismiss = { groupMenuExpanded = false },
-                            onClick = { groupMenuExpanded = true },
-                            active = selectedGroup != "Alle"
-                        ) {
-                            availableGroups.forEach { group ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = group,
-                                            color = TextPrimary
-                                        )
-                                    },
-                                    colors = MenuDefaults.itemColors(
-                                        textColor = TextPrimary
-                                    ),
-                                    onClick = {
-                                        onSelectedGroupChange(group)
-                                        groupMenuExpanded = false
-                                    }
-                                )
-                            }
-                        }
-
-                        FilterDropdown(
-                            label = if (subgroupEnabled) "Untergr.: $selectedSubgroup" else "Untergr.: Gruppe auswählen",
-                            expanded = subgroupMenuExpanded,
-                            onDismiss = { subgroupMenuExpanded = false },
-                            onClick = { subgroupMenuExpanded = true },
-                            enabled = subgroupEnabled,
-                            active = subgroupEnabled && selectedSubgroup != "Alle"
-                        ) {
-                            availableSubgroups.forEach { subgroup ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = subgroup,
-                                            color = TextPrimary
-                                        )
-                                    },
-                                    colors = MenuDefaults.itemColors(
-                                        textColor = TextPrimary
-                                    ),
-                                    onClick = {
-                                        onSelectedSubgroupChange(subgroup)
-                                        subgroupMenuExpanded = false
-                                    }
-                                )
-                            }
-                        }
-
-                        FilterDropdown(
-                            label = "Sort.: $sortLabel",
-                            expanded = sortMenuExpanded,
-                            onDismiss = { sortMenuExpanded = false },
-                            onClick = { sortMenuExpanded = true },
-                            active = currentSortOption != "A_Z"
-                        ) {
-                            listOf(
-                                "A_Z" to "A-Z",
-                                "Z_A" to "Z-A",
-                                "FOUND_FIRST" to "Gefundene zuerst",
-                                "NOT_FOUND_FIRST" to "Offene zuerst"
-                            ).forEach { (option, label) ->
-                                DropdownMenuItem(
-                                    text = {
-                                        Text(
-                                            text = label,
-                                            color = TextPrimary
-                                        )
-                                    },
-                                    colors = MenuDefaults.itemColors(
-                                        textColor = TextPrimary
-                                    ),
-                                    onClick = {
-                                        onSortOptionChange(option)
-                                        sortMenuExpanded = false
-                                    }
-                                )
-                            }
-                        }
-
-                        if (hasActiveFiltersOrSort) {
-                            OutlinedButton(
-                                onClick = onResetFiltersAndSort,
-                                modifier = Modifier.height(40.dp),
-                                contentPadding = PaddingValues(horizontal = 12.dp),
-                                shape = RoundedCornerShape(8.dp),
-                                border = BorderStroke(1.dp, BorderColor),
-                                colors = ButtonDefaults.outlinedButtonColors(
-                                    containerColor = CardBackground,
-                                    contentColor = TextPrimary
-                                )
-                            ) {
-                                Text("Zurücksetzen", style = MaterialTheme.typography.bodySmall)
-                            }
-                        }
                     }
                 }
             }
 
-            if (animals.isEmpty()) {
-                item {
-                    Text(
-                        text = "Keine Tiere gefunden.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.padding(top = 16.dp)
-                    )
-                }
-            } else {
-                items(animals) { animal ->
-                    val findingCount = findingCountByAnimalId[animal.id] ?: 0
-                    AnimalListItem(
-                        animal = animal,
-                        findingCount = findingCount,
-                        onClick = { onAnimalClick(animal) }
-                    )
-                }
-            }
-        }
-    }
 
-    @Composable
-    fun FilterChip(label: String, onClick: () -> Unit, active: Boolean) {
-        OutlinedButton(
-            onClick = onClick,
-            modifier = Modifier.height(40.dp),
-            colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = if (active) PrimaryGreen.copy(alpha = 0.1f) else Color.Transparent,
-                contentColor = if (active) PrimaryGreen else TextPrimary
-            ),
-            border = if (active) BorderStroke(1.dp, PrimaryGreen) else BorderStroke(
-                1.dp,
-                BorderColor
-            ),
-            shape = RoundedCornerShape(8.dp),
-            contentPadding = PaddingValues(horizontal = 12.dp)
-        ) {
-            Text(label, style = MaterialTheme.typography.bodySmall)
-        }
-    }
-
-    @Composable
-    fun FilterDropdown(
-        label: String,
-        expanded: Boolean,
-        onDismiss: () -> Unit,
-        onClick: () -> Unit,
-        enabled: Boolean = true,
-        active: Boolean = false,
-        content: @Composable () -> Unit
-    ) {
-        Box {
-            OutlinedButton(
-                onClick = onClick,
-                enabled = enabled,
-                modifier = Modifier.height(40.dp),
-                shape = RoundedCornerShape(8.dp),
-                contentPadding = PaddingValues(horizontal = 12.dp),
-                border = if (active) BorderStroke(1.dp, PrimaryGreen) else BorderStroke(1.dp, BorderColor),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = if (active) PrimaryGreen.copy(alpha = 0.1f) else CardBackground,
-                    contentColor = if (active) PrimaryGreen else TextPrimary
-                )
+            @Composable
+            private fun CropPhotoDialog(
+                uriString: String,
+                onDismiss: () -> Unit,
+                onCropComplete: (String) -> Unit
             ) {
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (active) PrimaryGreen else TextPrimary,
-                    maxLines = 1
-                )
-            }
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = onDismiss,
-                modifier = Modifier.background(CardBackground)
-            ) {
-                content()
-            }
-        }
-    }
-
-    @Composable
-    fun AnimalListItem(animal: AnimalEntry, findingCount: Int, onClick: () -> Unit) {
-
-        val isFound = findingCount > 0
-
-        val icon = when (animal.group) {
-            "Vögel" -> Icons.Filled.Air
-            "Fische" -> Icons.Filled.SetMeal
-            "Säugetiere" -> Icons.Filled.Pets
-            "Reptilien" -> Icons.Filled.BugReport
-            "Amphibien" -> Icons.Filled.WaterDrop
-            else -> Icons.Filled.Help
-        }
-
-        val backgroundColor by animateColorAsState(
-            targetValue = if (isFound) PrimaryGreenSoft else CardBackground,
-            label = "CardBackgroundAnimation"
-        )
-
-        Card(
-            onClick = onClick,
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = backgroundColor,
-                contentColor = TextPrimary
-            )
-        ) {
-            Row(
-                modifier = Modifier.padding(16.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-
-                Icon(
-                    imageVector = icon,
-                    contentDescription = null,
-                    tint = TextSecondary,
-                    modifier = Modifier.size(24.dp)
-                )
-
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                Dialog(
+                    onDismissRequest = onDismiss,
+                    properties = DialogProperties(usePlatformDefaultWidth = false)
                 ) {
-                    Text(
-                        text = animal.germanName,
-                        style = MaterialTheme.typography.titleMedium
-                    )
+                    val context = LocalContext.current
+                    val density = LocalDensity.current
+                    var bitmap by remember(uriString) { mutableStateOf<Bitmap?>(null) }
+                    var containerSize by remember { mutableStateOf(IntSize.Zero) }
+                    var scale by remember { mutableStateOf(1f) }
+                    var offset by remember { mutableStateOf(Offset.Zero) }
 
-                    Text(
-                        text = animal.latinName,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextSecondary
-                    )
-
-                    Text(
-                        text = if (findingCount > 0) "âœ“ Gefunden ($findingCount)" else "Nicht gefunden",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = if (findingCount > 0) PrimaryGreen else TextSecondary
-                    )
-                }
-            }
-        }
-    }
-
-
-    @Composable
-    private fun CropPhotoDialog(
-        uriString: String,
-        onDismiss: () -> Unit,
-        onCropComplete: (String) -> Unit
-    ) {
-        Dialog(
-            onDismissRequest = onDismiss,
-            properties = DialogProperties(usePlatformDefaultWidth = false)
-        ) {
-            val context = LocalContext.current
-            val density = LocalDensity.current
-            var bitmap by remember(uriString) { mutableStateOf<Bitmap?>(null) }
-            var containerSize by remember { mutableStateOf(IntSize.Zero) }
-            var scale by remember { mutableStateOf(1f) }
-            var offset by remember { mutableStateOf(Offset.Zero) }
-
-            LaunchedEffect(uriString) {
-                bitmap = withContext(Dispatchers.IO) {
-                    loadCorrectlyOrientedBitmapFromUriString(
-                        context = context,
-                        uriString = uriString,
-                        maxImageSizePx = null
-                    )
-                }
-            }
-
-            val loadedBitmap = bitmap
-            val cropSizePx = remember(containerSize) {
-                min(containerSize.width, containerSize.height) * 0.72f
-            }
-            val baseImageSize = remember(loadedBitmap, containerSize) {
-                if (loadedBitmap == null || containerSize == IntSize.Zero) {
-                    Pair(0f, 0f)
-                } else {
-                    val widthScale = containerSize.width.toFloat() / loadedBitmap.width.toFloat()
-                    val heightScale = containerSize.height.toFloat() / loadedBitmap.height.toFloat()
-                    val fitScale = min(widthScale, heightScale)
-                    Pair(
-                        loadedBitmap.width * fitScale,
-                        loadedBitmap.height * fitScale
-                    )
-                }
-            }
-            val minScale = remember(baseImageSize, cropSizePx) {
-                val baseWidth = baseImageSize.first
-                val baseHeight = baseImageSize.second
-                if (baseWidth <= 0f || baseHeight <= 0f || cropSizePx <= 0f) {
-                    1f
-                } else {
-                    max(1f, max(cropSizePx / baseWidth, cropSizePx / baseHeight))
-                }
-            }
-            val maxScale = max(5f, minScale)
-
-            LaunchedEffect(minScale) {
-                if (scale < minScale) {
-                    scale = minScale
-                    offset = Offset.Zero
-                }
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.92f))
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .pointerInput(Unit) {
-                            detectTapGestures(onTap = { onDismiss() })
+                    LaunchedEffect(uriString) {
+                        bitmap = withContext(Dispatchers.IO) {
+                            loadCorrectlyOrientedBitmapFromUriString(
+                                context = context,
+                                uriString = uriString,
+                                maxImageSizePx = null
+                            )
                         }
-                )
+                    }
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 24.dp, vertical = 96.dp)
-                        .onSizeChanged { containerSize = it },
-                    contentAlignment = Alignment.Center
-                ) {
-                    loadedBitmap?.let { safeBitmap ->
-                        Image(
-                            bitmap = safeBitmap.asImageBitmap(),
-                            contentDescription = null,
-                            contentScale = ContentScale.Fit,
+                    val loadedBitmap = bitmap
+                    val cropSizePx = remember(containerSize) {
+                        min(containerSize.width, containerSize.height) * 0.72f
+                    }
+                    val baseImageSize = remember(loadedBitmap, containerSize) {
+                        if (loadedBitmap == null || containerSize == IntSize.Zero) {
+                            Pair(0f, 0f)
+                        } else {
+                            val widthScale =
+                                containerSize.width.toFloat() / loadedBitmap.width.toFloat()
+                            val heightScale =
+                                containerSize.height.toFloat() / loadedBitmap.height.toFloat()
+                            val fitScale = min(widthScale, heightScale)
+                            Pair(
+                                loadedBitmap.width * fitScale,
+                                loadedBitmap.height * fitScale
+                            )
+                        }
+                    }
+                    val minScale = remember(baseImageSize, cropSizePx) {
+                        val baseWidth = baseImageSize.first
+                        val baseHeight = baseImageSize.second
+                        if (baseWidth <= 0f || baseHeight <= 0f || cropSizePx <= 0f) {
+                            1f
+                        } else {
+                            max(1f, max(cropSizePx / baseWidth, cropSizePx / baseHeight))
+                        }
+                    }
+                    val maxScale = max(5f, minScale)
+
+                    LaunchedEffect(minScale) {
+                        if (scale < minScale) {
+                            scale = minScale
+                            offset = Offset.Zero
+                        }
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.92f))
+                    ) {
+                        Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .pointerInput(safeBitmap, minScale, cropSizePx, containerSize) {
-                                    detectTransformGestures { _, pan, zoom, _ ->
-                                        val baseWidth = baseImageSize.first
-                                        val baseHeight = baseImageSize.second
-                                        if (baseWidth <= 0f || baseHeight <= 0f || cropSizePx <= 0f) return@detectTransformGestures
-
-                                        val newScale = (scale * zoom).coerceIn(minScale, maxScale)
-                                        val scaledWidth = baseWidth * newScale
-                                        val scaledHeight = baseHeight * newScale
-                                        val maxOffsetX = max(0f, (scaledWidth - cropSizePx) / 2f)
-                                        val maxOffsetY = max(0f, (scaledHeight - cropSizePx) / 2f)
-                                        val newOffset = offset + pan
-
-                                        scale = newScale
-                                        offset = Offset(
-                                            x = newOffset.x.coerceIn(-maxOffsetX, maxOffsetX),
-                                            y = newOffset.y.coerceIn(-maxOffsetY, maxOffsetY)
-                                        )
-                                    }
-                                }
-                                .graphicsLayer {
-                                    scaleX = scale
-                                    scaleY = scale
-                                    translationX = offset.x
-                                    translationY = offset.y
+                                .pointerInput(Unit) {
+                                    detectTapGestures(onTap = { onDismiss() })
                                 }
                         )
 
-                        if (cropSizePx > 0f) {
-                            Box(
-                                modifier = Modifier
-                                    .size(with(density) { cropSizePx.toDp() })
-                                    .border(2.dp, Color.White, RoundedCornerShape(12.dp))
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 24.dp, vertical = 96.dp)
+                                .onSizeChanged { containerSize = it },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            loadedBitmap?.let { safeBitmap ->
+                                Image(
+                                    bitmap = safeBitmap.asImageBitmap(),
+                                    contentDescription = null,
+                                    contentScale = ContentScale.Fit,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .pointerInput(
+                                            safeBitmap,
+                                            minScale,
+                                            cropSizePx,
+                                            containerSize
+                                        ) {
+                                            detectTransformGestures { _, pan, zoom, _ ->
+                                                val baseWidth = baseImageSize.first
+                                                val baseHeight = baseImageSize.second
+                                                if (baseWidth <= 0f || baseHeight <= 0f || cropSizePx <= 0f) return@detectTransformGestures
+
+                                                val newScale =
+                                                    (scale * zoom).coerceIn(minScale, maxScale)
+                                                val scaledWidth = baseWidth * newScale
+                                                val scaledHeight = baseHeight * newScale
+                                                val maxOffsetX =
+                                                    max(0f, (scaledWidth - cropSizePx) / 2f)
+                                                val maxOffsetY =
+                                                    max(0f, (scaledHeight - cropSizePx) / 2f)
+                                                val newOffset = offset + pan
+
+                                                scale = newScale
+                                                offset = Offset(
+                                                    x = newOffset.x.coerceIn(
+                                                        -maxOffsetX,
+                                                        maxOffsetX
+                                                    ),
+                                                    y = newOffset.y.coerceIn(
+                                                        -maxOffsetY,
+                                                        maxOffsetY
+                                                    )
+                                                )
+                                            }
+                                        }
+                                        .graphicsLayer {
+                                            scaleX = scale
+                                            scaleY = scale
+                                            translationX = offset.x
+                                            translationY = offset.y
+                                        }
+                                )
+
+                                if (cropSizePx > 0f) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(with(density) { cropSizePx.toDp() })
+                                            .border(2.dp, Color.White, RoundedCornerShape(12.dp))
+                                    )
+                                }
+                            }
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .statusBarsPadding()
+                                .padding(horizontal = 12.dp, vertical = 8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            TextButton(onClick = onDismiss) {
+                                Text("Abbrechen", color = Color.White)
+                            }
+                            IconButton(onClick = onDismiss) {
+                                Icon(
+                                    imageVector = Icons.Filled.Close,
+                                    contentDescription = "Schließen",
+                                    tint = Color.White
+                                )
+                            }
+                        }
+
+                        Button(
+                            onClick = {
+                                val safeBitmap = loadedBitmap ?: return@Button
+                                val croppedBitmap = cropBitmapToCenterFrame(
+                                    bitmap = safeBitmap,
+                                    containerSize = containerSize,
+                                    baseImageWidth = baseImageSize.first,
+                                    baseImageHeight = baseImageSize.second,
+                                    cropSizePx = cropSizePx,
+                                    scale = scale,
+                                    offset = offset
+                                ) ?: return@Button
+
+                                val croppedUri = saveBitmapForFinding(context, croppedBitmap)
+                                if (croppedUri.isNotBlank()) {
+                                    onCropComplete(croppedUri)
+                                }
+                            },
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .safeDrawingPadding()
+                                .padding(24.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = PrimaryGreen
+                            ),
+                            enabled = loadedBitmap != null && containerSize != IntSize.Zero
+                        ) {
+                            Text("Zuschneiden")
+                        }
+                    }
+                }
+            }
+
+            private fun cropBitmapToCenterFrame(
+                bitmap: Bitmap,
+                containerSize: IntSize,
+                baseImageWidth: Float,
+                baseImageHeight: Float,
+                cropSizePx: Float,
+                scale: Float,
+                offset: Offset
+            ): Bitmap? {
+                if (containerSize == IntSize.Zero || baseImageWidth <= 0f || baseImageHeight <= 0f || cropSizePx <= 0f) {
+                    return null
+                }
+
+                val scaledWidth = baseImageWidth * scale
+                val scaledHeight = baseImageHeight * scale
+                val imageLeft = (containerSize.width / 2f) + offset.x - (scaledWidth / 2f)
+                val imageTop = (containerSize.height / 2f) + offset.y - (scaledHeight / 2f)
+                val cropLeft = (containerSize.width - cropSizePx) / 2f
+                val cropTop = (containerSize.height - cropSizePx) / 2f
+
+                val bitmapLeft =
+                    (((cropLeft - imageLeft) / scaledWidth) * bitmap.width).roundToInt()
+                        .coerceIn(0, bitmap.width - 1)
+                val bitmapTop = (((cropTop - imageTop) / scaledHeight) * bitmap.height).roundToInt()
+                    .coerceIn(0, bitmap.height - 1)
+                val bitmapRight =
+                    ((((cropLeft + cropSizePx) - imageLeft) / scaledWidth) * bitmap.width).roundToInt()
+                        .coerceIn(bitmapLeft + 1, bitmap.width)
+                val bitmapBottom =
+                    ((((cropTop + cropSizePx) - imageTop) / scaledHeight) * bitmap.height).roundToInt()
+                        .coerceIn(bitmapTop + 1, bitmap.height)
+
+                return try {
+                    Bitmap.createBitmap(
+                        bitmap,
+                        bitmapLeft,
+                        bitmapTop,
+                        bitmapRight - bitmapLeft,
+                        bitmapBottom - bitmapTop
+                    )
+                } catch (_: Exception) {
+                    null
+                }
+            }
+
+            fun saveBitmapForFinding(context: Context, bitmap: Bitmap): String {
+                return try {
+                    val imagesDir = File(context.filesDir, FINDING_IMAGES_DIR).apply { mkdirs() }
+                    val fileName = "${UUID.randomUUID()}.jpg"
+                    val targetFile = File(imagesDir, fileName)
+
+                    targetFile.outputStream().use { output ->
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 95, output)
+                    }
+
+                    "internal://$fileName"
+                } catch (_: Exception) {
+                    ""
+                }
+            }
+
+            @Composable
+            fun UriImage(
+                uriString: String,
+                maxImageSizePx: Int? = null,
+                modifier: Modifier = Modifier
+            ) {
+                val context = LocalContext.current
+                var showFullscreenZoom by rememberSaveable(uriString) { mutableStateOf(false) }
+                val cacheKey = remember(uriString, maxImageSizePx) {
+                    uriImageCacheKey(uriString, maxImageSizePx)
+                }
+                var bitmap by remember(cacheKey) {
+                    mutableStateOf(uriImageMemoryCache.get(cacheKey))
+                }
+                var loadFinished by remember(cacheKey) {
+                    mutableStateOf(bitmap != null)
+                }
+
+                LaunchedEffect(cacheKey) {
+                    if (bitmap == null) {
+                        if (maxImageSizePx != null) {
+                            Log.d(
+                                "ProfilePerformance",
+                                "Loading preview image for $uriString with maxSize=$maxImageSizePx"
                             )
                         }
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .statusBarsPadding()
-                        .padding(horizontal = 12.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    TextButton(onClick = onDismiss) {
-                        Text("Abbrechen", color = Color.White)
-                    }
-                    IconButton(onClick = onDismiss) {
-                        Icon(
-                            imageVector = Icons.Filled.Close,
-                            contentDescription = "Schließen",
-                            tint = Color.White
-                        )
-                    }
-                }
-
-                Button(
-                    onClick = {
-                        val safeBitmap = loadedBitmap ?: return@Button
-                        val croppedBitmap = cropBitmapToCenterFrame(
-                            bitmap = safeBitmap,
-                            containerSize = containerSize,
-                            baseImageWidth = baseImageSize.first,
-                            baseImageHeight = baseImageSize.second,
-                            cropSizePx = cropSizePx,
-                            scale = scale,
-                            offset = offset
-                        ) ?: return@Button
-
-                        val croppedUri = saveBitmapForFinding(context, croppedBitmap)
-                        if (croppedUri.isNotBlank()) {
-                            onCropComplete(croppedUri)
+                        bitmap = withContext(Dispatchers.IO) {
+                            loadCorrectlyOrientedBitmapFromUriString(
+                                context = context,
+                                uriString = uriString,
+                                maxImageSizePx = maxImageSizePx
+                            )
+                        }?.also { loadedBitmap ->
+                            uriImageMemoryCache.put(cacheKey, loadedBitmap)
                         }
-                    },
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .safeDrawingPadding()
-                        .padding(24.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = PrimaryGreen
-                    ),
-                    enabled = loadedBitmap != null && containerSize != IntSize.Zero
-                ) {
-                    Text("Zuschneiden")
-                }
-            }
-        }
-    }
-
-    private fun cropBitmapToCenterFrame(
-        bitmap: Bitmap,
-        containerSize: IntSize,
-        baseImageWidth: Float,
-        baseImageHeight: Float,
-        cropSizePx: Float,
-        scale: Float,
-        offset: Offset
-    ): Bitmap? {
-        if (containerSize == IntSize.Zero || baseImageWidth <= 0f || baseImageHeight <= 0f || cropSizePx <= 0f) {
-            return null
-        }
-
-        val scaledWidth = baseImageWidth * scale
-        val scaledHeight = baseImageHeight * scale
-        val imageLeft = (containerSize.width / 2f) + offset.x - (scaledWidth / 2f)
-        val imageTop = (containerSize.height / 2f) + offset.y - (scaledHeight / 2f)
-        val cropLeft = (containerSize.width - cropSizePx) / 2f
-        val cropTop = (containerSize.height - cropSizePx) / 2f
-
-        val bitmapLeft = (((cropLeft - imageLeft) / scaledWidth) * bitmap.width).roundToInt()
-            .coerceIn(0, bitmap.width - 1)
-        val bitmapTop = (((cropTop - imageTop) / scaledHeight) * bitmap.height).roundToInt()
-            .coerceIn(0, bitmap.height - 1)
-        val bitmapRight = ((((cropLeft + cropSizePx) - imageLeft) / scaledWidth) * bitmap.width).roundToInt()
-            .coerceIn(bitmapLeft + 1, bitmap.width)
-        val bitmapBottom = ((((cropTop + cropSizePx) - imageTop) / scaledHeight) * bitmap.height).roundToInt()
-            .coerceIn(bitmapTop + 1, bitmap.height)
-
-        return try {
-            Bitmap.createBitmap(
-                bitmap,
-                bitmapLeft,
-                bitmapTop,
-                bitmapRight - bitmapLeft,
-                bitmapBottom - bitmapTop
-            )
-        } catch (_: Exception) {
-            null
-        }
-    }
-
-    fun saveBitmapForFinding(context: Context, bitmap: Bitmap): String {
-        return try {
-            val imagesDir = File(context.filesDir, FINDING_IMAGES_DIR).apply { mkdirs() }
-            val fileName = "${UUID.randomUUID()}.jpg"
-            val targetFile = File(imagesDir, fileName)
-
-            targetFile.outputStream().use { output ->
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 95, output)
-            }
-
-            "internal://$fileName"
-        } catch (_: Exception) {
-            ""
-        }
-    }
-
-    @Composable
-    fun UriImage(
-        uriString: String,
-        maxImageSizePx: Int? = null,
-        modifier: Modifier = Modifier
-    ) {
-        val context = LocalContext.current
-        var showFullscreenZoom by rememberSaveable(uriString) { mutableStateOf(false) }
-        val cacheKey = remember(uriString, maxImageSizePx) {
-            uriImageCacheKey(uriString, maxImageSizePx)
-        }
-        var bitmap by remember(cacheKey) {
-            mutableStateOf(uriImageMemoryCache.get(cacheKey))
-        }
-        var loadFinished by remember(cacheKey) {
-            mutableStateOf(bitmap != null)
-        }
-
-        LaunchedEffect(cacheKey) {
-            if (bitmap == null) {
-                if (maxImageSizePx != null) {
-                    Log.d("ProfilePerformance", "Loading preview image for $uriString with maxSize=$maxImageSizePx")
-                }
-                bitmap = withContext(Dispatchers.IO) {
-                    loadCorrectlyOrientedBitmapFromUriString(
-                        context = context,
-                        uriString = uriString,
-                        maxImageSizePx = maxImageSizePx
-                    )
-                }?.also { loadedBitmap ->
-                    uriImageMemoryCache.put(cacheKey, loadedBitmap)
-                }
-            }
-            loadFinished = true
-        }
-
-        bitmap?.let { loadedBitmap ->
-            Image(
-                bitmap = loadedBitmap.asImageBitmap(),
-                contentDescription = null,
-                modifier = modifier.clickable {
-                    showFullscreenZoom = true
-                },
-                contentScale = ContentScale.Crop
-            )
-        }
-
-        if (bitmap == null && loadFinished && uriString.startsWith("internal://")) {
-            Box(
-                modifier = modifier.background(Color(0xFFF3F4F6)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Foto auf diesem Gerät nicht verfügbar",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = TextSecondary,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(12.dp)
-                )
-            }
-        }
-
-        if (showFullscreenZoom) {
-            FullscreenZoomImageDialog(
-                uriString = uriString,
-                onDismiss = { showFullscreenZoom = false }
-            )
-        }
-    }
-
-    @Composable
-    private fun FullscreenZoomImageDialog(
-        uriString: String,
-        onDismiss: () -> Unit
-    ) {
-        Dialog(
-            onDismissRequest = onDismiss,
-            properties = DialogProperties(usePlatformDefaultWidth = false)
-        ) {
-            val context = LocalContext.current
-            var scale by remember { mutableStateOf(1f) }
-            var offset by remember { mutableStateOf(Offset.Zero) }
-            var bitmap by remember(uriString) {
-                mutableStateOf<Bitmap?>(uriImageMemoryCache.get(uriImageCacheKey(uriString, null)))
-            }
-
-            LaunchedEffect(uriString) {
-                if (bitmap == null) {
-                    bitmap = withContext(Dispatchers.IO) {
-                        loadCorrectlyOrientedBitmapFromUriString(
-                            context = context,
-                            uriString = uriString,
-                            maxImageSizePx = null
-                        )
-                    }?.also { loadedBitmap ->
-                        uriImageMemoryCache.put(uriImageCacheKey(uriString, null), loadedBitmap)
                     }
+                    loadFinished = true
                 }
-            }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.9f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .pointerInput(Unit) {
-                            detectTapGestures(onTap = { onDismiss() })
-                        }
-                )
 
                 bitmap?.let { loadedBitmap ->
                     Image(
                         bitmap = loadedBitmap.asImageBitmap(),
                         contentDescription = null,
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(24.dp)
-                            .pointerInput(uriString) {
-                                detectTransformGestures { _, pan, zoom, _ ->
-                                    val newScale = (scale * zoom).coerceIn(1f, 5f)
-                                    scale = newScale
-                                    offset = if (newScale <= 1f) {
-                                        Offset.Zero
-                                    } else {
-                                        offset + pan
-                                    }
-                                }
-                            }
-                            .graphicsLayer {
-                                scaleX = scale
-                                scaleY = scale
-                                translationX = offset.x
-                                translationY = offset.y
-                            }
+                        modifier = modifier.clickable {
+                            showFullscreenZoom = true
+                        },
+                        contentScale = ContentScale.Crop
                     )
                 }
 
-                IconButton(
-                    onClick = onDismiss,
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .statusBarsPadding()
-                        .padding(12.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Close,
-                        contentDescription = "Schließen",
-                        tint = Color.White
-                    )
-                }
-            }
-        }
-    }
-
-    fun persistReadPermission(context: Context, uri: Uri) {
-        try {
-            context.contentResolver.takePersistableUriPermission(
-                uri,
-                Intent.FLAG_GRANT_READ_URI_PERMISSION
-            )
-        } catch (_: SecurityException) {
-        } catch (_: Exception) {
-        }
-    }
-
-    fun loadAnimalsFromCsvWithDebug(context: Context, fileName: String): CsvLoadResult {
-        return try {
-            val assetFiles = context.assets.list("")?.toList().orEmpty()
-
-            if (!assetFiles.contains(fileName)) {
-                return CsvLoadResult(
-                    animals = emptyList(),
-                    debugMessage = "Datei nicht gefunden. Assets enthalten: ${assetFiles.joinToString()}"
-                )
-            }
-
-            val inputStream = context.assets.open(fileName)
-            val reader = BufferedReader(InputStreamReader(inputStream))
-            val lines = reader.readLines()
-
-            if (lines.isEmpty()) {
-                return CsvLoadResult(
-                    animals = emptyList(),
-                    debugMessage = "CSV ist leer."
-                )
-            }
-
-            val cleanedLines = lines
-                .map { it.replace("\uFEFF", "").trim() }
-                .filter { it.isNotBlank() }
-
-            if (cleanedLines.isEmpty()) {
-                return CsvLoadResult(
-                    animals = emptyList(),
-                    debugMessage = "CSV enthält keine lesbaren Zeilen."
-                )
-            }
-
-            val header = cleanedLines.first()
-            val delimiter = if (header.contains(";")) ";" else ","
-
-            val animals = cleanedLines
-                .drop(1)
-                .mapNotNull { line ->
-                    val parts = line.split(delimiter).map { it.trim() }
-
-                    if (parts.size < 5) {
-                        null
-                    } else {
-                        AnimalEntry(
-                            id = parts.getOrElse(0) { "" },
-                            group = parts.getOrElse(1) { "" },
-                            subgroup = parts.getOrElse(2) { "" },
-                            germanName = parts.getOrElse(3) { "" },
-                            latinName = parts.getOrElse(4) { "" },
-                            habitat = parts.getOrElse(5) { "" },
-                            distribution = parts.getOrElse(6) { "" },
-                            rarity = parts.getOrElse(7) { "" }
+                if (bitmap == null && loadFinished && uriString.startsWith("internal://")) {
+                    Box(
+                        modifier = modifier.background(Color(0xFFF3F4F6)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Foto auf diesem Gerät nicht verfügbar",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = TextSecondary,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(12.dp)
                         )
                     }
                 }
 
-            CsvLoadResult(
-                animals = animals,
-                debugMessage = "Datei gefunden. Zeilen: ${cleanedLines.size}. Trennzeichen: '$delimiter'"
-            )
-        } catch (e: Exception) {
-            CsvLoadResult(
-                animals = emptyList(),
-                debugMessage = "Fehler beim Laden: ${e.message}"
-            )
-        }
-    }
-
-    fun persistPhotoForFinding(context: Context, uriString: String): String {
-        if (uriString.isBlank()) return ""
-        if (uriString.startsWith("android.resource://")) return uriString
-        if (uriString.startsWith("internal://")) return uriString
-
-        return try {
-            val sourceUri = Uri.parse(uriString)
-            val imagesDir = File(context.filesDir, FINDING_IMAGES_DIR).apply { mkdirs() }
-
-            val fileName = "${UUID.randomUUID()}.img"
-            val targetFile = File(imagesDir, fileName)
-
-            context.contentResolver.openInputStream(sourceUri)?.use { input ->
-                targetFile.outputStream().use { output ->
-                    input.copyTo(output)
+                if (showFullscreenZoom) {
+                    FullscreenZoomImageDialog(
+                        uriString = uriString,
+                        onDismiss = { showFullscreenZoom = false }
+                    )
                 }
-            } ?: return uriString
-
-            "internal://$fileName"
-        } catch (_: Exception) {
-            uriString
-        }
-    }
-
-    fun normalizeSearchText(text: String): String {
-        return text
-            .lowercase()
-            .replace("ä", "ae")
-            .replace("ö", "oe")
-            .replace("ü", "ue")
-            .replace("ß", "ss")
-            .map { character ->
-                if (character.isLetterOrDigit()) character else ' '
             }
-            .joinToString("")
-            .trim()
-            .replace(Regex("\\s+"), " ")
-    }
 
-    fun tokenizeSearchText(text: String): List<String> {
-        return normalizeSearchText(text)
-            .split(" ")
-            .map { it.trim() }
-            .filter { it.isNotBlank() }
-    }
+            @Composable
+            private fun FullscreenZoomImageDialog(
+                uriString: String,
+                onDismiss: () -> Unit
+            ) {
+                Dialog(
+                    onDismissRequest = onDismiss,
+                    properties = DialogProperties(usePlatformDefaultWidth = false)
+                ) {
+                    val context = LocalContext.current
+                    var scale by remember { mutableStateOf(1f) }
+                    var offset by remember { mutableStateOf(Offset.Zero) }
+                    var bitmap by remember(uriString) {
+                        mutableStateOf<Bitmap?>(
+                            uriImageMemoryCache.get(
+                                uriImageCacheKey(
+                                    uriString,
+                                    null
+                                )
+                            )
+                        )
+                    }
 
-    fun loadCorrectlyOrientedBitmapFromUriString(
-        context: Context,
-        uriString: String,
-        maxImageSizePx: Int? = null
-    ): Bitmap? {
-        if (uriString.isBlank()) return null
+                    LaunchedEffect(uriString) {
+                        if (bitmap == null) {
+                            bitmap = withContext(Dispatchers.IO) {
+                                loadCorrectlyOrientedBitmapFromUriString(
+                                    context = context,
+                                    uriString = uriString,
+                                    maxImageSizePx = null
+                                )
+                            }?.also { loadedBitmap ->
+                                uriImageMemoryCache.put(
+                                    uriImageCacheKey(uriString, null),
+                                    loadedBitmap
+                                )
+                            }
+                        }
+                    }
 
-        return if (uriString.startsWith("internal://")) {
-            val fileName = uriString.removePrefix("internal://")
-            val file = File(File(context.filesDir, FINDING_IMAGES_DIR), fileName)
-            loadCorrectlyOrientedBitmapFromFile(file, maxImageSizePx)
-        } else {
-            loadCorrectlyOrientedBitmapFromUri(context, Uri.parse(uriString), maxImageSizePx)
-        }
-    }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.9f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .pointerInput(Unit) {
+                                    detectTapGestures(onTap = { onDismiss() })
+                                }
+                        )
 
-    fun loadCorrectlyOrientedBitmapFromUri(
-        context: Context,
-        uri: Uri,
-        maxImageSizePx: Int? = null
-    ): Bitmap? {
-        val bitmap = context.contentResolver.openInputStream(uri)?.use { input ->
-            decodeSampledBitmapFromStream(input, maxImageSizePx)
-        } ?: return null
+                        bitmap?.let { loadedBitmap ->
+                            Image(
+                                bitmap = loadedBitmap.asImageBitmap(),
+                                contentDescription = null,
+                                contentScale = ContentScale.Fit,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(24.dp)
+                                    .pointerInput(uriString) {
+                                        detectTransformGestures { _, pan, zoom, _ ->
+                                            val newScale = (scale * zoom).coerceIn(1f, 5f)
+                                            scale = newScale
+                                            offset = if (newScale <= 1f) {
+                                                Offset.Zero
+                                            } else {
+                                                offset + pan
+                                            }
+                                        }
+                                    }
+                                    .graphicsLayer {
+                                        scaleX = scale
+                                        scaleY = scale
+                                        translationX = offset.x
+                                        translationY = offset.y
+                                    }
+                            )
+                        }
 
-        val orientation = context.contentResolver.openInputStream(uri)?.use { input ->
-            ExifInterface(input).getAttributeInt(
-                ExifInterface.TAG_ORIENTATION,
-                ExifInterface.ORIENTATION_NORMAL
+                        IconButton(
+                            onClick = onDismiss,
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .statusBarsPadding()
+                                .padding(12.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Close,
+                                contentDescription = "Schließen",
+                                tint = Color.White
+                            )
+                        }
+                    }
+                }
+            }
+
+            private fun persistReadPermission(context: Context, uri: Uri) {
+                try {
+                    context.contentResolver.takePersistableUriPermission(
+                        uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION
+                    )
+                } catch (_: SecurityException) {
+                } catch (_: Exception) {
+                }
+            }
+
+            private fun loadAnimalsFromCsvWithDebug(
+                context: Context,
+                fileName: String
+            ): CsvLoadResult {
+                return try {
+                    val assetFiles = context.assets.list("")?.toList().orEmpty()
+
+                    if (!assetFiles.contains(fileName)) {
+                        return CsvLoadResult(
+                            animals = emptyList(),
+                            debugMessage = "Datei nicht gefunden. Assets enthalten: ${assetFiles.joinToString()}"
+                        )
+                    }
+
+                    val inputStream = context.assets.open(fileName)
+                    val reader = BufferedReader(InputStreamReader(inputStream))
+                    val lines = reader.readLines()
+
+                    if (lines.isEmpty()) {
+                        return CsvLoadResult(
+                            animals = emptyList(),
+                            debugMessage = "CSV ist leer."
+                        )
+                    }
+
+                    val cleanedLines = lines
+                        .map { it.replace("\uFEFF", "").trim() }
+                        .filter { it.isNotBlank() }
+
+                    if (cleanedLines.isEmpty()) {
+                        return CsvLoadResult(
+                            animals = emptyList(),
+                            debugMessage = "CSV enthält keine lesbaren Zeilen."
+                        )
+                    }
+
+                    val header = cleanedLines.first()
+                    val delimiter = if (header.contains(";")) ";" else ","
+
+                    val animals = cleanedLines
+                        .drop(1)
+                        .mapNotNull { line ->
+                            val parts = line.split(delimiter).map { it.trim() }
+
+                            if (parts.size < 5) {
+                                null
+                            } else {
+                                AnimalEntry(
+                                    id = parts.getOrElse(0) { "" },
+                                    group = parts.getOrElse(1) { "" },
+                                    subgroup = parts.getOrElse(2) { "" },
+                                    germanName = parts.getOrElse(3) { "" },
+                                    latinName = parts.getOrElse(4) { "" },
+                                    habitat = parts.getOrElse(5) { "" },
+                                    distribution = parts.getOrElse(6) { "" },
+                                    rarity = parts.getOrElse(7) { "" }
+                                )
+                            }
+                        }
+
+                    CsvLoadResult(
+                        animals = animals,
+                        debugMessage = "Datei gefunden. Zeilen: ${cleanedLines.size}. Trennzeichen: '$delimiter'"
+                    )
+                } catch (e: Exception) {
+                    CsvLoadResult(
+                        animals = emptyList(),
+                        debugMessage = "Fehler beim Laden: ${e.message}"
+                    )
+                }
+            }
+
+            private fun persistPhotoForFinding(context: Context, uriString: String): String {
+                if (uriString.isBlank()) return ""
+                if (uriString.startsWith("android.resource://")) return uriString
+                if (uriString.startsWith("internal://")) return uriString
+
+                return try {
+                    val sourceUri = Uri.parse(uriString)
+                    val imagesDir = File(context.filesDir, FINDING_IMAGES_DIR).apply { mkdirs() }
+
+                    val fileName = "${UUID.randomUUID()}.img"
+                    val targetFile = File(imagesDir, fileName)
+
+                    context.contentResolver.openInputStream(sourceUri)?.use { input ->
+                        targetFile.outputStream().use { output ->
+                            input.copyTo(output)
+                        }
+                    } ?: return uriString
+
+                    "internal://$fileName"
+                } catch (_: Exception) {
+                    uriString
+                }
+            }
+
+            private fun normalizeSearchText(text: String): String {
+                return text
+                    .lowercase()
+                    .replace("ä", "ae")
+                    .replace("ö", "oe")
+                    .replace("ü", "ue")
+                    .replace("ß", "ss")
+                    .map { character ->
+                        if (character.isLetterOrDigit()) character else ' '
+                    }
+                    .joinToString("")
+                    .trim()
+                    .replace(Regex("\\s+"), " ")
+            }
+
+            private fun tokenizeSearchText(text: String): List<String> {
+                return normalizeSearchText(text)
+                    .split(" ")
+                    .map { it.trim() }
+                    .filter { it.isNotBlank() }
+            }
+
+            fun loadCorrectlyOrientedBitmapFromUriString(
+                context: Context,
+                uriString: String,
+                maxImageSizePx: Int? = null
+            ): Bitmap? {
+                if (uriString.isBlank()) return null
+
+                return if (uriString.startsWith("internal://")) {
+                    val fileName = uriString.removePrefix("internal://")
+                    val file = File(File(context.filesDir, FINDING_IMAGES_DIR), fileName)
+                    loadCorrectlyOrientedBitmapFromFile(file, maxImageSizePx)
+                } else {
+                    loadCorrectlyOrientedBitmapFromUri(
+                        context,
+                        Uri.parse(uriString),
+                        maxImageSizePx
+                    )
+                }
+            }
+
+            fun loadCorrectlyOrientedBitmapFromUri(
+                context: Context,
+                uri: Uri,
+                maxImageSizePx: Int? = null
+            ): Bitmap? {
+                val bitmap = context.contentResolver.openInputStream(uri)?.use { input ->
+                    decodeSampledBitmapFromStream(input, maxImageSizePx)
+                } ?: return null
+
+                val orientation = context.contentResolver.openInputStream(uri)?.use { input ->
+                    ExifInterface(input).getAttributeInt(
+                        ExifInterface.TAG_ORIENTATION,
+                        ExifInterface.ORIENTATION_NORMAL
+                    )
+                } ?: ExifInterface.ORIENTATION_NORMAL
+
+                return applyExifOrientation(bitmap, orientation)
+            }
+
+            fun loadCorrectlyOrientedBitmapFromFile(
+                file: File,
+                maxImageSizePx: Int? = null
+            ): Bitmap? {
+                if (!file.exists()) return null
+
+                val bitmap =
+                    decodeSampledBitmapFromFile(file.absolutePath, maxImageSizePx) ?: return null
+
+                val orientation = file.inputStream().use { input ->
+                    ExifInterface(input).getAttributeInt(
+                        ExifInterface.TAG_ORIENTATION,
+                        ExifInterface.ORIENTATION_NORMAL
+                    )
+                }
+
+                return applyExifOrientation(bitmap, orientation)
+            }
+
+            fun applyExifOrientation(bitmap: Bitmap, orientation: Int): Bitmap {
+                return when (orientation) {
+                    ExifInterface.ORIENTATION_ROTATE_90 -> rotateBitmap(bitmap, 90f)
+                    ExifInterface.ORIENTATION_ROTATE_180 -> rotateBitmap(bitmap, 180f)
+                    ExifInterface.ORIENTATION_ROTATE_270 -> rotateBitmap(bitmap, 270f)
+                    ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> flipBitmap(bitmap, true)
+                    ExifInterface.ORIENTATION_FLIP_VERTICAL -> flipBitmap(bitmap, false)
+                    ExifInterface.ORIENTATION_TRANSPOSE -> rotateAndFlipBitmap(bitmap, 90f, true)
+                    ExifInterface.ORIENTATION_TRANSVERSE -> rotateAndFlipBitmap(bitmap, 270f, true)
+                    else -> bitmap
+                }
+            }
+
+            fun rotateBitmap(bitmap: Bitmap, degrees: Float): Bitmap {
+                val matrix = Matrix().apply {
+                    postRotate(degrees)
+                }
+                return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+            }
+
+            fun flipBitmap(bitmap: Bitmap, horizontal: Boolean): Bitmap {
+                val matrix = Matrix().apply {
+                    postScale(
+                        if (horizontal) -1f else 1f,
+                        if (horizontal) 1f else -1f
+                    )
+                }
+                return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+            }
+
+            fun rotateAndFlipBitmap(
+                bitmap: Bitmap,
+                degrees: Float,
+                horizontalFlip: Boolean
+            ): Bitmap {
+                val matrix = Matrix().apply {
+                    postRotate(degrees)
+                    postScale(if (horizontalFlip) -1f else 1f, 1f)
+                }
+                return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+            }
+
+            fun decodeSampledBitmapFromStream(
+                inputStream: java.io.InputStream,
+                maxImageSizePx: Int?
+            ): Bitmap? {
+                if (maxImageSizePx == null) {
+                    return BitmapFactory.decodeStream(inputStream)
+                }
+
+                val imageBytes = inputStream.readBytes()
+                val boundsOptions = BitmapFactory.Options().apply {
+                    inJustDecodeBounds = true
+                }
+                BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size, boundsOptions)
+
+                val decodeOptions = BitmapFactory.Options().apply {
+                    inSampleSize = calculateInSampleSize(
+                        boundsOptions.outWidth,
+                        boundsOptions.outHeight,
+                        maxImageSizePx
+                    )
+                }
+
+                return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size, decodeOptions)
+            }
+
+            fun decodeSampledBitmapFromFile(filePath: String, maxImageSizePx: Int?): Bitmap? {
+                if (maxImageSizePx == null) {
+                    return BitmapFactory.decodeFile(filePath)
+                }
+
+                val boundsOptions = BitmapFactory.Options().apply {
+                    inJustDecodeBounds = true
+                }
+                BitmapFactory.decodeFile(filePath, boundsOptions)
+
+                val decodeOptions = BitmapFactory.Options().apply {
+                    inSampleSize = calculateInSampleSize(
+                        boundsOptions.outWidth,
+                        boundsOptions.outHeight,
+                        maxImageSizePx
+                    )
+                }
+
+                return BitmapFactory.decodeFile(filePath, decodeOptions)
+            }
+
+            fun calculateInSampleSize(width: Int, height: Int, maxImageSizePx: Int): Int {
+                var inSampleSize = 1
+                var currentWidth = width
+                var currentHeight = height
+
+                while (currentWidth > maxImageSizePx || currentHeight > maxImageSizePx) {
+                    currentWidth /= 2
+                    currentHeight /= 2
+                    inSampleSize *= 2
+                }
+
+                return inSampleSize.coerceAtLeast(1)
+            }
+
+            private val LightColorScheme = lightColorScheme(
+                primary = PrimaryGreen,
+                secondary = TextSecondary,
+                tertiary = PrimaryGreenSoft,
+                background = AppBackground,
+                surface = CardBackground,
+                surfaceVariant = AppBackground, // Ersetzt das Standard-Lila durch dein helles Grün
+                onPrimary = Color.White,
+                onSecondary = Color.White,
+                onBackground = TextPrimary,
+                onSurface = TextPrimary,
+                onSurfaceVariant = TextSecondary,
+                outline = BorderColor // Nutzt dein definiertes Grau-Grün fÃ¼r Umrandungen
             )
-        } ?: ExifInterface.ORIENTATION_NORMAL
-
-        return applyExifOrientation(bitmap, orientation)
-    }
-
-    fun loadCorrectlyOrientedBitmapFromFile(file: File, maxImageSizePx: Int? = null): Bitmap? {
-        if (!file.exists()) return null
-
-        val bitmap = decodeSampledBitmapFromFile(file.absolutePath, maxImageSizePx) ?: return null
-
-        val orientation = file.inputStream().use { input ->
-            ExifInterface(input).getAttributeInt(
-                ExifInterface.TAG_ORIENTATION,
-                ExifInterface.ORIENTATION_NORMAL
-            )
-        }
-
-        return applyExifOrientation(bitmap, orientation)
-    }
-
-    fun applyExifOrientation(bitmap: Bitmap, orientation: Int): Bitmap {
-        return when (orientation) {
-            ExifInterface.ORIENTATION_ROTATE_90 -> rotateBitmap(bitmap, 90f)
-            ExifInterface.ORIENTATION_ROTATE_180 -> rotateBitmap(bitmap, 180f)
-            ExifInterface.ORIENTATION_ROTATE_270 -> rotateBitmap(bitmap, 270f)
-            ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> flipBitmap(bitmap, true)
-            ExifInterface.ORIENTATION_FLIP_VERTICAL -> flipBitmap(bitmap, false)
-            ExifInterface.ORIENTATION_TRANSPOSE -> rotateAndFlipBitmap(bitmap, 90f, true)
-            ExifInterface.ORIENTATION_TRANSVERSE -> rotateAndFlipBitmap(bitmap, 270f, true)
-            else -> bitmap
-        }
-    }
-
-    fun rotateBitmap(bitmap: Bitmap, degrees: Float): Bitmap {
-        val matrix = Matrix().apply {
-            postRotate(degrees)
-        }
-        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-    }
-
-    fun flipBitmap(bitmap: Bitmap, horizontal: Boolean): Bitmap {
-        val matrix = Matrix().apply {
-            postScale(
-                if (horizontal) -1f else 1f,
-                if (horizontal) 1f else -1f
-            )
-        }
-        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-    }
-
-    fun rotateAndFlipBitmap(bitmap: Bitmap, degrees: Float, horizontalFlip: Boolean): Bitmap {
-        val matrix = Matrix().apply {
-            postRotate(degrees)
-            postScale(if (horizontalFlip) -1f else 1f, 1f)
-        }
-        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
-    }
-
-    fun decodeSampledBitmapFromStream(
-        inputStream: java.io.InputStream,
-        maxImageSizePx: Int?
-    ): Bitmap? {
-        if (maxImageSizePx == null) {
-            return BitmapFactory.decodeStream(inputStream)
-        }
-
-        val imageBytes = inputStream.readBytes()
-        val boundsOptions = BitmapFactory.Options().apply {
-            inJustDecodeBounds = true
-        }
-        BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size, boundsOptions)
-
-        val decodeOptions = BitmapFactory.Options().apply {
-            inSampleSize = calculateInSampleSize(
-                boundsOptions.outWidth,
-                boundsOptions.outHeight,
-                maxImageSizePx
-            )
-        }
-
-        return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size, decodeOptions)
-    }
-
-    fun decodeSampledBitmapFromFile(filePath: String, maxImageSizePx: Int?): Bitmap? {
-        if (maxImageSizePx == null) {
-            return BitmapFactory.decodeFile(filePath)
-        }
-
-        val boundsOptions = BitmapFactory.Options().apply {
-            inJustDecodeBounds = true
-        }
-        BitmapFactory.decodeFile(filePath, boundsOptions)
-
-        val decodeOptions = BitmapFactory.Options().apply {
-            inSampleSize = calculateInSampleSize(
-                boundsOptions.outWidth,
-                boundsOptions.outHeight,
-                maxImageSizePx
-            )
-        }
-
-        return BitmapFactory.decodeFile(filePath, decodeOptions)
-    }
-
-    fun calculateInSampleSize(width: Int, height: Int, maxImageSizePx: Int): Int {
-        var inSampleSize = 1
-        var currentWidth = width
-        var currentHeight = height
-
-        while (currentWidth > maxImageSizePx || currentHeight > maxImageSizePx) {
-            currentWidth /= 2
-            currentHeight /= 2
-            inSampleSize *= 2
-        }
-
-        return inSampleSize.coerceAtLeast(1)
-    }
-
-    private val LightColorScheme = lightColorScheme(
-        primary = PrimaryGreen,
-        secondary = TextSecondary,
-        tertiary = PrimaryGreenSoft,
-        background = AppBackground,
-        surface = CardBackground,
-        surfaceVariant = AppBackground, // Ersetzt das Standard-Lila durch dein helles Grün
-        onPrimary = Color.White,
-        onSecondary = Color.White,
-        onBackground = TextPrimary,
-        onSurface = TextPrimary,
-        onSurfaceVariant = TextSecondary,
-        outline = BorderColor // Nutzt dein definiertes Grau-Grün fÃ¼r Umrandungen
-    )
