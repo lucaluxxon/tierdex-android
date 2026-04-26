@@ -1355,14 +1355,30 @@ fun SettingsScreen(
     onImportFindings: (List<AnimalFinding>) -> Unit,
     extraTopPadding: Dp = 0.dp,
     extraBottomPadding: Dp = 0.dp
-) {
-    val context = LocalContext.current
-    var selectedSettingsPage by rememberSaveable { mutableStateOf("menu") }
-    BackHandler {
-        if (selectedSettingsPage == "menu") {
-            onBack()
-        } else {
-            selectedSettingsPage = "menu"
+    ) {
+        val context = LocalContext.current
+        var selectedSettingsPage by rememberSaveable { mutableStateOf("menu") }
+        val pageTitle = when (selectedSettingsPage) {
+            "menu" -> "Einstellungen"
+            "rules" -> "Regeln"
+            "display" -> "Darstellung"
+            "features" -> "App-Funktionen"
+            "info" -> "Info"
+            else -> "Einstellungen"
+        }
+        val pageSubtitle = when (selectedSettingsPage) {
+            "menu" -> "Einführung, Hinweise und wichtige App-Bereiche an einem Ort."
+            "rules" -> "Kurz und klar zusammengefasst, was im Tierdex als Fund zählt."
+            "display" -> "Gestaltung und visuelle Optionen werden hier später ergänzt."
+            "features" -> "Quests, Challenges und weitere Bereiche werden hier gebündelt."
+            "info" -> "Backup, Hinweise zur Datensicherheit und Informationen zur App."
+            else -> ""
+        }
+        BackHandler {
+            if (selectedSettingsPage == "menu") {
+                onBack()
+            } else {
+                selectedSettingsPage = "menu"
         }
     }
 
@@ -1401,18 +1417,22 @@ fun SettingsScreen(
         }
 
         item {
-            Text(
-                text = when (selectedSettingsPage) {
-                    "menu" -> "Einstellungen"
-                    "rules" -> "Regeln"
-                    "display" -> "Darstellung"
-                    "features" -> "App-Funktionen"
-                    "info" -> "Info"
-                    else -> "Einstellungen"
-                },
-                style = MaterialTheme.typography.headlineMedium,
-                color = TextPrimary
-            )
+            SettingsContentCard {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Text(
+                        text = pageTitle,
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = TextPrimary
+                    )
+                    if (pageSubtitle.isNotBlank()) {
+                        Text(
+                            text = pageSubtitle,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextSecondary
+                        )
+                    }
+                }
+            }
         }
 
         when (selectedSettingsPage) {
@@ -1461,12 +1481,17 @@ fun SettingsScreen(
             "rules" -> {
                 item {
                     SettingsContentCard {
-                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            Text("â€¢ Keine Haustiere", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
-                            Text("â€¢ Keine Nutztiere", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
-                            Text("â€¢ Keine in Gefangenschaft lebenden Tiere", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text(
+                                text = "Was im Tierdex gilt",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = TextPrimary
+                            )
+                            Text("• Keine Haustiere", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
+                            Text("• Keine Nutztiere", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
+                            Text("• Keine in Gefangenschaft lebenden Tiere", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
                             Text("• Nur eigene Fotos dürfen eingereicht werden", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
-                            Text("â€¢ Bitte keine Fotos von toten oder verletzten Tieren", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
+                            Text("• Bitte keine Fotos von toten oder verletzten Tieren", style = MaterialTheme.typography.bodyMedium, color = TextSecondary)
                         }
                     }
                 }
@@ -1475,11 +1500,18 @@ fun SettingsScreen(
             "display" -> {
                 item {
                     SettingsContentCard {
-                        Text(
-                            text = "Farben und Designoptionen kommen später.",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = TextSecondary
-                        )
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text(
+                                text = "Darstellung",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = TextPrimary
+                            )
+                            Text(
+                                text = "Farben und Designoptionen werden später ergänzt. Die App bleibt bis dahin bewusst ruhig und einheitlich.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
+                            )
+                        }
                     }
                 }
             }
@@ -1487,11 +1519,18 @@ fun SettingsScreen(
             "features" -> {
                 item {
                     SettingsContentCard {
-                        Text(
-                            text = "Einstellungen für Quests und Challenges kommen später.",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = TextSecondary
-                        )
+                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text(
+                                text = "App-Funktionen",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = TextPrimary
+                            )
+                            Text(
+                                text = "Quests, Challenges und weitere Funktionen bekommen hier später ihren festen Platz.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
+                            )
+                        }
                     }
                 }
             }
@@ -1515,43 +1554,51 @@ fun SettingsScreen(
                 }
 
                 item {
-                    Button(
-                        onClick = {
-                            val file = exportFindings(context, allFindings)
-                            shareBackup(context, file)
-                            Toast.makeText(context, "Backup erstellt", Toast.LENGTH_SHORT).show()
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = PrimaryGreen
-                        )
-                    ) {
-                        Text("Backup teilen")
+                    SettingsContentCard {
+                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Text(
+                                text = "Backup",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = TextPrimary
+                            )
+                            Text(
+                                text = "Du kannst deine aktuellen Funddaten sichern und wieder einspielen.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
+                            )
+                            Button(
+                                onClick = {
+                                    val file = exportFindings(context, allFindings)
+                                    shareBackup(context, file)
+                                    Toast.makeText(context, "Backup erstellt", Toast.LENGTH_SHORT).show()
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = PrimaryGreen
+                                )
+                            ) {
+                                Text("Backup teilen")
+                            }
+                            Button(
+                                onClick = {
+                                    val imported = importFindings(context)
+                                    onImportFindings(imported)
+                                    Toast.makeText(context, "Backup geladen", Toast.LENGTH_SHORT).show()
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = PrimaryGreen
+                                )
+                            ) {
+                                Text("Backup laden")
+                            }
+                            Text(
+                                text = "Bei Gerätewechsel oder Neuinstallation können Fundfotos fehlen, auch wenn ein Backup oder Sync vorhanden ist.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = TextSecondary
+                            )
+                        }
                     }
-                }
-
-                item {
-                    Button(
-                        onClick = {
-                            val imported = importFindings(context)
-                            onImportFindings(imported)
-                            Toast.makeText(context, "Backup geladen", Toast.LENGTH_SHORT).show()
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = PrimaryGreen
-                        )
-                    ) {
-                        Text("Backup laden")
-                    }
-                }
-
-                item {
-                    Text(
-                        text = "Bei Gerätewechsel oder Neuinstallation können Fundfotos fehlen, auch wenn ein Backup oder Sync vorhanden ist.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = TextSecondary
-                    )
                 }
             }
         }
@@ -1588,16 +1635,16 @@ private fun SettingsMenuCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White,
+            containerColor = CardBackground,
             contentColor = TextPrimary
         )
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
+            modifier = Modifier.padding(horizontal = 18.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             Text(
                 text = title,
@@ -1619,16 +1666,16 @@ private fun SettingsContentCard(
 ) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(16.dp),
+        shape = RoundedCornerShape(20.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White,
+            containerColor = CardBackground,
             contentColor = TextPrimary
         )
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
+            modifier = Modifier.padding(horizontal = 18.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
             content = content
         )
     }
