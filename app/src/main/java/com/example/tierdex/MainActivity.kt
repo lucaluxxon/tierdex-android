@@ -525,7 +525,7 @@ private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
 
         val subgroupOptions =
             if (selectedGroupFilter == "Alle") {
-                listOf("Alle") + animals.map { it.subgroup }.distinct().sorted()
+                listOf("Alle")
             } else {
                 listOf("Alle") + animals
                     .filter { it.group == selectedGroupFilter }
@@ -866,6 +866,12 @@ private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
                             onToggleShowFoundOnly = { showFoundOnly = !showFoundOnly },
                             currentSortOption = selectedSortOption,
                             onSortOptionChange = { selectedSortOption = it },
+                            onResetFiltersAndSort = {
+                                showFoundOnly = false
+                                selectedSortOption = "A_Z"
+                                selectedGroupFilter = "Alle"
+                                selectedSubgroupFilter = "Alle"
+                            },
                             availableGroups = groupOptions,
                             selectedGroup = selectedGroupFilter,
                             onSelectedGroupChange = {
@@ -927,6 +933,12 @@ private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
                             onToggleShowFoundOnly = { showFoundOnly = !showFoundOnly },
                             currentSortOption = selectedSortOption,
                             onSortOptionChange = { selectedSortOption = it },
+                            onResetFiltersAndSort = {
+                                showFoundOnly = false
+                                selectedSortOption = "A_Z"
+                                selectedGroupFilter = "Alle"
+                                selectedSubgroupFilter = "Alle"
+                            },
                             availableGroups = groupOptions,
                             selectedGroup = selectedGroupFilter,
                             onSelectedGroupChange = {
@@ -3157,6 +3169,7 @@ fun AuthEntryScreen(
         collectedAnimalCount: Int,
         showFoundOnly: Boolean,
         onToggleShowFoundOnly: () -> Unit,
+        onResetFiltersAndSort: () -> Unit,
         availableGroups: List<String>,
         selectedGroup: String,
         onSelectedGroupChange: (String) -> Unit,
@@ -3174,12 +3187,18 @@ fun AuthEntryScreen(
         val sortLabel = when (currentSortOption) {
             "A_Z" -> "A-Z"
             "Z_A" -> "Z-A"
-            "FOUND_FIRST" -> "Gefunden"
-            "NOT_FOUND_FIRST" -> "Offen"
+            "FOUND_FIRST" -> "Gefundene zuerst"
+            "NOT_FOUND_FIRST" -> "Offene zuerst"
             else -> "A-Z"
         }
         var groupMenuExpanded by remember { mutableStateOf(false) }
         var subgroupMenuExpanded by remember { mutableStateOf(false) }
+        var sortMenuExpanded by remember { mutableStateOf(false) }
+        val subgroupEnabled = selectedGroup != "Alle"
+        val hasActiveFiltersOrSort = showFoundOnly ||
+            selectedGroup != "Alle" ||
+            selectedSubgroup != "Alle" ||
+            currentSortOption != "A_Z"
 
         LazyColumn(
             modifier = Modifier
@@ -3251,7 +3270,8 @@ fun AuthEntryScreen(
                             label = "Gruppe: $selectedGroup",
                             expanded = groupMenuExpanded,
                             onDismiss = { groupMenuExpanded = false },
-                            onClick = { groupMenuExpanded = true }
+                            onClick = { groupMenuExpanded = true },
+                            active = selectedGroup != "Alle"
                         ) {
                             availableGroups.forEach { group ->
                                 DropdownMenuItem(
@@ -3273,10 +3293,12 @@ fun AuthEntryScreen(
                         }
 
                         FilterDropdown(
-                            label = "Untergr.: $selectedSubgroup",
+                            label = if (subgroupEnabled) "Untergr.: $selectedSubgroup" else "Untergr.: zuerst Gruppe",
                             expanded = subgroupMenuExpanded,
                             onDismiss = { subgroupMenuExpanded = false },
-                            onClick = { subgroupMenuExpanded = true }
+                            onClick = { subgroupMenuExpanded = true },
+                            enabled = subgroupEnabled,
+                            active = subgroupEnabled && selectedSubgroup != "Alle"
                         ) {
                             availableSubgroups.forEach { subgroup ->
                                 DropdownMenuItem(
@@ -3297,21 +3319,51 @@ fun AuthEntryScreen(
                             }
                         }
 
-                        OutlinedButton(
-                            onClick = {
-                                val nextOption = when (currentSortOption) {
-                                    "A_Z" -> "Z_A"
-                                    "Z_A" -> "FOUND_FIRST"
-                                    "FOUND_FIRST" -> "NOT_FOUND_FIRST"
-                                    else -> "A_Z"
-                                }
-                                onSortOptionChange(nextOption)
-                            },
-                            modifier = Modifier.height(40.dp),
-                            contentPadding = PaddingValues(horizontal = 12.dp),
-                            shape = RoundedCornerShape(8.dp)
+                        FilterDropdown(
+                            label = "Sort.: $sortLabel",
+                            expanded = sortMenuExpanded,
+                            onDismiss = { sortMenuExpanded = false },
+                            onClick = { sortMenuExpanded = true },
+                            active = currentSortOption != "A_Z"
                         ) {
-                            Text("Sort.: $sortLabel", style = MaterialTheme.typography.bodySmall)
+                            listOf(
+                                "A_Z" to "A-Z",
+                                "Z_A" to "Z-A",
+                                "FOUND_FIRST" to "Gefundene zuerst",
+                                "NOT_FOUND_FIRST" to "Offene zuerst"
+                            ).forEach { (option, label) ->
+                                DropdownMenuItem(
+                                    text = {
+                                        Text(
+                                            text = label,
+                                            color = TextPrimary
+                                        )
+                                    },
+                                    colors = MenuDefaults.itemColors(
+                                        textColor = TextPrimary
+                                    ),
+                                    onClick = {
+                                        onSortOptionChange(option)
+                                        sortMenuExpanded = false
+                                    }
+                                )
+                            }
+                        }
+
+                        if (hasActiveFiltersOrSort) {
+                            OutlinedButton(
+                                onClick = onResetFiltersAndSort,
+                                modifier = Modifier.height(40.dp),
+                                contentPadding = PaddingValues(horizontal = 12.dp),
+                                shape = RoundedCornerShape(8.dp),
+                                border = BorderStroke(1.dp, BorderColor),
+                                colors = ButtonDefaults.outlinedButtonColors(
+                                    containerColor = CardBackground,
+                                    contentColor = TextPrimary
+                                )
+                            ) {
+                                Text("Zurücksetzen", style = MaterialTheme.typography.bodySmall)
+                            }
                         }
                     }
                 }
@@ -3364,24 +3416,27 @@ fun AuthEntryScreen(
         expanded: Boolean,
         onDismiss: () -> Unit,
         onClick: () -> Unit,
+        enabled: Boolean = true,
+        active: Boolean = false,
         content: @Composable () -> Unit
     ) {
         Box {
             OutlinedButton(
                 onClick = onClick,
+                enabled = enabled,
                 modifier = Modifier.height(40.dp),
                 shape = RoundedCornerShape(8.dp),
                 contentPadding = PaddingValues(horizontal = 12.dp),
-                border = BorderStroke(1.dp, BorderColor),
+                border = if (active) BorderStroke(1.dp, PrimaryGreen) else BorderStroke(1.dp, BorderColor),
                 colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = CardBackground,
-                    contentColor = TextPrimary
+                    containerColor = if (active) PrimaryGreen.copy(alpha = 0.1f) else CardBackground,
+                    contentColor = if (active) PrimaryGreen else TextPrimary
                 )
             ) {
                 Text(
                     text = label,
                     style = MaterialTheme.typography.bodySmall,
-                    color = TextPrimary,
+                    color = if (active) PrimaryGreen else TextPrimary,
                     maxLines = 1
                 )
             }
