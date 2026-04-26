@@ -66,6 +66,8 @@ import androidx.exifinterface.media.ExifInterface
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.File
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.UUID
 import kotlin.math.max
 import kotlin.math.min
@@ -157,6 +159,10 @@ private fun wishlistAnimalKey(ownerId: String): String = "$WISHLIST_ANIMAL_KEY_P
 private fun introPendingKey(ownerId: String): String = "$INTRO_PENDING_KEY_PREFIX$ownerId"
 
 private fun introSeenKey(ownerId: String): String = "$INTRO_SEEN_KEY_PREFIX$ownerId"
+
+private val appDateFormatter: DateTimeFormatter = DateTimeFormatter.ofPattern("dd.MM.yyyy")
+
+private fun currentAppDateText(): String = LocalDate.now().format(appDateFormatter)
 
 private val uriImageMemoryCache = object : LruCache<String, Bitmap>(20 * 1024 * 1024) {
     override fun sizeOf(key: String, value: Bitmap): Int = value.byteCount
@@ -2817,6 +2823,7 @@ fun AuthEntryScreen(
                 editingFinding = initialFinding
                 isEditMode = false
             } else {
+                date = currentAppDateText()
                 isEditMode = true
             }
         }
