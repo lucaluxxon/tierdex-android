@@ -468,24 +468,25 @@ private fun uriImageCacheKey(uriString: String, maxImageSizePx: Int?): String =
         val collectedAnimalIds = findingCountByAnimalId.keys
         val collectedAnimalCount = animals.count { it.id in collectedAnimalIds }
 
-        val baseFilteredAnimals = animals.filter { animal ->
-            val query = searchText.trim().lowercase()
-            query.isEmpty() ||
-                    animal.germanName.lowercase().contains(query) ||
-                    animal.latinName.lowercase().contains(query) ||
-                    animal.group.lowercase().contains(query)
-        }
         var selectedSortOption by rememberSaveable { mutableStateOf("A_Z") }
 
         val filteredAnimals = animals.filter { animal ->
-            val normalizedSearch = normalizeSearchText(searchText)
+            val searchTokens = tokenizeSearchText(searchText)
+            val searchableText = listOf(
+                animal.germanName,
+                animal.latinName,
+                animal.group,
+                animal.subgroup
+            ).joinToString(" ")
+            val normalizedSearchableText = normalizeSearchText(searchableText)
+            val compactSearchableText = normalizedSearchableText.replace(" ", "")
 
             val matchesSearch =
-                normalizedSearch.isBlank() ||
-                        normalizeSearchText(animal.germanName).contains(normalizedSearch) ||
-                        normalizeSearchText(animal.latinName).contains(normalizedSearch) ||
-                        normalizeSearchText(animal.group).contains(normalizedSearch) ||
-                        normalizeSearchText(animal.subgroup).contains(normalizedSearch)
+                searchTokens.isEmpty() ||
+                        searchTokens.all { token ->
+                            normalizedSearchableText.contains(token) ||
+                                    compactSearchableText.contains(token.replace(" ", ""))
+                        }
 
             val matchesFound =
                 !showFoundOnly || (findingCountByAnimalId[animal.id] ?: 0) > 0
@@ -4025,8 +4026,19 @@ fun AuthEntryScreen(
             .replace("ö", "oe")
             .replace("ü", "ue")
             .replace("ß", "ss")
-            .replace("-", "")
-            .replace(" ", "")
+            .map { character ->
+                if (character.isLetterOrDigit()) character else ' '
+            }
+            .joinToString("")
+            .trim()
+            .replace(Regex("\\s+"), " ")
+    }
+
+    fun tokenizeSearchText(text: String): List<String> {
+        return normalizeSearchText(text)
+            .split(" ")
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
     }
 
     fun loadCorrectlyOrientedBitmapFromUriString(
