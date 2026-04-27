@@ -3121,6 +3121,28 @@ fun AnimalDetailScreen(
                                 }
                             }
 
+                            val locationDetailText = when {
+                                currentFinding?.locationSource == "map" -> "Standort auf Karte gewählt"
+                                currentFinding?.locationSource == "gps" ||
+                                        (currentFinding?.latitude != null && currentFinding.longitude != null) ->
+                                    "GPS-Standort gespeichert"
+                                else -> null
+                            }
+                            locationDetailText?.let {
+                                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                    Text(
+                                        text = "Standortdetails",
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = TextSecondary
+                                    )
+                                    Text(
+                                        text = it,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = TextSecondary
+                                    )
+                                }
+                            }
+
                             currentFinding?.note?.takeIf { it.isNotBlank() }?.let {
                                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                                     Text(
