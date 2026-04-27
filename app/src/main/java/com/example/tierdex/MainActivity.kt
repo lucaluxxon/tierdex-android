@@ -3097,6 +3097,9 @@ fun AnimalDetailScreen(
     var longitude by rememberSaveable { mutableStateOf<Double?>(null) }
     var locationSource by rememberSaveable { mutableStateOf<String?>(null) }
     var locationStatusMessage by rememberSaveable { mutableStateOf("") }
+    var showLocationPicker by rememberSaveable { mutableStateOf(false) }
+    var pendingLatitude by remember { mutableStateOf<Double?>(null) }
+    var pendingLongitude by remember { mutableStateOf<Double?>(null) }
     var cropPhotoUri by remember { mutableStateOf<String?>(null) }
     val isWishlistSelected = animal.id == currentWishlistAnimalId
     var editingFinding by remember { mutableStateOf<AnimalFinding?>(null) }
@@ -3436,6 +3439,10 @@ fun AnimalDetailScreen(
                         date = currentFinding?.date.orEmpty()
                         location = currentFinding?.location.orEmpty()
                         note = currentFinding?.note.orEmpty()
+                        latitude = currentFinding?.latitude
+                        longitude = currentFinding?.longitude
+                        locationSource = currentFinding?.locationSource
+                        locationStatusMessage = ""
                         selectedPhotoUri = currentFinding?.photoUri.orEmpty()
                         isEditMode = true
                     },
@@ -3505,10 +3512,25 @@ fun AnimalDetailScreen(
                             Text("Aktuellen Standort übernehmen")
                         }
 
-                        val currentLocationStatus = if (latitude != null && longitude != null) {
-                            "Standort gespeichert"
-                        } else {
-                            locationStatusMessage
+                        OutlinedButton(
+                            onClick = {
+                                pendingLatitude = latitude
+                                pendingLongitude = longitude
+                                showLocationPicker = true
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Standort auf Karte wählen")
+                        }
+
+                        val currentLocationStatus = when {
+                            locationSource == "map" && latitude != null && longitude != null ->
+                                "Standort auf Karte gewählt"
+                            locationSource == "gps" && latitude != null && longitude != null ->
+                                "Standort gespeichert"
+                            latitude != null && longitude != null ->
+                                "Standort gespeichert"
+                            else -> locationStatusMessage
                         }
                         if (currentLocationStatus.isNotBlank()) {
                             Text(
@@ -3678,6 +3700,74 @@ fun AnimalDetailScreen(
                 cropPhotoUri = null
             }
         )
+    }
+
+    if (showLocationPicker) {
+        Dialog(
+            onDismissRequest = { showLocationPicker = false },
+            properties = DialogProperties(usePlatformDefaultWidth = false)
+        ) {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                shape = RoundedCornerShape(20.dp),
+                color = CardBackground
+            ) {
+                Column(
+                    modifier = Modifier.padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = "Standort auf Karte wählen",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = TextPrimary
+                    )
+
+                    LocationPickerMap(
+                        initialLatitude = pendingLatitude,
+                        initialLongitude = pendingLongitude,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(400.dp)
+                            .clip(RoundedCornerShape(16.dp)),
+                        onLocationSelected = { selectedLatitude, selectedLongitude ->
+                            pendingLatitude = selectedLatitude
+                            pendingLongitude = selectedLongitude
+                        }
+                    )
+
+                    Button(
+                        onClick = {
+                            if (pendingLatitude == null || pendingLongitude == null) {
+                                locationStatusMessage = "Bitte Standort auf der Karte auswählen"
+                            } else {
+                                latitude = pendingLatitude
+                                longitude = pendingLongitude
+                                locationSource = "map"
+                                locationStatusMessage = "Standort auf Karte gewählt"
+                                if (location.isBlank()) {
+                                    location = "Standort auf Karte gewählt"
+                                }
+                                showLocationPicker = false
+                            }
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
+                    ) {
+                        Text("Übernehmen")
+                    }
+
+                    OutlinedButton(
+                        onClick = { showLocationPicker = false },
+                        modifier = Modifier.fillMaxWidth(),
+                        border = BorderStroke(1.dp, BorderColor)
+                    ) {
+                        Text("Abbrechen")
+                    }
+                }
+            }
+        }
     }
 }
 
