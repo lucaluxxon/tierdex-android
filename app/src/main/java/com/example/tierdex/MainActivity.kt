@@ -354,6 +354,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     var introLaunchSource by rememberSaveable { mutableStateOf(IntroLaunchSource.AUTOMATIC.name) }
     var selectedGroupFilter by rememberSaveable { mutableStateOf("Alle") }
     var selectedSubgroupFilter by rememberSaveable { mutableStateOf("Alle") }
+    var showTierdexMapScreen by rememberSaveable { mutableStateOf(false) }
     val resetSearchState = {
         searchText = ""
     }
@@ -581,6 +582,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     BackHandler(enabled = showAnimalPicker && selectedAnimalId == null) {
         resetSearchState()
         showAnimalPicker = false
+    }
+    BackHandler(enabled = currentTab == AppTab.STATS && showTierdexMapScreen) {
+        showTierdexMapScreen = false
     }
     BackHandler(enabled = showAuthEntryScreen && !showSettingsScreen) {
         resetSearchState()
@@ -992,44 +996,54 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                 }
 
                 currentTab == AppTab.STATS -> {
-                    AnimalListScreen(
-                        onOpenSettings = {
-                            resetSearchState()
-                            showSettingsScreen = true
-                        },
-                        debugMessage = "Mein Tierdex",
-                        searchText = searchText,
-                        onSearchTextChange = { searchText = it },
-                        animals = sortedAnimals,
-                        totalAnimalCount = animals.size,
-                        collectedAnimalCount = collectedAnimalCount,
-                        showFoundOnly = showFoundOnly,
-                        onToggleShowFoundOnly = { showFoundOnly = !showFoundOnly },
-                        currentSortOption = selectedSortOption,
-                        onSortOptionChange = { selectedSortOption = it },
-                        onResetFiltersAndSort = {
-                            showFoundOnly = false
-                            selectedSortOption = "A_Z"
-                            selectedGroupFilter = "Alle"
-                            selectedSubgroupFilter = "Alle"
-                        },
-                        availableGroups = groupOptions,
-                        selectedGroup = selectedGroupFilter,
-                        onSelectedGroupChange = {
-                            selectedGroupFilter = it
-                            selectedSubgroupFilter = "Alle"
-                        },
-                        availableSubgroups = subgroupOptions,
-                        selectedSubgroup = selectedSubgroupFilter,
-                        onSelectedSubgroupChange = { selectedSubgroupFilter = it },
-                        findingCountByAnimalId = findingCountByAnimalId,
-                        onAnimalClick = { animal ->
-                            resetSearchState()
-                            selectedAnimalId = animal.id
-                        },
-                        extraTopPadding = innerPadding.calculateTopPadding(),
-                        extraBottomPadding = innerPadding.calculateBottomPadding()
-                    )
+                    if (showTierdexMapScreen) {
+                        TierdexMapScreen(
+                            findings = findingsFromRoom,
+                            onBack = { showTierdexMapScreen = false },
+                            extraTopPadding = innerPadding.calculateTopPadding(),
+                            extraBottomPadding = innerPadding.calculateBottomPadding()
+                        )
+                    } else {
+                        AnimalListScreen(
+                            onOpenSettings = {
+                                resetSearchState()
+                                showSettingsScreen = true
+                            },
+                            debugMessage = "Mein Tierdex",
+                            searchText = searchText,
+                            onSearchTextChange = { searchText = it },
+                            animals = sortedAnimals,
+                            totalAnimalCount = animals.size,
+                            collectedAnimalCount = collectedAnimalCount,
+                            showFoundOnly = showFoundOnly,
+                            onToggleShowFoundOnly = { showFoundOnly = !showFoundOnly },
+                            currentSortOption = selectedSortOption,
+                            onSortOptionChange = { selectedSortOption = it },
+                            onResetFiltersAndSort = {
+                                showFoundOnly = false
+                                selectedSortOption = "A_Z"
+                                selectedGroupFilter = "Alle"
+                                selectedSubgroupFilter = "Alle"
+                            },
+                            availableGroups = groupOptions,
+                            selectedGroup = selectedGroupFilter,
+                            onSelectedGroupChange = {
+                                selectedGroupFilter = it
+                                selectedSubgroupFilter = "Alle"
+                            },
+                            availableSubgroups = subgroupOptions,
+                            selectedSubgroup = selectedSubgroupFilter,
+                            onSelectedSubgroupChange = { selectedSubgroupFilter = it },
+                            findingCountByAnimalId = findingCountByAnimalId,
+                            onAnimalClick = { animal ->
+                                resetSearchState()
+                                selectedAnimalId = animal.id
+                            },
+                            onOpenMap = { showTierdexMapScreen = true },
+                            extraTopPadding = innerPadding.calculateTopPadding(),
+                            extraBottomPadding = innerPadding.calculateBottomPadding()
+                        )
+                    }
                 }
 
                 currentTab == AppTab.PROFILE -> {
@@ -1471,6 +1485,87 @@ fun FindingsMapPreview(
                 state = MarkerState(position = latLng),
                 title = "Fund"
             )
+        }
+    }
+}
+
+@Composable
+fun TierdexMapScreen(
+    findings: List<AnimalFinding>,
+    onBack: () -> Unit,
+    extraTopPadding: Dp = 0.dp,
+    extraBottomPadding: Dp = 0.dp
+) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .statusBarsPadding()
+            .padding(
+                start = 16.dp,
+                top = 16.dp + extraTopPadding,
+                end = 16.dp
+            ),
+        contentPadding = PaddingValues(
+            top = 0.dp,
+            bottom = extraBottomPadding + 24.dp
+        ),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        item {
+            OutlinedButton(
+                onClick = onBack,
+                border = BorderStroke(1.dp, BorderColor)
+            ) {
+                Text("Zurück zu Mein Tierdex")
+            }
+        }
+
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = CardBackground,
+                    contentColor = TextPrimary
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Text(
+                        text = "Fundorte",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = TextPrimary
+                    )
+                    Text(
+                        text = "Alle gespeicherten Fundorte auf einer Karte",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
+                }
+            }
+        }
+
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = CardBackground,
+                    contentColor = TextPrimary
+                )
+            ) {
+                FindingsMapPreview(
+                    findings = findings,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(420.dp)
+                )
+            }
         }
     }
 }
@@ -3559,6 +3654,7 @@ fun AnimalDetailScreen(
                 onSelectedSubgroupChange: (String) -> Unit,
                 findingCountByAnimalId: Map<String, Int>,
                 onAnimalClick: (AnimalEntry) -> Unit,
+                onOpenMap: (() -> Unit)? = null,
                 currentSortOption: String,
                 onSortOptionChange: (String) -> Unit,
                 isPickerMode: Boolean = false,
@@ -3608,6 +3704,37 @@ fun AnimalDetailScreen(
                                     Text(
                                         text = "Gesammelt: $collectedAnimalCount von $totalAnimalCount Arten",
                                         style = MaterialTheme.typography.bodyMedium,
+                                        color = TextSecondary
+                                    )
+                                }
+                            }
+                        }
+                    }
+                    if (!isPickerMode && onOpenMap != null) {
+                        item {
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .clickable(onClick = onOpenMap),
+                                shape = RoundedCornerShape(16.dp),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = CardBackground,
+                                    contentColor = TextPrimary
+                                )
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(16.dp),
+                                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Text(
+                                        text = "Fundorte anzeigen",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = TextPrimary
+                                    )
+                                    Text(
+                                        text = "Alle gespeicherten Fundorte auf einer Karte",
+                                        style = MaterialTheme.typography.bodySmall,
                                         color = TextSecondary
                                     )
                                 }
