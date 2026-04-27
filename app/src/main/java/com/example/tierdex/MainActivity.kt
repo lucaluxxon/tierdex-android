@@ -1490,6 +1490,53 @@ fun FindingsMapPreview(
 }
 
 @Composable
+fun LocationPickerMap(
+    initialLatitude: Double? = null,
+    initialLongitude: Double? = null,
+    modifier: Modifier = Modifier,
+    onLocationSelected: (Double, Double) -> Unit
+) {
+    val defaultPosition = LatLng(51.1657, 10.4515)
+    val initialPosition = if (initialLatitude != null && initialLongitude != null) {
+        LatLng(initialLatitude, initialLongitude)
+    } else {
+        defaultPosition
+    }
+    var selectedPosition by remember(initialLatitude, initialLongitude) {
+        mutableStateOf(
+            if (initialLatitude != null && initialLongitude != null) {
+                LatLng(initialLatitude, initialLongitude)
+            } else {
+                null
+            }
+        )
+    }
+
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(
+            initialPosition,
+            if (selectedPosition != null) 14f else 5.5f
+        )
+    }
+
+    GoogleMap(
+        modifier = modifier,
+        cameraPositionState = cameraPositionState,
+        onMapClick = { latLng ->
+            selectedPosition = latLng
+            onLocationSelected(latLng.latitude, latLng.longitude)
+        }
+    ) {
+        selectedPosition?.let { latLng ->
+            Marker(
+                state = MarkerState(position = latLng),
+                title = "Ausgewählter Standort"
+            )
+        }
+    }
+}
+
+@Composable
 fun TierdexMapScreen(
     findings: List<AnimalFinding>,
     onBack: () -> Unit,
