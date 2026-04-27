@@ -1,7 +1,9 @@
 ﻿package com.example.tierdex
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
@@ -16,6 +18,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -63,6 +66,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.exifinterface.media.ExifInterface
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.android.gms.tasks.CancellationTokenSource
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.io.File
@@ -2891,11 +2897,52 @@ fun AnimalDetailScreen(
     var location by rememberSaveable { mutableStateOf("") }
     var note by rememberSaveable { mutableStateOf("") }
     var selectedPhotoUri by rememberSaveable { mutableStateOf("") }
+    var latitude by rememberSaveable { mutableStateOf<Double?>(null) }
+    var longitude by rememberSaveable { mutableStateOf<Double?>(null) }
+    var locationSource by rememberSaveable { mutableStateOf<String?>(null) }
+    var locationStatusMessage by rememberSaveable { mutableStateOf("") }
     var cropPhotoUri by remember { mutableStateOf<String?>(null) }
     val isWishlistSelected = animal.id == currentWishlistAnimalId
     var editingFinding by remember { mutableStateOf<AnimalFinding?>(null) }
     var isEditMode by rememberSaveable { mutableStateOf(initialFinding == null) }
     val hasAnyFinding = findings.isNotEmpty()
+
+    val requestCurrentLocation = {
+        val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+        val cancellationTokenSource = CancellationTokenSource()
+
+        fusedLocationClient
+            .getCurrentLocation(
+                Priority.PRIORITY_HIGH_ACCURACY,
+                cancellationTokenSource.token
+            )
+            .addOnSuccessListener { currentLocation ->
+                if (currentLocation != null) {
+                    latitude = currentLocation.latitude
+                    longitude = currentLocation.longitude
+                    locationSource = "gps"
+                    locationStatusMessage = "Standort gespeichert"
+                    if (location.isBlank()) {
+                        location = "Aktueller Standort"
+                    }
+                } else {
+                    locationStatusMessage = "Standort konnte nicht ermittelt werden"
+                }
+            }
+            .addOnFailureListener {
+                locationStatusMessage = "Standort konnte nicht ermittelt werden"
+            }
+    }
+
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { granted ->
+        if (granted) {
+            requestCurrentLocation()
+        } else {
+            locationStatusMessage = "Standortberechtigung nicht erteilt"
+        }
+    }
 
     LaunchedEffect(initialFinding) {
         if (initialFinding != null) {
@@ -2903,10 +2950,18 @@ fun AnimalDetailScreen(
             location = initialFinding.location
             note = initialFinding.note
             selectedPhotoUri = initialFinding.photoUri
+            latitude = initialFinding.latitude
+            longitude = initialFinding.longitude
+            locationSource = initialFinding.locationSource
+            locationStatusMessage = ""
             editingFinding = initialFinding
             isEditMode = false
         } else {
             date = currentAppDateText()
+            latitude = null
+            longitude = null
+            locationSource = null
+            locationStatusMessage = ""
             isEditMode = true
         }
     }
@@ -3210,6 +3265,41 @@ fun AnimalDetailScreen(
                             singleLine = true,
                         )
 
+                        OutlinedButton(
+                            onClick = {
+                                val fineLocationGranted = ContextCompat.checkSelfPermission(
+                                    context,
+                                    Manifest.permission.ACCESS_FINE_LOCATION
+                                ) == PackageManager.PERMISSION_GRANTED
+                                val coarseLocationGranted = ContextCompat.checkSelfPermission(
+                                    context,
+                                    Manifest.permission.ACCESS_COARSE_LOCATION
+                                ) == PackageManager.PERMISSION_GRANTED
+
+                                if (fineLocationGranted || coarseLocationGranted) {
+                                    requestCurrentLocation()
+                                } else {
+                                    locationPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Aktuellen Standort übernehmen")
+                        }
+
+                        val currentLocationStatus = if (latitude != null && longitude != null) {
+                            "Standort gespeichert"
+                        } else {
+                            locationStatusMessage
+                        }
+                        if (currentLocationStatus.isNotBlank()) {
+                            Text(
+                                text = currentLocationStatus,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = TextSecondary
+                            )
+                        }
+
                         OutlinedTextField(
                             value = note,
                             onValueChange = { note = it },
@@ -3278,9 +3368,9 @@ fun AnimalDetailScreen(
                                             location = location.trim(),
                                             note = note.trim(),
                                             photoUri = storedPhotoUri,
-                                            latitude = editingFinding?.latitude,
-                                            longitude = editingFinding?.longitude,
-                                            locationSource = editingFinding?.locationSource,
+                                            latitude = latitude,
+                                            longitude = longitude,
+                                            locationSource = locationSource,
                                             ownerId = editingFinding?.ownerId
                                         )
 
@@ -3292,6 +3382,10 @@ fun AnimalDetailScreen(
                                             location = ""
                                             note = ""
                                             selectedPhotoUri = ""
+                                            latitude = null
+                                            longitude = null
+                                            locationSource = null
+                                            locationStatusMessage = ""
                                             editingFinding = null
                                         } else {
                                             onUpdateFinding(
@@ -3318,6 +3412,10 @@ fun AnimalDetailScreen(
                                         date = currentFinding?.date.orEmpty()
                                         location = currentFinding?.location.orEmpty()
                                         note = currentFinding?.note.orEmpty()
+                                        latitude = currentFinding?.latitude
+                                        longitude = currentFinding?.longitude
+                                        locationSource = currentFinding?.locationSource
+                                        locationStatusMessage = ""
                                         selectedPhotoUri =
                                             currentFinding?.photoUri.orEmpty()
                                         cropPhotoUri = null
