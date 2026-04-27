@@ -148,6 +148,12 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 
 
 private const val ANIMALS_FILE_NAME = "tierlistegesamt.csv"
@@ -1417,6 +1423,54 @@ fun HomeScreen(
                     Text("Beispiel: Finde in den nächsten 24 Stunden 2 Vogelarten.")
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun FindingsMapPreview(
+    findings: List<AnimalFinding>,
+    modifier: Modifier = Modifier
+) {
+    val findingsWithCoordinates = findings.mapNotNull { finding ->
+        val latitude = finding.latitude
+        val longitude = finding.longitude
+        if (latitude == null || longitude == null) {
+            null
+        } else {
+            finding to LatLng(latitude, longitude)
+        }
+    }
+
+    if (findingsWithCoordinates.isEmpty()) {
+        Box(
+            modifier = modifier,
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = "Noch keine Fundorte gespeichert",
+                style = MaterialTheme.typography.bodyMedium,
+                color = TextSecondary,
+                textAlign = TextAlign.Center
+            )
+        }
+        return
+    }
+
+    val firstPosition = findingsWithCoordinates.first().second
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(firstPosition, 12f)
+    }
+
+    GoogleMap(
+        modifier = modifier,
+        cameraPositionState = cameraPositionState
+    ) {
+        findingsWithCoordinates.forEach { (_, latLng) ->
+            Marker(
+                state = MarkerState(position = latLng),
+                title = "Fund"
+            )
         }
     }
 }
