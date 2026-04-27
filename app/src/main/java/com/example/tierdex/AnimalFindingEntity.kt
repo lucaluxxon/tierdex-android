@@ -11,5 +11,8 @@ data class AnimalFindingEntity(
     val location: String,
     val note: String,
     val photoUri: String,
+    val latitude: Double? = null,
+    val longitude: Double? = null,
+    val locationSource: String? = null,
     val ownerId: String? = null
 )

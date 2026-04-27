@@ -53,7 +53,10 @@ object FirestoreFindingRepository {
             "date" to finding.date,
             "location" to finding.location,
             "note" to finding.note,
-            "photoUri" to finding.photoUri
+            "photoUri" to finding.photoUri,
+            "latitude" to finding.latitude,
+            "longitude" to finding.longitude,
+            "locationSource" to finding.locationSource
         )
 
         val documentId = documentIdForFinding(finding)
@@ -218,6 +221,9 @@ object FirestoreFindingRepository {
                         location = document.getString("location").orEmpty(),
                         note = document.getString("note").orEmpty(),
                         photoUri = document.getString("photoUri").orEmpty(),
+                        latitude = document.getDouble("latitude"),
+                        longitude = document.getDouble("longitude"),
+                        locationSource = document.getString("locationSource"),
                         ownerId = uid
                     )
                 }

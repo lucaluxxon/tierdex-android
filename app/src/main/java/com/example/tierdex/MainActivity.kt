@@ -188,6 +188,7 @@ class MainActivity : ComponentActivity() {
             "animal_finding_database"
         )
             .addMigrations(AnimalFindingDatabase.MIGRATION_1_2)
+            .addMigrations(AnimalFindingDatabase.MIGRATION_2_3)
             .build()
     }
 
@@ -245,6 +246,9 @@ data class AnimalFinding(
     val location: String,
     val note: String,
     val photoUri: String = "",
+    val latitude: Double? = null,
+    val longitude: Double? = null,
+    val locationSource: String? = null,
     val ownerId: String? = null
 )
 
@@ -315,6 +319,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
             location = it.location,
             note = it.note,
             photoUri = it.photoUri,
+            latitude = it.latitude,
+            longitude = it.longitude,
+            locationSource = it.locationSource,
             ownerId = it.ownerId
         )
     }
@@ -392,6 +399,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                 location = entity.location,
                                 note = entity.note,
                                 photoUri = entity.photoUri,
+                                latitude = entity.latitude,
+                                longitude = entity.longitude,
+                                locationSource = entity.locationSource,
                                 ownerId = entity.ownerId
                             )
                         }
@@ -438,6 +448,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                         location = cloudFinding.location,
                                         note = cloudFinding.note,
                                         photoUri = cloudFinding.photoUri,
+                                        latitude = cloudFinding.latitude,
+                                        longitude = cloudFinding.longitude,
+                                        locationSource = cloudFinding.locationSource,
                                         ownerId = ownerId
                                     )
                                 )
@@ -715,6 +728,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                             location = importedFindingForCurrentOwner.location,
                                             note = importedFindingForCurrentOwner.note,
                                             photoUri = importedFindingForCurrentOwner.photoUri,
+                                            latitude = importedFindingForCurrentOwner.latitude,
+                                            longitude = importedFindingForCurrentOwner.longitude,
+                                            locationSource = importedFindingForCurrentOwner.locationSource,
                                             ownerId = importedFindingForCurrentOwner.ownerId
                                         )
                                     )
@@ -760,6 +776,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                         location = finding.location,
                                         note = finding.note,
                                         photoUri = finding.photoUri,
+                                        latitude = finding.latitude,
+                                        longitude = finding.longitude,
+                                        locationSource = finding.locationSource,
                                         ownerId = currentOwnerId
                                     )
                                 )
@@ -850,6 +869,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                             location = newFinding.location,
                                             note = newFinding.note,
                                             photoUri = newFinding.photoUri,
+                                            latitude = newFinding.latitude,
+                                            longitude = newFinding.longitude,
+                                            locationSource = newFinding.locationSource,
                                             ownerId = currentOwnerId
                                         )
                                     )
@@ -3256,6 +3278,9 @@ fun AnimalDetailScreen(
                                             location = location.trim(),
                                             note = note.trim(),
                                             photoUri = storedPhotoUri,
+                                            latitude = editingFinding?.latitude,
+                                            longitude = editingFinding?.longitude,
+                                            locationSource = editingFinding?.locationSource,
                                             ownerId = editingFinding?.ownerId
                                         )
 
