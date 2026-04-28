@@ -20,6 +20,14 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -92,6 +100,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.DropdownMenu
@@ -168,6 +177,7 @@ private const val INTRO_PENDING_KEY_PREFIX = "intro_pending_"
 private const val INTRO_SEEN_KEY_PREFIX = "intro_seen_"
 private const val WISHLIST_ANIMAL_KEY_PREFIX = "wishAnimalId_"
 private const val FAVORITE_ANIMAL_KEY_PREFIX = "favoriteAnimalId_"
+private const val LOCAL_PREFERENCES_OWNER_ID = "local"
 private val AppGreenBackground = Color(0xFF51734A)
 
 private fun favoriteAnimalKey(ownerId: String): String = "$FAVORITE_ANIMAL_KEY_PREFIX$ownerId"
@@ -345,6 +355,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     val context = LocalContext.current
     val prefs =
         context.getSharedPreferences("tierdex_prefs", android.content.Context.MODE_PRIVATE)
+    val preferenceOwnerId = ownerId ?: LOCAL_PREFERENCES_OWNER_ID
     var searchText by rememberSaveable { mutableStateOf("") }
     var selectedAnimalId by rememberSaveable { mutableStateOf<String?>(null) }
     var storageDebug by rememberSaveable { mutableStateOf("Funde werden geladen...") }
@@ -360,16 +371,18 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     var selectedGroupFilter by rememberSaveable { mutableStateOf("Alle") }
     var selectedSubgroupFilter by rememberSaveable { mutableStateOf("Alle") }
     var showTierdexMapScreen by rememberSaveable { mutableStateOf(false) }
+    var openCreateFindingMode by rememberSaveable { mutableStateOf(false) }
     val resetSearchState = {
         searchText = ""
     }
     var favoriteAnimalId by rememberSaveable { mutableStateOf<String?>(null) }
 
     var wishlistAnimalId by rememberSaveable { mutableStateOf<String?>(null) }
+    var showWishlistCelebration by rememberSaveable { mutableStateOf(false) }
     var previousOwnerId by rememberSaveable { mutableStateOf(ownerId) }
     LaunchedEffect(ownerId) {
-        favoriteAnimalId = ownerId?.let { prefs.getString(favoriteAnimalKey(it), null) }
-        wishlistAnimalId = ownerId?.let { prefs.getString(wishlistAnimalKey(it), null) }
+        favoriteAnimalId = prefs.getString(favoriteAnimalKey(preferenceOwnerId), null)
+        wishlistAnimalId = prefs.getString(wishlistAnimalKey(preferenceOwnerId), null)
 
         val hasPendingIntro = ownerId?.let {
             val pending = prefs.getBoolean(introPendingKey(it), false)
@@ -492,6 +505,20 @@ fun TierdexApp(database: AnimalFindingDatabase) {
             )
         }
     }
+    LaunchedEffect(wishlistAnimalId, findingsFromRoom, preferenceOwnerId) {
+        val currentWishlistAnimalId = wishlistAnimalId ?: return@LaunchedEffect
+        val wishlistAnimalWasFound = findingsFromRoom.any { it.animalId == currentWishlistAnimalId }
+        if (wishlistAnimalWasFound) {
+            wishlistAnimalId = null
+            prefs.edit().remove(wishlistAnimalKey(preferenceOwnerId)).apply()
+        }
+    }
+    LaunchedEffect(showWishlistCelebration) {
+        if (showWishlistCelebration) {
+            delay(2200)
+            showWishlistCelebration = false
+        }
+    }
 
 
     val animalLoadResult: CsvLoadResult = remember(context) {
@@ -582,6 +609,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         resetSearchState()
         selectedAnimalId = null
         selectedFindingToEdit = null
+        openCreateFindingMode = false
     }
 
     BackHandler(enabled = showAnimalPicker && selectedAnimalId == null) {
@@ -629,6 +657,8 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                 FloatingActionButton(
                     onClick = {
                         resetSearchState()
+                        selectedFindingToEdit = null
+                        openCreateFindingMode = false
                         showAnimalPicker = true
                     },
                     containerColor = PrimaryGreen,
@@ -783,10 +813,12 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         findings = findingsFromRoom.filter { it.animalId == selectedAnimal.id },
                         storageDebug = storageDebug,
                         initialFinding = selectedFindingToEdit,
+                        startInCreateMode = openCreateFindingMode && selectedFindingToEdit == null,
                         onBackClick = {
                             resetSearchState()
                             selectedAnimalId = null
                             selectedFindingToEdit = null
+                            openCreateFindingMode = false
                         },
                         onSaveFinding = { finding ->
                             scope.launch {
@@ -803,6 +835,12 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                         ownerId = currentOwnerId
                                     )
                                 )
+
+                                if (wishlistAnimalId == finding.animalId) {
+                                    wishlistAnimalId = null
+                                    prefs.edit().remove(wishlistAnimalKey(preferenceOwnerId)).apply()
+                                    showWishlistCelebration = true
+                                }
 
                                 if (currentOwnerId != null) {
                                     FirestoreFindingRepository.saveCurrentUserFinding(finding) { success, result ->
@@ -914,18 +952,21 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             }
                         },
                         onSetFavoriteFindingAnimal = { animal ->
-                            favoriteAnimalId = animal.id
-                            currentOwnerId?.let { ownerId ->
-                                prefs.edit().putString(favoriteAnimalKey(ownerId), animal.id)
+                            val animalHasFinding = findingsFromRoom.any { it.animalId == animal.id }
+                            if (animalHasFinding) {
+                                favoriteAnimalId = animal.id
+                                prefs.edit()
+                                    .putString(favoriteAnimalKey(preferenceOwnerId), animal.id)
                                     .apply()
                             }
                         },
                         currentFavoriteAnimalId = favoriteAnimalId,
                         onSetWishlistAnimal = { animal ->
-                            wishlistAnimalId =
-                                if (wishlistAnimalId == animal.id) null else animal.id
-                            currentOwnerId?.let { ownerId ->
-                                prefs.edit().putString(wishlistAnimalKey(ownerId), wishlistAnimalId)
+                            val animalHasFinding = findingsFromRoom.any { it.animalId == animal.id }
+                            if (!animalHasFinding && wishlistAnimalId != animal.id) {
+                                wishlistAnimalId = animal.id
+                                prefs.edit()
+                                    .putString(wishlistAnimalKey(preferenceOwnerId), animal.id)
                                     .apply()
                             }
                         },
@@ -970,6 +1011,8 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             resetSearchState()
                             selectedAnimalId = animal.id
                             showAnimalPicker = false
+                            selectedFindingToEdit = null
+                            openCreateFindingMode = true
                         },
                         isPickerMode = true,
                         extraTopPadding = innerPadding.calculateTopPadding(),
@@ -988,6 +1031,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         onEditFinding = { finding ->
                             selectedFindingToEdit = finding
                             selectedAnimalId = finding.animalId
+                            openCreateFindingMode = false
                         },
                         extraTopPadding = 0.dp,
                         extraBottomPadding = innerPadding.calculateBottomPadding()
@@ -1044,6 +1088,8 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             onAnimalClick = { animal ->
                                 resetSearchState()
                                 selectedAnimalId = animal.id
+                                selectedFindingToEdit = null
+                                openCreateFindingMode = false
                             },
                             onOpenMap = { showTierdexMapScreen = true },
                             extraTopPadding = innerPadding.calculateTopPadding(),
@@ -1066,6 +1112,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         onEditFinding = { finding ->
                             selectedFindingToEdit = finding
                             selectedAnimalId = finding.animalId
+                            openCreateFindingMode = false
                         },
                         favoriteAnimalId = favoriteAnimalId,
                         wishlistAnimalId = wishlistAnimalId,
@@ -1074,6 +1121,16 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                     )
                 }
             }
+            WishlistCelebrationBanner(
+                visible = showWishlistCelebration,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(
+                        top = innerPadding.calculateTopPadding() + 16.dp,
+                        start = 16.dp,
+                        end = 16.dp
+                    )
+            )
             if (showStartupHintDialog && !showIntroScreen) {
                 StartupHintDialog(
                     onDismiss = { showStartupHintDialog = false }
@@ -1103,6 +1160,64 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         contentDescription = "Einstellungen"
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun WishlistCelebrationBanner(
+    visible: Boolean,
+    modifier: Modifier = Modifier
+) {
+    val scale by animateFloatAsState(
+        targetValue = if (visible) 1f else 0.92f,
+        label = "wishlistCelebrationScale"
+    )
+
+    AnimatedVisibility(
+        visible = visible,
+        modifier = modifier,
+        enter = fadeIn() + slideInVertically(initialOffsetY = { -it / 2 }) + scaleIn(initialScale = 0.92f),
+        exit = fadeOut() + slideOutVertically(targetOffsetY = { -it / 3 }) + scaleOut(targetScale = 0.96f)
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .graphicsLayer {
+                    scaleX = scale
+                    scaleY = scale
+                },
+            shape = RoundedCornerShape(20.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = PrimaryGreenSoft.copy(alpha = 0.96f)
+            ),
+            border = BorderStroke(1.dp, PrimaryGreen.copy(alpha = 0.25f))
+        ) {
+            Column(
+                modifier = Modifier.padding(horizontal = 18.dp, vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(text = "✦", color = PrimaryGreen, style = MaterialTheme.typography.titleLarge)
+                    Text(text = "★", color = PrimaryGreen, style = MaterialTheme.typography.headlineSmall)
+                    Text(text = "✦", color = PrimaryGreen, style = MaterialTheme.typography.titleLarge)
+                }
+                Text(
+                    text = "Wunsch-Fund entdeckt!",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = TextPrimary
+                )
+                Text(
+                    text = "Dein Wunsch-Tier ist jetzt gefunden.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextSecondary
+                )
             }
         }
     }
@@ -3084,6 +3199,7 @@ fun AnimalDetailScreen(
     findings: List<AnimalFinding>,
     storageDebug: String,
     initialFinding: AnimalFinding?,
+    startInCreateMode: Boolean = false,
     onBackClick: () -> Unit,
     onSaveFinding: (AnimalFinding) -> Unit,
     onDeleteFinding: (AnimalFinding) -> Unit,
@@ -3128,8 +3244,16 @@ fun AnimalDetailScreen(
     val isWishlistSelected = animal.id == currentWishlistAnimalId
     val isFavoriteSelected = animal.id == currentFavoriteAnimalId
     var editingFinding by remember(initial?.roomId) { mutableStateOf(initial) }
-    var isEditMode by rememberSaveable(initial?.roomId) { mutableStateOf(initial == null) }
+    var isEditMode by rememberSaveable(initial?.roomId, startInCreateMode) {
+        mutableStateOf(initial == null && startInCreateMode)
+    }
     val hasAnyFinding = findings.isNotEmpty()
+    val detailFindings = remember(findings) { findings.asReversed() }
+    val additionalAnimalInfo = listOf(
+        "Lebensraum" to animal.habitat,
+        "Verbreitung" to animal.distribution,
+        "Seltenheit" to animal.rarity
+    ).filter { (_, value) -> value.isNotBlank() }
 
     val requestCurrentLocation = {
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
@@ -3178,6 +3302,19 @@ fun AnimalDetailScreen(
     }
 
     val currentFinding = editingFinding ?: initial
+    val openFindingDetails: (AnimalFinding) -> Unit = { finding ->
+        editingFinding = finding
+        date = finding.date
+        location = finding.location
+        note = finding.note
+        latitude = finding.latitude
+        longitude = finding.longitude
+        locationSource = finding.locationSource
+        locationStatusMessage = ""
+        selectedPhotoUri = finding.photoUri
+        cropPhotoUri = null
+        isEditMode = false
+    }
     val editablePhotoUri = selectedPhotoUri.takeIf { it.isNotBlank() } ?: currentFinding?.photoUri
     val hasTextualFindingDetails =
         !currentFinding?.date.isNullOrBlank() ||
@@ -3280,6 +3417,64 @@ fun AnimalDetailScreen(
                                 },
                                 tint = PrimaryGreen
                             )
+                        }
+                    }
+                }
+            }
+        }
+
+        if (!isEditMode && detailFindings.isNotEmpty()) {
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    colors = CardDefaults.cardColors(containerColor = CardBackground)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            text = "Vorhandene Funde",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = TextPrimary
+                        )
+
+                        detailFindings.forEach { finding ->
+                            Card(
+                                onClick = { openFindingDetails(finding) },
+                                shape = RoundedCornerShape(16.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.White.copy(alpha = 0.82f)
+                                ),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(16.dp),
+                                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Text(
+                                        text = finding.date.ifBlank { "Fund ohne Datum" },
+                                        style = MaterialTheme.typography.titleSmall,
+                                        color = TextPrimary
+                                    )
+                                    finding.location.takeIf { it.isNotBlank() }?.let {
+                                        Text(
+                                            text = it,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = TextSecondary
+                                        )
+                                    }
+                                    finding.note.takeIf { it.isNotBlank() }?.let {
+                                        Text(
+                                            text = it,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = TextSecondary
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -3442,6 +3637,76 @@ fun AnimalDetailScreen(
                                 }
                             }
                         }
+                    }
+                }
+            }
+        }
+
+        if (!isEditMode) {
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    colors = CardDefaults.cardColors(containerColor = CardBackground)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            text = "Weitere Tierinfos",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = TextPrimary
+                        )
+
+                        if (additionalAnimalInfo.isEmpty()) {
+                            Text(
+                                text = "Hier können später Lebensraum, Verbreitung, Seltenheit und weitere Informationen erscheinen.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
+                            )
+                        } else {
+                            additionalAnimalInfo.forEach { (label, value) ->
+                                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                    Text(
+                                        text = label,
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = TextSecondary
+                                    )
+                                    Text(
+                                        text = value,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = TextPrimary
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    colors = CardDefaults.cardColors(containerColor = CardBackground)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Text(
+                            text = "Freunde",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = TextPrimary
+                        )
+                        Text(
+                            text = "Später siehst du hier, welche Freunde dieses Tier bereits gefunden haben.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextSecondary
+                        )
                     }
                 }
             }
