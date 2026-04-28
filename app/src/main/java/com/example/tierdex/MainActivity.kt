@@ -191,6 +191,11 @@ private fun introSeenKey(ownerId: String): String = "$INTRO_SEEN_KEY_PREFIX$owne
 private fun currentAppDateText(): String =
     SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
 
+private fun formatCoordinates(
+    latitude: Double,
+    longitude: Double
+): String = String.format(Locale.US, "%.6f, %.6f", latitude, longitude)
+
 private val uriImageMemoryCache = object : LruCache<String, Bitmap>(20 * 1024 * 1024) {
     override fun sizeOf(key: String, value: Bitmap): Int = value.byteCount
 }
@@ -378,7 +383,8 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     var favoriteAnimalId by rememberSaveable { mutableStateOf<String?>(null) }
 
     var wishlistAnimalId by rememberSaveable { mutableStateOf<String?>(null) }
-    var showWishlistCelebration by rememberSaveable { mutableStateOf(false) }
+    var wishlistCelebrationMessage by rememberSaveable { mutableStateOf<CelebrationMessage?>(null) }
+    var questLevelUpMessage by rememberSaveable { mutableStateOf<CelebrationMessage?>(null) }
     var previousOwnerId by rememberSaveable { mutableStateOf(ownerId) }
     LaunchedEffect(ownerId) {
         favoriteAnimalId = prefs.getString(favoriteAnimalKey(preferenceOwnerId), null)
@@ -513,10 +519,16 @@ fun TierdexApp(database: AnimalFindingDatabase) {
             prefs.edit().remove(wishlistAnimalKey(preferenceOwnerId)).apply()
         }
     }
-    LaunchedEffect(showWishlistCelebration) {
-        if (showWishlistCelebration) {
+    LaunchedEffect(wishlistCelebrationMessage) {
+        if (wishlistCelebrationMessage != null) {
             delay(2200)
-            showWishlistCelebration = false
+            wishlistCelebrationMessage = null
+        }
+    }
+    LaunchedEffect(questLevelUpMessage) {
+        if (questLevelUpMessage != null) {
+            delay(2200)
+            questLevelUpMessage = null
         }
     }
 
@@ -822,6 +834,13 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         },
                         onSaveFinding = { finding ->
                             scope.launch {
+                                val previousFindings = findingsFromRoom
+                                val questCelebration = detectQuestLevelUpMessage(
+                                    previousFindings = previousFindings,
+                                    newFinding = finding,
+                                    animals = animals
+                                )
+
                                 dao.insertFinding(
                                     AnimalFindingEntity(
                                         animalId = finding.animalId,
@@ -839,8 +858,13 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                 if (wishlistAnimalId == finding.animalId) {
                                     wishlistAnimalId = null
                                     prefs.edit().remove(wishlistAnimalKey(preferenceOwnerId)).apply()
-                                    showWishlistCelebration = true
+                                    wishlistCelebrationMessage = CelebrationMessage(
+                                        title = "Wunsch-Fund entdeckt!",
+                                        subtitle = "Dein Wunsch-Tier ist jetzt gefunden."
+                                    )
                                 }
+
+                                questLevelUpMessage = questCelebration
 
                                 if (currentOwnerId != null) {
                                     FirestoreFindingRepository.saveCurrentUserFinding(finding) { success, result ->
@@ -1027,6 +1051,8 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         totalFindings = findingsFromRoom.size,
                         findings = findingsFromRoom,
                         animals = animals,
+                        favoriteAnimalId = favoriteAnimalId,
+                        wishlistAnimalId = wishlistAnimalId,
                         roomFindingsCount = allFindings.size,
                         onEditFinding = { finding ->
                             selectedFindingToEdit = finding
@@ -1121,12 +1147,24 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                     )
                 }
             }
-            WishlistCelebrationBanner(
-                visible = showWishlistCelebration,
+            CelebrationBanner(
+                visible = wishlistCelebrationMessage != null,
+                message = wishlistCelebrationMessage,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .padding(
                         top = innerPadding.calculateTopPadding() + 16.dp,
+                        start = 16.dp,
+                        end = 16.dp
+                    )
+            )
+            CelebrationBanner(
+                visible = questLevelUpMessage != null,
+                message = questLevelUpMessage,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(
+                        top = innerPadding.calculateTopPadding() + 108.dp,
                         start = 16.dp,
                         end = 16.dp
                     )
@@ -1166,13 +1204,14 @@ fun TierdexApp(database: AnimalFindingDatabase) {
 }
 
 @Composable
-fun WishlistCelebrationBanner(
+fun CelebrationBanner(
     visible: Boolean,
+    message: CelebrationMessage?,
     modifier: Modifier = Modifier
 ) {
     val scale by animateFloatAsState(
         targetValue = if (visible) 1f else 0.92f,
-        label = "wishlistCelebrationScale"
+        label = "celebrationScale"
     )
 
     AnimatedVisibility(
@@ -1209,12 +1248,12 @@ fun WishlistCelebrationBanner(
                     Text(text = "✦", color = PrimaryGreen, style = MaterialTheme.typography.titleLarge)
                 }
                 Text(
-                    text = "Wunsch-Fund entdeckt!",
+                    text = message?.title.orEmpty(),
                     style = MaterialTheme.typography.titleMedium,
                     color = TextPrimary
                 )
                 Text(
-                    text = "Dein Wunsch-Tier ist jetzt gefunden.",
+                    text = message?.subtitle.orEmpty(),
                     style = MaterialTheme.typography.bodyMedium,
                     color = TextSecondary
                 )
@@ -1283,31 +1322,145 @@ fun MainBottomBar(
 }
 
 @Composable
+fun HomeSectionTitle(
+    title: String,
+    subtitle: String? = null
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            color = TextPrimary
+        )
+        subtitle?.let {
+            Text(
+                text = it,
+                style = MaterialTheme.typography.bodySmall,
+                color = TextSecondary
+            )
+        }
+    }
+}
+
+@Composable
+fun HomeStatTile(
+    title: String,
+    value: String,
+    supportingText: String,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(18.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = CardBackground,
+            contentColor = TextPrimary
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.labelMedium,
+                color = TextSecondary
+            )
+            Text(
+                text = value,
+                style = MaterialTheme.typography.titleLarge,
+                color = TextPrimary
+            )
+            Text(
+                text = supportingText,
+                style = MaterialTheme.typography.bodySmall,
+                color = TextSecondary
+            )
+        }
+    }
+}
+
+@Composable
+fun HomeQuestCompactCard(
+    quest: QuestUiModel,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(18.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (quest.isCompleted) PrimaryGreenSoft.copy(alpha = 0.45f) else CardBackground,
+            contentColor = TextPrimary
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                text = quest.title,
+                style = MaterialTheme.typography.titleSmall,
+                color = TextPrimary
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "${quest.shownProgress}/${quest.goal}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextPrimary
+                )
+                Text(
+                    text = if (quest.isCompleted) "Geschafft" else quest.percentLabel,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = if (quest.isCompleted) PrimaryGreen else TextSecondary
+                )
+            }
+            LinearProgressIndicator(
+                progress = { quest.progressFraction },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(6.dp)
+                    .clip(RoundedCornerShape(999.dp)),
+                color = PrimaryGreen,
+                trackColor = PrimaryGreenSoft.copy(alpha = 0.45f)
+            )
+            Text(
+                text = quest.encouragementLabel,
+                style = MaterialTheme.typography.bodySmall,
+                color = TextSecondary
+            )
+        }
+    }
+}
+
+@Composable
 fun HomeScreen(
     collectedAnimalCount: Int,
     totalAnimalCount: Int,
     totalFindings: Int,
     findings: List<AnimalFinding>,
     animals: List<AnimalEntry>,
+    favoriteAnimalId: String?,
+    wishlistAnimalId: String?,
     onEditFinding: (AnimalFinding) -> Unit,
     roomFindingsCount: Int,
     extraTopPadding: Dp = 0.dp,
     extraBottomPadding: Dp = 0.dp
 ) {
     val latestFinding = findings.firstOrNull()
-    val latestAnimal = animals.find {
-        it.id.trim().lowercase() == latestFinding?.animalId?.trim()?.lowercase()
-    }
+    val animalById = remember(animals) { animals.associateBy { it.id } }
+    val latestAnimal = latestFinding?.animalId?.let { animalById[it] }
+    val wishlistAnimal = wishlistAnimalId?.let { animalById[it] }
 
     val photoFindingCount = findings.count { it.photoUri.isNotBlank() }
+    val findingsWithLocationCount = findings.count { it.latitude != null && it.longitude != null }
     val collectionPercent = if (totalAnimalCount > 0) {
         (collectedAnimalCount.toFloat() / totalAnimalCount.toFloat()) * 100f
-    } else {
-        0f
-    }
-
-    val collectionProgress = if (totalAnimalCount > 0) {
-        collectedAnimalCount.toFloat() / totalAnimalCount.toFloat()
     } else {
         0f
     }
@@ -1321,6 +1474,7 @@ fun HomeScreen(
                 photoFindingCount = photoFindingCount
             )
         }
+    val nextQuest = quests.firstOrNull { !it.isCompleted } ?: quests.firstOrNull()
 
     LazyColumn(
         modifier = Modifier
@@ -1336,29 +1490,34 @@ fun HomeScreen(
             top = 0.dp,
             bottom = extraBottomPadding + 24.dp
         ),
-        verticalArrangement = Arrangement.spacedBy(10.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                shape = RoundedCornerShape(24.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = CardBackground,
+                    containerColor = PrimaryGreenSoft.copy(alpha = 0.95f),
                     contentColor = TextPrimary
                 )
             ) {
                 Column(
-                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                    modifier = Modifier.padding(horizontal = 22.dp, vertical = 22.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Text(
-                        text = "Startseite",
+                        text = "Willkommen zurück",
                         style = MaterialTheme.typography.headlineMedium,
                         color = TextPrimary
                     )
                     Text(
-                        text = "Dein letzter Fund, dein Fortschritt und deine nächsten Ziele an einem Ort.",
+                        text = "Du hast $collectedAnimalCount ${if (collectedAnimalCount == 1) "Tier" else "Tiere"} entdeckt",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = TextPrimary
+                    )
+                    Text(
+                        text = "Dein Fortschritt wächst weiter. Hier siehst du deine Sammlung, dein nächstes Ziel und die wichtigsten Zahlen auf einen Blick.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = TextSecondary
                     )
@@ -1368,12 +1527,9 @@ fun HomeScreen(
 
         item {
             Card(
-                onClick = {
-                    latestFinding?.let(onEditFinding)
-                },
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                shape = RoundedCornerShape(22.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                 colors = CardDefaults.cardColors(
                     containerColor = CardBackground,
                     contentColor = TextPrimary
@@ -1381,50 +1537,201 @@ fun HomeScreen(
             ) {
                 Column(
                     modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Text(
-                        text = "Zuletzt entdeckt",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = TextSecondary
-                    )
-                    Text(
-                        text = "Letzter Fund",
-                        style = MaterialTheme.typography.titleMedium,
+                    HomeSectionTitle(
+                        title = "Nächstes Ziel",
+                        subtitle = "Dein aktuell wichtigster Quest-Fortschritt"
                     )
 
-                    if (latestFinding == null) {
-                        Text("Noch kein Fund gespeichert.")
+                    if (nextQuest == null) {
+                        Text(
+                            text = "Noch keine Questdaten verfügbar.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextSecondary
+                        )
                     } else {
-                        if (latestFinding.date.isNotBlank()) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
                             Text(
-                                text = latestAnimal?.germanName ?: "Unbekanntes Tier",
-                                style = MaterialTheme.typography.titleMedium
+                                text = nextQuest.title,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = TextPrimary
                             )
                             Text(
-                                text = "Datum: ${latestFinding.date}",
+                                text = nextQuest.percentLabel,
+                                style = MaterialTheme.typography.labelLarge,
+                                color = PrimaryGreen
+                            )
+                        }
+                        Text(
+                            text = nextQuest.description,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextSecondary
+                        )
+                        Text(
+                            text = "${nextQuest.shownProgress} von ${nextQuest.goal} Funden",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextPrimary
+                        )
+                        LinearProgressIndicator(
+                            progress = { nextQuest.progressFraction },
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(10.dp)
+                                .clip(RoundedCornerShape(999.dp)),
+                            color = PrimaryGreen,
+                            trackColor = PrimaryGreenSoft.copy(alpha = 0.45f)
+                        )
+                        Text(
+                            text = nextQuest.encouragementLabel,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = TextSecondary
+                        )
+                    }
+                }
+            }
+        }
+
+        item {
+            HomeSectionTitle(
+                title = "Überblick",
+                subtitle = "Deine wichtigsten Werte auf einen Blick"
+            )
+        }
+
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                HomeStatTile(
+                    title = "Funde",
+                    value = totalFindings.toString(),
+                    supportingText = "gespeicherte Beobachtungen",
+                    modifier = Modifier.weight(1f)
+                )
+                HomeStatTile(
+                    title = "Entdeckt",
+                    value = collectedAnimalCount.toString(),
+                    supportingText = "verschiedene Tierarten",
+                    modifier = Modifier.weight(1f)
+                )
+            }
+        }
+
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                if (wishlistAnimal != null) {
+                    Card(
+                        modifier = Modifier.weight(1.25f),
+                        shape = RoundedCornerShape(20.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = PrimaryGreenSoft.copy(alpha = 0.72f),
+                            contentColor = TextPrimary
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(horizontal = 18.dp, vertical = 16.dp),
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Text(
+                                text = "Wunsch-Fund",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = TextSecondary
+                            )
+                            Text(
+                                text = wishlistAnimal.germanName,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = TextPrimary
+                            )
+                            Text(
+                                text = wishlistAnimal.latinName,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = TextSecondary
                             )
-                            if (latestFinding.location.isNotBlank()) {
-                                Text(
-                                    text = "Fundort: ${latestFinding.location}",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = TextSecondary
-                                )
-                            }
                         }
+                    }
+                    HomeStatTile(
+                        title = "Fundorte",
+                        value = findingsWithLocationCount.toString(),
+                        supportingText = "mit gespeicherten Koordinaten",
+                        modifier = Modifier.weight(0.9f)
+                    )
+                } else {
+                    HomeStatTile(
+                        title = "Wunsch-Fund",
+                        value = "Offen",
+                        supportingText = "noch kein Tier gewählt",
+                        modifier = Modifier.weight(1f)
+                    )
+                    HomeStatTile(
+                        title = "Fundorte",
+                        value = findingsWithLocationCount.toString(),
+                        supportingText = "mit gespeicherten Koordinaten",
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
+        }
 
-                        if (latestFinding.note.isNotBlank()) {
+        latestFinding?.let { finding ->
+            item {
+                Card(
+                    onClick = { onEditFinding(finding) },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = CardBackground,
+                        contentColor = TextPrimary
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        HomeSectionTitle(
+                            title = "Zuletzt entdeckt",
+                            subtitle = "Dein aktuellster Fund"
+                        )
+
+                        Text(
+                            text = latestAnimal?.germanName ?: "Unbekanntes Tier",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = TextPrimary
+                        )
+
+                        latestFinding.date.takeIf { it.isNotBlank() }?.let {
                             Text(
-                                text = "Notiz: ${latestFinding.note}",
+                                text = "Datum: $it",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = TextSecondary
                             )
                         }
-
+                        latestFinding.location.takeIf { it.isNotBlank() }?.let {
+                            Text(
+                                text = "Fundort: $it",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
+                            )
+                        }
+                        latestFinding.note.takeIf { it.isNotBlank() }?.let {
+                            Text(
+                                text = "Notiz: $it",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
+                            )
+                        }
                         if (latestFinding.photoUri.isNotBlank()) {
-                            Spacer(modifier = Modifier.height(12.dp))
+                            Spacer(modifier = Modifier.height(8.dp))
                             UriImage(
                                 uriString = latestFinding.photoUri,
                                 maxImageSizePx = 1024,
@@ -1439,97 +1746,27 @@ fun HomeScreen(
         }
 
         item {
-            Card(
+            HomeSectionTitle(
+                title = "Quests",
+                subtitle = "Deine nächsten Sammelziele"
+            )
+        }
+
+        items(quests.chunked(2)) { questRow ->
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = CardBackground,
-                    contentColor = TextPrimary
-                )
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = "Sammlungsstand",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = TextSecondary
+                questRow.forEach { quest ->
+                    HomeQuestCompactCard(
+                        quest = quest,
+                        modifier = Modifier.weight(1f)
                     )
-                    Text(
-                        text = "Fortschritt",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = TextPrimary
-                    )
-                    Text(
-                        text = "Gesammelt: $collectedAnimalCount von $totalAnimalCount Arten",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextPrimary
-                    )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(
-                            modifier = Modifier.weight(1f),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            Text(
-                                text = String.format("%.1f %%", collectionPercent),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = TextSecondary
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(8.dp)
-                                    .clip(RoundedCornerShape(999.dp))
-                                    .background(Color.White)
-                                    .border(
-                                        width = 1.dp,
-                                        color = TextSecondary.copy(alpha = 0.25f),
-                                        shape = RoundedCornerShape(999.dp)
-                                    )
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxHeight()
-                                        .fillMaxWidth(collectionProgress)
-                                        .background(PrimaryGreen)
-                                )
-                            }
-                        }
-                        Text(
-                            text = "Gesamte Funde: $totalFindings",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = TextSecondary,
-                            modifier = Modifier.padding(start = 12.dp)
-                        )
-                    }
+                }
+                if (questRow.size == 1) {
+                    Spacer(modifier = Modifier.weight(1f))
                 }
             }
-        }
-
-        item {
-            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(
-                    text = "Quests",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = TextPrimary
-                )
-                Text(
-                    text = "Deine nächsten kleinen Ziele auf einen Blick.",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = TextSecondary
-                )
-            }
-        }
-
-        items(quests, key = { it.id }) { quest ->
-            QuestCard(quest = quest)
         }
 
         item {
@@ -1551,9 +1788,7 @@ fun HomeScreen(
                         style = MaterialTheme.typography.titleMedium,
                         color = TextPrimary
                     )
-
                     Spacer(modifier = Modifier.height(8.dp))
-
                     Text("Hier kommen später wechselnde zeitlich begrenzte Aufgaben hin.")
                     Text("Beispiel: Finde in den nächsten 24 Stunden 2 Vogelarten.")
                 }
@@ -2146,6 +2381,11 @@ data class QuestUiModel(
         }
 }
 
+data class CelebrationMessage(
+    val title: String,
+    val subtitle: String
+)
+
 @Composable
 fun QuestCard(quest: QuestUiModel) {
     Card(
@@ -2347,6 +2587,76 @@ fun buildHomeQuests(
 
 fun normalizeQuestGroupName(group: String): String {
     return group.trim().lowercase()
+}
+
+fun detectQuestLevelUpMessage(
+    previousFindings: List<AnimalFinding>,
+    newFinding: AnimalFinding,
+    animals: List<AnimalEntry>
+): CelebrationMessage? {
+    fun reachedGoal(previous: Int, current: Int, goals: List<Int>): Int? {
+        return goals.firstOrNull { goal -> previous < goal && current >= goal }
+    }
+
+    val totalGoal = reachedGoal(
+        previous = previousFindings.size,
+        current = previousFindings.size + 1,
+        goals = listOf(1, 5, 10, 25, 50)
+    )
+    if (totalGoal != null) {
+        return CelebrationMessage(
+            title = "Quest geschafft: $totalGoal Funde!",
+            subtitle = "Deine Gesamtfund-Quest hat eine neue Stufe erreicht."
+        )
+    }
+
+    if (newFinding.photoUri.isNotBlank()) {
+        val previousPhotoCount = previousFindings.count { it.photoUri.isNotBlank() }
+        val photoGoal = reachedGoal(
+            previous = previousPhotoCount,
+            current = previousPhotoCount + 1,
+            goals = listOf(1, 3, 5, 10, 20)
+        )
+        if (photoGoal != null) {
+            return CelebrationMessage(
+                title = "Quest geschafft: $photoGoal Foto-Funde!",
+                subtitle = "Deine Fotoquest hat eine neue Stufe erreicht."
+            )
+        }
+    }
+
+    val foundAnimal = animals.firstOrNull { it.id == newFinding.animalId }
+    val normalizedGroup = foundAnimal?.group?.let(::normalizeQuestGroupName) ?: return null
+    val groupQuestConfigs = listOf(
+        "Vögel" to listOf("Vogel", "Vögel"),
+        "Fische" to listOf("Fisch", "Fische"),
+        "Säugetiere" to listOf("Säugetier", "Säugetiere"),
+        "Amphibien" to listOf("Amphibie", "Amphibien"),
+        "Reptilien" to listOf("Reptil", "Reptilien")
+    )
+    val matchedGroupConfig = groupQuestConfigs.firstOrNull { (_, aliases) ->
+        normalizedGroup in aliases.map(::normalizeQuestGroupName)
+    } ?: return null
+
+    val relevantAliases = matchedGroupConfig.second.map(::normalizeQuestGroupName).toSet()
+    val animalById = animals.associateBy { it.id }
+    val previousGroupCount = previousFindings.count { finding ->
+        animalById[finding.animalId]?.group?.let(::normalizeQuestGroupName) in relevantAliases
+    }
+    val groupGoal = reachedGoal(
+        previous = previousGroupCount,
+        current = previousGroupCount + 1,
+        goals = listOf(1, 3, 5, 10)
+    )
+
+    return if (groupGoal != null) {
+        CelebrationMessage(
+            title = "Quest geschafft: $groupGoal ${matchedGroupConfig.first}!",
+            subtitle = "Deine ${matchedGroupConfig.first}-Quest hat eine neue Stufe erreicht."
+        )
+    } else {
+        null
+    }
 }
 
 @Composable
@@ -3269,10 +3579,11 @@ fun AnimalDetailScreen(
                     latitude = currentLocation.latitude
                     longitude = currentLocation.longitude
                     locationSource = "gps"
+                    location = formatCoordinates(
+                        currentLocation.latitude,
+                        currentLocation.longitude
+                    )
                     locationStatusMessage = "Standort gespeichert"
-                    if (location.isBlank()) {
-                        location = "Aktueller Standort"
-                    }
                 } else {
                     locationStatusMessage = "Standort konnte nicht ermittelt werden"
                 }
@@ -3783,10 +4094,28 @@ fun AnimalDetailScreen(
                                 if (latitude != null && longitude != null) {
                                     IconButton(
                                         onClick = {
+                                            val previousLatitude = latitude
+                                            val previousLongitude = longitude
+                                            val previousLocationSource = locationSource
+                                            val autoLocationText = if (
+                                                previousLatitude != null &&
+                                                previousLongitude != null
+                                            ) {
+                                                formatCoordinates(
+                                                    previousLatitude,
+                                                    previousLongitude
+                                                )
+                                            } else {
+                                                null
+                                            }
                                             latitude = null
                                             longitude = null
                                             locationSource = null
-                                            if (location == "Aktueller Standort" || location == "Standort auf Karte gewählt") {
+                                            if (
+                                                previousLocationSource in setOf("gps", "map") &&
+                                                autoLocationText != null &&
+                                                location == autoLocationText
+                                            ) {
                                                 location = ""
                                             }
                                             locationStatusMessage = "Standort entfernt"
@@ -4069,10 +4398,11 @@ fun AnimalDetailScreen(
                                 latitude = pendingLatitude
                                 longitude = pendingLongitude
                                 locationSource = "map"
+                                location = formatCoordinates(
+                                    pendingLatitude!!,
+                                    pendingLongitude!!
+                                )
                                 locationStatusMessage = "Standort auf Karte gewählt"
-                                if (location.isBlank()) {
-                                    location = "Standort auf Karte gewählt"
-                                }
                                 showLocationPicker = false
                             }
                         },
