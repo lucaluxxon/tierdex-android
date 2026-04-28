@@ -142,7 +142,12 @@ import androidx.compose.material.icons.filled.SetMeal
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Collections
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.ui.text.style.TextAlign
@@ -861,7 +866,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             }
                         },
                         onUpdateFinding = { oldFinding, newFinding ->
-                            selectedFindingToEdit = null
+                            selectedFindingToEdit = newFinding
 
                             scope.launch {
                                 val roomMatch = if (oldFinding.roomId != null) {
@@ -915,6 +920,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                     .apply()
                             }
                         },
+                        currentFavoriteAnimalId = favoriteAnimalId,
                         onSetWishlistAnimal = { animal ->
                             wishlistAnimalId =
                                 if (wishlistAnimalId == animal.id) null else animal.id
@@ -3083,27 +3089,46 @@ fun AnimalDetailScreen(
     onDeleteFinding: (AnimalFinding) -> Unit,
     onUpdateFinding: (AnimalFinding, AnimalFinding) -> Unit,
     onSetFavoriteFindingAnimal: (AnimalEntry) -> Unit,
+    currentFavoriteAnimalId: String?,
     onSetWishlistAnimal: (AnimalEntry) -> Unit,
     currentWishlistAnimalId: String?,
     extraTopPadding: Dp = 0.dp,
     extraBottomPadding: Dp = 0.dp
 ) {
     val context = LocalContext.current
-    var date by rememberSaveable { mutableStateOf("") }
-    var location by rememberSaveable { mutableStateOf("") }
-    var note by rememberSaveable { mutableStateOf("") }
-    var selectedPhotoUri by rememberSaveable { mutableStateOf("") }
-    var latitude by rememberSaveable { mutableStateOf<Double?>(null) }
-    var longitude by rememberSaveable { mutableStateOf<Double?>(null) }
-    var locationSource by rememberSaveable { mutableStateOf<String?>(null) }
-    var locationStatusMessage by rememberSaveable { mutableStateOf("") }
-    var showLocationPicker by rememberSaveable { mutableStateOf(false) }
+    val initial = initialFinding
+    var date by rememberSaveable(initial?.roomId) {
+        mutableStateOf(initial?.date ?: currentAppDateText())
+    }
+    var location by rememberSaveable(initial?.roomId) {
+        mutableStateOf(initial?.location ?: "")
+    }
+    var note by rememberSaveable(initial?.roomId) {
+        mutableStateOf(initial?.note ?: "")
+    }
+    var selectedPhotoUri by rememberSaveable(initial?.roomId) {
+        mutableStateOf(initial?.photoUri ?: "")
+    }
+    var latitude by rememberSaveable(initial?.roomId) {
+        mutableStateOf(initial?.latitude)
+    }
+    var longitude by rememberSaveable(initial?.roomId) {
+        mutableStateOf(initial?.longitude)
+    }
+    var locationSource by rememberSaveable(initial?.roomId) {
+        mutableStateOf(initial?.locationSource)
+    }
+    var locationStatusMessage by rememberSaveable(initial?.roomId) {
+        mutableStateOf("")
+    }
+    var showLocationPicker by rememberSaveable(initial?.roomId) { mutableStateOf(false) }
     var pendingLatitude by remember { mutableStateOf<Double?>(null) }
     var pendingLongitude by remember { mutableStateOf<Double?>(null) }
     var cropPhotoUri by remember { mutableStateOf<String?>(null) }
     val isWishlistSelected = animal.id == currentWishlistAnimalId
-    var editingFinding by remember { mutableStateOf<AnimalFinding?>(null) }
-    var isEditMode by rememberSaveable { mutableStateOf(initialFinding == null) }
+    val isFavoriteSelected = animal.id == currentFavoriteAnimalId
+    var editingFinding by remember(initial?.roomId) { mutableStateOf(initial) }
+    var isEditMode by rememberSaveable(initial?.roomId) { mutableStateOf(initial == null) }
     val hasAnyFinding = findings.isNotEmpty()
 
     val requestCurrentLocation = {
@@ -3143,28 +3168,6 @@ fun AnimalDetailScreen(
         }
     }
 
-    LaunchedEffect(initialFinding) {
-        if (initialFinding != null) {
-            date = initialFinding.date
-            location = initialFinding.location
-            note = initialFinding.note
-            selectedPhotoUri = initialFinding.photoUri
-            latitude = initialFinding.latitude
-            longitude = initialFinding.longitude
-            locationSource = initialFinding.locationSource
-            locationStatusMessage = ""
-            editingFinding = initialFinding
-            isEditMode = false
-        } else {
-            date = currentAppDateText()
-            latitude = null
-            longitude = null
-            locationSource = null
-            locationStatusMessage = ""
-            isEditMode = true
-        }
-    }
-
     val pickMedia = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri ->
@@ -3174,7 +3177,7 @@ fun AnimalDetailScreen(
         }
     }
 
-    val currentFinding = editingFinding ?: initialFinding
+    val currentFinding = editingFinding ?: initial
     val editablePhotoUri = selectedPhotoUri.takeIf { it.isNotBlank() } ?: currentFinding?.photoUri
     val hasTextualFindingDetails =
         !currentFinding?.date.isNullOrBlank() ||
@@ -3200,71 +3203,83 @@ fun AnimalDetailScreen(
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                 colors = CardDefaults.cardColors(containerColor = CardBackground)
             ) {
-                Column(
-                    modifier = Modifier.padding(20.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = if (currentFinding != null) "Fundansicht" else "Tierdetails",
-                        style = MaterialTheme.typography.labelLarge,
-                        color = TextSecondary
-                    )
-                    Text(
-                        text = animal.germanName,
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = TextPrimary
-                    )
-                    Text(
-                        text = animal.latinName,
-                        style = MaterialTheme.typography.titleMedium,
-                        color = TextSecondary
-                    )
-                    Text(
-                        text = animal.group,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = TextPrimary
-                    )
-                    animal.subgroup.takeIf { it.isNotBlank() }?.let {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    Column(
+                        modifier = Modifier.padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
                         Text(
-                            text = it,
-                            style = MaterialTheme.typography.bodyMedium,
+                            text = if (currentFinding != null) "Fundansicht" else "Tierdetails",
+                            style = MaterialTheme.typography.labelLarge,
                             color = TextSecondary
                         )
-                    }
-                    Text(
-                        text = if (currentFinding != null) {
-                            "Tierinfos und dein gespeicherter Fund in einer Übersicht."
-                        } else {
-                            "Alle wichtigen Angaben zu diesem Tier auf einen Blick."
-                        },
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextSecondary
-                    )
-
-                    if (!hasAnyFinding) {
-                        OutlinedButton(
-                            onClick = {
-                                onSetFavoriteFindingAnimal(animal)
-                                onBackClick()
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text("Als Lieblingstier speichern")
+                        Text(
+                            text = animal.germanName,
+                            style = MaterialTheme.typography.headlineMedium,
+                            color = TextPrimary
+                        )
+                        Text(
+                            text = animal.latinName,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = TextSecondary
+                        )
+                        Text(
+                            text = animal.group,
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = TextPrimary
+                        )
+                        animal.subgroup.takeIf { it.isNotBlank() }?.let {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
+                            )
                         }
                     }
 
-                    if (hasAnyFinding) {
-                        Button(
+                    Surface(
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(12.dp),
+                        shape = RoundedCornerShape(999.dp),
+                        color = Color.White.copy(alpha = 0.92f),
+                        shadowElevation = 2.dp
+                    ) {
+                        IconButton(
                             onClick = {
-                                onSetFavoriteFindingAnimal(animal)
-                                onBackClick()
+                                if (hasAnyFinding) {
+                                    if (!isFavoriteSelected) {
+                                        onSetFavoriteFindingAnimal(animal)
+                                    }
+                                } else {
+                                    if (!isWishlistSelected) {
+                                        onSetWishlistAnimal(animal)
+                                    }
+                                }
                             },
-                            modifier = Modifier.fillMaxWidth(),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = PrimaryGreen
-                            )
+                            modifier = Modifier.size(40.dp)
                         ) {
-                            Text("Als Lieblingstier speichern")
+                            Icon(
+                                imageVector = if (hasAnyFinding) {
+                                    if (isFavoriteSelected) {
+                                        Icons.Filled.Favorite
+                                    } else {
+                                        Icons.Outlined.FavoriteBorder
+                                    }
+                                } else {
+                                    if (isWishlistSelected) {
+                                        Icons.Filled.Star
+                                    } else {
+                                        Icons.Outlined.StarBorder
+                                    }
+                                },
+                                contentDescription = if (hasAnyFinding) {
+                                    "Als Lieblingstier speichern"
+                                } else {
+                                    "Als Wunsch-Fund speichern"
+                                },
+                                tint = PrimaryGreen
+                            )
                         }
                     }
                 }
@@ -3436,6 +3451,7 @@ fun AnimalDetailScreen(
             item {
                 Button(
                     onClick = {
+                        editingFinding = currentFinding
                         date = currentFinding?.date.orEmpty()
                         location = currentFinding?.location.orEmpty()
                         note = currentFinding?.note.orEmpty()
@@ -3479,6 +3495,17 @@ fun AnimalDetailScreen(
                             onValueChange = { date = it },
                             modifier = Modifier.fillMaxWidth(),
                             label = { Text("Datum") },
+                            trailingIcon = {
+                                if (date.isNotBlank()) {
+                                    IconButton(onClick = { date = "" }) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Delete,
+                                            contentDescription = "Datum löschen",
+                                            tint = TextSecondary
+                                        )
+                                    }
+                                }
+                            },
                             singleLine = true
                         )
 
@@ -3487,6 +3514,27 @@ fun AnimalDetailScreen(
                             onValueChange = { location = it },
                             modifier = Modifier.fillMaxWidth(),
                             label = { Text("Fundort") },
+                            trailingIcon = {
+                                if (latitude != null && longitude != null) {
+                                    IconButton(
+                                        onClick = {
+                                            latitude = null
+                                            longitude = null
+                                            locationSource = null
+                                            if (location == "Aktueller Standort" || location == "Standort auf Karte gewählt") {
+                                                location = ""
+                                            }
+                                            locationStatusMessage = "Standort entfernt"
+                                        }
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Delete,
+                                            contentDescription = "Standort entfernen",
+                                            tint = TextSecondary
+                                        )
+                                    }
+                                }
+                            },
                             singleLine = true,
                         )
 
@@ -3545,6 +3593,17 @@ fun AnimalDetailScreen(
                             onValueChange = { note = it },
                             modifier = Modifier.fillMaxWidth(),
                             label = { Text("Notiz") },
+                            trailingIcon = {
+                                if (note.isNotBlank()) {
+                                    IconButton(onClick = { note = "" }) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Delete,
+                                            contentDescription = "Notiz löschen",
+                                            tint = TextSecondary
+                                        )
+                                    }
+                                }
+                            },
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = PrimaryGreen,
                                 unfocusedBorderColor = BorderColor,
