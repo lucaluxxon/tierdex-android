@@ -79,7 +79,6 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import java.io.BufferedReader
-import java.io.InputStreamReader
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -3597,7 +3596,7 @@ fun AnimalDetailScreen(
     val hasAnyFinding = findings.isNotEmpty()
     val detailFindings = remember(findings) { findings.asReversed() }
     val additionalAnimalInfo = listOf(
-        "Lebensräume" to animal.habitats.joinToString(", "),
+                                                "Lebensraum" to animal.habitats.joinToString(", "),
         "Lebensraum" to animal.habitat,
         "Verbreitung in Deutschland" to animal.distributionGermany,
         "Verbreitung" to animal.distribution,
@@ -5338,9 +5337,9 @@ fun AnimalDetailScreen(
                         )
                     }
 
-                    val inputStream = context.assets.open(fileName)
-                    val reader = BufferedReader(InputStreamReader(inputStream))
-                    val lines = reader.readLines()
+                    val lines = context.assets.open(fileName).bufferedReader(Charsets.UTF_8).use { reader ->
+                        reader.readLines()
+                    }
 
                     if (lines.isEmpty()) {
                         return CsvLoadResult(
@@ -5408,15 +5407,38 @@ fun AnimalDetailScreen(
                 }
             }
 
+            private fun normalizeAnimalText(text: String): String {
+                if (text.isBlank()) return text
+
+                val repaired = try {
+                    val candidate = text.toByteArray(Charsets.ISO_8859_1).toString(Charsets.UTF_8)
+                    val originalScore = text.count { it == 'Ã' || it == 'Â' || it == 'â' }
+                    val candidateScore = candidate.count { it == 'Ã' || it == 'Â' || it == 'â' }
+                    if (candidateScore < originalScore) candidate else text
+                } catch (_: Exception) {
+                    text
+                }
+
+                return repaired.trim()
+            }
+
             private fun JsonObject.stringOrEmpty(key: String): String {
-                return get(key)?.takeIf { !it.isJsonNull }?.asString?.trim().orEmpty()
+                return get(key)
+                    ?.takeIf { !it.isJsonNull }
+                    ?.asString
+                    ?.let(::normalizeAnimalText)
+                    .orEmpty()
             }
 
             private fun JsonObject.stringListOrEmpty(key: String): List<String> {
                 val element = get(key) ?: return emptyList()
                 if (!element.isJsonArray) return emptyList()
                 return element.asJsonArray.mapNotNull { item ->
-                    item?.takeIf { !it.isJsonNull }?.asString?.trim()?.takeIf { it.isNotEmpty() }
+                    item
+                        ?.takeIf { !it.isJsonNull }
+                        ?.asString
+                        ?.let(::normalizeAnimalText)
+                        ?.takeIf { it.isNotEmpty() }
                 }
             }
 
@@ -5466,10 +5488,10 @@ fun AnimalDetailScreen(
                             debugMessage = "JSON nicht gefunden, CSV-Fallback aktiv. ${fallback.debugMessage}"
                         )
                     } else {
-                        context.assets.open(jsonFileName).use { inputStream ->
-                            InputStreamReader(inputStream, Charsets.UTF_8).use { reader ->
+                        context.assets.open(jsonFileName).bufferedReader(Charsets.UTF_8).use { reader ->
+                                val jsonText = reader.readText()
                                 val parsedAnimals = Gson()
-                                    .fromJson(reader, JsonArray::class.java)
+                                    .fromJson(jsonText, JsonArray::class.java)
                                     ?.mapNotNull { element ->
                                         element
                                             ?.takeIf { it.isJsonObject }
@@ -5485,12 +5507,21 @@ fun AnimalDetailScreen(
                                         debugMessage = "JSON leer oder unlesbar, CSV-Fallback aktiv. ${fallback.debugMessage}"
                                     )
                                 } else {
+                                    val sampleAnimal =
+                                        parsedAnimals.firstOrNull { it.id == "saeugetier_braunes_langohr" }
                                     CsvLoadResult(
                                         animals = parsedAnimals,
-                                        debugMessage = "JSON geladen. Einträge: ${parsedAnimals.size}"
+                                        debugMessage = buildString {
+                                            append("JSON geladen. Einträge: ${parsedAnimals.size}")
+                                            sampleAnimal?.let { animal ->
+                                                append(" Beispiel: ${animal.germanName}")
+                                                animal.habitats.firstOrNull()?.let { habitat ->
+                                                    append(" / $habitat")
+                                                }
+                                            }
+                                        }
                                     )
                                 }
-                            }
                         }
                     }
                 } catch (e: Exception) {
