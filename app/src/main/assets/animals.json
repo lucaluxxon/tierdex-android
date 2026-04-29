@@ -11931,23 +11931,33 @@
     "id": "saeugetier_grosse_hufeisennase",
     "group": "Säugetiere",
     "subgroup": "Fledermäuse",
-    "germanName": "Grosse Hufeisennase",
+    "germanName": "Gro?e Hufeisennase",
     "latinName": "Rhinolophus ferrumequinum",
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "H?hlen",
+      "W?lder",
+      "Streuobstwiesen",
+      "D?rfer"
+    ],
+    "distributionGermany": "Vor allem im S?den und S?dwesten, regional stark l?ckenhaft",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in warmen Abend- und Nachtstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Gro?e Fledermaus mit breiten Fl?geln, auff?lligem hufeisenf?rmigem Nasenblatt und graubraunem Fell.",
+    "observationTip": "Achte in warmen N?chten nahe strukturreichen W?ldern, Streuobstwiesen und Ortschaften auf ruhige Jagdfl?ge.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland sehr lokal; Verbreitung und H?ufigkeit sp?ter noch einmal pr?fen."
   },
   {
     "id": "saeugetier_kleine_hufeisennase",
@@ -11958,18 +11968,28 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "H?hlen",
+      "D?rfer",
+      "W?lder",
+      "Geb?sche"
+    ],
+    "distributionGermany": "Vor allem im S?den und S?dwesten, sonst nur regional",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in milden Abend- und Nachtstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine Fledermaus mit rundlichen Fl?geln, feinem Nasenblatt und weich graubraunem Fell.",
+    "observationTip": "Achte in milden N?chten an Dorfr?ndern, Waldr?ndern und bei alten Quartieren auf langsame Jagdfl?ge.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regional sehr unterschiedlich; in einigen Gegenden stark r?ckl?ufig."
   },
   {
     "id": "saeugetier_langfluegelfledermaus",
@@ -11980,38 +12000,56 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "H?hlen",
+      "Gebirge",
+      "W?lder",
+      "T?ler"
+    ],
+    "distributionGermany": "Nur sehr lokal im S?den und grenznahen Gebirgsregionen",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in warmen Sommern?chten",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanke Fledermaus mit sehr langen, schmalen Fl?geln und gleichm??ig graubraunem Fell.",
+    "observationTip": "Achte in warmen Sommern?chten in gebirgigen Regionen nahe H?hlen und T?lern auf schnelle Jagdfl?ge.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland extrem selten; aktuelle Vorkommen bitte sp?ter verifizieren."
   },
   {
     "id": "saeugetier_grosses_mausohr",
     "group": "Säugetiere",
     "subgroup": "Fledermäuse",
-    "germanName": "Grosses Mausohr",
+    "germanName": "Gro?es Mausohr",
     "latinName": "Myotis myotis",
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "W?lder",
+      "D?rfer",
+      "Kirchen",
+      "Wiesen"
+    ],
+    "distributionGermany": "In vielen Regionen Deutschlands verbreitet, regional aber l?ckig",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in warmen Abend- und Nachtstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Gro?e Fledermaus mit breiten Fl?geln, gro?en Ohren und graubraunem R?cken mit heller Unterseite.",
+    "observationTip": "Achte in warmen N?chten nahe W?ldern, D?rfern und offenen Jagdfl?chen auf kr?ftige Fl?ge.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
     "reviewNote": ""
   },
@@ -12024,18 +12062,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "W?lder",
+      "Wiesen",
+      "Gebirge",
+      "D?rfer"
+    ],
+    "distributionGermany": "Vor allem im S?den, sonst nur regional nachgewiesen",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in warmen Sommern?chten",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Etwas kleinere Mausohr-Fledermaus mit graubraunem Fell, breiten Fl?geln und gro?en Ohren.",
+    "observationTip": "Achte in warmen Sommern?chten in s?dlichen Regionen an Waldr?ndern und offenen Fl?chen auf Jagdfl?ge.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Verwechslung mit dem Gro?en Mausohr m?glich; Feldbestimmung oft unsicher."
   },
   {
     "id": "saeugetier_wimperfledermaus",
@@ -12046,18 +12093,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "W?lder",
+      "St?lle",
+      "D?rfer",
+      "Gew?sser"
+    ],
+    "distributionGermany": "Regional vor allem im S?den und Westen verbreitet",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in warmen Abendstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgro?e Fledermaus mit graubraunem Fell, relativ breiten Fl?geln und fein behaartem Gesicht.",
+    "observationTip": "Achte in warmen N?chten nahe alten Geb?uden, W?ldern und Gew?ssern auf wendige Jagdfl?ge.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regionale Schwerpunkte vorhanden; bundesweite H?ufigkeit sp?ter noch pr?fen."
   },
   {
     "id": "saeugetier_bechsteinfledermaus",
@@ -12068,18 +12124,28 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Laubw?lder",
+      "Mischw?lder",
+      "Walds?ume",
+      "Lichtungen"
+    ],
+    "distributionGermany": "Vor allem in waldreichen Regionen Mittel- und S?ddeutschlands",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in milden Sommern?chten",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgro?e Fledermaus mit auffallend langen Ohren, breiten Fl?geln und warm braunem Fell.",
+    "observationTip": "Achte in milden Sommern?chten in alten Laub- und Mischw?ldern auf langsame, wendige Jagdfl?ge.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "St?rker an alte W?lder gebunden; regionale Verbreitung sp?ter noch feiner pr?fen."
   },
   {
     "id": "saeugetier_fransenfledermaus",
@@ -12090,16 +12156,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "W?lder",
+      "Gew?sser",
+      "D?rfer",
+      "Parks"
+    ],
+    "distributionGermany": "Weit verbreitet, aber vielerorts nur lokal bekannt",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in warmen Abendstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgro?e Fledermaus mit graubraunem Fell, relativ breiten Fl?geln und heller Unterseite.",
+    "observationTip": "Achte an warmen Abenden in Waldn?he, Parks und an Gew?sserr?ndern auf wendige Jagdfl?ge.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
     "reviewNote": ""
   },
@@ -12112,18 +12187,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "W?lder",
+      "Parks",
+      "Gew?sser",
+      "Siedlungen"
+    ],
+    "distributionGermany": "Weit verbreitet, regional aber l?ckenhaft erfasst",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in milden Abend- und Nachtstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine bis mittelgro?e Fledermaus mit braunem Fell, feinem Gesicht und relativ schmalen Fl?geln.",
+    "observationTip": "Achte in milden N?chten an Waldr?ndern, Gew?ssern und parkartigen Bereichen auf schnelle Jagdfl?ge.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Abgrenzung zu ?hnlichen Bartflederm?usen im Feld schwierig."
   },
   {
     "id": "saeugetier_kleine_bartfledermaus",
@@ -12134,18 +12217,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "W?lder",
+      "Siedlungen",
+      "Parks",
+      "Gew?sser"
+    ],
+    "distributionGermany": "In vielen Regionen verbreitet, aber nicht ?berall h?ufig",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in warmen Abendstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine Fledermaus mit braunem Fell, dunklem Gesicht und schmalen, spitzen Fl?geln.",
+    "observationTip": "Achte an warmen Abenden in Siedlungsn?he, an Gew?ssern und Walds?umen auf schnelle Jagdfl?ge.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Bestimmung gegen?ber Brandtfledermaus sp?ter noch einmal pr?fen."
   },
   {
     "id": "saeugetier_nymphenfledermaus",
@@ -12156,18 +12248,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Laubw?lder",
+      "Bachauen",
+      "Schluchten",
+      "Waldr?nder"
+    ],
+    "distributionGermany": "Nur lokal nachgewiesen, vor allem in w?rmeren Waldregionen",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in warmen Sommern?chten",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr kleine Fledermaus mit zierlichem Kopf, braunem Fell und schmalen Fl?geln.",
+    "observationTip": "Achte in warmen Sommern?chten in alten Laubwaldgebieten und Bachn?he auf feine Jagdfl?ge.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene und erst sp?t erkannte Art; Vorkommen in Deutschland weiterhin unvollst?ndig erfasst."
   },
   {
     "id": "saeugetier_wasserfledermaus",
@@ -12178,16 +12279,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gew?sser",
+      "W?lder",
+      "Parks",
+      "Auen"
+    ],
+    "distributionGermany": "Nahezu bundesweit verbreitet",
+    "rarityGame": "h?ufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in warmen Abend- und Nachtstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgro?e Fledermaus mit braunem R?cken, heller Unterseite und verh?ltnism??ig gro?en F??en.",
+    "observationTip": "Achte an warmen Abenden knapp ?ber Gew?ssern und an Ufergeh?lzen auf niedrige Jagdfl?ge.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
     "reviewNote": ""
   },
@@ -12200,18 +12310,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Fl?sse",
+      "Kan?le",
+      "Auen"
+    ],
+    "distributionGermany": "Vor allem im Norden und Nordosten, sonst selten",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in milden Sommern?chten",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgro?e Fledermaus mit graubraunem Fell, heller Unterseite und relativ langen Fl?geln.",
+    "observationTip": "Achte in milden Sommern?chten ?ber gr??eren Gew?ssern auf z?gige Jagdfl?ge in geringer H?he.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "St?rker auf norddeutsche Gew?sserlandschaften konzentriert; regional sehr unterschiedlich."
   },
   {
     "id": "saeugetier_mopsfledermaus",
@@ -12222,18 +12341,28 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "W?lder",
+      "Waldr?nder",
+      "Lichtungen",
+      "Berglagen"
+    ],
+    "distributionGermany": "Lokal in mehreren Mittelgebirgen und waldreichen Regionen",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in milden Sommern?chten",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgro?e Fledermaus mit dunkelbraunem Fell, breitem Gesicht und kurzen rundlichen Ohren.",
+    "observationTip": "Achte in milden Sommern?chten an Waldwegen, Schneisen und Lichtungen auf flatternde Jagdfl?ge.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regional stark an strukturreiche Waldgebiete gebunden; genaue H?ufigkeit sp?ter pr?fen."
   },
   {
     "id": "saeugetier_nordfledermaus",
@@ -12244,18 +12373,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gebirge",
+      "Siedlungen",
+      "W?lder",
+      "T?ler"
+    ],
+    "distributionGermany": "Vor allem in den Alpen und wenigen h?heren Mittelgebirgen",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in klaren milden N?chten",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgro?e Fledermaus mit dunkelbraunem Fell und goldbraun ?berhauchten Haarspitzen.",
+    "observationTip": "Achte in klaren N?chten in h?heren Lagen nahe Siedlungen und Waldr?ndern auf kr?ftige Jagdfl?ge.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland nur lokal nachgewiesen; Datenlage begrenzt."
   },
   {
     "id": "saeugetier_breitfluegelfledermaus",
@@ -12266,16 +12404,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Siedlungen",
+      "Parks",
+      "Gew?sser",
+      "Offenland"
+    ],
+    "distributionGermany": "In weiten Teilen Deutschlands verbreitet",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in warmen Abend- und Nachtstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kr?ftige Fledermaus mit breiten Fl?geln, dunklem Gesicht und braunem bis schwarzbraunem Fell.",
+    "observationTip": "Achte an warmen Abenden in Siedlungen, Parks und ?ber offenen Fl?chen auf kr?ftige Jagdfl?ge.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
     "reviewNote": ""
   },
@@ -12288,18 +12435,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "St?dte",
+      "Felslandschaften",
+      "Gew?sser",
+      "Offenland"
+    ],
+    "distributionGermany": "Regional verbreitet, vielerorts Durchz?gler oder Wintergast",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in warmen Abendstunden und Zugzeiten",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgro?e Fledermaus mit dunkelbraunem Fell und auff?llig silbrig bereiften Haarspitzen.",
+    "observationTip": "Achte an warmen Abenden in St?dten, an Gew?ssern und offenen Himmelsbereichen auf schnelle Fl?ge.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regional auch als Durchz?gler relevant; Saisonangaben sp?ter ggf. verfeinern."
   },
   {
     "id": "saeugetier_alpenfledermaus",
@@ -12310,40 +12466,56 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gebirge",
+      "Siedlungen",
+      "Felsbereiche",
+      "T?ler"
+    ],
+    "distributionGermany": "Vor allem im Alpenraum und angrenzenden warmen Regionen",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in warmen Sommern?chten",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine bis mittelgro?e Fledermaus mit braunem Fell, dunklem Gesicht und schmalen Fl?geln.",
+    "observationTip": "Achte in warmen Sommern?chten in alpennahen Siedlungen und T?lern auf schnelle Jagdfl?ge.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland noch relativ lokal; genaue Ausbreitung sp?ter pr?fen."
   },
   {
     "id": "saeugetier_weissrandfledermaus",
     "group": "Säugetiere",
     "subgroup": "Fledermäuse",
-    "germanName": "Weissrandfledermaus",
+    "germanName": "Wei?randfledermaus",
     "latinName": "Pipistrellus kuhlii",
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "St?dte",
+      "D?rfer",
+      "Parks",
+      "Gew?sser"
+    ],
+    "distributionGermany": "Vor allem in w?rmeren Regionen, zunehmend ausbreitend",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in warmen Abend- und Nachtstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine Fledermaus mit braunem Fell, dunklem Gesicht und auffallend hell gerandetem Fl?gelrand.",
+    "observationTip": "Achte an warmen Abenden in Siedlungen, Parks und an Gew?ssern auf schnelle Jagdfl?ge.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Art breitet sich regional weiter aus; H?ufigkeit deshalb sp?ter noch einmal pr?fen."
   },
   {
     "id": "saeugetier_zwergfledermaus",
@@ -12354,16 +12526,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Siedlungen",
+      "Parks",
+      "Gew?sser",
+      "W?lder"
+    ],
+    "distributionGermany": "Nahezu bundesweit verbreitet",
+    "rarityGame": "h?ufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in warmen Abendstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr kleine Fledermaus mit braunem Fell, dunklem Gesicht und schmalen spitzen Fl?geln.",
+    "observationTip": "Achte an warmen Abenden in Siedlungen, Parks und an Gew?sserr?ndern auf schnelle Jagdfl?ge.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
     "reviewNote": ""
   },
@@ -12376,18 +12557,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gew?sser",
+      "Auen",
+      "W?lder",
+      "Siedlungen"
+    ],
+    "distributionGermany": "Weit verbreitet, aber lange ?bersehen",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in milden Sommern?chten",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr kleine Fledermaus mit braunem Fell, hellem Bauch und schmalen Fl?geln.",
+    "observationTip": "Achte in milden Sommern?chten an Gew?ssern, Auen und Waldr?ndern auf feine Jagdfl?ge.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Art wurde lange mit der Zwergfledermaus verwechselt; regionale Daten teils unscharf."
   },
   {
     "id": "saeugetier_rauhautfledermaus",
@@ -12398,18 +12587,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "W?lder",
+      "Gew?sser",
+      "Parks",
+      "Auen"
+    ],
+    "distributionGermany": "Weit verbreitet, besonders auf Zug und in waldreichen Regionen",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in Zugzeiten und warmen N?chten",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine Fledermaus mit dunkelbraunem, leicht struppigem Fell und schmalen Fl?geln.",
+    "observationTip": "Achte in warmen N?chten an Gew?ssern, Walds?umen und in Auen auf z?gige Jagdfl?ge.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Als Zugfledermaus saisonal unterschiedlich h?ufig; sp?ter ggf. pr?zisieren."
   },
   {
     "id": "saeugetier_abendsegler",
@@ -12420,16 +12618,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "W?lder",
+      "Parks",
+      "Seen",
+      "St?dte"
+    ],
+    "distributionGermany": "In vielen Regionen Deutschlands verbreitet",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in warmen Abendstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Gro?e Fledermaus mit langen schmalen Fl?geln, kastanienbraunem Fell und kr?ftigem K?rper.",
+    "observationTip": "Achte an warmen Abenden hoch ?ber Parks, Seen und Waldr?ndern auf schnelle Jagdfl?ge.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
     "reviewNote": ""
   },
@@ -12442,18 +12649,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "W?lder",
+      "Parks",
+      "Gew?sser",
+      "Siedlungen"
+    ],
+    "distributionGermany": "Regional verbreitet, vor allem in waldreichen Gegenden",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in warmen Sommerabenden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgro?e Fledermaus mit schmalen Fl?geln, braunem Fell und etwas zierlicherem K?rperbau.",
+    "observationTip": "Achte an warmen Sommerabenden ?ber Walds?umen, Parks und Gew?ssern auf schnelle Fl?ge.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Wird regional unterschiedlich erfasst; H?ufigkeit sp?ter noch genauer pr?fen."
   },
   {
     "id": "saeugetier_riesenabendsegler",
@@ -12464,18 +12679,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "W?lder",
+      "Parks",
+      "Flusst?ler",
+      "Seen"
+    ],
+    "distributionGermany": "Nur sehr lokal und selten nachgewiesen",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in warmen Sommern?chten",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr gro?e Fledermaus mit langen schmalen Fl?geln, kr?ftigem K?rper und braunem Fell.",
+    "observationTip": "Achte in warmen Sommern?chten hoch ?ber W?ldern, Flusst?lern und Seen auf kraftvolle Fl?ge.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland sehr selten; aktuelle Nachweise sp?ter noch einmal pr?fen."
   },
   {
     "id": "saeugetier_braunes_langohr",
@@ -12486,16 +12710,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "W?lder",
+      "G?rten",
+      "Parks",
+      "D?rfer"
+    ],
+    "distributionGermany": "Nahezu bundesweit verbreitet",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in ruhigen warmen Abendstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgro?e Fledermaus mit sehr langen Ohren, weichem braunem Fell und zartem Gesicht.",
+    "observationTip": "Achte in ruhigen warmen Abendstunden in G?rten, Parks und Waldn?he auf langsame Jagdfl?ge.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
     "reviewNote": ""
   },
@@ -12503,23 +12736,32 @@
     "id": "saeugetier_graues_langohr",
     "group": "Säugetiere",
     "subgroup": "Fledermäuse",
-    "germanName": "Graüs Langohr",
+    "germanName": "Graues Langohr",
     "latinName": "Plecotus austriacus",
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "D?rfer",
+      "Offenland",
+      "Parks",
+      "Kirchorte"
+    ],
+    "distributionGermany": "Vor allem im S?den und Westen, sonst lokal",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in warmen Abendstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgro?e Fledermaus mit sehr langen Ohren, graubraunem Fell und heller Unterseite.",
+    "observationTip": "Achte an warmen Abenden in d?rflichen Lagen und offenem Kulturland auf langsame Jagdfl?ge.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland regional begrenzt; genaue Verbreitung sp?ter noch einmal abgleichen."
   },
   {
     "id": "saeugetier_feldhase",
