@@ -70,6 +70,7 @@ import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -3600,10 +3601,9 @@ fun AnimalDetailScreen(
         "Lebensraum" to animal.habitat,
         "Verbreitung in Deutschland" to animal.distributionGermany,
         "Verbreitung" to animal.distribution,
-        "Seltenheit im Spiel" to animal.rarityGame,
         "Seltenheit" to animal.rarity,
         "Aktivität" to animal.activity,
-        "Saison" to animal.season
+        "Beste Beobachtungszeit" to animal.season
     ).filter { (_, value) -> value.isNotBlank() }
 
     val requestCurrentLocation = {
@@ -3694,14 +3694,11 @@ fun AnimalDetailScreen(
             ) {
                 Box(modifier = Modifier.fillMaxWidth()) {
                     Column(
-                        modifier = Modifier.padding(20.dp),
+                        modifier = Modifier
+                            .padding(20.dp)
+                            .padding(end = 56.dp),
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Text(
-                            text = if (currentFinding != null) "Fundansicht" else "Tierdetails",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = TextSecondary
-                        )
                         Text(
                             text = animal.germanName,
                             style = MaterialTheme.typography.headlineMedium,
@@ -3712,13 +3709,6 @@ fun AnimalDetailScreen(
                             style = MaterialTheme.typography.titleMedium,
                             color = TextSecondary
                         )
-                        animal.shortDescription.takeIf { it.isNotBlank() }?.let {
-                            Text(
-                                text = it,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = TextPrimary
-                            )
-                        }
                         Text(
                             text = animal.group,
                             style = MaterialTheme.typography.bodyLarge,
@@ -3729,6 +3719,13 @@ fun AnimalDetailScreen(
                                 text = it,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = TextSecondary
+                            )
+                        }
+                        animal.shortDescription.takeIf { it.isNotBlank() }?.let {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextPrimary
                             )
                         }
                     }
@@ -4031,7 +4028,8 @@ fun AnimalDetailScreen(
                                     Text(
                                         text = label,
                                         style = MaterialTheme.typography.labelLarge,
-                                        color = TextSecondary
+                                        color = TextPrimary,
+                                        fontWeight = FontWeight.SemiBold
                                     )
                                     Text(
                                         text = value,
@@ -4045,9 +4043,10 @@ fun AnimalDetailScreen(
                         animal.observationTip.takeIf { it.isNotBlank() }?.let {
                             Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                                 Text(
-                                    text = "Beobachtungstipp",
+                                    text = "Fundtipp",
                                     style = MaterialTheme.typography.labelLarge,
-                                    color = TextSecondary
+                                    color = TextPrimary,
+                                    fontWeight = FontWeight.SemiBold
                                 )
                                 Text(
                                     text = it,
