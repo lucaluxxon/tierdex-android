@@ -122,6 +122,8 @@ import com.example.tierdex.ui.theme.TextPrimary
 import com.example.tierdex.ui.theme.TextSecondary
 import com.example.tierdex.ui.theme.CardBackground
 import com.example.tierdex.ui.theme.BorderColor
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -170,7 +172,8 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 
 
-private const val ANIMALS_FILE_NAME = "tierlistegesamt.csv"
+private const val ANIMALS_JSON_FILE_NAME = "animals.json"
+private const val ANIMALS_CSV_FILE_NAME = "tierlistegesamt.csv"
 private const val FINDING_IMAGES_DIR = "finding_images"
 private const val STARTUP_HINT_SHOWN_KEY_PREFIX = "startup_hint_shown_"
 private const val INTRO_PENDING_KEY_PREFIX = "intro_pending_"
@@ -534,7 +537,11 @@ fun TierdexApp(database: AnimalFindingDatabase) {
 
 
     val animalLoadResult: CsvLoadResult = remember(context) {
-        loadAnimalsFromCsvWithDebug(context, ANIMALS_FILE_NAME)
+        loadAnimalsFromJsonWithDebug(
+            context = context,
+            jsonFileName = ANIMALS_JSON_FILE_NAME,
+            csvFallbackFileName = ANIMALS_CSV_FILE_NAME
+        )
     }
 
     val animals: List<AnimalEntry> = animalLoadResult.animals
@@ -5346,6 +5353,50 @@ fun AnimalDetailScreen(
                     CsvLoadResult(
                         animals = emptyList(),
                         debugMessage = "Fehler beim Laden: ${e.message}"
+                    )
+                }
+            }
+
+            private fun loadAnimalsFromJsonWithDebug(
+                context: Context,
+                jsonFileName: String,
+                csvFallbackFileName: String
+            ): CsvLoadResult {
+                return try {
+                    val assetFiles = context.assets.list("")?.toList().orEmpty()
+
+                    if (!assetFiles.contains(jsonFileName)) {
+                        val fallback = loadAnimalsFromCsvWithDebug(context, csvFallbackFileName)
+                        fallback.copy(
+                            debugMessage = "JSON nicht gefunden, CSV-Fallback aktiv. ${fallback.debugMessage}"
+                        )
+                    } else {
+                        context.assets.open(jsonFileName).use { inputStream ->
+                            InputStreamReader(inputStream, Charsets.UTF_8).use { reader ->
+                                val animalListType = object : TypeToken<List<AnimalEntry>>() {}.type
+                                val parsedAnimals =
+                                    Gson().fromJson<List<AnimalEntry>?>(reader, animalListType)
+                                        .orEmpty()
+
+                                if (parsedAnimals.isEmpty()) {
+                                    val fallback =
+                                        loadAnimalsFromCsvWithDebug(context, csvFallbackFileName)
+                                    fallback.copy(
+                                        debugMessage = "JSON leer oder unlesbar, CSV-Fallback aktiv. ${fallback.debugMessage}"
+                                    )
+                                } else {
+                                    CsvLoadResult(
+                                        animals = parsedAnimals,
+                                        debugMessage = "JSON geladen. Einträge: ${parsedAnimals.size}"
+                                    )
+                                }
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    val fallback = loadAnimalsFromCsvWithDebug(context, csvFallbackFileName)
+                    fallback.copy(
+                        debugMessage = "JSON-Fehler, CSV-Fallback aktiv: ${e.message}. ${fallback.debugMessage}"
                     )
                 }
             }
