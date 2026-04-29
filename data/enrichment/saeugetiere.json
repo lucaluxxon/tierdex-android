@@ -1910,5 +1910,376 @@
     ],
     "needsReview": true,
     "reviewNote": "Vorkommen hängen stark von Wiederansiedlung und regionaler Ausbreitung ab; später noch einmal abgleichen."
+  },
+  {
+    "id": "saeugetier_seehund",
+    "habitats": [
+      "Nordsee",
+      "Ostsee",
+      "Küsten",
+      "Sandbänke"
+    ],
+    "distributionGermany": "Regelmäßig an Nord- und Ostseeküste, besonders im Wattenmeer und an Teilen der Ostsee",
+    "rarityGame": "gelegentlich",
+    "activity": "tag- und dämmerungsaktiv",
+    "season": "Ganzjährig, an Küsten besonders bei ruhiger See und guter Sicht",
+    "shortDescription": "Mittelgroße Robbe mit rundlichem Kopf, kurzem Fell und variabler grauer bis brauner Fleckenzeichnung.",
+    "observationTip": "Achte an Nord- und Ostseeküste bei ruhiger See auf Tiere im Wasser oder ruhende Gruppen auf Sandbänken.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": ""
+  },
+  {
+    "id": "saeugetier_kegelrobbe",
+    "habitats": [
+      "Nordsee",
+      "Ostsee",
+      "Küsten",
+      "Sandbänke"
+    ],
+    "distributionGermany": "Regelmäßig an Nord- und Ostseeküste, regional mit wachsenden Beständen",
+    "rarityGame": "gelegentlich",
+    "activity": "tag- und dämmerungsaktiv",
+    "season": "Ganzjährig, an Küsten besonders bei ruhiger See und guter Sicht",
+    "shortDescription": "Große kräftige Robbe mit langgestrecktem Kopf, breiter Schnauze und grau geflecktem Fell.",
+    "observationTip": "Achte an Küsten und auf Sandbänken bei ruhiger See auf größere ruhende Tiere oder Köpfe im Wasser.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Bestände nehmen regional zu; Beobachtbarkeit kann sich dadurch weiter verändern."
+  },
+  {
+    "id": "saeugetier_ringelrobbe",
+    "habitats": [
+      "Ostsee",
+      "Küsten",
+      "offenes Meer",
+      "Eisbereiche"
+    ],
+    "distributionGermany": "In Deutschland nur ausnahmsweise oder sehr selten im Ostseeraum",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Am ehesten im Winterhalbjahr bei guter Sicht im Ostseeraum",
+    "shortDescription": "Kleine bis mittelgroße Robbe mit rundlichem Kopf und heller Ringzeichnung auf dunklerem Fell.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig im Ostseeraum.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Kein regelmäßiger deutscher Küstenbewohner; Angaben stark von seltenen Einzelbeobachtungen geprägt."
+  },
+  {
+    "id": "saeugetier_schweinswal",
+    "habitats": [
+      "Nordsee",
+      "Ostsee",
+      "Küsten",
+      "offenes Meer"
+    ],
+    "distributionGermany": "Regelmäßig in Nord- und Ostsee, mit wichtigen Vorkommen besonders in Nordsee und westlicher Ostsee",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, an Küsten besonders bei ruhiger See und guter Sicht",
+    "shortDescription": "Kleiner gedrungener Zahnwal mit dunklem Rücken, heller Unterseite und niedriger dreieckiger Rückenfinne.",
+    "observationTip": "Achte an Küsten oder auf See bei ruhiger Wasseroberfläche auf kurze Finnenbögen und unauffälliges Auftauchen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Vorkommen in der Ostsee regional unterschiedlich empfindlich; spätere Feindifferenzierung sinnvoll."
+  },
+  {
+    "id": "saeugetier_grosser_tuemmler",
+    "habitats": [
+      "Nordsee",
+      "Ostsee",
+      "offenes Meer",
+      "Küsten"
+    ],
+    "distributionGermany": "In Deutschland selten und meist als Einzeltiere oder unregelmäßige Gäste nachgewiesen",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Am ehesten bei ruhiger See und guter Sicht auf See oder an der Küste",
+    "shortDescription": "Großer Delfin mit kräftigem Körper, kurzer markanter Schnauze und gebogener Rückenfinne.",
+    "observationTip": "In Deutschland nur unregelmäßig zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder auf See.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Kein regelmäßiger deutscher Küstenbewohner; Beobachtungen beruhen oft auf Einzelnachweisen."
+  },
+  {
+    "id": "saeugetier_gemeiner_delfin",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Küsten"
+    ],
+    "distributionGermany": "In deutschen Gewässern selten und überwiegend als Ausnahmegast",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Am ehesten bei ruhiger See und guter Sicht auf See oder an der Küste",
+    "shortDescription": "Schlanker Delfin mit dunklem Rücken, hellem Bauch und auffälliger sanduhrartiger Flankenzeichnung.",
+    "observationTip": "In Deutschland nur selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder auf See.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regelmäßigkeit in deutschen Gewässern gering; Angaben basieren vor allem auf seltenen Nachweisen."
+  },
+  {
+    "id": "saeugetier_weissschnauzendelfin",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Küsten"
+    ],
+    "distributionGermany": "Vor allem in der Nordsee selten, aber regelmäßiger als viele andere Delfinarten",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Am ehesten bei ruhiger See und guter Sicht in der Nordsee",
+    "shortDescription": "Kräftiger Delfin mit dunklem Rücken, heller Flanke und auffallend heller Schnauzenpartie.",
+    "observationTip": "Achte in der Nordsee bei ruhiger See auf schnell auftauchende Gruppen und markante helle Kopfpartien.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "In Deutschland eher Nordsee-bezogen; Vorkommen weiterhin deutlich seltener als beim Schweinswal."
+  },
+  {
+    "id": "saeugetier_weissseitendelfin",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Küsten"
+    ],
+    "distributionGermany": "In deutschen Gewässern selten und überwiegend in der Nordsee nachgewiesen",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Am ehesten bei ruhiger See und guter Sicht in der Nordsee",
+    "shortDescription": "Schlanker Delfin mit dunklem Rücken, heller Flanke und markant gebogener Rückenfinne.",
+    "observationTip": "In Deutschland selten; Sichtungen gelingen am ehesten zufällig auf See oder an der Nordseeküste.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Vor allem pelagische Art; deutsche Nachweise bleiben unregelmäßig."
+  },
+  {
+    "id": "saeugetier_risso_delfin",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Küsten"
+    ],
+    "distributionGermany": "In Deutschland sehr selten und nur als Ausnahmegast nachgewiesen",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Am ehesten bei ruhiger See und guter Sicht auf See",
+    "shortDescription": "Großer Delfin mit stumpfem Kopf, hoher Rückenfinne und oft stark vernarbter grauer Haut.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig auf See oder an der Küste.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Deutsche Nachweise sind seltene Ausnahmen; keine regelmäßige Art in deutschen Gewässern."
+  },
+  {
+    "id": "saeugetier_streifendelfin",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Küsten"
+    ],
+    "distributionGermany": "In Deutschland sehr selten und meist als Irrgast dokumentiert",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Am ehesten bei ruhiger See und guter Sicht auf See",
+    "shortDescription": "Schlanker Delfin mit dunklem Rücken, heller Unterseite und auffälligen dunklen Seitenstreifen.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig auf See oder an der Küste.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Kein regelmäßiger Bewohner deutscher Gewässer; Beobachtungen stark ausnahmeabhängig."
+  },
+  {
+    "id": "saeugetier_rundkopfdelfin",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Küsten"
+    ],
+    "distributionGermany": "In deutschen Gewässern selten und meist als Ausnahmegast nachgewiesen",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Am ehesten bei ruhiger See und guter Sicht auf See",
+    "shortDescription": "Großer Delfin mit rundlicher Stirn, dunklem Körper und relativ langer sichelförmiger Rückenfinne.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig auf See oder an der Küste.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Deutsche Nachweise sind unregelmäßig und meist Einzelereignisse."
+  },
+  {
+    "id": "saeugetier_orca",
+    "habitats": [
+      "Nordsee",
+      "Ostsee",
+      "offenes Meer",
+      "Küsten"
+    ],
+    "distributionGermany": "In Deutschland sehr selten und überwiegend als Ausnahmegast dokumentiert",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Am ehesten bei ruhiger See und guter Sicht auf See oder an der Küste",
+    "shortDescription": "Sehr großer Zahnwal mit schwarz-weißer Kontrastzeichnung und hoher, auffälliger Rückenfinne.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig auf See oder an der Küste.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Kein regelmäßiger deutscher Meeressäuger; Sichtungen sind seltene Einzelereignisse."
+  },
+  {
+    "id": "saeugetier_zwergwal",
+    "habitats": [
+      "Nordsee",
+      "Ostsee",
+      "offenes Meer",
+      "Küsten"
+    ],
+    "distributionGermany": "Regelmäßig, aber nicht häufig vor allem in Nordsee und teils Ostsee nachgewiesen",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Am ehesten bei ruhiger See und guter Sicht auf See oder an der Küste",
+    "shortDescription": "Kleiner Bartenwal mit langgestrecktem dunklem Körper, heller Unterseite und relativ spitzer Schnauze.",
+    "observationTip": "Achte bei ruhiger See auf See oder an der Küste auf kurz auftauchende Rückenpartien und kleine Blasfontänen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Für deutsche Gewässer regelmäßiger als viele Großwale, aber dennoch deutlich seltener als Schweinswale."
+  },
+  {
+    "id": "saeugetier_finnwal",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Küsten"
+    ],
+    "distributionGermany": "In Deutschland sehr selten und meist als Ausnahme- oder Durchzugsgast",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Am ehesten bei ruhiger See und guter Sicht auf See",
+    "shortDescription": "Sehr großer schlanker Bartenwal mit langem dunklem Körper und kleiner Rückenfinne weit hinten am Rücken.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig auf See oder an der Küste.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Keine regelmäßige Art in deutschen Gewässern; Beobachtungen meist Einzel- oder Ausnahmeereignisse."
+  },
+  {
+    "id": "saeugetier_buckelwal",
+    "habitats": [
+      "Nordsee",
+      "Ostsee",
+      "offenes Meer",
+      "Küsten"
+    ],
+    "distributionGermany": "In Deutschland selten und meist als Ausnahmegast an Nord- oder Ostseeküste nachgewiesen",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Am ehesten bei ruhiger See und guter Sicht an der Küste oder auf See",
+    "shortDescription": "Großer Bartenwal mit sehr langen Brustflossen, dunklem Körper und markant höckeriger Rückenlinie.",
+    "observationTip": "In Deutschland nur selten zu beobachten; Sichtungen gelingen am ehesten zufällig an der Küste oder auf See.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Beobachtungen in Deutschland beruhen meist auf seltenen Einzelereignissen."
+  },
+  {
+    "id": "saeugetier_pottwal",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Küsten"
+    ],
+    "distributionGermany": "In Deutschland sehr selten und meist nur bei Ausnahmeereignissen bekannt",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Am ehesten bei ruhiger See und guter Sicht auf See",
+    "shortDescription": "Sehr großer Zahnwal mit massivem quaderförmigem Kopf, dunkler Haut und kleiner Rückenwulst.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig auf See oder bei Ausnahmefällen an der Küste.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Deutsche Nachweise sind stark ausnahmegeprägt und oft mit Strandungen verbunden."
+  },
+  {
+    "id": "saeugetier_cuvier_schnabelwal",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Küsten"
+    ],
+    "distributionGermany": "In Deutschland extrem selten und nur ausnahmsweise dokumentiert",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Am ehesten bei ruhiger See und guter Sicht auf See",
+    "shortDescription": "Mittelgroßer Schnabelwal mit gedrungenem Körper, kurzer Schnauze und graubrauner Färbung.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig auf See oder in Ausnahmefällen an der Küste.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr seltene Ausnahmeart; Angaben in Deutschland stark von Einzelbeobachtungen abhängig."
+  },
+  {
+    "id": "saeugetier_nordlicher_entenwal",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Küsten"
+    ],
+    "distributionGermany": "In Deutschland sehr selten und nur als Ausnahmegast nachgewiesen",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Am ehesten bei ruhiger See und guter Sicht auf See",
+    "shortDescription": "Großer Schnabelwal mit massiger Stirn, dunklem Körper und langer schmaler Schnauzenpartie.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig auf See oder an der Küste.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Deutsche Nachweise sind seltene Ausnahmeereignisse; keine regelmäßige Art in deutschen Gewässern."
   }
 ]
