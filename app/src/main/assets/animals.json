@@ -13689,18 +13689,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Heiden",
+      "Feldfluren",
+      "Gebirge"
+    ],
+    "distributionGermany": "Wieder in mehreren Regionen verbreitet, mit Schwerpunkten im Osten, Norden und in Mittelgebirgen",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Ganzjährig, besonders in der Dämmerung und nachts",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Großes hundeartiges Säugetier mit langbeinigem Körper, dichtem graubraunem Fell und buschiger Rute.",
+    "observationTip": "Achte in der Dämmerung in großen Wald- und Offenlandkomplexen eher auf Spuren, Losung oder kurze Fernsichtungen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Verbreitung durch Rückkehr und Ausbreitung dynamisch; regionale Vorkommen später noch einmal prüfen."
   },
   {
     "id": "saeugetier_rotfuchs",
@@ -13711,16 +13720,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Feldfluren",
+      "Siedlungen",
+      "Waldränder"
+    ],
+    "distributionGermany": "Bundesweit weit verbreitet",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Ganzjährig, besonders in der Dämmerung und nachts",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlankes hundeartiges Säugetier mit rostrot bis braunem Fell, heller Unterseite und buschiger Rute.",
+    "observationTip": "Achte in der Dämmerung an Waldrändern, Feldwegen und Siedlungsrändern auf schnelle, niedrige Laufbewegungen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
     "reviewNote": ""
   },
@@ -13733,18 +13751,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feldfluren",
+      "Auen",
+      "Heckenlandschaften",
+      "Waldränder"
+    ],
+    "distributionGermany": "Noch selten, aber mit zunehmenden Nachweisen in mehreren Regionen",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Ganzjährig, besonders in der Dämmerung und nachts",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroßes hundeartiges Säugetier mit goldbraunem Fell, schlankem Körper und buschiger Rute.",
+    "observationTip": "Achte in strukturreichen Offenlandschaften und Auen eher auf kurze Sichtungen oder Spurhinweise in der Dämmerung.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland noch in Ausbreitung; Häufigkeit und Vorkommen regional stark im Wandel."
   },
   {
     "id": "saeugetier_marderhund",
@@ -13755,18 +13782,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Auen",
+      "Wälder",
+      "Feuchtgebiete",
+      "Feldfluren"
+    ],
+    "distributionGermany": "Vor allem im Osten und Norden verbreitet, regional weiter ausgreifend",
+    "rarityGame": "gebietsfremd",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Ganzjährig, besonders in der Dämmerung und nachts",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Gedrungenes hundeartiges Säugetier mit dichtem graubraunem Fell, dunkler Gesichtsmaske und buschiger Rute.",
+    "observationTip": "Achte in der Dämmerung in feuchten Wald- und Offenlandgebieten eher auf Spuren, Losung oder kurze Sichtungen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Gebietsfremde Art; regionale Ausbreitung und Bestände später noch einmal überprüfen."
   },
   {
     "id": "saeugetier_waschbaer",
@@ -13777,18 +13812,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Auen",
+      "Siedlungen",
+      "Gewässerufer"
+    ],
+    "distributionGermany": "In vielen Regionen weit verbreitet, besonders in Mittel- und Ostdeutschland",
+    "rarityGame": "gebietsfremd",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Ganzjährig, besonders in der Dämmerung und nachts",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftiges Säugetier mit grauem Fell, schwarzer Gesichtsmaske und deutlich geringeltem Schwanz.",
+    "observationTip": "Achte nachts an Gewässerufern, in Auen und an Siedlungsrändern auf Kletterspuren, Trittsiegel oder kurze Sichtungen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Gebietsfremde Art mit regional sehr hohen Dichten; Spielhäufigkeit später eventuell noch anpassen."
   },
   {
     "id": "saeugetier_braunbaer",
@@ -13799,18 +13843,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gebirge",
+      "Wälder",
+      "Almwiesen",
+      "Täler"
+    ],
+    "distributionGermany": "Nur sehr seltene Einzelvorkommen oder Durchzügler, vor allem im Alpenraum",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Frühjahr bis Herbst, besonders in ruhigen Dämmerungsstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr großes kräftiges Säugetier mit massigem Körper, dichtem braunem Fell und kurzer Rute.",
+    "observationTip": "Achte in abgelegenen Gebirgsregionen eher auf Spuren, Trittsiegel und vereinzelte Fernsichtungen als auf direkte Begegnungen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland kein stabiler Bestand; Beobachtungen hängen stark von Einzelvorkommen oder Wanderungen ab."
   },
   {
     "id": "saeugetier_dachs",
@@ -13821,16 +13873,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Waldränder",
+      "Feldfluren",
+      "Hecken"
+    ],
+    "distributionGermany": "Bundesweit weit verbreitet",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Ganzjährig, besonders in der Dämmerung und nachts",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftiges Marderartiges mit grauem Fell, schwarzer Unterseite und markanter schwarz-weißer Kopfzeichnung.",
+    "observationTip": "Achte in der Dämmerung an Waldrändern und Feldwegen auf Spuren, Baue und kurze Sichtungen nahe Deckung.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
     "reviewNote": ""
   },
@@ -13843,18 +13904,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Siedlungen",
+      "Dörfer",
+      "Waldränder",
+      "Feldfluren"
+    ],
+    "distributionGermany": "Bundesweit weit verbreitet",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Ganzjährig, besonders in der Dämmerung und nachts",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlankes Marderartiges mit braunem Fell, heller Kehlzeichnung und langem buschigem Schwanz.",
+    "observationTip": "Achte nachts in Dörfern, an Scheunen und an Randbereichen von Siedlungen auf flinke Kletter- und Laufbewegungen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Siedlungsnähe oft häufiger als wahrgenommen; regionale Unterschiede eher gering."
   },
   {
     "id": "saeugetier_baummarder",
@@ -13865,18 +13934,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Mischwälder",
+      "Waldränder",
+      "Gebirge"
+    ],
+    "distributionGermany": "In vielen Waldregionen verbreitet, regional aber lückig",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Ganzjährig, besonders in ruhigen Dämmerungsstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlankes Marderartiges mit dunkelbraunem Fell, gelblicher Kehlzeichnung und langem buschigem Schwanz.",
+    "observationTip": "Achte in ruhigen Waldgebieten auf kurze Kletterbewegungen, Spuren oder Sichtungen entlang von Schneisen und Wegen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Verbreitung regional unterschiedlich; direkte Beobachtungen bleiben meist selten."
   },
   {
     "id": "saeugetier_iltis",
@@ -13887,18 +13965,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Auen",
+      "Feuchtgebiete",
+      "Wälder",
+      "Feldfluren"
+    ],
+    "distributionGermany": "Weit verbreitet, regional aber rückläufig oder lückenhaft",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Ganzjährig, besonders in der Dämmerung und nachts",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftiges Marderartiges mit dunkelbraunem Fell, heller Gesichtsmaske und kurzem buschigem Schwanz.",
+    "observationTip": "Achte in der Dämmerung nahe Feuchtgebieten, Auen und deckungsreichen Offenlandbereichen auf kurze Sichtungen und Spuren.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regionale Rückgänge möglich; Häufigkeit sollte später noch einmal abgeglichen werden."
   },
   {
     "id": "saeugetier_europaeischer_nerz",
@@ -13909,18 +13996,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Auen",
+      "Gewässerufer",
+      "Bruchwälder",
+      "Feuchtgebiete"
+    ],
+    "distributionGermany": "Nur noch extrem selten oder ohne stabile Wildbestände",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Ganzjährig, besonders in der Dämmerung und nachts",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleines Marderartiges mit dunkelbraunem Fell, schlankem Körper und heller Zeichnung an der Schnauze.",
+    "observationTip": "Achte an ruhigen Gewässerufern eher auf indirekte Hinweise wie Trittsiegel oder sehr kurze Sichtungen in dichter Deckung.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland extrem selten; aktuelle Situation hängt stark von Schutz- und Wiederansiedlungsmaßnahmen ab."
   },
   {
     "id": "saeugetier_amerikanischer_nerz",
@@ -13931,18 +14027,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gewässerufer",
+      "Auen",
+      "Feuchtgebiete",
+      "Bruchwälder"
+    ],
+    "distributionGermany": "Regional an Gewässern und Feuchtgebieten verbreitet",
+    "rarityGame": "gebietsfremd",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Ganzjährig, besonders in der Dämmerung und nachts",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlankes Marderartiges mit dunkelbraunem Fell, langem Körper und meist kleiner heller Kinnzeichnung.",
+    "observationTip": "Achte an Gewässerufern und in Feuchtgebieten auf schnelle Uferbewegungen, Spuren und kurze Sichtungen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Gebietsfremde Art; regionale Bestände und Ausbreitung später noch einmal prüfen."
   },
   {
     "id": "saeugetier_hermelin",
@@ -13953,18 +14057,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wiesen",
+      "Hecken",
+      "Moore",
+      "Waldränder"
+    ],
+    "distributionGermany": "Weit verbreitet, regional aber nicht überall häufig",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tag- und dämmerungsaktiv",
+    "season": "Ganzjährig, besonders in den Morgen- und Abendstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleines schlankes Marderartiges mit braunem Sommerfell, heller Unterseite und schwarzer Schwanzspitze.",
+    "observationTip": "Achte in den Morgen- und Abendstunden an deckungsreichen Offenlandbereichen auf schnelle, wellenartige Laufbewegungen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regionale Häufigkeit verschieden; Winterfärbung in Deutschland nicht überall vollständig weiß."
   },
   {
     "id": "saeugetier_mauswiesel",
@@ -13975,18 +14087,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wiesen",
+      "Hecken",
+      "Feldfluren",
+      "Waldränder"
+    ],
+    "distributionGermany": "Bundesweit verbreitet, aber oft unauffällig",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tag- und dämmerungsaktiv",
+    "season": "Ganzjährig, besonders in den Morgen- und Abendstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr kleines Marderartiges mit langem schlankem Körper, braunem Rücken und heller Unterseite.",
+    "observationTip": "Achte in deckungsreichen Wiesen- und Heckenlandschaften auf blitzschnelle Bodenbewegungen und kurze Sichtungen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Wird leicht übersehen; regionale Daten zur Häufigkeit sind oft lückenhaft."
   },
   {
     "id": "saeugetier_fischotter",
@@ -13997,18 +14117,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Flüsse",
+      "Seen",
+      "Auen",
+      "Gewässerufer"
+    ],
+    "distributionGermany": "Wieder in mehreren Regionen verbreitet, aber nicht flächendeckend",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Ganzjährig, besonders in der Dämmerung und nachts",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Großes Marderartiges mit langgestrecktem Körper, dichtem dunkelbraunem Fell und kräftigem Schwanz.",
+    "observationTip": "Achte an ruhigen Gewässern eher auf Trittsiegel, Rutschbahnen, Losung oder kurze Sichtungen in der Dämmerung.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Bestände erholen sich regional unterschiedlich; Verbreitung später noch einmal aktualisieren."
   },
   {
     "id": "saeugetier_wildkatze",
@@ -14019,18 +14148,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Laubwälder",
+      "Mischwälder",
+      "Waldränder",
+      "Gebüsche"
+    ],
+    "distributionGermany": "Vor allem in Mittel- und Süddeutschland wieder verbreitet, regional ausbreitend",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Ganzjährig, besonders in ruhigen Dämmerungsstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige Katze mit dichtem graubraunem Fell, breitem Kopf und buschigem geringeltem Schwanz mit dunkler Spitze.",
+    "observationTip": "Achte in ruhigen Waldlandschaften eher auf Spuren, Trittsiegel oder sehr kurze Sichtungen entlang von Wegen und Schneisen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Abgrenzung zu verwilderten Hauskatzen im Feld schwierig; regionale Vorkommen dynamisch."
   },
   {
     "id": "saeugetier_hauskatze",
@@ -14041,18 +14179,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Siedlungen",
+      "Dörfer",
+      "Gärten",
+      "Höfe"
+    ],
+    "distributionGermany": "Bundesweit verbreitet",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tag- und nachtaktiv",
+    "season": "Ganzjährig, zu jeder Tageszeit",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine bis mittelgroße Katze mit sehr variablem Fellmuster, aufrechtem Schwanz und rundem Kopf.",
+    "observationTip": "Achte ganzjährig in Siedlungsnähe, Gärten und an Höfen auf ruhende, schleichende oder jagende Tiere.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Als Haustier und verwilderte Form allgegenwärtig; Spielgewichtung später eventuell gesondert bewerten."
   },
   {
     "id": "saeugetier_luchs",
@@ -14063,18 +14209,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Gebirge",
+      "Felsregionen",
+      "Waldränder"
+    ],
+    "distributionGermany": "Nur regional in wenigen Mittelgebirgen und Alpenbereichen mit Vorkommen",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Ganzjährig, besonders in ruhigen Dämmerungsstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Große Katze mit geflecktem gelbbraunem Fell, kurzen schwarzüberspitzten Ohren und sehr kurzem Schwanz.",
+    "observationTip": "Achte in abgelegenen Wald- und Gebirgsregionen eher auf Spuren, Risse oder sehr kurze Fernsichtungen.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Vorkommen hängen stark von Wiederansiedlung und regionaler Ausbreitung ab; später noch einmal abgleichen."
   },
   {
     "id": "saeugetier_seehund",
