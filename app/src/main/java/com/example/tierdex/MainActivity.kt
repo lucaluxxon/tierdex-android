@@ -43,6 +43,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -186,12 +187,16 @@ private const val INTRO_PENDING_KEY_PREFIX = "intro_pending_"
 private const val INTRO_SEEN_KEY_PREFIX = "intro_seen_"
 private const val WISHLIST_ANIMAL_KEY_PREFIX = "wishAnimalId_"
 private const val FAVORITE_ANIMAL_KEY_PREFIX = "favoriteAnimalId_"
+private const val PROFILE_BIO_KEY_PREFIX = "profileBio_"
+private const val PROFILE_IMAGE_KEY_PREFIX = "profileImage_"
 private const val LOCAL_PREFERENCES_OWNER_ID = "local"
 private val AppGreenBackground = Color(0xFF51734A)
 
 private fun favoriteAnimalKey(ownerId: String): String = "$FAVORITE_ANIMAL_KEY_PREFIX$ownerId"
 
 private fun wishlistAnimalKey(ownerId: String): String = "$WISHLIST_ANIMAL_KEY_PREFIX$ownerId"
+private fun profileBioKey(ownerId: String): String = "$PROFILE_BIO_KEY_PREFIX$ownerId"
+private fun profileImageKey(ownerId: String): String = "$PROFILE_IMAGE_KEY_PREFIX$ownerId"
 
 private fun introPendingKey(ownerId: String): String = "$INTRO_PENDING_KEY_PREFIX$ownerId"
 
@@ -3126,14 +3131,46 @@ fun ProfileScreen(
     extraTopPadding: Dp = 0.dp,
     extraBottomPadding: Dp = 0.dp
 ) {
+    val context = LocalContext.current
+    val prefs = remember(context) {
+        context.getSharedPreferences("tierdex_prefs", android.content.Context.MODE_PRIVATE)
+    }
+    val preferenceOwnerId = currentUserId ?: LOCAL_PREFERENCES_OWNER_ID
     val animalById = remember(animals) { animals.associateBy { it.id } }
     val favoriteAnimal = animalById[favoriteAnimalId]
     val wishlistAnimal = animalById[wishlistAnimalId]
     val reversedFindings = remember(findings) { findings.asReversed() }
+    val groupIconForAnimal: (AnimalEntry?) -> ImageVector = { entry ->
+        when (entry?.group) {
+            "Vögel" -> Icons.Filled.Air
+            "Fische" -> Icons.Filled.SetMeal
+            "Säugetiere" -> Icons.Filled.Pets
+            "Reptilien" -> Icons.Filled.BugReport
+            "Amphibien" -> Icons.Filled.WaterDrop
+            else -> Icons.Filled.Help
+        }
+    }
     var displayNameInput by rememberSaveable(currentDisplayName) {
         mutableStateOf(currentDisplayName ?: "")
     }
     var authMessage by rememberSaveable { mutableStateOf<String?>(null) }
+    var profileBio by rememberSaveable(preferenceOwnerId) {
+        mutableStateOf(prefs.getString(profileBioKey(preferenceOwnerId), "").orEmpty())
+    }
+    var profileImageUri by rememberSaveable(preferenceOwnerId) {
+        mutableStateOf(prefs.getString(profileImageKey(preferenceOwnerId), "").orEmpty())
+    }
+    var showBioEditor by rememberSaveable(preferenceOwnerId) { mutableStateOf(false) }
+    var bioDraft by rememberSaveable(preferenceOwnerId) { mutableStateOf(profileBio) }
+    val profileImagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let {
+            val storedPhotoUri = persistPhotoForFinding(context, it.toString())
+            profileImageUri = storedPhotoUri
+            prefs.edit().putString(profileImageKey(preferenceOwnerId), storedPhotoUri).apply()
+        }
+    }
 
     LaunchedEffect(currentUserId) {
         if (currentUserId != null) {
@@ -3169,12 +3206,175 @@ fun ProfileScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
-            Text(
-                text = currentDisplayName?.takeIf { it.isNotBlank() }?.let { "Profil von $it" }
-                    ?: "Profil",
-                style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier
-            )
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(24.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 5.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = CardBackground,
+                    contentColor = TextPrimary
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    Box(
+                        modifier = Modifier.size(168.dp),
+                        contentAlignment = Alignment.BottomEnd
+                    ) {
+                        Surface(
+                            modifier = Modifier
+                                .size(152.dp)
+                                .clip(CircleShape),
+                            shape = CircleShape,
+                            color = PrimaryGreenSoft.copy(alpha = 0.65f)
+                        ) {
+                            if (profileImageUri.isNotBlank()) {
+                                UriImage(
+                                    uriString = profileImageUri,
+                                    maxImageSizePx = 900,
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .clip(CircleShape)
+                                )
+                            } else {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Pets,
+                                        contentDescription = "Profilbild Platzhalter",
+                                        tint = PrimaryGreen,
+                                        modifier = Modifier.size(44.dp)
+                                    )
+                                }
+                            }
+                        }
+
+                        Surface(
+                            shape = CircleShape,
+                            color = Color.White,
+                            shadowElevation = 4.dp
+                        ) {
+                            IconButton(
+                                onClick = {
+                                    profileImagePicker.launch(
+                                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                    )
+                                },
+                                modifier = Modifier.size(40.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Edit,
+                                    contentDescription = "Profilbild bearbeiten",
+                                    tint = TextPrimary
+                                )
+                            }
+                        }
+                    }
+
+                    Text(
+                        text = currentDisplayName?.takeIf { it.isNotBlank() }?.let { "Profil von $it" }
+                            ?: "Profil",
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = TextPrimary,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 4.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "Bio",
+                                style = MaterialTheme.typography.titleSmall,
+                                color = TextPrimary
+                            )
+                            IconButton(
+                                onClick = {
+                                    bioDraft = profileBio
+                                    showBioEditor = true
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Edit,
+                                    contentDescription = "Bio bearbeiten",
+                                    tint = TextSecondary
+                                )
+                            }
+                        }
+                        Text(
+                            text = profileBio.ifBlank { "Erzähl etwas über dich…" },
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = if (profileBio.isBlank()) TextSecondary else TextPrimary
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(vertical = 10.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Collections,
+                                contentDescription = null,
+                                tint = PrimaryGreen,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Text(
+                                text = totalFindings.toString(),
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = TextPrimary
+                            )
+                            Text(
+                                text = "Funde",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = TextSecondary
+                            )
+                        }
+                        Column(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(vertical = 10.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Pets,
+                                contentDescription = null,
+                                tint = PrimaryGreen,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Text(
+                                text = collectedAnimalCount.toString(),
+                                style = MaterialTheme.typography.headlineMedium,
+                                color = TextPrimary
+                            )
+                            Text(
+                                text = "Entdeckte Arten",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = TextSecondary
+                            )
+                        }
+                    }
+                }
+            }
         }
 
         if (currentUserId != null && currentDisplayName.isNullOrBlank()) {
@@ -3231,117 +3431,113 @@ fun ProfileScreen(
         }
 
         item {
-            Card(
+            Row(
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = CardBackground,
-                    contentColor = TextPrimary
-                )
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                Card(
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = CardBackground,
+                        contentColor = TextPrimary
+                    )
                 ) {
-                    Text(
-                        text = "Deine Übersicht",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = TextPrimary
-                    )
-                    Spacer(
-                        modifier = Modifier.height(8.dp)
-                    )
-                    Text(
-                        "Gesammelte Arten: $collectedAnimalCount",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextSecondary
-                    )
-                    Text(
-                        "Gesammelte Funde: $totalFindings",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextSecondary
-                    )
-                }
-            }
-        }
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Favorite,
+                                contentDescription = null,
+                                tint = PrimaryGreen,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Text(
+                                text = "Lieblingsfund",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = TextPrimary
+                            )
+                            favoriteAnimal?.let {
+                                Icon(
+                                    imageVector = groupIconForAnimal(it),
+                                    contentDescription = it.group,
+                                    tint = TextSecondary,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
 
-        item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = CardBackground,
-                    contentColor = TextPrimary
-                )
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    Text(
-                        text = "Lieblingstier",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = TextPrimary
-                    )
-
-                    if (favoriteAnimal == null) {
-                        Text(
-                            text = "Noch kein Lieblingstier gewählt",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = TextSecondary
-                        )
-                    } else {
-                        Text(
-                            text = favoriteAnimal.germanName,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = TextPrimary
-                        )
-                        Text(
-                            text = favoriteAnimal.latinName,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = TextSecondary
-                        )
+                        if (favoriteAnimal == null) {
+                            Text(
+                                text = "Noch nicht gewählt",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
+                            )
+                        } else {
+                            Text(
+                                text = favoriteAnimal.germanName,
+                                style = MaterialTheme.typography.titleMedium,
+                                color = TextPrimary
+                            )
+                        }
                     }
                 }
-            }
-        }
-        item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = CardBackground,
-                    contentColor = TextPrimary
-                )
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    Text(
-                        text = "Wunsch-Fund",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = TextPrimary
+
+                Card(
+                    modifier = Modifier.weight(1f),
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = CardBackground,
+                        contentColor = TextPrimary
                     )
-                    if (wishlistAnimal == null) {
-                        Text(
-                            text = "Nicht gewählt",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = TextSecondary
-                        )
-                    } else {
-                        Text(
-                            text = wishlistAnimal.germanName,
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        Text(
-                            text = wishlistAnimal.latinName,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = TextSecondary
-                        )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Star,
+                                contentDescription = null,
+                                tint = PrimaryGreen,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Text(
+                                text = "Wunschfund",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = TextPrimary
+                            )
+                            wishlistAnimal?.let {
+                                Icon(
+                                    imageVector = groupIconForAnimal(it),
+                                    contentDescription = it.group,
+                                    tint = TextSecondary,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                            }
+                        }
+                        if (wishlistAnimal == null) {
+                            Text(
+                                text = "Nicht gewählt",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
+                            )
+                        } else {
+                            Text(
+                                text = wishlistAnimal.germanName,
+                                style = MaterialTheme.typography.titleMedium
+                            )
+                        }
                     }
                 }
             }
@@ -3431,6 +3627,43 @@ fun ProfileScreen(
                 }
             }
         }
+    }
+
+    if (showBioEditor) {
+        AlertDialog(
+            onDismissRequest = { showBioEditor = false },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val savedBio = bioDraft.trim()
+                        profileBio = savedBio
+                        prefs.edit().putString(profileBioKey(preferenceOwnerId), savedBio).apply()
+                        showBioEditor = false
+                    }
+                ) {
+                    Text("Speichern")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { showBioEditor = false }
+                ) {
+                    Text("Abbrechen")
+                }
+            },
+            title = {
+                Text("Bio bearbeiten")
+            },
+            text = {
+                OutlinedTextField(
+                    value = bioDraft,
+                    onValueChange = { bioDraft = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    label = { Text("Bio") },
+                    minLines = 3
+                )
+            }
+        )
     }
 }
 
@@ -4082,26 +4315,21 @@ fun AnimalDetailScreen(
                         }
 
                         animal.observationTip.takeIf { it.isNotBlank() }?.let {
-                            Surface(
-                                shape = RoundedCornerShape(16.dp),
-                                color = CardBackground.copy(alpha = 0.72f)
+                            Column(
+                                modifier = Modifier.padding(top = 4.dp),
+                                verticalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
-                                Column(
-                                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
-                                    verticalArrangement = Arrangement.spacedBy(6.dp)
-                                ) {
-                                    Text(
-                                        text = "Fundtipp",
-                                        style = MaterialTheme.typography.titleSmall,
-                                        color = TextPrimary,
-                                        fontWeight = FontWeight.SemiBold
-                                    )
-                                    Text(
-                                        text = it,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = TextSecondary
-                                    )
-                                }
+                                Text(
+                                    text = "Fundtipp",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = TextPrimary,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Text(
+                                    text = it,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = TextSecondary
+                                )
                             }
                         }
                     }
