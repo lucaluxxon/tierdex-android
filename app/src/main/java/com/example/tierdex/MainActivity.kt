@@ -156,6 +156,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Collections
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.FavoriteBorder
@@ -168,9 +169,13 @@ import androidx.compose.ui.window.DialogProperties
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapUiSettings
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.clustering.Clustering
+import com.google.maps.android.clustering.ClusterItem
 
 
 private const val ANIMALS_JSON_FILE_NAME = "animals.json"
@@ -199,6 +204,17 @@ private fun formatCoordinates(
     latitude: Double,
     longitude: Double
 ): String = String.format(Locale.US, "%.6f, %.6f", latitude, longitude)
+
+private data class FindingClusterItem(
+    private val positionValue: LatLng,
+    private val titleValue: String,
+    private val snippetValue: String
+) : ClusterItem {
+    override fun getPosition(): LatLng = positionValue
+    override fun getTitle(): String = titleValue
+    override fun getSnippet(): String = snippetValue
+    override fun getZIndex(): Float? = null
+}
 
 private val uriImageMemoryCache = object : LruCache<String, Bitmap>(20 * 1024 * 1024) {
     override fun sizeOf(key: String, value: Bitmap): Int = value.byteCount
@@ -1102,7 +1118,6 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                     if (showTierdexMapScreen) {
                         TierdexMapScreen(
                             findings = findingsFromRoom,
-                            onBack = { showTierdexMapScreen = false },
                             extraTopPadding = innerPadding.calculateTopPadding(),
                             extraBottomPadding = innerPadding.calculateBottomPadding()
                         )
@@ -1852,6 +1867,7 @@ fun FindingsMapPreview(
     findings: List<AnimalFinding>,
     modifier: Modifier = Modifier
 ) {
+    val context = LocalContext.current
     val findingsWithCoordinates = findings.mapNotNull { finding ->
         val latitude = finding.latitude
         val longitude = finding.longitude
@@ -1877,21 +1893,57 @@ fun FindingsMapPreview(
         return
     }
 
-    val firstPosition = findingsWithCoordinates.first().second
+    val germanyCenter = LatLng(51.1657, 10.4515)
+    val clusterItems = remember(findingsWithCoordinates) {
+        findingsWithCoordinates.map { (finding, latLng) ->
+            FindingClusterItem(
+                latLng,
+                finding.location.ifBlank { "Fund" },
+                buildString {
+                    if (finding.date.isNotBlank()) {
+                        append(finding.date)
+                    }
+                    if (finding.location.isNotBlank()) {
+                        if (isNotEmpty()) append(" • ")
+                        append(finding.location)
+                    }
+                }
+            )
+        }
+    }
+    val hasLocationPermission = remember(context) {
+        ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+    }
     val cameraPositionState = rememberCameraPositionState {
-        position = CameraPosition.fromLatLngZoom(firstPosition, 12f)
+        position = CameraPosition.fromLatLngZoom(germanyCenter, 5.5f)
+    }
+    val mapProperties = remember(hasLocationPermission) {
+        MapProperties(
+            isMyLocationEnabled = hasLocationPermission
+        )
+    }
+    val mapUiSettings = remember(hasLocationPermission) {
+        MapUiSettings(
+            myLocationButtonEnabled = hasLocationPermission
+        )
     }
 
     GoogleMap(
         modifier = modifier,
-        cameraPositionState = cameraPositionState
+        cameraPositionState = cameraPositionState,
+        properties = mapProperties,
+        uiSettings = mapUiSettings
     ) {
-        findingsWithCoordinates.forEach { (_, latLng) ->
-            Marker(
-                state = MarkerState(position = latLng),
-                title = "Fund"
-            )
-        }
+        Clustering(
+            items = clusterItems
+        )
     }
 }
 
@@ -1945,7 +1997,6 @@ fun LocationPickerMap(
 @Composable
 fun TierdexMapScreen(
     findings: List<AnimalFinding>,
-    onBack: () -> Unit,
     extraTopPadding: Dp = 0.dp,
     extraBottomPadding: Dp = 0.dp
 ) {
@@ -1964,15 +2015,6 @@ fun TierdexMapScreen(
         ),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        item {
-            OutlinedButton(
-                onClick = onBack,
-                border = BorderStroke(1.dp, BorderColor)
-            ) {
-                Text("Zurück zu Mein Tierdex")
-            }
-        }
-
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -4553,7 +4595,9 @@ fun AnimalDetailScreen(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Column {
+                            Column(
+                                modifier = Modifier.weight(1f)
+                            ) {
                                 Text(
                                     text = if (isPickerMode) debugMessage else "Mein Tierdex",
                                     style = MaterialTheme.typography.headlineMedium,
@@ -4568,34 +4612,21 @@ fun AnimalDetailScreen(
                                     )
                                 }
                             }
-                        }
-                    }
-                    if (!isPickerMode && onOpenMap != null) {
-                        item {
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable(onClick = onOpenMap),
-                                shape = RoundedCornerShape(16.dp),
-                                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                                colors = CardDefaults.cardColors(
-                                    containerColor = CardBackground,
-                                    contentColor = TextPrimary
-                                )
-                            ) {
-                                Column(
-                                    modifier = Modifier.padding(16.dp),
-                                    verticalArrangement = Arrangement.spacedBy(4.dp)
+
+                            if (!isPickerMode && onOpenMap != null) {
+                                OutlinedButton(
+                                    onClick = onOpenMap,
+                                    border = BorderStroke(1.dp, BorderColor)
                                 ) {
-                                    Text(
-                                        text = "Fundorte anzeigen",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        color = TextPrimary
+                                    Icon(
+                                        imageVector = Icons.Filled.Map,
+                                        contentDescription = null,
+                                        tint = TextPrimary
                                     )
+                                    Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = "Alle gespeicherten Fundorte auf einer Karte",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = TextSecondary
+                                        text = "Fundorte",
+                                        color = TextPrimary
                                     )
                                 }
                             }
