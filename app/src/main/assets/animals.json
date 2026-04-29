@@ -15069,7 +15069,7 @@
   {
     "id": "fisch_blei",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Blei",
     "latinName": "Abramis brama",
     "habitat": "",
@@ -15100,7 +15100,7 @@
   {
     "id": "fisch_schneider",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Schneider",
     "latinName": "Alburnoides bipunctatus",
     "habitat": "",
@@ -15131,7 +15131,7 @@
   {
     "id": "fisch_ukelei",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Ukelei",
     "latinName": "Alburnus alburnus",
     "habitat": "",
@@ -15162,7 +15162,7 @@
   {
     "id": "fisch_seelaube",
     "group": "Fische",
-    "subgroup": "Heringe, Makrelen und Freiwasserarten",
+    "subgroup": "Karpfenfische",
     "germanName": "Seelaube",
     "latinName": "Alburnus mento",
     "habitat": "",
@@ -15193,7 +15193,7 @@
   {
     "id": "fisch_maifisch",
     "group": "Fische",
-    "subgroup": "Heringe, Makrelen und Freiwasserarten",
+    "subgroup": "Heringe",
     "germanName": "Maifisch",
     "latinName": "Alosa alosa",
     "habitat": "",
@@ -15224,7 +15224,7 @@
   {
     "id": "fisch_schwarzer_katzenwels",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Welse und bodenlebende Süßwasserfische",
     "germanName": "Schwarzer Katzenwels",
     "latinName": "Ameiurus melas",
     "habitat": "",
@@ -15255,7 +15255,7 @@
   {
     "id": "fisch_brauner_katzenwels",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Welse und bodenlebende Süßwasserfische",
     "germanName": "Brauner Katzenwels",
     "latinName": "Ameiurus nebulosus",
     "habitat": "",
@@ -15286,7 +15286,7 @@
   {
     "id": "fisch_nackthalsgrundel",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Welse und bodenlebende Süßwasserfische",
     "germanName": "Nackthalsgrundel",
     "latinName": "Babka gymnotrachelus",
     "habitat": "",
@@ -15317,7 +15317,7 @@
   {
     "id": "fisch_zope",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Zope",
     "latinName": "Ballerus ballerus",
     "habitat": "",
@@ -15348,7 +15348,7 @@
   {
     "id": "fisch_zobel",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Zobel",
     "latinName": "Ballerus sapa",
     "habitat": "",
@@ -15379,7 +15379,7 @@
   {
     "id": "fisch_bachschmerle",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Welse und bodenlebende Süßwasserfische",
     "germanName": "Bachschmerle",
     "latinName": "Barbatula barbatula",
     "habitat": "",
@@ -15410,7 +15410,7 @@
   {
     "id": "fisch_barbe",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Barbe",
     "latinName": "Barbus barbus",
     "habitat": "",
@@ -15441,7 +15441,7 @@
   {
     "id": "fisch_guester",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Güster",
     "latinName": "Blicca bjoerkna",
     "habitat": "",
@@ -15472,7 +15472,7 @@
   {
     "id": "fisch_goldfisch_komplex",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Goldfisch-Komplex",
     "latinName": "Carassius auratus-Komplex",
     "habitat": "",
@@ -15503,7 +15503,7 @@
   {
     "id": "fisch_goldfisch",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Goldfisch",
     "latinName": "Carassius auratus",
     "habitat": "",
@@ -15534,7 +15534,7 @@
   {
     "id": "fisch_kleine_maraene",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Salmoniden (Lachse, Forellen, Äschen)",
     "germanName": "Kleine Maräne",
     "latinName": "Coregonus albula",
     "habitat": "",
@@ -15565,7 +15565,7 @@
   {
     "id": "fisch_sandfelchen",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Salmoniden (Lachse, Forellen, Äschen)",
     "germanName": "Sandfelchen",
     "latinName": "Coregonus arenicolus",
     "habitat": "",
@@ -15596,7 +15596,7 @@
   {
     "id": "fisch_ammersee_kilch",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Salmoniden (Lachse, Forellen, Äschen)",
     "germanName": "Ammersee-Kilch",
     "latinName": "Coregonus bavaricus",
     "habitat": "",
@@ -15627,7 +15627,7 @@
   {
     "id": "fisch_fontane_maraene",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Salmoniden (Lachse, Forellen, Äschen)",
     "germanName": "Fontane-Maräne",
     "latinName": "Coregonus fontanae",
     "habitat": "",
@@ -15658,7 +15658,7 @@
   {
     "id": "fisch_bodensee_kilch",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Salmoniden (Lachse, Forellen, Äschen)",
     "germanName": "Bodensee-Kilch",
     "latinName": "Coregonus gutturosus",
     "habitat": "",
@@ -15689,7 +15689,7 @@
   {
     "id": "fisch_chiemsee_renke",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Salmoniden (Lachse, Forellen, Äschen)",
     "germanName": "Chiemsee-Renke",
     "latinName": "Coregonus hoferi",
     "habitat": "",
@@ -15720,7 +15720,7 @@
   {
     "id": "fisch_schaalsee_maraene",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Salmoniden (Lachse, Forellen, Äschen)",
     "germanName": "Schaalsee-Maräne",
     "latinName": "Coregonus holsatus",
     "habitat": "",
@@ -15751,7 +15751,7 @@
   {
     "id": "fisch_luzin_maraene",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Salmoniden (Lachse, Forellen, Äschen)",
     "germanName": "Luzin-Maräne",
     "latinName": "Coregonus lucinensis",
     "habitat": "",
@@ -15782,7 +15782,7 @@
   {
     "id": "fisch_gangfisch",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Salmoniden (Lachse, Forellen, Äschen)",
     "germanName": "Gangfisch",
     "latinName": "Coregonus macrophthalmus",
     "habitat": "",
@@ -15813,7 +15813,7 @@
   {
     "id": "fisch_ostsee_schnaepel",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Salmoniden (Lachse, Forellen, Äschen)",
     "germanName": "Ostsee-Schnäpel",
     "latinName": "Coregonus maraena",
     "habitat": "",
@@ -15844,7 +15844,7 @@
   {
     "id": "fisch_giebel",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Giebel",
     "latinName": "Carassius gibelio",
     "habitat": "",
@@ -15875,7 +15875,7 @@
   {
     "id": "fisch_ginbuna",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Ginbuna",
     "latinName": "Carassius langsdorfii",
     "habitat": "",
@@ -15906,7 +15906,7 @@
   {
     "id": "fisch_karausche",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Karausche",
     "latinName": "Carassius carassius",
     "habitat": "",
@@ -15937,7 +15937,7 @@
   {
     "id": "fisch_nase",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Nase",
     "latinName": "Chondrostoma nasus",
     "habitat": "",
@@ -15968,7 +15968,7 @@
   {
     "id": "fisch_italienischer_steinbeisser",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Welse und bodenlebende Süßwasserfische",
     "germanName": "Italienischer Steinbeisser",
     "latinName": "Cobitis bilineata",
     "habitat": "",
@@ -15999,7 +15999,7 @@
   {
     "id": "fisch_donau_steinbeisser",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Welse und bodenlebende Süßwasserfische",
     "germanName": "Donau-Steinbeisser",
     "latinName": "Cobitis elongatoides",
     "habitat": "",
@@ -16030,7 +16030,7 @@
   {
     "id": "fisch_steinbeisser",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Welse und bodenlebende Süßwasserfische",
     "germanName": "Steinbeisser",
     "latinName": "Cobitis taenia",
     "habitat": "",
@@ -16061,7 +16061,7 @@
   {
     "id": "fisch_peipus_maraene",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Salmoniden (Lachse, Forellen, Äschen)",
     "germanName": "Peipus-Maräne",
     "latinName": "Coregonus maraenoides",
     "habitat": "",
@@ -16092,7 +16092,7 @@
   {
     "id": "fisch_nordsee_schnaepel",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Salmoniden (Lachse, Forellen, Äschen)",
     "germanName": "Nordsee-Schnäpel",
     "latinName": "Coregonus oxyrinchus",
     "habitat": "",
@@ -16123,7 +16123,7 @@
   {
     "id": "fisch_peled_maraene",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Salmoniden (Lachse, Forellen, Äschen)",
     "germanName": "Peled-Maräne",
     "latinName": "Coregonus peled",
     "habitat": "",
@@ -16154,7 +16154,7 @@
   {
     "id": "fisch_starnberger_renke",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Salmoniden (Lachse, Forellen, Äschen)",
     "germanName": "Starnberger Renke",
     "latinName": "Coregonus renke",
     "habitat": "",
@@ -16185,7 +16185,7 @@
   {
     "id": "fisch_blaufelchen",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Salmoniden (Lachse, Forellen, Äschen)",
     "germanName": "Blaufelchen",
     "latinName": "Coregonus wartmanni",
     "habitat": "",
@@ -16216,7 +16216,7 @@
   {
     "id": "fisch_buckelmaraene",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Salmoniden (Lachse, Forellen, Äschen)",
     "germanName": "Buckelmaräne",
     "latinName": "Coregonus widegreni",
     "habitat": "",
@@ -16247,7 +16247,7 @@
   {
     "id": "fisch_koppe",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Welse und bodenlebende Süßwasserfische",
     "germanName": "Koppe",
     "latinName": "Cottus gobio",
     "habitat": "",
@@ -16278,7 +16278,7 @@
   {
     "id": "fisch_baltische_koppe",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Welse und bodenlebende Süßwasserfische",
     "germanName": "Baltische Koppe",
     "latinName": "Cottus microstomus",
     "habitat": "",
@@ -16309,7 +16309,7 @@
   {
     "id": "fisch_stachel_koppe",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Welse und bodenlebende Süßwasserfische",
     "germanName": "Stachel-Koppe",
     "latinName": "Cottus perifretum",
     "habitat": "",
@@ -16340,7 +16340,7 @@
   {
     "id": "fisch_buntflossen_koppe",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Welse und bodenlebende Süßwasserfische",
     "germanName": "Buntflossen-Koppe",
     "latinName": "Cottus poecilopus",
     "habitat": "",
@@ -16371,7 +16371,7 @@
   {
     "id": "fisch_rhein_koppe",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Welse und bodenlebende Süßwasserfische",
     "germanName": "Rhein-Koppe",
     "latinName": "Cottus rhenanus",
     "habitat": "",
@@ -16402,7 +16402,7 @@
   {
     "id": "fisch_graskarpfen",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Graskarpfen",
     "latinName": "Ctenopharyngodon idella",
     "habitat": "",
@@ -16433,7 +16433,7 @@
   {
     "id": "fisch_karpfen",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Karpfen",
     "latinName": "Cyprinus carpio",
     "habitat": "",
@@ -16464,7 +16464,7 @@
   {
     "id": "fisch_hecht",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Barschartige Süßwasserfische",
     "germanName": "Hecht",
     "latinName": "Esox lucius",
     "habitat": "",
@@ -16495,7 +16495,7 @@
   {
     "id": "fisch_donau_bachneunauge",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Neunaugen",
     "germanName": "Donau-Bachneunauge",
     "latinName": "Eudontomyzon vladykovi",
     "habitat": "",
@@ -16526,7 +16526,7 @@
   {
     "id": "fisch_dreistachliger_stichling",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Barschartige Süßwasserfische",
     "germanName": "Dreistachliger Stichling",
     "latinName": "Gasterosteus aculeatus",
     "habitat": "",
@@ -16557,7 +16557,7 @@
   {
     "id": "fisch_gruendling",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Gründling",
     "latinName": "Gobio gobio",
     "habitat": "",
@@ -16588,7 +16588,7 @@
   {
     "id": "fisch_ammersee_kaulbarsch",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Barschartige Süßwasserfische",
     "germanName": "Ammersee-Kaulbarsch",
     "latinName": "Gymnocephalus ambriaelacus",
     "habitat": "",
@@ -16619,7 +16619,7 @@
   {
     "id": "fisch_donau_kaulbarsch",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Barschartige Süßwasserfische",
     "germanName": "Donau-Kaulbarsch",
     "latinName": "Gymnocephalus baloni",
     "habitat": "",
@@ -16650,7 +16650,7 @@
   {
     "id": "fisch_kaulbarsch",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Barschartige Süßwasserfische",
     "germanName": "Kaulbarsch",
     "latinName": "Gymnocephalus cernua",
     "habitat": "",
@@ -16681,7 +16681,7 @@
   {
     "id": "fisch_schraetzer",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Barschartige Süßwasserfische",
     "germanName": "Schrätzer",
     "latinName": "Gymnocephalus schraetser",
     "habitat": "",
@@ -16712,7 +16712,7 @@
   {
     "id": "fisch_huchen",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Salmoniden (Lachse, Forellen, Äschen)",
     "germanName": "Huchen",
     "latinName": "Hucho hucho",
     "habitat": "",
@@ -16743,7 +16743,7 @@
   {
     "id": "fisch_hausen",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Welse und bodenlebende Süßwasserfische",
     "germanName": "Hausen",
     "latinName": "Huso huso",
     "habitat": "",
@@ -16774,7 +16774,7 @@
   {
     "id": "fisch_silberkarpfen",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Küstenfische",
     "germanName": "Silberkarpfen",
     "latinName": "Hypophthalmichthys molitrix",
     "habitat": "",
@@ -16805,7 +16805,7 @@
   {
     "id": "fisch_marmorkarpfen",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Küstenfische",
     "germanName": "Marmorkarpfen",
     "latinName": "Hypophthalmichthys nobilis",
     "habitat": "",
@@ -16836,7 +16836,7 @@
   {
     "id": "fisch_kaukasische_zwerggrundel",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Welse und bodenlebende Süßwasserfische",
     "germanName": "Kaukasische Zwerggrundel",
     "latinName": "Knipowitschia caucasica",
     "habitat": "",
@@ -16867,7 +16867,7 @@
   {
     "id": "fisch_flussneunauge",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Neunaugen",
     "germanName": "Flussneunauge",
     "latinName": "Lampetra fluviatilis",
     "habitat": "",
@@ -16898,7 +16898,7 @@
   {
     "id": "fisch_bachneunauge",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Neunaugen",
     "germanName": "Bachneunauge",
     "latinName": "Lampetra planeri",
     "habitat": "",
@@ -16929,7 +16929,7 @@
   {
     "id": "fisch_sonnenbarsch",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Barschartige Süßwasserfische",
     "germanName": "Sonnenbarsch",
     "latinName": "Lepomis gibbosus",
     "habitat": "",
@@ -16960,7 +16960,7 @@
   {
     "id": "fisch_moderlieschen",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Moderlieschen",
     "latinName": "Leucaspius delineatus",
     "habitat": "",
@@ -16991,7 +16991,7 @@
   {
     "id": "fisch_rapfen",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Rapfen",
     "latinName": "Leuciscus aspius",
     "habitat": "",
@@ -17021,7 +17021,7 @@
   {
     "id": "fisch_aland",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Aland",
     "latinName": "Leuciscus idus",
     "habitat": "",
@@ -17051,7 +17051,7 @@
   {
     "id": "fisch_hasel",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Hasel",
     "latinName": "Leuciscus leuciscus",
     "habitat": "",
@@ -17081,7 +17081,7 @@
   {
     "id": "fisch_quappe",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Dorschverwandte",
     "germanName": "Quappe",
     "latinName": "Lota lota",
     "habitat": "",
@@ -17112,7 +17112,7 @@
   {
     "id": "fisch_forellenbarsch",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Barschartige Süßwasserfische",
     "germanName": "Forellenbarsch",
     "latinName": "Micropterus salmoides",
     "habitat": "",
@@ -17142,7 +17142,7 @@
   {
     "id": "fisch_schlammpeitzger",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Welse und bodenlebende Süßwasserfische",
     "germanName": "Schlammpeitzger",
     "latinName": "Misgurnus fossilis",
     "habitat": "",
@@ -17173,7 +17173,7 @@
   {
     "id": "fisch_flussgrundel",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Welse und bodenlebende Süßwasserfische",
     "germanName": "Flussgrundel",
     "latinName": "Neogobius fluviatilis",
     "habitat": "",
@@ -17203,7 +17203,7 @@
   {
     "id": "fisch_schwarzmundgrundel",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Welse und bodenlebende Süßwasserfische",
     "germanName": "Schwarzmundgrundel",
     "latinName": "Neogobius melanostomus",
     "habitat": "",
@@ -17233,7 +17233,7 @@
   {
     "id": "fisch_regenbogenforelle",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Salmoniden (Lachse, Forellen, Äschen)",
     "germanName": "Regenbogenforelle",
     "latinName": "Oncorhynchus mykiss",
     "habitat": "",
@@ -17263,7 +17263,7 @@
   {
     "id": "fisch_stint",
     "group": "Fische",
-    "subgroup": "Heringe, Makrelen und Freiwasserarten",
+    "subgroup": "Freiwasserfische",
     "germanName": "Stint",
     "latinName": "Osmerus eperlanus",
     "habitat": "",
@@ -17294,7 +17294,7 @@
   {
     "id": "fisch_dicker_schlammpeitzger",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Welse und bodenlebende Süßwasserfische",
     "germanName": "Dicker Schlammpeitzger",
     "latinName": "Paramisgurnus dabryanus",
     "habitat": "",
@@ -17324,7 +17324,7 @@
   {
     "id": "fisch_ziege",
     "group": "Fische",
-    "subgroup": "Heringe, Makrelen und Freiwasserarten",
+    "subgroup": "Karpfenfische",
     "germanName": "Ziege",
     "latinName": "Pelecus cultratus",
     "habitat": "",
@@ -17355,7 +17355,7 @@
   {
     "id": "fisch_flussbarsch",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Barschartige Süßwasserfische",
     "germanName": "Flussbarsch",
     "latinName": "Perca fluviatilis",
     "habitat": "",
@@ -17385,7 +17385,7 @@
   {
     "id": "fisch_amurgrundel",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Welse und bodenlebende Süßwasserfische",
     "germanName": "Amurgrundel",
     "latinName": "Perccottus glenii",
     "habitat": "",
@@ -17415,7 +17415,7 @@
   {
     "id": "fisch_meerneunauge",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Neunaugen",
     "germanName": "Meerneunauge",
     "latinName": "Petromyzon marinus",
     "habitat": "",
@@ -17446,7 +17446,7 @@
   {
     "id": "fisch_donau_elritze",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Donau-Elritze",
     "latinName": "Phoxinus csikii",
     "habitat": "",
@@ -17477,7 +17477,7 @@
   {
     "id": "fisch_baltische_elritze",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Baltische Elritze",
     "latinName": "Phoxinus marsilii",
     "habitat": "",
@@ -17508,7 +17508,7 @@
   {
     "id": "fisch_mitteldeutsche_elritze",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Mitteldeutsche Elritze",
     "latinName": "Phoxinus morella",
     "habitat": "",
@@ -17539,7 +17539,7 @@
   {
     "id": "fisch_fettkopf_elritze",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Fettkopf-Elritze",
     "latinName": "Pimephales promelas",
     "habitat": "",
@@ -17569,7 +17569,7 @@
   {
     "id": "fisch_kessler_grundel",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Welse und bodenlebende Süßwasserfische",
     "germanName": "Kessler-Grundel",
     "latinName": "Ponticola kessleri",
     "habitat": "",
@@ -17599,7 +17599,7 @@
   {
     "id": "fisch_nasengrundel",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Welse und bodenlebende Süßwasserfische",
     "germanName": "Nasengrundel",
     "latinName": "Proterorhinus semilunaris",
     "habitat": "",
@@ -17629,7 +17629,7 @@
   {
     "id": "fisch_blaubandbaerbling",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Blaubandbärbling",
     "latinName": "Pseudorasbora parva",
     "habitat": "",
@@ -17659,7 +17659,7 @@
   {
     "id": "fisch_neunstachliger_stichling",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Barschartige Süßwasserfische",
     "germanName": "Neunstachliger Stichling",
     "latinName": "Pungitius pungitius",
     "habitat": "",
@@ -17689,7 +17689,7 @@
   {
     "id": "fisch_bitterling",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Bitterling",
     "latinName": "Rhodeus amarus",
     "habitat": "",
@@ -17720,7 +17720,7 @@
   {
     "id": "fisch_noerdlicher_stromgruendling",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Nördlicher Stromgründling",
     "latinName": "Romanogobio belingi",
     "habitat": "",
@@ -17751,7 +17751,7 @@
   {
     "id": "fisch_steingressling",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Steingressling",
     "latinName": "Romanogobio uranoscopus",
     "habitat": "",
@@ -17782,7 +17782,7 @@
   {
     "id": "fisch_donau_stromgruendling",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Donau-Stromgründling",
     "latinName": "Romanogobio vladykovi",
     "habitat": "",
@@ -17813,7 +17813,7 @@
   {
     "id": "fisch_perlfisch",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Perlfisch",
     "latinName": "Rutilus meidingeri",
     "habitat": "",
@@ -17844,7 +17844,7 @@
   {
     "id": "fisch_ploetze",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Plötze",
     "latinName": "Rutilus rutilus",
     "habitat": "",
@@ -17874,7 +17874,7 @@
   {
     "id": "fisch_frauennerfling",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Fraünnerfling",
     "latinName": "Rutilus virgo",
     "habitat": "",
@@ -17905,7 +17905,7 @@
   {
     "id": "fisch_donau_goldsteinbeisser",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Welse und bodenlebende Süßwasserfische",
     "germanName": "Donau-Goldsteinbeisser",
     "latinName": "Sabanejewia balcanica",
     "habitat": "",
@@ -17936,7 +17936,7 @@
   {
     "id": "fisch_baltischer_goldsteinbeisser",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Welse und bodenlebende Süßwasserfische",
     "germanName": "Baltischer Goldsteinbeisser",
     "latinName": "Sabanejewia baltica",
     "habitat": "",
@@ -17967,7 +17967,7 @@
   {
     "id": "fisch_lachs",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Salmoniden (Lachse, Forellen, Äschen)",
     "germanName": "Lachs",
     "latinName": "Salmo salar",
     "habitat": "",
@@ -17998,7 +17998,7 @@
   {
     "id": "fisch_forelle",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Salmoniden (Lachse, Forellen, Äschen)",
     "germanName": "Forelle",
     "latinName": "Salmo trutta",
     "habitat": "",
@@ -18028,7 +18028,7 @@
   {
     "id": "fisch_ammersee_saibling",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Salmoniden (Lachse, Forellen, Äschen)",
     "germanName": "Ammersee-Saibling",
     "latinName": "Salvelinus evasus",
     "habitat": "",
@@ -18059,7 +18059,7 @@
   {
     "id": "fisch_bachsaibling",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Salmoniden (Lachse, Forellen, Äschen)",
     "germanName": "Bachsaibling",
     "latinName": "Salvelinus fontinalis",
     "habitat": "",
@@ -18089,7 +18089,7 @@
   {
     "id": "fisch_tiefseesaibling",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Salmoniden (Lachse, Forellen, Äschen)",
     "germanName": "Tiefseesaibling",
     "latinName": "Salvelinus profundus",
     "habitat": "",
@@ -18120,7 +18120,7 @@
   {
     "id": "fisch_alpensaibling",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Salmoniden (Lachse, Forellen, Äschen)",
     "germanName": "Alpensaibling",
     "latinName": "Salvelinus umbla",
     "habitat": "",
@@ -18151,7 +18151,7 @@
   {
     "id": "fisch_zander",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Barschartige Süßwasserfische",
     "germanName": "Zander",
     "latinName": "Sander lucioperca",
     "habitat": "",
@@ -18181,7 +18181,7 @@
   {
     "id": "fisch_wolga_zander",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Barschartige Süßwasserfische",
     "germanName": "Wolga-Zander",
     "latinName": "Sander volgensis",
     "habitat": "",
@@ -18212,7 +18212,7 @@
   {
     "id": "fisch_rotfeder",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Rotfeder",
     "latinName": "Scardinius erythrophthalmus",
     "habitat": "",
@@ -18242,7 +18242,7 @@
   {
     "id": "fisch_wels",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Welse und bodenlebende Süßwasserfische",
     "germanName": "Wels",
     "latinName": "Silurus glanis",
     "habitat": "",
@@ -18272,7 +18272,7 @@
   {
     "id": "fisch_doebel",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Küstenfische",
     "germanName": "Döbel",
     "latinName": "Squalius cephalus",
     "habitat": "",
@@ -18302,7 +18302,7 @@
   {
     "id": "fisch_gelber_drachenwels",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Welse und bodenlebende Süßwasserfische",
     "germanName": "Gelber Drachenwels",
     "latinName": "Tachysurus sinensis",
     "habitat": "",
@@ -18332,7 +18332,7 @@
   {
     "id": "fisch_stroemer",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Strömer",
     "latinName": "Telestes souffia",
     "habitat": "",
@@ -18363,7 +18363,7 @@
   {
     "id": "fisch_aesche",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Salmoniden (Lachse, Forellen, Äschen)",
     "germanName": "äsche",
     "latinName": "Thymallus thymallus",
     "habitat": "",
@@ -18394,7 +18394,7 @@
   {
     "id": "fisch_schleie",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Schleie",
     "latinName": "Tinca tinca",
     "habitat": "",
@@ -18424,7 +18424,7 @@
   {
     "id": "fisch_zaehrte",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Karpfenfische",
     "germanName": "Zährte",
     "latinName": "Vimba vimba",
     "habitat": "",
@@ -18455,7 +18455,7 @@
   {
     "id": "fisch_streber",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Barschartige Süßwasserfische",
     "germanName": "Streber",
     "latinName": "Zingel streber",
     "habitat": "",
@@ -18486,7 +18486,7 @@
   {
     "id": "fisch_zingel",
     "group": "Fische",
-    "subgroup": "Süßwasserfische",
+    "subgroup": "Barschartige Süßwasserfische",
     "germanName": "Zingel",
     "latinName": "Zingel zingel",
     "habitat": "",
@@ -19010,7 +19010,7 @@
   {
     "id": "fisch_aalmutter",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Aalmutter",
     "latinName": "Zoarces viviparus",
     "habitat": "",
@@ -19040,7 +19040,7 @@
   {
     "id": "fisch_adlerfisch",
     "group": "Fische",
-    "subgroup": "Heringe, Makrelen und Freiwasserarten",
+    "subgroup": "Freiwasserfische",
     "germanName": "Adlerfisch",
     "latinName": "Argyrosomus regius",
     "habitat": "",
@@ -19071,7 +19071,7 @@
   {
     "id": "fisch_atlantische_makrele",
     "group": "Fische",
-    "subgroup": "Heringe, Makrelen und Freiwasserarten",
+    "subgroup": "Makrelen und Thunfische",
     "germanName": "Atlantische Makrele",
     "latinName": "Scomber scombrus",
     "habitat": "",
@@ -19102,7 +19102,7 @@
   {
     "id": "fisch_atlantischer_hering",
     "group": "Fische",
-    "subgroup": "Heringe, Makrelen und Freiwasserarten",
+    "subgroup": "Heringe",
     "germanName": "Atlantischer Hering",
     "latinName": "Clupea harengus",
     "habitat": "",
@@ -19133,7 +19133,7 @@
   {
     "id": "fisch_augenfleck_lippfisch",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Plattfische",
     "germanName": "Augenfleck-Lippfisch",
     "latinName": "Platichthys solemdali",
     "habitat": "",
@@ -19164,7 +19164,7 @@
   {
     "id": "fisch_blauer_wittling",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Dorschverwandte",
     "germanName": "Blaür Wittling",
     "latinName": "Micromesistius poutassou",
     "habitat": "",
@@ -19195,7 +19195,7 @@
   {
     "id": "fisch_blaumaeulchen",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Freiwasserfische",
     "germanName": "Blaumäulchen",
     "latinName": "Helicolenus dactylopterus",
     "habitat": "",
@@ -19226,7 +19226,7 @@
   {
     "id": "fisch_brachsenmakrele",
     "group": "Fische",
-    "subgroup": "Heringe, Makrelen und Freiwasserarten",
+    "subgroup": "Makrelen und Thunfische",
     "germanName": "Brachsenmakrele",
     "latinName": "Brama brama",
     "habitat": "",
@@ -19257,7 +19257,7 @@
   {
     "id": "fisch_butterfisch",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Butterfisch",
     "latinName": "Pholis gunnellus",
     "habitat": "",
@@ -19287,7 +19287,7 @@
   {
     "id": "fisch_dicklippige_meeraesche",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Dicklippige Meeräsche",
     "latinName": "Chelon labrosus",
     "habitat": "",
@@ -19317,7 +19317,7 @@
   {
     "id": "fisch_doggerscharbe",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Plattfische",
     "germanName": "Doggerscharbe",
     "latinName": "Hippoglossoides platessoides",
     "habitat": "",
@@ -19348,7 +19348,7 @@
   {
     "id": "fisch_dreibaertelige_seequappe",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Dorschverwandte",
     "germanName": "Dreibärtelige Seequappe",
     "latinName": "Gaidropsarus vulgaris",
     "habitat": "",
@@ -19379,7 +19379,7 @@
   {
     "id": "fisch_duennlippige_meeraesche",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Dünnlippige Meeräsche",
     "latinName": "Chelon ramada",
     "habitat": "",
@@ -19409,7 +19409,7 @@
   {
     "id": "fisch_europaeischer_aal",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Europäischer Aal",
     "latinName": "Anguilla anguilla",
     "habitat": "",
@@ -19440,7 +19440,7 @@
   {
     "id": "fisch_finte",
     "group": "Fische",
-    "subgroup": "Heringe, Makrelen und Freiwasserarten",
+    "subgroup": "Heringe",
     "germanName": "Finte",
     "latinName": "Alosa fallax",
     "habitat": "",
@@ -19471,7 +19471,7 @@
   {
     "id": "fisch_fleckengrundel",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Fleckengrundel",
     "latinName": "Pomatoschistus pictus",
     "habitat": "",
@@ -19501,7 +19501,7 @@
   {
     "id": "fisch_flunder",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Plattfische",
     "germanName": "Flunder",
     "latinName": "Platichthys flesus",
     "habitat": "",
@@ -19532,7 +19532,7 @@
   {
     "id": "fisch_fluegelbutt",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Plattfische",
     "germanName": "Flügelbutt",
     "latinName": "Lepidorhombus whiffiagonis",
     "habitat": "",
@@ -19563,7 +19563,7 @@
   {
     "id": "fisch_franzosendorsch",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Dorschverwandte",
     "germanName": "Franzosendorsch",
     "latinName": "Trisopterus luscus",
     "habitat": "",
@@ -19594,7 +19594,7 @@
   {
     "id": "fisch_froschdorsch",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Dorschverwandte",
     "germanName": "Froschdorsch",
     "latinName": "Raniceps raninus",
     "habitat": "",
@@ -19625,7 +19625,7 @@
   {
     "id": "fisch_fuenfbaertelige_seequappe",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Dorschverwandte",
     "germanName": "Fünfbärtelige Seequappe",
     "latinName": "Ciliata mustela",
     "habitat": "",
@@ -19656,7 +19656,7 @@
   {
     "id": "fisch_gefleckter_grosser_sandaal",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Gefleckter Grosser Sandaal",
     "latinName": "Hyperoplus lanceolatus",
     "habitat": "",
@@ -19686,7 +19686,7 @@
   {
     "id": "fisch_gefleckter_leierfisch",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Gefleckter Leierfisch",
     "latinName": "Callionymus maculatus",
     "habitat": "",
@@ -19716,7 +19716,7 @@
   {
     "id": "fisch_gefleckter_lippfisch",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Gefleckter Lippfisch",
     "latinName": "Labrus bergylta",
     "habitat": "",
@@ -19746,7 +19746,7 @@
   {
     "id": "fisch_gemeiner_seewolf",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Gemeiner Seewolf",
     "latinName": "Anarhichas lupus",
     "habitat": "",
@@ -19777,7 +19777,7 @@
   {
     "id": "fisch_gemeiner_aehrenfisch",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Gemeiner ährenfisch",
     "latinName": "Callionymus lyra",
     "habitat": "",
@@ -19807,7 +19807,7 @@
   {
     "id": "fisch_glasauge",
     "group": "Fische",
-    "subgroup": "Heringe, Makrelen und Freiwasserarten",
+    "subgroup": "Freiwasserfische",
     "germanName": "Glasauge",
     "latinName": "Argentina sphyraena",
     "habitat": "",
@@ -19838,7 +19838,7 @@
   {
     "id": "fisch_glasgrundel",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Glasgrundel",
     "latinName": "Aphia minuta",
     "habitat": "",
@@ -19868,7 +19868,7 @@
   {
     "id": "fisch_glattbutt",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Plattfische",
     "germanName": "Glattbutt",
     "latinName": "Scophthalmus rhombus",
     "habitat": "",
@@ -19899,7 +19899,7 @@
   {
     "id": "fisch_grasnadel",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Grasnadel",
     "latinName": "Syngnathus typhle",
     "habitat": "",
@@ -19929,7 +19929,7 @@
   {
     "id": "fisch_grauer_knurrhahn",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Graür Knurrhahn",
     "latinName": "Eutrigla gurnardus",
     "habitat": "",
@@ -19959,7 +19959,7 @@
   {
     "id": "fisch_grosse_schlangennadel",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Grosse Schlangennadel",
     "latinName": "Entelurus aequoreus",
     "habitat": "",
@@ -19989,7 +19989,7 @@
   {
     "id": "fisch_grosse_seenadel",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Grosse Seenadel",
     "latinName": "Syngnathus acus",
     "habitat": "",
@@ -20019,7 +20019,7 @@
   {
     "id": "fisch_grosser_scheibenbauch",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Grosser Scheibenbauch",
     "latinName": "Liparis liparis",
     "habitat": "",
@@ -20049,7 +20049,7 @@
   {
     "id": "fisch_grosses_petermaennchen",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Grosses Petermännchen",
     "latinName": "Trachinus draco",
     "habitat": "",
@@ -20079,7 +20079,7 @@
   {
     "id": "fisch_haarbutt",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Plattfische",
     "germanName": "Haarbutt",
     "latinName": "Zeugopterus punctatus",
     "habitat": "",
@@ -20110,7 +20110,7 @@
   {
     "id": "fisch_heilbutt",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Plattfische",
     "germanName": "Heilbutt",
     "latinName": "Hippoglossus hippoglossus",
     "habitat": "",
@@ -20141,7 +20141,7 @@
   {
     "id": "fisch_heringskoenig",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Freiwasserfische",
     "germanName": "Heringskönig, Petersfisch",
     "latinName": "Zeus faber",
     "habitat": "",
@@ -20171,7 +20171,7 @@
   {
     "id": "fisch_holzmakrele",
     "group": "Fische",
-    "subgroup": "Heringe, Makrelen und Freiwasserarten",
+    "subgroup": "Makrelen und Thunfische",
     "germanName": "Holzmakrele, Stöcker",
     "latinName": "Trachurus trachurus",
     "habitat": "",
@@ -20202,7 +20202,7 @@
   {
     "id": "fisch_hornhecht",
     "group": "Fische",
-    "subgroup": "Heringe, Makrelen und Freiwasserarten",
+    "subgroup": "Freiwasserfische",
     "germanName": "Hornhecht",
     "latinName": "Belone belone",
     "habitat": "",
@@ -20233,7 +20233,7 @@
   {
     "id": "fisch_hundszunge",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Plattfische",
     "germanName": "Hundszunge",
     "latinName": "Glyptocephalus cynoglossus",
     "habitat": "",
@@ -20264,7 +20264,7 @@
   {
     "id": "fisch_kabeljau",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Dorschverwandte",
     "germanName": "Kabeljau, Dorsch",
     "latinName": "Gadus morhua",
     "habitat": "",
@@ -20295,7 +20295,7 @@
   {
     "id": "fisch_kleine_schlangennadel",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Kleine Schlangennadel",
     "latinName": "Nerophis ophidion",
     "habitat": "",
@@ -20325,7 +20325,7 @@
   {
     "id": "fisch_kleine_seenadel",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Kleine Seenadel",
     "latinName": "Syngnathus rostellatus",
     "habitat": "",
@@ -20355,7 +20355,7 @@
   {
     "id": "fisch_kleiner_rotbarsch",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Freiwasserfische",
     "germanName": "Kleiner Rotbarsch",
     "latinName": "Sebastes viviparus",
     "habitat": "",
@@ -20386,7 +20386,7 @@
   {
     "id": "fisch_kleiner_sandaal",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Kleiner Sandaal",
     "latinName": "Ammodytes tobianus",
     "habitat": "",
@@ -20416,7 +20416,7 @@
   {
     "id": "fisch_kleiner_scheibenbauch",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Kleiner Scheibenbauch",
     "latinName": "Liparis montagui",
     "habitat": "",
@@ -20446,7 +20446,7 @@
   {
     "id": "fisch_kleines_petermaennchen",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Kleines Petermännchen",
     "latinName": "Echiichthys vipera",
     "habitat": "",
@@ -20476,7 +20476,7 @@
   {
     "id": "fisch_kliesche",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Plattfische",
     "germanName": "Kliesche, Scharbe",
     "latinName": "Limanda limanda",
     "habitat": "",
@@ -20507,7 +20507,7 @@
   {
     "id": "fisch_klippenbarsch",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Klippenbarsch",
     "latinName": "Ctenolabrus rupestris",
     "habitat": "",
@@ -20537,7 +20537,7 @@
   {
     "id": "fisch_kristallgrundel",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Kristallgrundel",
     "latinName": "Crystallogobius linearis",
     "habitat": "",
@@ -20567,7 +20567,7 @@
   {
     "id": "fisch_kurzschnaeuziges_seepferdchen",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Kurzschnäuziges Seepferdchen",
     "latinName": "Maurolicus muelleri",
     "habitat": "",
@@ -20598,7 +20598,7 @@
   {
     "id": "fisch_lammzunge",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Plattfische",
     "germanName": "Lammzunge",
     "latinName": "Arnoglossus laterna",
     "habitat": "",
@@ -20629,7 +20629,7 @@
   {
     "id": "fisch_leng",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Dorschverwandte",
     "germanName": "Leng",
     "latinName": "Molva molva",
     "habitat": "",
@@ -20660,7 +20660,7 @@
   {
     "id": "fisch_lozanos_grundel",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Lozanos Grundel",
     "latinName": "Pomatoschistus lozanoi",
     "habitat": "",
@@ -20690,7 +20690,7 @@
   {
     "id": "fisch_makrelenhecht",
     "group": "Fische",
-    "subgroup": "Heringe, Makrelen und Freiwasserarten",
+    "subgroup": "Makrelen und Thunfische",
     "germanName": "Makrelenhecht",
     "latinName": "Scomberesox saurus",
     "habitat": "",
@@ -20721,7 +20721,7 @@
   {
     "id": "fisch_meeraal",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Meeraal",
     "latinName": "Conger conger",
     "habitat": "",
@@ -20751,7 +20751,7 @@
   {
     "id": "fisch_mondfisch",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Freiwasserfische",
     "germanName": "Mondfisch",
     "latinName": "Mola mola",
     "habitat": "",
@@ -20782,7 +20782,7 @@
   {
     "id": "fisch_nacktsandaal",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Nacktsandaal",
     "latinName": "Gymnammodytes semisquamatus",
     "habitat": "",
@@ -20812,7 +20812,7 @@
   {
     "id": "fisch_norwegergrundel",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Norwegergrundel",
     "latinName": "Pomatoschistus norvegicus",
     "habitat": "",
@@ -20842,7 +20842,7 @@
   {
     "id": "fisch_noerdliche_fuenfbaertelige_seequappe",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Dorschverwandte",
     "germanName": "Nördliche Fünfbärtelige Seequappe",
     "latinName": "Ciliata septentrionalis",
     "habitat": "",
@@ -20873,7 +20873,7 @@
   {
     "id": "fisch_seequappe_ornamentleierfisch",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Makrelen und Thunfische",
     "germanName": "Seequappe Ornamentleierfisch",
     "latinName": "Sarda sarda",
     "habitat": "",
@@ -20903,7 +20903,7 @@
   {
     "id": "fisch_pollack",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Dorschverwandte",
     "germanName": "Pollack, Steinköhler",
     "latinName": "Pollachius pollachius",
     "habitat": "",
@@ -20934,7 +20934,7 @@
   {
     "id": "fisch_roter_knurrhahn",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Roter Knurrhahn",
     "latinName": "Chelidonichthys lucerna",
     "habitat": "",
@@ -20964,7 +20964,7 @@
   {
     "id": "fisch_roter_thun",
     "group": "Fische",
-    "subgroup": "Heringe, Makrelen und Freiwasserarten",
+    "subgroup": "Makrelen und Thunfische",
     "germanName": "Roter Thun",
     "latinName": "Thunnus thynnus",
     "habitat": "",
@@ -20995,7 +20995,7 @@
   {
     "id": "fisch_rotzunge",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Plattfische",
     "germanName": "Rotzunge, Limande",
     "latinName": "Microstomus kitt",
     "habitat": "",
@@ -21026,7 +21026,7 @@
   {
     "id": "fisch_sandaal",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Sandaal",
     "latinName": "Ammodytes marinus",
     "habitat": "",
@@ -21056,7 +21056,7 @@
   {
     "id": "fisch_sandgrundel",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Sandgrundel",
     "latinName": "Pomatoschistus minutus",
     "habitat": "",
@@ -21086,7 +21086,7 @@
   {
     "id": "fisch_sandzunge",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Plattfische",
     "germanName": "Sandzunge",
     "latinName": "Pegusa lascaris",
     "habitat": "",
@@ -21117,7 +21117,7 @@
   {
     "id": "fisch_sardelle",
     "group": "Fische",
-    "subgroup": "Heringe, Makrelen und Freiwasserarten",
+    "subgroup": "Heringe",
     "germanName": "Sardelle",
     "latinName": "Engraulis encrasicolus",
     "habitat": "",
@@ -21148,7 +21148,7 @@
   {
     "id": "fisch_sardine",
     "group": "Fische",
-    "subgroup": "Heringe, Makrelen und Freiwasserarten",
+    "subgroup": "Heringe",
     "germanName": "Sardine",
     "latinName": "Sardina pilchardus",
     "habitat": "",
@@ -21179,7 +21179,7 @@
   {
     "id": "fisch_schan",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Schan",
     "latinName": "Lipophrys pholis",
     "habitat": "",
@@ -21209,7 +21209,7 @@
   {
     "id": "fisch_schellfisch",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Dorschverwandte",
     "germanName": "Schellfisch",
     "latinName": "Melanogrammus aeglefinus",
     "habitat": "",
@@ -21240,7 +21240,7 @@
   {
     "id": "fisch_scholle",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Plattfische",
     "germanName": "Scholle",
     "latinName": "Pleuronectes platessa",
     "habitat": "",
@@ -21271,7 +21271,7 @@
   {
     "id": "fisch_schwarzgrundel",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Schwarzgrundel",
     "latinName": "Gobius niger",
     "habitat": "",
@@ -21301,7 +21301,7 @@
   {
     "id": "fisch_schwertfisch",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Freiwasserfische",
     "germanName": "Schwertfisch",
     "latinName": "Xiphias gladius",
     "habitat": "",
@@ -21332,7 +21332,7 @@
   {
     "id": "fisch_schwimmgrundel",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Schwimmgrundel",
     "latinName": "Pomatoschistus flavescens",
     "habitat": "",
@@ -21362,7 +21362,7 @@
   {
     "id": "fisch_seebull",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Seebull",
     "latinName": "Taurulus bubalis",
     "habitat": "",
@@ -21392,7 +21392,7 @@
   {
     "id": "fisch_seehase",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Seehase",
     "latinName": "Cyclopterus lumpus",
     "habitat": "",
@@ -21422,7 +21422,7 @@
   {
     "id": "fisch_seehecht",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Dorschverwandte",
     "germanName": "Seehecht",
     "latinName": "Merluccius merluccius",
     "habitat": "",
@@ -21453,7 +21453,7 @@
   {
     "id": "fisch_seekuckuck",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Seekuckuck",
     "latinName": "Chelidonichthys cuculus",
     "habitat": "",
@@ -21483,7 +21483,7 @@
   {
     "id": "fisch_seelachs",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Dorschverwandte",
     "germanName": "Seelachs, Köhler",
     "latinName": "Pollachius virens",
     "habitat": "",
@@ -21514,7 +21514,7 @@
   {
     "id": "fisch_seeskorpion",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Seeskorpion",
     "latinName": "Myoxocephalus scorpius",
     "habitat": "",
@@ -21544,7 +21544,7 @@
   {
     "id": "fisch_seestichling",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Seestichling",
     "latinName": "Spinachia spinachia",
     "habitat": "",
@@ -21574,7 +21574,7 @@
   {
     "id": "fisch_seeteufel",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Seeteufel",
     "latinName": "Lophius piscatorius",
     "habitat": "",
@@ -21605,7 +21605,7 @@
   {
     "id": "fisch_seezunge",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Plattfische",
     "germanName": "Seezunge",
     "latinName": "Solea solea",
     "habitat": "",
@@ -21636,7 +21636,7 @@
   {
     "id": "fisch_spitzschwaenziger_bandfisch",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Spitzschwänziger Bandfisch",
     "latinName": "Lumpenus lampretaeformis",
     "habitat": "",
@@ -21666,7 +21666,7 @@
   {
     "id": "fisch_sprotte",
     "group": "Fische",
-    "subgroup": "Heringe, Makrelen und Freiwasserarten",
+    "subgroup": "Heringe",
     "germanName": "Sprotte",
     "latinName": "Sprattus sprattus",
     "habitat": "",
@@ -21697,7 +21697,7 @@
   {
     "id": "fisch_stachelruecken_schleimfisch",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Stachelrücken-Schleimfisch",
     "latinName": "Chirolophis ascanii",
     "habitat": "",
@@ -21727,7 +21727,7 @@
   {
     "id": "fisch_steinbutt",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Plattfische",
     "germanName": "Steinbutt",
     "latinName": "Scophthalmus maximus",
     "habitat": "",
@@ -21758,7 +21758,7 @@
   {
     "id": "fisch_steinpicker",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Steinpicker",
     "latinName": "Agonus cataphractus",
     "habitat": "",
@@ -21788,7 +21788,7 @@
   {
     "id": "fisch_stintdorsch",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Dorschverwandte",
     "germanName": "Stintdorsch",
     "latinName": "Trisopterus esmarkii",
     "habitat": "",
@@ -21819,7 +21819,7 @@
   {
     "id": "fisch_strandgrundel",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Strandgrundel",
     "latinName": "Pomatoschistus microps",
     "habitat": "",
@@ -21849,7 +21849,7 @@
   {
     "id": "fisch_streifenbarbe",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Streifenbarbe",
     "latinName": "Mullus surmuletus",
     "habitat": "",
@@ -21879,7 +21879,7 @@
   {
     "id": "fisch_streifenzunge",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Plattfische",
     "germanName": "Streifenzunge",
     "latinName": "Microchirus variegatus",
     "habitat": "",
@@ -21910,7 +21910,7 @@
   {
     "id": "fisch_ungefleckter_grosser_sandaal",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Ungefleckter Grosser Sandaal",
     "latinName": "Hyperoplus immaculatus",
     "habitat": "",
@@ -21940,7 +21940,7 @@
   {
     "id": "fisch_vahls_wolfsfisch",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Vahls Wolfsfisch",
     "latinName": "Lycodes gracilis",
     "habitat": "",
@@ -21971,7 +21971,7 @@
   {
     "id": "fisch_vierbaertelige_seequappe",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Dorschverwandte",
     "germanName": "Vierbärtelige Seequappe",
     "latinName": "Enchelyopus cimbrius",
     "habitat": "",
@@ -22002,7 +22002,7 @@
   {
     "id": "fisch_wittling",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Dorschverwandte",
     "germanName": "Wittling",
     "latinName": "Merlangius merlangus",
     "habitat": "",
@@ -22033,7 +22033,7 @@
   {
     "id": "fisch_wolfsbarsch",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Wolfsbarsch, Seebarsch",
     "latinName": "Dicentrarchus labrax",
     "habitat": "",
@@ -22063,7 +22063,7 @@
   {
     "id": "fisch_zwergbutt",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Plattfische",
     "germanName": "Zwergbutt",
     "latinName": "Phrynorhombus norvegicus",
     "habitat": "",
@@ -22094,7 +22094,7 @@
   {
     "id": "fisch_zwergdorsch",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Dorschverwandte",
     "germanName": "Zwergdorsch",
     "latinName": "Trisopterus minutus",
     "habitat": "",
@@ -22125,7 +22125,7 @@
   {
     "id": "fisch_zwergseeskorpion",
     "group": "Fische",
-    "subgroup": "Übrige Meeresfische",
+    "subgroup": "Küstenfische",
     "germanName": "Zwergseeskorpion",
     "latinName": "Micrenophrys lilljeborgii",
     "habitat": "",
@@ -22155,7 +22155,7 @@
   {
     "id": "fisch_zwergzunge",
     "group": "Fische",
-    "subgroup": "Dorschverwandte und Plattfische",
+    "subgroup": "Plattfische",
     "germanName": "Zwergzunge, Glaszunge",
     "latinName": "Buglossidium luteum",
     "habitat": "",
