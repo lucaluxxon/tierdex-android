@@ -13171,18 +13171,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feldfluren",
+      "Ackerraine",
+      "Hecken",
+      "Feuchtwiesen"
+    ],
+    "distributionGermany": "Vor allem im Osten und Nordosten verbreitet, regional ausbreitend",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "d?mmerungs- und nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in der D?mmerung und nachts",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine Maus mit warm braunem Fell, heller Unterseite und oft dunklem R?ckenstreif.",
+    "observationTip": "Achte in der D?mmerung an Ackerr?ndern, Hecken und feuchten Wiesen auf huschende Bewegungen im Gras.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Verbreitung regional unterschiedlich und in Ausbreitung; sp?ter noch einmal pr?fen."
   },
   {
     "id": "saeugetier_gelbhalsmaus",
@@ -13193,18 +13201,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Laubw?lder",
+      "Waldr?nder",
+      "Hecken",
+      "G?rten"
+    ],
+    "distributionGermany": "Weit verbreitet, besonders in Mittel- und S?ddeutschland",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "d?mmerungs- und nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in der D?mmerung und nachts",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanke Maus mit braunem R?cken, heller Unterseite, gro?en Augen und gelblichem Halsband.",
+    "observationTip": "Achte in der D?mmerung in Laubw?ldern, Hecken und strukturreichen Randbereichen auf flinke Kletter- und Bodenbewegungen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Verwechslung mit Waldmaus m?glich; Bestimmung im Feld nicht immer sicher."
   },
   {
     "id": "saeugetier_waldmaus",
@@ -13215,16 +13232,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "W?lder",
+      "Hecken",
+      "G?rten",
+      "Feldr?nder"
+    ],
+    "distributionGermany": "Nahezu bundesweit verbreitet",
+    "rarityGame": "h?ufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "d?mmerungs- und nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in der D?mmerung und nachts",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Zierliche Maus mit braunem R?cken, wei?licher Unterseite, gro?en Ohren und gro?en dunklen Augen.",
+    "observationTip": "Achte in der D?mmerung in W?ldern, G?rten und an Feldr?ndern auf schnelle Spr?nge und huschende Bewegungen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
     "reviewNote": ""
   },
@@ -13237,18 +13263,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wiesen",
+      "R?hrichte",
+      "Getreidefelder",
+      "Gr?ben"
+    ],
+    "distributionGermany": "Weit verbreitet, aber leicht zu ?bersehen",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "d?mmerungs- und nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in warmen Abendstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Winzige Maus mit rotbraunem R?cken, heller Unterseite und relativ langem Greifschwanz.",
+    "observationTip": "Achte an warmen Abenden in hohen Gr?sern, R?hrichten und Getreide auf feine Kletterbewegungen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Wird wegen ihrer geringen Gr??e oft ?bersehen."
   },
   {
     "id": "saeugetier_hausmaus",
@@ -13259,18 +13293,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Siedlungen",
+      "H?fe",
+      "Lager",
+      "G?rten"
+    ],
+    "distributionGermany": "Bundesweit verbreitet",
+    "rarityGame": "h?ufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "d?mmerungs- und nachtaktiv",
+    "season": "Ganzj?hrig, besonders in der D?mmerung und nachts",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine schlanke Maus mit graubraunem Fell, spitzer Schnauze und langem nahezu nacktem Schwanz.",
+    "observationTip": "Achte ganzj?hrig in Geb?uden?he, H?fen und G?rten auf schnelle Bodenbewegungen und Nagespuren.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Als Kulturfolger fast ?berall vorhanden; Spielbalance sp?ter eventuell pr?fen."
   },
   {
     "id": "saeugetier_hausratte",
@@ -13281,18 +13323,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "H?fen",
+      "D?cher",
+      "Lagerh?user",
+      "Siedlungen"
+    ],
+    "distributionGermany": "Nur noch regional und deutlich seltener als die Wanderratte",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "d?mmerungs- und nachtaktiv",
+    "season": "Ganzj?hrig, besonders in der D?mmerung und nachts",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanke Ratte mit graubraunem Fell, gro?en Ohren, spitzer Schnauze und langem d?nnem Schwanz.",
+    "observationTip": "Achte nachts in alten Geb?uden, H?fen und Lagerbereichen auf kletternde oder huschende Tiere.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland regional stark zur?ckgedr?ngt; aktuelle Vorkommen sp?ter pr?fen."
   },
   {
     "id": "saeugetier_wanderratte",
@@ -13303,16 +13353,24 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Siedlungen",
+      "Kan?le",
+      "H?fe",
+      "Uferbereiche"
+    ],
+    "distributionGermany": "Bundesweit weit verbreitet",
+    "rarityGame": "h?ufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "d?mmerungs- und nachtaktiv",
+    "season": "Ganzj?hrig, besonders in der D?mmerung und nachts",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kr?ftige Ratte mit graubraunem Fell, stumpfer Schnauze, kleinen Ohren und langem Schwanz.",
+    "observationTip": "Achte nachts in Siedlungen, an Kan?len und H?fen auf schnelle Bodenbewegungen und Laufwege.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
     "reviewNote": ""
   },
@@ -13325,18 +13383,28 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Ackerfl?chen",
+      "Feldfluren",
+      "L?ssb?den",
+      "Brachfl?chen"
+    ],
+    "distributionGermany": "Nur noch regional in wenigen Ackerlandschaften erhalten",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "d?mmerungs- und nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in milden Abendstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kr?ftiger Hamster mit goldbraunem R?cken, schwarzem Bauch und auff?lligen wei?en Flecken an den Flanken.",
+    "observationTip": "Achte in milden Abendstunden in offenen Ackerlandschaften auf kurze Laufbewegungen und Erdausw?rfe an Bauen.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Stark bedroht und regional sehr selten; Verbreitung sp?ter noch genauer eingrenzen."
   },
   {
     "id": "saeugetier_roetelmaus",
@@ -13347,16 +13415,24 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "W?lder",
+      "Hecken",
+      "G?rten",
+      "Geb?sche"
+    ],
+    "distributionGermany": "Nahezu bundesweit verbreitet",
+    "rarityGame": "h?ufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tag- und nachtaktiv",
+    "season": "Ganzj?hrig, besonders vom Fr?hjahr bis Herbst",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine W?hlmaus mit rotbraunem R?cken, heller Unterseite, stumpfer Schnauze und relativ kleinen Ohren.",
+    "observationTip": "Achte in dichter Bodenvegetation, Hecken und Walds?umen auf rasche Bewegungen und kleine Laufgassen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
     "reviewNote": ""
   },
@@ -13369,18 +13445,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feldfluren",
+      "Wiesen",
+      "?cker",
+      "B?schungen"
+    ],
+    "distributionGermany": "Bundesweit weit verbreitet",
+    "rarityGame": "h?ufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tag- und nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in den Morgen- und Abendstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine gedrungene W?hlmaus mit graubraunem Fell, stumpfer Schnauze und kurzem Schwanz.",
+    "observationTip": "Achte an Wiesen, ?ckern und B?schungen auf Laufgassen, Fra?spuren und kurze Bodenbewegungen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Best?nde schwanken regional und jahresweise teils stark."
   },
   {
     "id": "saeugetier_erdmaus",
@@ -13391,18 +13475,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feuchtwiesen",
+      "Brachen",
+      "Grasl?nder",
+      "Geb?sche"
+    ],
+    "distributionGermany": "Weit verbreitet, regional aber uneinheitlich h?ufig",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tag- und nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in den Morgen- und Abendstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kr?ftige W?hlmaus mit braunem Fell, stumpfer Schnauze, kleinen Ohren und kurzem Schwanz.",
+    "observationTip": "Achte in h?herer Vegetation und auf feuchten Grasfl?chen auf Laufgassen und kurze Bodenbewegungen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Abgrenzung zur Feldmaus regional nicht immer einfach."
   },
   {
     "id": "saeugetier_nordische_wuehlmaus",
@@ -13413,18 +13505,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Moore",
+      "Nasswiesen",
+      "Riede",
+      "Auen"
+    ],
+    "distributionGermany": "Nur in wenigen n?rdlichen und nord?stlichen Regionen",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tag- und nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in ruhigen Morgen- und Abendstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine bis mittelgro?e W?hlmaus mit braunem Fell, stumpfer Schnauze und kurzem Schwanz.",
+    "observationTip": "Achte in feuchten Offenlandbereichen auf Laufgassen, Fra?spuren und huschende Bewegungen im Gras.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland stark regional begrenzt; aktuelle Vorkommen sp?ter noch einmal abgleichen."
   },
   {
     "id": "saeugetier_kurzohrmaus",
@@ -13435,18 +13536,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wiesen",
+      "Waldr?nder",
+      "Brachen",
+      "Geb?sche"
+    ],
+    "distributionGermany": "L?ckenhaft verbreitet und vielerorts selten nachgewiesen",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "d?mmerungs- und nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in der D?mmerung und nachts",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine Maus mit graubraunem Fell, sehr kleinen Ohren, stumpferem Kopf und mittellangem Schwanz.",
+    "observationTip": "Achte in dichter Vegetation und an ?berg?ngen zwischen Wiese und Geh?lz auf leise huschende Bewegungen.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Wird selten nachgewiesen; Bestimmung und Verbreitung sp?ter noch genauer pr?fen."
   },
   {
     "id": "saeugetier_bayerische_kurzohrmaus",
@@ -13457,18 +13567,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Almwiesen",
+      "Berggr?nland",
+      "Blockfluren",
+      "Gebirgslagen"
+    ],
+    "distributionGermany": "Nur in sehr kleinen Bereichen Bayerns bekannt",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "d?mmerungs- und nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in schneefreien Monaten",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine gedrungene Maus mit graubraunem Fell, sehr kleinen Ohren und kurzem Schwanz.",
+    "observationTip": "Achte in schneefreien Berglagen auf kleine Bodenbewegungen, Laufspuren und Fra?stellen im Gras.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Extrem seltene und lokal begrenzte Art; Datenlage sp?ter besonders sorgf?ltig pr?fen."
   },
   {
     "id": "saeugetier_schneemaus",
@@ -13479,18 +13598,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Alpen",
+      "Blockhalden",
+      "Felsh?nge",
+      "Ger?llfelder"
+    ],
+    "distributionGermany": "In Deutschland auf alpine Hochlagen beschr?nkt",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tag- und d?mmerungsaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders an sonnigen Tagen in schneefreien Lagen",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kr?ftige graue Maus mit heller Unterseite, stumpfer Schnauze und dicht behaartem Schwanz.",
+    "observationTip": "Achte in alpinen Ger?ll- und Felsbereichen an sonnigen Tagen auf flinke Bewegungen zwischen Steinen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland nur in Hochlagen der Alpen; regionale Nachweise sp?ter verifizieren."
   },
   {
     "id": "saeugetier_ostschermaus",
@@ -13501,18 +13628,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Uferzonen",
+      "Gr?ben",
+      "Wiesen",
+      "Gew?ssern?he"
+    ],
+    "distributionGermany": "Vor allem im Osten und Nordosten verbreitet",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tag- und nachtaktiv",
+    "season": "Ganzj?hrig, besonders vom Fr?hjahr bis Herbst",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Gro?e W?hlmaus mit dunkelbraunem Fell, stumpfem Kopf und relativ kurzem behaartem Schwanz.",
+    "observationTip": "Achte nahe Gew?ssern und in feuchten Wiesen auf Laufg?nge, Fra?spuren und kurze Bodenbewegungen.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Nomenklatur und Abgrenzung innerhalb der Scherm?use sp?ter noch einmal pr?fen."
   },
   {
     "id": "saeugetier_gebirgsschermaus",
@@ -13523,18 +13659,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Almwiesen",
+      "Bergwiesen",
+      "Weiden",
+      "Gebirgslagen"
+    ],
+    "distributionGermany": "Vor allem in S?ddeutschland und h?heren Lagen",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tag- und nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in schneefreien Monaten",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kr?ftige W?hlmaus mit dunkelbraunem Fell, stumpfem Kopf und kurzem behaartem Schwanz.",
+    "observationTip": "Achte in Bergwiesen und Weidelandschaften auf frische Erdausw?rfe, Fra?spuren und kurze Sichtungen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Abgrenzung zur Ostschermaus und taxonomische Einordnung sp?ter noch einmal pr?fen."
   },
   {
     "id": "saeugetier_wolf",
