@@ -19816,18 +19816,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Weiher",
+      "Auen",
+      "Altarme",
+      "Röhrichte"
+    ],
+    "distributionGermany": "Sehr lokal, vor allem in Brandenburg sowie wenige Wiederansiedlungsgebiete",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Frühherbst, besonders an warmen sonnigen Tagen",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Dunkle Schildkröte mit gelb gesprenkeltem Panzer und kleinen hellen Punkten auf Kopf und Beinen.",
+    "observationTip": "Suche an warmen Frühjahrs- und Sommertagen an ruhigen Gewässern nach sonnenden Tieren auf Uferstellen oder Holz.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland stark lokal begrenzt; wiederangesiedelte Bestände bitte später genauer prüfen."
   },
   {
     "id": "reptil_westliche_blindschleiche",
@@ -19838,18 +19847,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Waldränder",
+      "Hecken",
+      "Gärten",
+      "Wiesen"
+    ],
+    "distributionGermany": "Weit verbreitet in vielen Teilen Deutschlands",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tag- und dämmerungsaktiv",
+    "season": "Frühjahr bis Herbst, besonders an milden sonnigen Tagen",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlangenähnliche, beinlose Echse mit glattem glänzendem Körper und meist brauner bis grauer Färbung.",
+    "observationTip": "Suche an milden Frühjahrs- und Sommertagen unter Steinen, Totholz oder an Wegrändern nach ihr.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Westliche Blindschleiche und nahe Verwandte wurden taxonomisch getrennt; regionale Abgrenzung später prüfen."
   },
   {
     "id": "reptil_zauneidechse",
@@ -19860,18 +19878,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Böschungen",
+      "Heiden",
+      "Waldränder",
+      "Bahndämme"
+    ],
+    "distributionGermany": "Weit verbreitet, aber regional mit Lücken",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Spätsommer, besonders an warmen sonnigen Tagen",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige Eidechse; Männchen im Frühjahr oft leuchtend grün, Weibchen meist brauner gemustert.",
+    "observationTip": "Suche an warmen Tagen an strukturreichen Böschungen, Wegrändern und offenen Flächen nach sonnenden Tieren.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regional noch recht häufig, andernorts deutlich rückläufig."
   },
   {
     "id": "reptil_westliche_smaragdeidechse",
@@ -19882,18 +19909,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Weinberge",
+      "Trockenhänge",
+      "Gebüsche",
+      "Mauern"
+    ],
+    "distributionGermany": "Sehr lokal im Südwesten Deutschlands",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Spätsommer, besonders an heißen sonnigen Tagen",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Große, auffällig grüne Eidechse mit schlankem Körper und feiner dunkler Zeichnung.",
+    "observationTip": "Suche an warmen Tagen in strukturreichen Trockenhängen, Weinbergen und Mauerbereichen nach ihr.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland nur sehr kleinräumig; westliche und östliche Smaragdeidechse regional trennen."
   },
   {
     "id": "reptil_oestliche_smaragdeidechse",
@@ -19904,18 +19939,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Trockenhänge",
+      "Gebüsche",
+      "Mauern",
+      "Waldränder"
+    ],
+    "distributionGermany": "Sehr lokal im Südosten und an wenigen Wärmeinseln",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Spätsommer, besonders an heißen sonnigen Tagen",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Große, leuchtend grüne Eidechse mit langem Schwanz und dunkler Fleckung.",
+    "observationTip": "Suche an warmen Tagen in sonnigen Hanglagen, Gebüschen und an steinigen Strukturen nach ihr.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland extrem lokal; genaue Areale und Abgrenzung zur westlichen Art später prüfen."
   },
   {
     "id": "reptil_mauereidechse",
@@ -19926,18 +19969,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Trockenmauern",
+      "Bahndämme",
+      "Felsen",
+      "Siedlungen"
+    ],
+    "distributionGermany": "Lokal verbreitet, teils heimisch, teils durch Aussetzungen oder Verschleppung",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Spätsommer, besonders an warmen sonnigen Tagen",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine, schlanke Eidechse mit flachem Körper und variabler graubrauner bis grünlicher Zeichnung.",
+    "observationTip": "Suche an warmen Tagen an Mauern, Felsen und Bahnböschungen nach schnell huschenden Tieren.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Vorkommen teils nicht ursprünglich; regionale Herkunft später prüfen."
   },
   {
     "id": "reptil_waldeidechse",
@@ -19948,16 +19999,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Moore",
+      "Waldränder",
+      "Heiden",
+      "Feuchtwiesen"
+    ],
+    "distributionGermany": "Weit verbreitet, besonders in kühleren und feuchteren Regionen",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Frühherbst, besonders an sonnigen Abschnitten kühler Tage",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine, eher gedrungene Eidechse mit brauner Grundfärbung und feiner Rückenzeichnung.",
+    "observationTip": "Suche an sonnigen Stellen in Mooren, an Waldrändern oder in Heideflächen nach ihr.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
     "reviewNote": ""
   },
@@ -19970,18 +20030,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Heiden",
+      "Felskuppen",
+      "Waldränder",
+      "Trockenhänge"
+    ],
+    "distributionGermany": "Verstreut, mit Schwerpunkten in wärmeren Regionen und Mittelgebirgen",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Frühherbst, besonders an warmen sonnigen Tagen",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanke, unauffällige Natter mit braun-grauer Färbung und dunklem Augenstreif.",
+    "observationTip": "Suche an warmen Tagen in steinigen, strukturreichen Offenbereichen nach ihr.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Unauffällige Art, daher regional oft unterschätzt."
   },
   {
     "id": "reptil_ringelnatter",
@@ -19992,18 +20061,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gewässerufer",
+      "Feuchtwiesen",
+      "Auen",
+      "Gärten"
+    ],
+    "distributionGermany": "Weit verbreitet in großen Teilen Deutschlands",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Frühherbst, besonders an warmen Tagen",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroße Natter mit graugrüner Grundfarbe und meist hellen Nackenflecken.",
+    "observationTip": "Suche an warmen Tagen an Gewässerrändern, in Röhrichten und auf Wegen in Wassernähe nach ihr.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Durch Aufspaltung von Ringelnatter-Komplex regional genauer zu prüfen."
   },
   {
     "id": "reptil_barren_ringelnatter",
@@ -20014,18 +20092,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Flussauen",
+      "Seen",
+      "Ufergehölze",
+      "Feuchtgebiete"
+    ],
+    "distributionGermany": "Vor allem im Westen und Südwesten Deutschlands",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Frühherbst, besonders an warmen Tagen",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanke Natter mit dunkler Grundfarbe und oft markanter gebänderter Flankenzeichnung.",
+    "observationTip": "Suche an warmen Tagen an Gewässerufern, in Auen und an vegetationsreichen Uferzonen nach ihr.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Verbreitung in Deutschland nach taxonomischer Trennung regional genauer prüfen."
   },
   {
     "id": "reptil_wuerfelnatter",
@@ -20036,18 +20122,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Flussufer",
+      "Steinufer",
+      "Auen",
+      "Altwasser"
+    ],
+    "distributionGermany": "Sehr lokal, vor allem an wenigen großen Flusssystemen im Süden und Osten",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Frühherbst, besonders an heißen sonnigen Tagen",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanke Natter mit würfelartiger dunkler Fleckung auf grauer bis olivfarbener Grundfarbe.",
+    "observationTip": "Suche an heißen Tagen an steinigen Flussufern und ruhigen Altwassern nach ihr.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland sehr selten und stark auf wenige Gewässer beschränkt."
   },
   {
     "id": "reptil_aspisviper",
@@ -20058,18 +20152,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Felsen",
+      "Trockenhänge",
+      "Gebüsche",
+      "Blockhalden"
+    ],
+    "distributionGermany": "Extrem lokal im südlichen Schwarzwald",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Frühherbst, besonders an warmen sonnigen Tagen",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige Viper mit breitem dreieckigem Kopf und markanter Zickzack- oder Fleckenzeichnung.",
+    "observationTip": "Suche an warmen Tagen in felsigen Hanglagen und zwischen Steinen nach ruhenden Tieren.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland nur winzige Randvorkommen; genaue Verbreitung später prüfen."
   },
   {
     "id": "reptil_kreuzotter",
@@ -20080,18 +20182,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Moore",
+      "Heiden",
+      "Waldränder",
+      "Lichtungen"
+    ],
+    "distributionGermany": "Verstreut, besonders im Norden sowie in Mittelgebirgen und Moorgebieten",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Frühherbst, besonders an sonnigen Tagen mit Rückzugsmöglichkeiten",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige Viper mit breitem Kopf und meist dunklem Zickzackband auf dem Rücken.",
+    "observationTip": "Suche an sonnigen Tagen an Heideflächen, Mooren und Waldrändern nach ihr, aber mit Abstand.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regional selten geworden; Sicherheitshinweis bei späterer Nutzung evtl. ergänzen."
   },
   {
     "id": "reptil_aeskulapnatter",
@@ -20102,17 +20213,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Laubwälder",
+      "Mauern",
+      "Weinberge",
+      "Gebüsche"
+    ],
+    "distributionGermany": "Sehr lokal vor allem im Südwesten und an wenigen Wärmegebieten",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Frühherbst, besonders an warmen sonnigen Tagen",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Lange, schlanke Natter mit einfarbig olivbrauner bis gelblichbrauner Grundfarbe.",
+    "observationTip": "Suche an warmen Tagen in strukturreichen Weinbergen, Mauern und lichten Wäldern nach ihr.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland auf sehr wenige Gebiete beschränkt; regionale Angaben später prüfen."
   }
 ]
