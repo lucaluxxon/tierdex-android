@@ -12772,18 +12772,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feldfluren",
+      "Wiesen",
+      "?cker",
+      "Waldr?nder"
+    ],
+    "distributionGermany": "Nahezu bundesweit verbreitet, regional aber r?ckl?ufig",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "d?mmerungs- und nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in der D?mmerung",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Langbeiniges Hasentier mit langen Ohren, braunem Fell und heller Bauchseite.",
+    "observationTip": "Suche in der D?mmerung in offenen Feldfluren, auf Wiesen und an Wegr?ndern nach ihm.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regional unterschiedlich h?ufig; in intensiv genutzten Agrarr?umen oft deutlich seltener."
   },
   {
     "id": "saeugetier_schneehase",
@@ -12794,18 +12803,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Alpen",
+      "Gebirgslagen",
+      "Latschenfelder",
+      "Bergwiesen"
+    ],
+    "distributionGermany": "In Deutschland vor allem in den Alpen",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "d?mmerungs- und nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in ruhigen D?mmerungsstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kr?ftiger Hase mit relativ kurzen Ohren und jahreszeitlich wechselndem Fell von braun bis wei?.",
+    "observationTip": "Suche in alpinen Lagen in ruhigen D?mmerungsstunden an H?ngen, Bergwiesen und ?bergangsbereichen nach ihm.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland auf den Alpenraum beschr?nkt; regionale Vorkommen sp?ter noch genauer pr?fen."
   },
   {
     "id": "saeugetier_wildkaninchen",
@@ -12816,18 +12833,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wiesen",
+      "B?schungen",
+      "Heiden",
+      "Siedlungsr?nder"
+    ],
+    "distributionGermany": "Vor allem in tieferen und w?rmeren Lagen weit verbreitet",
+    "rarityGame": "h?ufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "d?mmerungs- und nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in den Abendstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleines Kaninchen mit graubraunem Fell, kurzer wei?er Schwanzunterseite und relativ kurzen Ohren.",
+    "observationTip": "Suche in den Abendstunden an Wiesen, B?schungen und offenen Randbereichen nach mehreren Tieren zugleich.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Best?nde schwanken regional teils stark durch Krankheiten und lokale Bedingungen."
   },
   {
     "id": "saeugetier_eichhoernchen",
@@ -12838,16 +12864,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "W?lder",
+      "Parks",
+      "G?rten",
+      "Baumbest?nde"
+    ],
+    "distributionGermany": "Bundesweit weit verbreitet",
+    "rarityGame": "h?ufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzj?hrig, besonders in den Morgenstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleines H?rnchen mit buschigem Schwanz, gro?en dunklen Augen und Fell in Rot- bis Dunkelbraunt?nen.",
+    "observationTip": "Achte morgens in Baumbest?nden, Parks und G?rten auf flinke Kletterbewegungen und Spr?nge.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
     "reviewNote": ""
   },
@@ -12860,18 +12895,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Parks",
+      "G?rten",
+      "Siedlungsgr?n",
+      "Waldr?nder"
+    ],
+    "distributionGermany": "Nur lokal aus ausgesetzten oder entkommenen Best?nden bekannt",
+    "rarityGame": "gebietsfremd",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in den Morgenstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleines H?rnchen mit braunem Fell, auff?lligen dunklen R?ckenstreifen und buschigem Schwanz.",
+    "observationTip": "Achte morgens in Parkanlagen, G?rten und strukturreichen Gr?nfl?chen auf schnelle Boden- und Kletterbewegungen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland gebietsfremd und nur lokal etabliert; Vorkommen regional unterschiedlich."
   },
   {
     "id": "saeugetier_alpenmurmeltier",
@@ -12882,18 +12925,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Alpenwiesen",
+      "Gebirgslagen",
+      "Schutthalden",
+      "H?nge"
+    ],
+    "distributionGermany": "In Deutschland vor allem im Alpenraum verbreitet",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders an sonnigen Vormittagen",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kr?ftiges Nagetier mit gedrungenem K?rper, kurzem buschigem Schwanz und graubraunem Fell.",
+    "observationTip": "Achte an sonnigen Vormittagen in alpinen Offenlagen auf aufrechte Warnhaltungen und kurze Rufe.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland im Wesentlichen auf alpine Regionen beschr?nkt."
   },
   {
     "id": "saeugetier_europaeischer_biber",
@@ -12904,18 +12955,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Fl?sse",
+      "B?che",
+      "Seen",
+      "Auen"
+    ],
+    "distributionGermany": "In vielen Regionen wieder verbreitet, mit regionalen Schwerpunkten",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "d?mmerungs- und nachtaktiv",
+    "season": "Ganzj?hrig, besonders in der Abendd?mmerung",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Gro?es Nagetier mit dichtem braunem Fell, breitem flachem Schwanz und kr?ftigem Kopf.",
+    "observationTip": "Achte in der Abendd?mmerung an ruhigen Gew?ssern auf Schwimmbewegungen, Fra?spuren und Platschen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Ausbreitung regional dynamisch; lokale H?ufigkeit sp?ter ggf. aktualisieren."
   },
   {
     "id": "saeugetier_bisamratte",
@@ -12926,18 +12986,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gr?ben",
+      "Teiche",
+      "Fl?sse",
+      "Uferzonen"
+    ],
+    "distributionGermany": "Weit verbreitet an geeigneten Gew?ssern",
+    "rarityGame": "gebietsfremd",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "d?mmerungs- und nachtaktiv",
+    "season": "Fr?hjahr bis Herbst, besonders in der D?mmerung",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgro?es Nagetier mit dunkelbraunem Fell, langem seitlich abgeflachtem Schwanz und kleinem Kopf.",
+    "observationTip": "Achte in der D?mmerung an Gr?ben, Teichen und Uferzonen auf schwimmende Tiere und Fra?stellen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Gebietsfremde Art; regionale Best?nde k?nnen stark schwanken."
   },
   {
     "id": "saeugetier_nutria",
@@ -12948,18 +13016,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gew?sserufer",
+      "Kan?le",
+      "Teiche",
+      "Auen"
+    ],
+    "distributionGermany": "Regional weit verbreitet, besonders in milderen Tieflagen",
+    "rarityGame": "gebietsfremd",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "d?mmerungs- und nachtaktiv",
+    "season": "Ganzj?hrig, besonders in milden Abendstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Gro?es Nagetier mit grobem braunem Fell, rundem R?cken und langem nacktem Schwanz.",
+    "observationTip": "Achte in milden Abendstunden an Ufern, Kan?len und Teichen auf ruhige Schwimmbewegungen und Fra?spuren.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Gebietsfremde Art mit regional sehr unterschiedlichen Best?nden."
   },
   {
     "id": "saeugetier_siebenschlaefer",
@@ -12970,18 +13047,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Laubw?lder",
+      "G?rten",
+      "Obstwiesen",
+      "Siedlungsr?nder"
+    ],
+    "distributionGermany": "Vor allem in Mittel- und S?ddeutschland weit verbreitet",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Sommer bis Fr?hherbst, besonders in warmen N?chten",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine Schlafmaus mit grauem Fell, gro?en dunklen Augen und buschigem Schwanz.",
+    "observationTip": "Achte in warmen Sommern?chten in baumreichen Gebieten auf Kletterbewegungen und raschelnde Aktivit?t.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Durch lange Winterruhe saisonal nur in einem begrenzten Zeitraum gut beobachtbar."
   },
   {
     "id": "saeugetier_gartenschlaefer",
@@ -12992,18 +13078,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "G?rten",
+      "Obstwiesen",
+      "Waldr?nder",
+      "Siedlungen"
+    ],
+    "distributionGermany": "Regional stark l?ckenhaft, mit Schwerpunkten in Mittelgebirgen und S?dwesten",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Sommer bis Fr?hherbst, besonders in milden N?chten",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine Schlafmaus mit grauem Fell, auff?lliger schwarzer Gesichtsmaske und buschigem Schwanz.",
+    "observationTip": "Achte in milden N?chten in strukturreichen G?rten, Obstwiesen und Randlagen auf Kletteraktivit?t.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regional stark zur?ckgegangen; Verbreitung sp?ter noch einmal pr?fen."
   },
   {
     "id": "saeugetier_haselmaus",
@@ -13014,18 +13109,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Hecken",
+      "Geb?sche",
+      "Waldr?nder",
+      "Jungw?lder"
+    ],
+    "distributionGermany": "Weit verbreitet, aber oft unauff?llig und lokal",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Sommer bis Fr?hherbst, besonders in milden N?chten",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr kleine Schlafmaus mit goldbraunem Fell, gro?en schwarzen Augen und buschigem Schwanz.",
+    "observationTip": "Achte in milden N?chten in dichten Hecken und Geb?schen auf leise Kletterbewegungen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Wegen versteckter Lebensweise oft schwer zu erfassen; H?ufigkeit regional unterschiedlich."
   },
   {
     "id": "saeugetier_baumschlaefer",
@@ -13036,18 +13140,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Laubw?lder",
+      "Geb?sche",
+      "Waldr?nder",
+      "Buschlandschaften"
+    ],
+    "distributionGermany": "Nur lokal und sehr selten nachgewiesen",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Sommer bis Fr?hherbst, besonders in warmen ruhigen N?chten",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine Schlafmaus mit graubraunem Fell, dunkler Gesichtszeichnung und buschigem Schwanz mit dunkler Spitze.",
+    "observationTip": "Achte in warmen ruhigen N?chten in strukturreichen Geh?lzen auf vorsichtige Kletterbewegungen.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland sehr lokal; Datenlage und aktuelle Vorkommen sp?ter noch einmal pr?fen."
   },
   {
     "id": "saeugetier_brandmaus",
