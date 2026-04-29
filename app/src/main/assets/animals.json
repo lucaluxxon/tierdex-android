@@ -19192,18 +19192,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Teiche",
+      "Quellbereiche"
+    ],
+    "distributionGermany": "Vor allem Mittelgebirge, Alpenrand und waldreiche Regionen",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Frühjahr bis Herbst",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftiger Molch mit auffälligem Bauch, oft an kleinen Gewässern.",
+    "observationTip": "Im Frühjahr in klaren Waldtümpeln und Teichen nach ihm suchen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Verbreitung regional unterschiedlich, im Norden deutlich seltener."
   },
   {
     "id": "amphibie_fadenmolch",
@@ -19214,18 +19222,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wiesen",
+      "Hecken",
+      "Kleingewässer"
+    ],
+    "distributionGermany": "Vor allem im Westen und Norden, lokal auch in der Mitte Deutschlands",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Frühjahr bis Sommer",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner Molch, zur Paarungszeit mit feinem Schwanzfaden beim Männchen.",
+    "observationTip": "In flachen, fischfreien Tümpeln und Gräben besonders im Frühjahr beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Süddeutschland nicht flächendeckend, regionale Lücken bitte später prüfen."
   },
   {
     "id": "amphibie_teichmolch",
@@ -19236,16 +19252,24 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gärten",
+      "Teiche",
+      "Feuchtwiesen"
+    ],
+    "distributionGermany": "Fast deutschlandweit verbreitet",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Frühjahr bis Herbst",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Häufiger kleiner Molch, oft in Gärten und an Dorfteichen.",
+    "observationTip": "Im Frühjahr in sonnigen, pflanzenreichen Teichen besonders gut zu finden.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
     "reviewNote": ""
   },
@@ -19258,40 +19282,55 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Bergwälder",
+      "Almen",
+      "Schluchtwälder"
+    ],
+    "distributionGermany": "Nur im äußersten Alpenraum Süddeutschlands",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv bei feuchtem Wetter",
+    "season": "Frühjahr bis Herbst",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Tiefschwarzer Salamander der Alpenregionen.",
+    "observationTip": "Nach Regen auf Bergwegen und in feuchten Hochlagen Ausschau halten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland nur sehr kleinräumig, genaue Vorkommen später noch verfeinern."
   },
   {
     "id": "amphibie_feuersalamander",
     "group": "Amphibien",
     "subgroup": "Schwanzlurche",
-    "germanName": "Feürsalamander",
+    "germanName": "Feuersalamander",
     "latinName": "Salamandra salamandra",
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Laubwälder",
+      "Quellbäche",
+      "Schluchten"
+    ],
+    "distributionGermany": "Vor allem in Mittelgebirgen und waldreichen Regionen verbreitet",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Frühjahr bis Herbst",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schwarz-gelb gezeichneter Salamander feuchter Wälder.",
+    "observationTip": "Bei Regen nachts auf Waldwegen oder nahe Quellbächen suchen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Bestände mancherorts durch Salamanderpest unter Druck, regional sehr unterschiedlich."
   },
   {
     "id": "amphibie_kammmolch",
@@ -19302,18 +19341,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Stillgewässer",
+      "Wiesen",
+      "Heckenlandschaften"
+    ],
+    "distributionGermany": "Weit verbreitet, aber oft nur lokal in geeigneten Gewässern",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Frühjahr bis Sommer",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Größter heimischer Molch mit markantem Kamm in der Paarungszeit.",
+    "observationTip": "Fischfreie, strukturreiche Teiche im Frühjahr gezielt absuchen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Trotz breiter Verbreitung vielerorts lückenhaft und lokal gefährdet."
   },
   {
     "id": "amphibie_geburtshelferkroete",
@@ -19324,18 +19371,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Steinbrüche",
+      "Hänge",
+      "Kleingewässer"
+    ],
+    "distributionGermany": "Vor allem westliche und mittlere Mittelgebirge",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Frühjahr bis Herbst",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine Kröte, deren Männchen die Eierschnüre mitträgt.",
+    "observationTip": "Abends in steinigen Gebieten nahe kleinen Wasserstellen auf Rufe achten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regionale Schwerpunktart, in vielen Gegenden fehlend."
   },
   {
     "id": "amphibie_gelbbauchunke",
@@ -19346,18 +19401,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Pfützen",
+      "Fahrspuren",
+      "Steinbrüche"
+    ],
+    "distributionGermany": "Schwerpunkt im Süden und Südwesten Deutschlands",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tag- und dämmerungsaktiv",
+    "season": "Frühjahr bis Spätsommer",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine Unke mit auffälliger gelb-schwarzer Bauchzeichnung.",
+    "observationTip": "Flache, sonnenwarme Kleinstgewässer und Fahrspuren kontrollieren.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland sehr regional, Schwerpunkt klar im Süden."
   },
   {
     "id": "amphibie_rotbauchunke",
@@ -19368,18 +19431,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Auen",
+      "Flachgewässer",
+      "Feuchtwiesen"
+    ],
+    "distributionGermany": "Vor allem Nordosten und östliche Tieflandbereiche",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tag- und dämmerungsaktiv",
+    "season": "Frühjahr bis Sommer",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine Unke mit roter Bauchzeichnung und melodischem Ruf.",
+    "observationTip": "In warmen Flachgewässern lauschen und nach kleinen, dunklen Unken suchen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Verbreitung in Deutschland stark auf östliche Regionen konzentriert."
   },
   {
     "id": "amphibie_erdkroete",
@@ -19390,16 +19461,24 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Gärten",
+      "Teiche"
+    ],
+    "distributionGermany": "Nahezu deutschlandweit verbreitet",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Frühjahr bis Herbst",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Große, robuste Kröte, oft auf nächtlichen Wegen unterwegs.",
+    "observationTip": "Zur Laichzeit an Straßen und Gewässern besonders häufig zu sehen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
     "reviewNote": ""
   },
@@ -19412,18 +19491,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Trockenflächen",
+      "Brachen",
+      "Flachgewässer"
+    ],
+    "distributionGermany": "Vor allem im Osten und in wärmeren offenen Landschaften",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Frühjahr bis Sommer",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Helle Kröte mit grünlicher Fleckenzeichnung offener Lebensräume.",
+    "observationTip": "In warmen, offenen Gebieten nachts nach ihrem charakteristischen Ruf suchen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Lokal unterschiedlich, in vielen Regionen deutlich zurückgegangen."
   },
   {
     "id": "amphibie_kreuzkroete",
@@ -19434,18 +19521,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Sandflächen",
+      "Heiden",
+      "Pioniergewässer"
+    ],
+    "distributionGermany": "Verstreut in sandigen und offenen Regionen Deutschlands",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Frühjahr bis Sommer",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kröte mit hellem Rückenstreif und Vorliebe für offene Flächen.",
+    "observationTip": "Nachts in Sandgruben, Heiden oder auf Truppenübungsplätzen lauschen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Stark von offenen Pionierflächen abhängig, regional unterschiedlich häufig."
   },
   {
     "id": "amphibie_laubfrosch",
@@ -19456,18 +19551,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gebüsche",
+      "Weiher",
+      "Auen"
+    ],
+    "distributionGermany": "Lokal verbreitet, Schwerpunkt in warmen Tiefland- und Auenlandschaften",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Frühjahr bis Sommer",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner grüner Frosch, oft mit lauten Chören zur Paarungszeit.",
+    "observationTip": "Abends an vegetationsreichen Gewässern auf Rufe achten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Verbreitung kleinräumig, lokal aber an geeigneten Gewässern gut nachweisbar."
   },
   {
     "id": "amphibie_nordamerikanischer_ochsenfrosch",
@@ -19478,18 +19581,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Große Teiche",
+      "Seen",
+      "Auengewässer"
+    ],
+    "distributionGermany": "Nur lokal, meist auf eingeschleppte Vorkommen beschränkt",
+    "rarityGame": "invasiv",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Frühjahr bis Herbst",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Großer eingeführter Frosch mit tiefem, auffälligem Ruf.",
+    "observationTip": "An bekannten Problemgewässern und größeren Stillgewässern beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Keine heimische Art; Vorkommen in Deutschland kleinräumig und nicht flächig."
   },
   {
     "id": "amphibie_knoblauchkroete",
@@ -19500,18 +19610,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Äcker",
+      "Sandböden",
+      "Weiher"
+    ],
+    "distributionGermany": "Vor allem im Norddeutschen Tiefland und in sandigen Regionen",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "nachtaktiv",
+    "season": "Frühjahr bis Sommer",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Versteckt lebende Kröte, die sich gern in lockeren Böden eingräbt.",
+    "observationTip": "Am besten nachts in sandigen Agrarlandschaften nahe Laichgewässern suchen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Schwer nachweisbar, deshalb regional oft unterschätzt."
   },
   {
     "id": "amphibie_teichfrosch",
@@ -19522,18 +19640,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Teiche",
+      "Seen",
+      "Gräben"
+    ],
+    "distributionGermany": "Weit verbreitet in geeigneten Gewässerlandschaften",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tag- und dämmerungsaktiv",
+    "season": "Frühjahr bis Herbst",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Häufiger Wasserfrosch an pflanzenreichen Gewässern.",
+    "observationTip": "An warmen Tagen an Ufern sitzend oder ins Wasser springend beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Abgrenzung zu anderen Wasserfröschen im Feld nicht immer einfach."
   },
   {
     "id": "amphibie_kleiner_wasserfrosch",
@@ -19544,18 +19669,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Weiher",
+      "Tümpel",
+      "Feuchtwiesen"
+    ],
+    "distributionGermany": "Lokal in weiten Teilen Deutschlands vertreten",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tag- und dämmerungsaktiv",
+    "season": "Frühjahr bis Herbst",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner Wasserfrosch, oft an sonnigen Kleingewässern.",
+    "observationTip": "Auf kleinere Wasserfrösche an ruhigen, vegetationsreichen Gewässern achten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Wasserfrosch-Komplex ist schwierig; Bestimmung teils nur eingeschränkt sicher."
   },
   {
     "id": "amphibie_seefrosch",
@@ -19566,18 +19698,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Flüsse",
+      "große Teiche"
+    ],
+    "distributionGermany": "Lokal verbreitet, eher an größeren Gewässern",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tag- und dämmerungsaktiv",
+    "season": "Frühjahr bis Herbst",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Größerer Wasserfrosch mit kräftigem Ruf an größeren Gewässern.",
+    "observationTip": "An sonnigen Ufern größerer Gewässer auf Rufe und Sprünge achten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Abgrenzung innerhalb des Wasserfrosch-Komplexes bitte später fachlich prüfen."
   },
   {
     "id": "amphibie_moorfrosch",
@@ -19588,18 +19727,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Moore",
+      "Bruchwälder",
+      "Feuchtwiesen"
+    ],
+    "distributionGermany": "Vor allem im Norden und Nordosten sowie in Moorlandschaften",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Frühjahr bis Sommer",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Brauner Frosch, dessen Männchen zur Laichzeit kurz blau wirken können.",
+    "observationTip": "Früh im Jahr in Moorgewässern und nassen Wiesen nach ihm suchen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Schwerpunkte liegen in Moorregionen; Verbreitung nicht flächig."
   },
   {
     "id": "amphibie_springfrosch",
@@ -19610,18 +19757,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Laubwälder",
+      "Auen",
+      "Teiche"
+    ],
+    "distributionGermany": "Vor allem wärmere Regionen im Süden und Westen Deutschlands",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Frühjahr bis Sommer",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker brauner Frosch mit sehr weiten Sprüngen.",
+    "observationTip": "Früh im Jahr an Waldgewässern und lichten Laubwäldern Ausschau halten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regionale Verbreitungsschwerpunkte, im Norden vielerorts fehlend."
   },
   {
     "id": "amphibie_grasfrosch",
@@ -19632,16 +19786,24 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Wiesen",
+      "Teiche"
+    ],
+    "distributionGermany": "Nahezu deutschlandweit verbreitet",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Frühjahr bis Herbst",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Häufiger brauner Frosch vieler feuchter Lebensräume.",
+    "observationTip": "Früh im Frühjahr an Laichgewässern besonders gut zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
     "reviewNote": ""
   },
