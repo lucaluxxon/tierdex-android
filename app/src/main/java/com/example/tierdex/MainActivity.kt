@@ -652,7 +652,14 @@ fun TierdexApp(database: AnimalFindingDatabase) {
 
     Scaffold(
         containerColor = Color.White,
-        topBar = {},
+        topBar = {
+            TierdexTopBar(
+                onSettingsClick = {
+                    resetSearchState()
+                    showSettingsScreen = true
+                }
+            )
+        },
         bottomBar = {
             if (selectedAnimal == null && !showAnimalPicker && !showAuthStartScreen && !showAuthEntryScreen && !showIntroScreen && !showSettingsScreen) {
                 MainBottomBar(
@@ -1059,14 +1066,14 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             selectedAnimalId = finding.animalId
                             openCreateFindingMode = false
                         },
-                        extraTopPadding = 0.dp,
+                        extraTopPadding = innerPadding.calculateTopPadding(),
                         extraBottomPadding = innerPadding.calculateBottomPadding()
                     )
                 }
 
                 currentTab == AppTab.FRIENDS -> {
                     FriendsScreen(
-                        extraTopPadding = 0.dp,
+                        extraTopPadding = innerPadding.calculateTopPadding(),
                         extraBottomPadding = innerPadding.calculateBottomPadding()
                     )
                 }
@@ -1142,7 +1149,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         },
                         favoriteAnimalId = favoriteAnimalId,
                         wishlistAnimalId = wishlistAnimalId,
-                        extraTopPadding = 0.dp,
+                        extraTopPadding = innerPadding.calculateTopPadding(),
                         extraBottomPadding = innerPadding.calculateBottomPadding()
                     )
                 }
@@ -1173,31 +1180,6 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                 StartupHintDialog(
                     onDismiss = { showStartupHintDialog = false }
                 )
-            }
-            if (
-                selectedAnimalId == null &&
-                !showAnimalPicker &&
-                !showIntroScreen &&
-                !showSettingsScreen &&
-                !showAuthStartScreen &&
-                !showAuthEntryScreen
-            ) {
-                IconButton(
-                    onClick = {
-                        resetSearchState()
-                        showSettingsScreen = true
-                    },
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .statusBarsPadding()
-                        .offset(y = 2.dp)
-                        .padding(top = 8.dp, end = 16.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Settings,
-                        contentDescription = "Einstellungen"
-                    )
-                }
             }
         }
     }
@@ -1257,6 +1239,57 @@ fun CelebrationBanner(
                     style = MaterialTheme.typography.bodyMedium,
                     color = TextSecondary
                 )
+            }
+        }
+    }
+}
+
+@Composable
+fun TierdexTopBar(
+    onSettingsClick: () -> Unit
+) {
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        color = Color.White,
+        shadowElevation = 4.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .statusBarsPadding()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier.width(40.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.tierdex01_playstore),
+                    contentDescription = "Tierdex Logo",
+                    modifier = Modifier.size(28.dp)
+                )
+            }
+
+            Text(
+                text = "Tierdex",
+                style = MaterialTheme.typography.titleLarge,
+                color = TextPrimary,
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center
+            )
+
+            Box(
+                modifier = Modifier.width(40.dp),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                IconButton(onClick = onSettingsClick) {
+                    Icon(
+                        imageVector = Icons.Filled.Settings,
+                        contentDescription = "Einstellungen",
+                        tint = TextPrimary
+                    )
+                }
             }
         }
     }
@@ -1372,11 +1405,13 @@ fun HomeStatTile(
                 style = MaterialTheme.typography.titleLarge,
                 color = TextPrimary
             )
-            Text(
-                text = supportingText,
-                style = MaterialTheme.typography.bodySmall,
-                color = TextSecondary
-            )
+            if (supportingText.isNotBlank()) {
+                Text(
+                    text = supportingText,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextSecondary
+                )
+            }
         }
     }
 }
@@ -1480,7 +1515,6 @@ fun HomeScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .statusBarsPadding()
             .padding(
                 start = 16.dp,
                 top = 16.dp + extraTopPadding,
@@ -1540,8 +1574,7 @@ fun HomeScreen(
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     HomeSectionTitle(
-                        title = "Nächstes Ziel",
-                        subtitle = "Dein aktuell wichtigster Quest-Fortschritt"
+                        title = "Nächstes Ziel"
                     )
 
                     if (nextQuest == null) {
@@ -1598,8 +1631,7 @@ fun HomeScreen(
 
         item {
             HomeSectionTitle(
-                title = "Überblick",
-                subtitle = "Deine wichtigsten Werte auf einen Blick"
+                title = "Überblick"
             )
         }
 
@@ -1634,7 +1666,7 @@ fun HomeScreen(
                         shape = RoundedCornerShape(20.dp),
                         elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
                         colors = CardDefaults.cardColors(
-                            containerColor = PrimaryGreenSoft.copy(alpha = 0.72f),
+                            containerColor = Color(0xFFE7F0E2),
                             contentColor = TextPrimary
                         )
                     ) {
@@ -1669,7 +1701,7 @@ fun HomeScreen(
                     HomeStatTile(
                         title = "Wunsch-Fund",
                         value = "Offen",
-                        supportingText = "noch kein Tier gewählt",
+                        supportingText = "",
                         modifier = Modifier.weight(1f)
                     )
                     HomeStatTile(
@@ -1699,8 +1731,7 @@ fun HomeScreen(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         HomeSectionTitle(
-                            title = "Zuletzt entdeckt",
-                            subtitle = "Dein aktuellster Fund"
+                            title = "Zuletzt entdeckt"
                         )
 
                         Text(
@@ -1747,8 +1778,7 @@ fun HomeScreen(
 
         item {
             HomeSectionTitle(
-                title = "Quests",
-                subtitle = "Deine nächsten Sammelziele"
+                title = "Quests"
             )
         }
 
@@ -1903,7 +1933,6 @@ fun TierdexMapScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .statusBarsPadding()
             .padding(
                 start = 16.dp,
                 top = 16.dp + extraTopPadding,
@@ -2013,7 +2042,6 @@ fun SettingsScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .statusBarsPadding()
             .padding(
                 start = 16.dp,
                 top = 16.dp + extraTopPadding,
@@ -2668,7 +2696,6 @@ fun FriendsScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .statusBarsPadding()
             .padding(
                 start = 16.dp,
                 top = 16.dp + extraTopPadding,
@@ -3068,7 +3095,6 @@ fun ProfileScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .statusBarsPadding()
             .padding(
                 start = 16.dp,
                 top = 16.dp + extraTopPadding,
@@ -3193,14 +3219,9 @@ fun ProfileScreen(
                     verticalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Text(
-                        text = "Lieblingstier aus deinen Funden",
+                        text = "Lieblingstier",
                         style = MaterialTheme.typography.titleMedium,
                         color = TextPrimary
-                    )
-                    Text(
-                        text = "Gespeichert wird aktuell das Tier aus einem deiner bisherigen Funde.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = TextSecondary
                     )
 
                     if (favoriteAnimal == null) {
@@ -3242,11 +3263,6 @@ fun ProfileScreen(
                         text = "Wunsch-Fund",
                         style = MaterialTheme.typography.titleMedium,
                         color = TextPrimary
-                    )
-                    Text(
-                        text = "Hier erscheint das Tier, das du als nächsten Fund gerne entdecken möchtest.",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = TextSecondary
                     )
                     if (wishlistAnimal == null) {
                         Text(
@@ -4486,7 +4502,7 @@ fun AnimalDetailScreen(
                         ) {
                             Column {
                                 Text(
-                                    text = if (isPickerMode) debugMessage else "Tierdex",
+                                    text = if (isPickerMode) debugMessage else "Mein Tierdex",
                                     style = MaterialTheme.typography.headlineMedium,
                                     color = TextPrimary
                                 )
