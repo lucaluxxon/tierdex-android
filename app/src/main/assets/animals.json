@@ -11536,18 +11536,26 @@
     "habitat": "",
     "distribution": "Bundesweit",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Siedlungen",
+      "Städte",
+      "Dörfer",
+      "Kulturlandschaften"
+    ],
+    "distributionGermany": "Bundesweit flächendeckend verbreitet",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tag- und nachtaktiv",
+    "season": "Ganzjährig, zu jeder Tageszeit",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Aufrecht gehendes Säugetier mit wenig Körperbehaarung und sehr variablem Erscheinungsbild.",
+    "observationTip": "In Städten, Dörfern und Kulturlandschaften lässt er sich ganzjährig zu jeder Tageszeit leicht beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Als Kulturfolger überall präsent; für die Spielbalance später eventuell gesondert behandeln."
   },
   {
     "id": "saeugetier_westigel",
@@ -11558,40 +11566,58 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gärten",
+      "Parks",
+      "Hecken",
+      "Siedlungsränder"
+    ],
+    "distributionGermany": "Vor allem in West- und Teilen Süddeutschlands verbreitet",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Frühjahr bis Herbst, besonders in milden Abendstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftiger Igel mit braunem Gesicht, heller Unterseite und dichtem Stachelkleid.",
+    "observationTip": "Suche an milden Abenden in Gärten, Parks und strukturreichen Siedlungsrändern nach ihm.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Abgrenzung zum Weißbrustigel regional nicht immer einfach; Verbreitung später noch einmal prüfen."
   },
   {
     "id": "saeugetier_noerdlicher_weissbrustigel",
     "group": "Säugetiere",
     "subgroup": "Igelverwandte",
-    "germanName": "Nördlicher Weissbrustigel",
+    "germanName": "Nördlicher Weißbrustigel",
     "latinName": "Erinaceus roumanicus",
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gärten",
+      "Parks",
+      "Dörfer",
+      "Siedlungsränder"
+    ],
+    "distributionGermany": "Vor allem in Ost- und Nordostdeutschland verbreitet, regional weiter westlich",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Frühjahr bis Herbst, besonders in milden Abendstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Igel mit auffällig heller Brust, hellem Bauch und dichtem braun-weißem Stachelkleid.",
+    "observationTip": "Suche an milden Abenden in Gärten, Dörfern und parkartigen Siedlungsbereichen nach ihm.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Verbreitung und Überschneidungen mit dem Westigel sind regional unterschiedlich."
   },
   {
     "id": "saeugetier_europaeischer_maulwurf",
@@ -11602,18 +11628,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wiesen",
+      "Gärten",
+      "Äcker",
+      "Waldränder"
+    ],
+    "distributionGermany": "Nahezu bundesweit verbreitet",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tag- und nachtaktiv",
+    "season": "Ganzjährig, besonders bei feuchter milder Witterung",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Gedrungenes, dunkel gefärbtes Säugetier mit samtigem Fell, spitzer Schnauze und schaufelartigen Vorderfüßen.",
+    "observationTip": "Achte ganzjährig in Wiesen, Gärten und lockeren Böden auf frische Maulwurfshügel und kurze Sichtungen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Direktbeobachtungen sind selten; Nachweise erfolgen oft über Hügel."
   },
   {
     "id": "saeugetier_gartenspitzmaus",
@@ -11624,18 +11659,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gärten",
+      "Hecken",
+      "Höfe",
+      "Trockenstandorte"
+    ],
+    "distributionGermany": "Regional vor allem im Westen und Süden verbreitet",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Frühjahr bis Herbst, besonders in warmen Nächten",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine Spitzmaus mit graubraunem Fell, heller Unterseite und spitzer beweglicher Schnauze.",
+    "observationTip": "Suche in warmen Nächten in Gärten, Heckenbereichen und an Gebäuderändern nach ihr.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Bestimmung gegenüber ähnlichen Crocidura-Arten regional anspruchsvoll."
   },
   {
     "id": "saeugetier_feldspitzmaus",
@@ -11646,18 +11690,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Felder",
+      "Brachflächen",
+      "Hecken",
+      "Dörfer"
+    ],
+    "distributionGermany": "Lückenhaft verbreitet, regional im Osten und Süden häufiger",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Frühjahr bis Herbst, besonders in warmen Abendstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine Spitzmaus mit graubraunem Rücken, heller Unterseite und oft deutlich zweifarbiger Zeichnung.",
+    "observationTip": "Suche an warmen Abenden in strukturreichen Feldrändern, Hecken und Dorfbereichen nach ihr.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Verbreitung regional stark unterschiedlich; genaue Häufigkeit später noch prüfen."
   },
   {
     "id": "saeugetier_hausspitzmaus",
@@ -11668,18 +11721,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Siedlungen",
+      "Höfe",
+      "Scheunen",
+      "Gärten"
+    ],
+    "distributionGermany": "Vor allem in wärmeren Regionen Deutschlands verbreitet",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Frühjahr bis Herbst, besonders in milden Nächten",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr kleine Spitzmaus mit graubraunem Fell, heller Unterseite und langer spitzer Schnauze.",
+    "observationTip": "Suche in milden Nächten in Höfen, Scheunen, Gärten und an Gebäuderändern nach ihr.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland regional ungleich verbreitet, stärker in wärmeren Gebieten."
   },
   {
     "id": "saeugetier_waldspitzmaus",
@@ -11690,16 +11751,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Hecken",
+      "Wiesen",
+      "Gärten"
+    ],
+    "distributionGermany": "Nahezu bundesweit verbreitet",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tag- und nachtaktiv",
+    "season": "Frühjahr bis Herbst, besonders in den Abend- und Morgenstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine Spitzmaus mit braunem Rücken, heller Unterseite und lang zugespitzter Schnauze.",
+    "observationTip": "Suche im Frühjahr bis Herbst in Laubstreu, an Hecken und auf feuchten Wiesen nach ihr.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
     "reviewNote": ""
   },
@@ -11712,18 +11782,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Gebüsche",
+      "Wiesen",
+      "Waldränder"
+    ],
+    "distributionGermany": "Vor allem in West- und Mitteldeutschland verbreitet",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tag- und nachtaktiv",
+    "season": "Frühjahr bis Herbst, besonders in feuchten milden Phasen",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine Spitzmaus mit dunklem Rücken, etwas helleren Flanken und spitzer Schnauze.",
+    "observationTip": "Suche in feuchten Wald- und Heckenbereichen vom Frühjahr bis Herbst nach ihr.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Abgrenzung zur Waldspitzmaus im Feld schwierig; Verbreitung regional prüfen."
   },
   {
     "id": "saeugetier_zwergspitzmaus",
@@ -11734,18 +11813,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wiesen",
+      "Moore",
+      "Hecken",
+      "Wälder"
+    ],
+    "distributionGermany": "Weit verbreitet, aber wegen der geringen Größe oft übersehen",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tag- und nachtaktiv",
+    "season": "Frühjahr bis Herbst, besonders in ruhigen Morgen- und Abendstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Winzige Spitzmaus mit sehr feiner Schnauze, kurzem braunem Fell und heller Unterseite.",
+    "observationTip": "Suche in dichter Bodenvegetation und an feuchten Wiesenrändern nach ihr.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Wird leicht übersehen; Nachweise sind oft zufällig."
   },
   {
     "id": "saeugetier_alpenspitzmaus",
@@ -11756,18 +11843,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gebirgswälder",
+      "Bergwiesen",
+      "Blockhalden",
+      "Bachtäler"
+    ],
+    "distributionGermany": "Vor allem in den Alpen und wenigen höheren Mittelgebirgen",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tag- und nachtaktiv",
+    "season": "Frühjahr bis Herbst, besonders in schneefreien Bergmonaten",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Dunkel gefärbte Spitzmaus mit relativ langem Schwanz und spitzer, feiner Schnauze.",
+    "observationTip": "Suche in schneefreien Bergmonaten in kühlen, strukturreichen Gebirgslagen nach ihr.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland sehr lokal; Häufigkeit und genaue Vorkommen später prüfen."
   },
   {
     "id": "saeugetier_wasserspitzmaus",
@@ -11778,18 +11874,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Bäche",
+      "Teiche",
+      "Uferzonen",
+      "Feuchtwiesen"
+    ],
+    "distributionGermany": "Weit verbreitet, aber nirgends häufig",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Frühjahr bis Herbst, besonders an ruhigen Ufern in den Abendstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige Spitzmaus mit fast schwarzem Rücken, heller Bauchseite und borstigem Fell.",
+    "observationTip": "Suche an ruhigen Ufern von Bächen und Teichen in der Dämmerung nach ihr.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regional unterschiedlich häufig; direkte Beobachtungen sind eher selten."
   },
   {
     "id": "saeugetier_sumpfspitzmaus",
@@ -11800,18 +11905,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Moore",
+      "Feuchtwiesen",
+      "Gräben",
+      "Uferbereiche"
+    ],
+    "distributionGermany": "Lückenhaft verbreitet, regional im Osten und Süden nachgewiesen",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Frühjahr bis Herbst, besonders in feuchten milden Abendstunden",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine dunkle Spitzmaus mit grau schwarzem Fell, heller Unterseite und spitzer Schnauze.",
+    "observationTip": "Suche in Feuchtwiesen, Mooren und grabenreichen Uferzonen in der Dämmerung nach ihr.",
+    "sources": [
+      "BfN",
+      "Rote Liste Zentrum",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Verbreitung regional lückenhaft; Datenlage in einigen Bundesländern unsicher."
   },
   {
     "id": "saeugetier_grosse_hufeisennase",
