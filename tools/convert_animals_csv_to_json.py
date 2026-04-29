@@ -14,6 +14,21 @@ FIELDS = [
     "rarity",
 ]
 
+DEFAULT_FIELDS = {
+    "habitats": [],
+    "distributionGermany": "",
+    "rarityGame": "",
+    "redListGermany": "",
+    "activity": "",
+    "season": "",
+    "protectionStatus": "",
+    "shortDescription": "",
+    "observationTip": "",
+    "sources": [],
+    "needsReview": True,
+    "reviewNote": "",
+}
+
 
 def main() -> None:
     project_root = Path(__file__).resolve().parents[1]
@@ -30,6 +45,7 @@ def main() -> None:
         animals = []
         for row in reader:
             animal = {field: (row.get(field, "") or "").strip() for field in FIELDS}
+            animal.update(DEFAULT_FIELDS)
             if animal["id"]:
                 animals.append(animal)
 

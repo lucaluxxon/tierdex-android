@@ -123,7 +123,8 @@ import com.example.tierdex.ui.theme.TextSecondary
 import com.example.tierdex.ui.theme.CardBackground
 import com.example.tierdex.ui.theme.BorderColor
 import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -271,7 +272,19 @@ data class AnimalEntry(
     val latinName: String,
     val habitat: String,
     val distribution: String,
-    val rarity: String
+    val rarity: String,
+    val habitats: List<String> = emptyList(),
+    val distributionGermany: String = "",
+    val rarityGame: String = "",
+    val redListGermany: String = "",
+    val activity: String = "",
+    val season: String = "",
+    val protectionStatus: String = "",
+    val shortDescription: String = "",
+    val observationTip: String = "",
+    val sources: List<String> = emptyList(),
+    val needsReview: Boolean = true,
+    val reviewNote: String = ""
 )
 
 data class AnimalFinding(
@@ -5340,7 +5353,19 @@ fun AnimalDetailScreen(
                                     latinName = parts.getOrElse(4) { "" },
                                     habitat = parts.getOrElse(5) { "" },
                                     distribution = parts.getOrElse(6) { "" },
-                                    rarity = parts.getOrElse(7) { "" }
+                                    rarity = parts.getOrElse(7) { "" },
+                                    habitats = emptyList(),
+                                    distributionGermany = "",
+                                    rarityGame = "",
+                                    redListGermany = "",
+                                    activity = "",
+                                    season = "",
+                                    protectionStatus = "",
+                                    shortDescription = "",
+                                    observationTip = "",
+                                    sources = emptyList(),
+                                    needsReview = true,
+                                    reviewNote = ""
                                 )
                             }
                         }
@@ -5355,6 +5380,50 @@ fun AnimalDetailScreen(
                         debugMessage = "Fehler beim Laden: ${e.message}"
                     )
                 }
+            }
+
+            private fun JsonObject.stringOrEmpty(key: String): String {
+                return get(key)?.takeIf { !it.isJsonNull }?.asString?.trim().orEmpty()
+            }
+
+            private fun JsonObject.stringListOrEmpty(key: String): List<String> {
+                val element = get(key) ?: return emptyList()
+                if (!element.isJsonArray) return emptyList()
+                return element.asJsonArray.mapNotNull { item ->
+                    item?.takeIf { !it.isJsonNull }?.asString?.trim()?.takeIf { it.isNotEmpty() }
+                }
+            }
+
+            private fun JsonObject.booleanOrDefault(
+                key: String,
+                defaultValue: Boolean
+            ): Boolean {
+                return get(key)?.takeIf { !it.isJsonNull }?.asBoolean ?: defaultValue
+            }
+
+            private fun JsonObject.toAnimalEntry(): AnimalEntry {
+                return AnimalEntry(
+                    id = stringOrEmpty("id"),
+                    group = stringOrEmpty("group"),
+                    subgroup = stringOrEmpty("subgroup"),
+                    germanName = stringOrEmpty("germanName"),
+                    latinName = stringOrEmpty("latinName"),
+                    habitat = stringOrEmpty("habitat"),
+                    distribution = stringOrEmpty("distribution"),
+                    rarity = stringOrEmpty("rarity"),
+                    habitats = stringListOrEmpty("habitats"),
+                    distributionGermany = stringOrEmpty("distributionGermany"),
+                    rarityGame = stringOrEmpty("rarityGame"),
+                    redListGermany = stringOrEmpty("redListGermany"),
+                    activity = stringOrEmpty("activity"),
+                    season = stringOrEmpty("season"),
+                    protectionStatus = stringOrEmpty("protectionStatus"),
+                    shortDescription = stringOrEmpty("shortDescription"),
+                    observationTip = stringOrEmpty("observationTip"),
+                    sources = stringListOrEmpty("sources"),
+                    needsReview = booleanOrDefault("needsReview", true),
+                    reviewNote = stringOrEmpty("reviewNote")
+                )
             }
 
             private fun loadAnimalsFromJsonWithDebug(
@@ -5373,10 +5442,15 @@ fun AnimalDetailScreen(
                     } else {
                         context.assets.open(jsonFileName).use { inputStream ->
                             InputStreamReader(inputStream, Charsets.UTF_8).use { reader ->
-                                val animalListType = object : TypeToken<List<AnimalEntry>>() {}.type
-                                val parsedAnimals =
-                                    Gson().fromJson<List<AnimalEntry>?>(reader, animalListType)
-                                        .orEmpty()
+                                val parsedAnimals = Gson()
+                                    .fromJson(reader, JsonArray::class.java)
+                                    ?.mapNotNull { element ->
+                                        element
+                                            ?.takeIf { it.isJsonObject }
+                                            ?.asJsonObject
+                                            ?.toAnimalEntry()
+                                    }
+                                    .orEmpty()
 
                                 if (parsedAnimals.isEmpty()) {
                                     val fallback =
