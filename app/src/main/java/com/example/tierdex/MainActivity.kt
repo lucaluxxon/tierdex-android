@@ -4007,7 +4007,7 @@ fun AnimalDetailScreen(
                 ) {
                     Column(
                         modifier = Modifier.padding(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         Text(
                             text = "Weitere Tierinfos",
@@ -4023,35 +4023,43 @@ fun AnimalDetailScreen(
                             )
                         } else {
                             additionalAnimalInfo.forEach { (label, value) ->
-                                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                     Text(
                                         text = label,
-                                        style = MaterialTheme.typography.labelLarge,
+                                        style = MaterialTheme.typography.titleSmall,
                                         color = TextPrimary,
                                         fontWeight = FontWeight.SemiBold
                                     )
                                     Text(
                                         text = value,
                                         style = MaterialTheme.typography.bodyMedium,
-                                        color = TextPrimary
+                                        color = TextSecondary
                                     )
                                 }
                             }
                         }
 
                         animal.observationTip.takeIf { it.isNotBlank() }?.let {
-                            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                                Text(
-                                    text = "Fundtipp",
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = TextPrimary,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                                Text(
-                                    text = it,
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = TextPrimary
-                                )
+                            Surface(
+                                shape = RoundedCornerShape(16.dp),
+                                color = CardBackground.copy(alpha = 0.72f)
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
+                                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    Text(
+                                        text = "Fundtipp",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        color = TextPrimary,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                    Text(
+                                        text = it,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = TextSecondary
+                                    )
+                                }
                             }
                         }
                     }
