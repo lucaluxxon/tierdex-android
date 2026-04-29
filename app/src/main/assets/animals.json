@@ -14773,16 +14773,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Waldränder",
+      "Feldfluren",
+      "Hecken"
+    ],
+    "distributionGermany": "Bundesweit weit verbreitet",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Ganzjährig, besonders in der Dämmerung und am frühen Morgen",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlankes Huftier mit rotbraunem Sommerfell, graubraunem Winterfell und auffälligem weißem Spiegel.",
+    "observationTip": "Achte früh morgens oder in der Dämmerung an Waldrändern, Feldrändern und Hecken auf einzelne oder wenige Tiere.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
     "reviewNote": ""
   },
@@ -14795,18 +14804,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Waldränder",
+      "Lichtungen",
+      "Gebirge"
+    ],
+    "distributionGermany": "Regional weit verbreitet, mit Schwerpunkten in größeren Wald- und Mittelgebirgsgebieten",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Ganzjährig, besonders in der Dämmerung und am frühen Morgen",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Großes Hirschartiges mit kräftigem Körper, rotbraunem Fell und beim Männchen weit verzweigtem Geweih.",
+    "observationTip": "Achte früh morgens oder in der Dämmerung an Lichtungen, Waldrändern und offenen Schneisen auf größere Tiere oder Gruppen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regionale Häufigkeit hängt stark von Bestandsmanagement und Waldgebieten ab."
   },
   {
     "id": "saeugetier_damhirsch",
@@ -14817,18 +14834,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Parks",
+      "Feldfluren",
+      "Waldränder"
+    ],
+    "distributionGermany": "In Deutschland nur regional oder in einzelnen Beständen vorkommend",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Ganzjährig, besonders in der Dämmerung und am frühen Morgen",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroßer Hirsch mit oft weiß geflecktem Sommerfell, heller Unterseite und schaufelförmigem Geweih beim Männchen.",
+    "observationTip": "Achte früh morgens oder in der Dämmerung in parkartigen Landschaften und an Waldrändern auf ruhende oder ziehende Gruppen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Bestände sind teils eingebürgert oder lokal gehalten; Verbreitung regional unterschiedlich."
   },
   {
     "id": "saeugetier_sikahirsch",
@@ -14839,18 +14864,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Waldränder",
+      "Feldfluren",
+      "Heiden"
+    ],
+    "distributionGermany": "In Deutschland nur regional oder in einzelnen Beständen vorkommend",
+    "rarityGame": "gebietsfremd",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Ganzjährig, besonders in der Dämmerung und am frühen Morgen",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroßer Hirsch mit dunklem rotbraunem Fell, oft hellen Flecken und relativ schlankem Körperbau.",
+    "observationTip": "Achte früh morgens oder in der Dämmerung in bekannten Waldgebieten und Offenlandrändern auf vorsichtige Sichtungen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Gebietsfremde Art; Vorkommen beruhen auf eingebürgerten oder ausgesetzten Beständen."
   },
   {
     "id": "saeugetier_elch",
@@ -14861,18 +14894,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Moore",
+      "Auen",
+      "Wälder",
+      "Seenlandschaften"
+    ],
+    "distributionGermany": "In Deutschland nur sehr selten und meist als wandernder Einzelgast",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Am ehesten im Frühjahr bis Herbst, besonders in der Dämmerung und am frühen Morgen",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr großes Hirschartiges mit langbeinigem Körper, dunklem Fell, breitem Kopf und beim Männchen schaufelartigem Geweih.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in moorigen oder waldreichen Regionen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Kein stabiler deutscher Bestand; Nachweise hängen meist von einzelnen Zuwanderern ab."
   },
   {
     "id": "saeugetier_mufflon",
@@ -14883,18 +14924,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Mittelgebirge",
+      "Felslagen",
+      "Heiden"
+    ],
+    "distributionGermany": "In Deutschland nur regional oder in einzelnen Beständen vorkommend",
+    "rarityGame": "gebietsfremd",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tag- und dämmerungsaktiv",
+    "season": "Ganzjährig, besonders in der Dämmerung und am frühen Morgen",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Wildschaf mit gedrungenem Körper, braunem Fell und beim Widder kräftig gebogenen Hörnern.",
+    "observationTip": "Achte früh morgens oder in der Dämmerung in bekannten Mittelgebirgs- und Waldgebieten auf kleinere Gruppen in offenem Gelände.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Gebietsfremde Art; Vorkommen beruhen auf eingeführten Beständen und sind regional begrenzt."
   },
   {
     "id": "saeugetier_gaemse",
@@ -14905,18 +14954,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Alpen",
+      "Gebirge",
+      "Felsregionen",
+      "Almwiesen"
+    ],
+    "distributionGermany": "Vor allem in den Alpen, regional auch in einzelnen Mittelgebirgsbeständen",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders morgens und am späten Nachmittag",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlankes Huftier mit braunem Fell, heller Gesichtsmaske und kurzen schwarzen Hakelhörnern.",
+    "observationTip": "Achte morgens oder am späten Nachmittag in Gebirgslagen auf Tiere an Hängen, Graten und offenen Höhenlagen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Vorkommen außerhalb der Alpen sind regional und teils ausgesetzt oder wiederangesiedelt."
   },
   {
     "id": "saeugetier_alpensteinbock",
@@ -14927,18 +14984,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Alpen",
+      "Gebirge",
+      "Felsregionen",
+      "Almwiesen"
+    ],
+    "distributionGermany": "In Deutschland nur regional in alpinen Wiederansiedlungsbeständen vorkommend",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders morgens und am späten Nachmittag",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftiges Wildziegenartiges mit massigem Körper, braunem Fell und sehr langen gebogenen Hörnern.",
+    "observationTip": "Achte morgens oder am späten Nachmittag in alpinen Fels- und Weidelagen auf ruhende oder ziehende Tiere.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Deutsche Bestände beruhen auf Wiederansiedlung und sind regional klar begrenzt."
   },
   {
     "id": "saeugetier_wisent",
@@ -14949,18 +15014,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Lichtungen",
+      "Auen",
+      "Waldränder"
+    ],
+    "distributionGermany": "In Deutschland nur regional oder in einzelnen Beständen vorkommend",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders morgens und am späten Nachmittag",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr großes kräftiges Rind mit dunkelbraunem Fell, massigem Vorderkörper und ausgeprägter Schulterpartie.",
+    "observationTip": "Achte in bekannten Projektgebieten oder Gehegen eher auf größere Tiere an Lichtungen und offenen Randbereichen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Vorkommen hängen stark von Wiederansiedlung, Gehegen oder einzelnen Herden ab; später genauer differenzieren."
   },
   {
     "id": "saeugetier_wildschwein",
@@ -14971,18 +15044,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Feldfluren",
+      "Auen",
+      "Waldränder"
+    ],
+    "distributionGermany": "Bundesweit weit verbreitet",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Ganzjährig, besonders in der Dämmerung und am frühen Morgen",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftiges Schwein mit borstigem dunkelbraunem Fell, keilförmigem Kopf und kurzer aufgerichteter Mähne.",
+    "observationTip": "Achte früh morgens oder in der Dämmerung an Wald- und Feldrändern auf Wühlspuren, Fährten oder kurze Sichtungen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Bestände regional sehr hoch; Spielgewichtung später eventuell noch anpassen."
   },
   {
     "id": "fisch_blei",
