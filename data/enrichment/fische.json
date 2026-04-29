@@ -1,0 +1,2815 @@
+[
+  {
+    "id": "fisch_blondrochen",
+    "habitats": [
+      "Nordsee",
+      "Ostsee",
+      "Schelfmeer",
+      "Sandböden"
+    ],
+    "distributionGermany": "Vor allem in der Nordsee, in deutschen Gewässern insgesamt eher selten.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, bei ruhiger See und auflandigem Wind am ehesten bemerkbar",
+    "shortDescription": "Großer Rochen mit breiter rautenförmiger Scheibe, heller Oberseite und kurzem Schwanz.",
+    "observationTip": "In Deutschland nur selten zu beobachten; Sichtungen gelingen am ehesten zufällig an der Küste oder auf See.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Vorkommen in deutschen Gewässern bitte später mit aktuellen Nordsee-Daten abgleichen."
+  },
+  {
+    "id": "fisch_dornhai",
+    "habitats": [
+      "Nordsee",
+      "Ostsee",
+      "Küstenmeer",
+      "offenes Meer"
+    ],
+    "distributionGermany": "In Nord- und Ostsee nachweisbar, regional und saisonal unterschiedlich häufig.",
+    "rarityGame": "gelegentlich",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, bei ruhiger See und guten Sichtbedingungen günstiger",
+    "shortDescription": "Schlanker Hai mit grauer Oberseite, heller Unterseite und auffälligen Stacheln vor den Rückenflossen.",
+    "observationTip": "Achte an Küsten und auf See auf schlanke Haikörper nahe der Oberfläche oder in Fängen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Bestände schwanken regional; Häufigkeit für deutsche Gewässer später genauer prüfen."
+  },
+  {
+    "id": "fisch_fleckrochen",
+    "habitats": [
+      "Nordsee",
+      "Schelfmeer",
+      "Sandböden",
+      "Küstenmeer"
+    ],
+    "distributionGermany": "Vor allem in der Nordsee, in deutschen Gewässern nur regional nachweisbar.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, bei ruhiger See und auf See günstiger",
+    "shortDescription": "Kleiner bis mittelgroßer Rochen mit rautenförmiger Scheibe und dunkler Fleckenzeichnung.",
+    "observationTip": "In Deutschland nur selten zu beobachten; Sichtungen gelingen meist zufällig an der Küste oder auf See.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Nordsee-Nachweise später noch einmal mit aktuellen Artenlisten vergleichen."
+  },
+  {
+    "id": "fisch_fuchshai",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Küstenmeer"
+    ],
+    "distributionGermany": "In deutschen Gewässern nur ausnahmsweise nachgewiesen.",
+    "rarityGame": "sehr selten",
+    "activity": "schwimmaktiv",
+    "season": "Sommer bis Herbst, in Deutschland aber nur sehr selten bemerkbar",
+    "shortDescription": "Großer Hai mit spitzem Kopf, kräftigem Körper und extrem verlängerter oberer Schwanzflosse.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an der Küste oder auf See.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Für Deutschland eher Ausnahmegast; Vorkommen und Saison bitte später verifizieren."
+  },
+  {
+    "id": "fisch_gewoehnlicher_glattrochen",
+    "habitats": [
+      "Nordsee",
+      "Schelfmeer",
+      "Bodengrund",
+      "Küstenmeer"
+    ],
+    "distributionGermany": "In deutschen Meeresgewässern selten und überwiegend in der Nordsee zu erwarten.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, bei ruhiger See am ehesten bemerkbar",
+    "shortDescription": "Sehr großer Rochen mit breiter glatter Scheibe, heller Unterseite und langem Schwanz.",
+    "observationTip": "In Deutschland nur selten zu beobachten; Sichtungen erfolgen meist zufällig an der Küste oder auf See.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Taxonomie und Abgrenzung zu nahen Arten später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_grosser_glattrochen",
+    "habitats": [
+      "Nordsee",
+      "Schelfmeer",
+      "Bodengrund",
+      "Küstenmeer"
+    ],
+    "distributionGermany": "In deutschen Gewässern selten, vor allem in der Nordsee denkbar.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, bei ruhiger See am ehesten bemerkbar",
+    "shortDescription": "Sehr großer Rochen mit breiter Scheibe, kräftigem Körper und lang ausgezogenem Schwanz.",
+    "observationTip": "In Deutschland nur selten zu beobachten; Sichtungen gelingen meist zufällig an der Küste oder auf See.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Verbreitung in deutschen Gewässern bitte später mit aktuellen Datensätzen abgleichen."
+  },
+  {
+    "id": "fisch_grossgefleckter_katzenhai",
+    "habitats": [
+      "Nordsee",
+      "Küstenmeer",
+      "Felsgrund",
+      "Sandböden"
+    ],
+    "distributionGermany": "In deutschen Gewässern selten und eher in der Nordsee zu erwarten.",
+    "rarityGame": "selten",
+    "activity": "nachtaktiv",
+    "season": "Frühjahr bis Herbst, bei ruhiger See und auf See günstiger",
+    "shortDescription": "Katzenhai mit langem Körper, großen dunklen Flecken und breitem Kopf.",
+    "observationTip": "Achte auf See oder in Küstennähe auf langgestreckte Haikörper nahe dem Grund oder in Beifängen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Für deutsche Nachweise bitte spätere Prüfung mit Nordsee-Daten einplanen."
+  },
+  {
+    "id": "fisch_heringshai",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Küstenmeer"
+    ],
+    "distributionGermany": "In deutschen Gewässern selten, vor allem in der Nordsee und angrenzenden Meeresbereichen.",
+    "rarityGame": "selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, bei ruhiger See am ehesten bemerkbar",
+    "shortDescription": "Kräftiger Hai mit torpedoförmigem Körper, spitzer Schnauze und graublauer Oberseite.",
+    "observationTip": "In Deutschland nur selten zu beobachten; Sichtungen gelingen meist zufällig an der Küste oder auf See.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Häufigkeit in deutschen Gewässern später mit aktuellen Meeresschutzdaten abgleichen."
+  },
+  {
+    "id": "fisch_hundshai",
+    "habitats": [
+      "Nordsee",
+      "Küstenmeer",
+      "Schelfmeer",
+      "Bodengrund"
+    ],
+    "distributionGermany": "In deutschen Gewässern selten und eher in der Nordsee nachweisbar.",
+    "rarityGame": "selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, bei ruhiger See günstiger",
+    "shortDescription": "Schlanker Hai mit grauer Oberseite, heller Unterseite und langer spitzer Schnauze.",
+    "observationTip": "Achte auf See oder in Küstennähe auf schlanke Haikörper im freien Wasser oder in Beifängen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Nachweise in deutschen Gewässern sind eher selten; bitte später fachlich gegenprüfen."
+  },
+  {
+    "id": "fisch_kleingefleckter_katzenhai",
+    "habitats": [
+      "Nordsee",
+      "Küstenmeer",
+      "Sandböden",
+      "Felsgrund"
+    ],
+    "distributionGermany": "In deutschen Gewässern selten, am ehesten in der Nordsee.",
+    "rarityGame": "selten",
+    "activity": "nachtaktiv",
+    "season": "Frühjahr bis Herbst, bei ruhiger See günstiger",
+    "shortDescription": "Kleiner Hai mit langem Körper, kurzer Schnauze und vielen kleinen dunklen Flecken.",
+    "observationTip": "Achte auf See oder in Küstennähe auf kleine gefleckte Haie nahe dem Grund oder in Beifängen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Für deutsche Gewässer eher selten; spätere Abgleichung mit aktuellen Nordsee-Nachweisen sinnvoll."
+  },
+  {
+    "id": "fisch_kuckucksrochen",
+    "habitats": [
+      "Nordsee",
+      "Schelfmeer",
+      "Sandböden",
+      "Küstenmeer"
+    ],
+    "distributionGermany": "In deutschen Gewässern selten und vor allem in der Nordsee denkbar.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, bei ruhiger See am ehesten bemerkbar",
+    "shortDescription": "Rochen mit rautenförmiger Scheibe, heller Unterseite und auffälligen dunklen Flecken auf der Oberseite.",
+    "observationTip": "In Deutschland nur selten zu beobachten; Sichtungen erfolgen meist zufällig an der Küste oder auf See.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Nordsee-Vorkommen später bitte mit aktuellen Funddaten prüfen."
+  },
+  {
+    "id": "fisch_nagelrochen",
+    "habitats": [
+      "Nordsee",
+      "Ostsee",
+      "Küstenmeer",
+      "Sandböden"
+    ],
+    "distributionGermany": "In Nord- und teils Ostsee nachweisbar, aber regional unterschiedlich häufig.",
+    "rarityGame": "gelegentlich",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, bei ruhiger See und in Küstennähe günstiger",
+    "shortDescription": "Mittelgroßer Rochen mit rautenförmiger Scheibe und auffälligen Dornen auf Rücken und Schwanz.",
+    "observationTip": "Achte an Küsten und auf See auf flache Rochenkörper nahe dem Grund oder in Fängen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Häufigkeit zwischen Nord- und Ostsee regional unterschiedlich; später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_riesenhai",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Küstenmeer"
+    ],
+    "distributionGermany": "In deutschen Gewässern nur ausnahmsweise nachgewiesen.",
+    "rarityGame": "sehr selten",
+    "activity": "schwimmaktiv",
+    "season": "Sommer bis Herbst, in Deutschland aber nur sehr selten bemerkbar",
+    "shortDescription": "Sehr großer Hai mit massivem Körper, breitem Maul und hoher Rückenflosse.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an der Küste oder auf See.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Für Deutschland eher Ausnahmegast; aktuelle Nachweise später verifizieren."
+  },
+  {
+    "id": "fisch_stechrochen",
+    "habitats": [
+      "Nordsee",
+      "Küstenmeer",
+      "Sandböden",
+      "Flachwasser"
+    ],
+    "distributionGermany": "In deutschen Gewässern selten und vor allem in wärmeren Küstenbereichen zu erwarten.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Sommer bis Frühherbst, bei warmem Wasser und ruhiger See günstiger",
+    "shortDescription": "Flacher Rochen mit runder Scheibe, peitschenartigem Schwanz und dunkler Oberseite.",
+    "observationTip": "In Deutschland nur selten zu beobachten; Sichtungen gelingen meist zufällig in Küstennähe oder auf See.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Nachweise in deutschen Gewässern bitte später mit aktuellen Küstendaten abgleichen."
+  },
+  {
+    "id": "fisch_sternrochen",
+    "habitats": [
+      "Nordsee",
+      "Ostsee",
+      "Küstenmeer",
+      "Bodengrund"
+    ],
+    "distributionGermany": "In Nordsee und Teilen der Ostsee nachweisbar, aber insgesamt nicht häufig.",
+    "rarityGame": "gelegentlich",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, bei ruhiger See und Küstennähe günstiger",
+    "shortDescription": "Rochen mit rautenförmiger Scheibe, heller Unterseite und sternartig verteilten Flecken auf der Oberseite.",
+    "observationTip": "Achte an Küsten und auf See auf flache Rochenkörper nahe dem Grund oder in Fängen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Häufigkeit in deutschen Gewässern regional unterschiedlich; später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_weissgefleckter_glatthai",
+    "habitats": [
+      "Nordsee",
+      "Küstenmeer",
+      "Sandböden",
+      "Schelfmeer"
+    ],
+    "distributionGermany": "In deutschen Gewässern selten, am ehesten in der Nordsee nachweisbar.",
+    "rarityGame": "selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, bei ruhiger See günstiger",
+    "shortDescription": "Schlanker Hai mit hellen Flecken, grauer Oberseite und langem kräftigem Schwanz.",
+    "observationTip": "Achte auf See oder in Küstennähe auf schlanke helle Haie im freien Wasser oder in Beifängen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Für deutsche Gewässer eher selten; spätere Prüfung mit aktuellen Nordsee-Nachweisen sinnvoll."
+  },
+  {
+    "id": "fisch_quappe",
+    "habitats": [
+      "Flüsse",
+      "Seen",
+      "Kiesgründe",
+      "Tiefe Zonen"
+    ],
+    "distributionGermany": "In Deutschland regional verbreitet, vor allem in kühleren Seen und Flüssen.",
+    "rarityGame": "gelegentlich",
+    "activity": "nachtaktiv",
+    "season": "Herbst bis Frühjahr, besonders in kalten klaren Nächten",
+    "shortDescription": "Langgestreckter Fisch mit marmorierter Färbung, breitem Kopf und einzelner Bartel am Kinn.",
+    "observationTip": "Achte in kalten Jahreszeiten nachts in klaren Flüssen und Seen auf bodennahe Bewegungen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Als einzige Süßwasser-Dorschart in Deutschland regional unterschiedlich häufig."
+  },
+  {
+    "id": "fisch_augenfleck_lippfisch",
+    "habitats": [
+      "Ostsee",
+      "Küstenmeer",
+      "Sandgründe",
+      "Brackwasser"
+    ],
+    "distributionGermany": "Vor allem in der Ostsee und angrenzenden Brackwasserbereichen nachweisbar.",
+    "rarityGame": "gelegentlich",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, bei ruhiger See und klaren Flachwasserbereichen günstig",
+    "shortDescription": "Flacher Fisch mit ovalem Körper, beiden Augen auf einer Seite und feiner Punktzeichnung.",
+    "observationTip": "Achte in ruhigen Küstenbereichen auf gut getarnte Plattfische am Boden.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Deutscher Name im Datensatz wirkt fachlich auffällig; später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_blauer_wittling",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Tiefenwasser",
+      "Schelfmeer"
+    ],
+    "distributionGermany": "In der Nordsee und angrenzenden Meeresgebieten nachweisbar, oft eher offshore.",
+    "rarityGame": "gelegentlich",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, auf See bei ruhiger Witterung am ehesten bemerkbar",
+    "shortDescription": "Schlanker dorschartiger Fisch mit großen Augen, silbrig-blauer Färbung und gegabelter Schwanzflosse.",
+    "observationTip": "Achte auf See auf schlanke Schwarmfische im Freiwasser oder in Fängen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Häufigkeit in deutschen Gewässern später mit aktuellen Nordsee-Daten abgleichen."
+  },
+  {
+    "id": "fisch_doggerscharbe",
+    "habitats": [
+      "Nordsee",
+      "Schelfmeer",
+      "Sandböden",
+      "Küstenmeer"
+    ],
+    "distributionGermany": "In der Nordsee regelmäßig, in deutschen Gewässern aber nicht überall häufig.",
+    "rarityGame": "gelegentlich",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, bei ruhiger See in Küstennähe günstig",
+    "shortDescription": "Flacher Fisch mit ovalem Körper, beiden Augen auf einer Seite und feiner gesprenkelter Oberseite.",
+    "observationTip": "Achte auf sandigen Meeresböden auf flach anliegende, gut getarnte Plattfische.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Deutsche Häufigkeit regional unterschiedlich; später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_dreibaertelige_seequappe",
+    "habitats": [
+      "Nordsee",
+      "Küstenmeer",
+      "Felsgrund",
+      "Tangzonen"
+    ],
+    "distributionGermany": "In Nordsee und küstennahen Meeresbereichen regional vorhanden.",
+    "rarityGame": "gelegentlich",
+    "activity": "nachtaktiv",
+    "season": "Frühjahr bis Herbst, besonders in ruhigen Abend- und Nachtstunden",
+    "shortDescription": "Langgestreckter dorschartiger Fisch mit Bartfäden am Kopf und marmorierter Färbung.",
+    "observationTip": "Achte in Küstennähe nachts zwischen Steinen und Algen auf langsame Bodenbewegungen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Nachweise in deutschen Gewässern später genauer abgleichen."
+  },
+  {
+    "id": "fisch_flunder",
+    "habitats": [
+      "Nordsee",
+      "Ostsee",
+      "Mündungen",
+      "Sandgründe"
+    ],
+    "distributionGermany": "In Nord- und Ostsee sowie in Brackwasserbereichen weit verbreitet.",
+    "rarityGame": "häufig",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, bei ruhiger See und in flachen Küstenzonen günstig",
+    "shortDescription": "Flacher, runder Plattfisch mit rauer Oberseite, beiden Augen auf einer Seite und brauner Musterung.",
+    "observationTip": "Achte in flachen Küsten- und Mündungsbereichen auf im Sand getarnte Plattfische.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "In Deutschland sehr bekannt, aber regionale Häufigkeit je nach Küstenabschnitt unterschiedlich."
+  },
+  {
+    "id": "fisch_fluegelbutt",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Sandgründe",
+      "Schelfmeer"
+    ],
+    "distributionGermany": "In der Nordsee regional nachweisbar, insgesamt eher seltener als andere Plattfische.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, auf See bei ruhiger Witterung am ehesten bemerkbar",
+    "shortDescription": "Langlicher Plattfisch mit rautenartigem Umriss, beiden Augen auf einer Seite und feiner Fleckung.",
+    "observationTip": "Achte auf sandigen bis schlickigen Meeresböden auf flache gut getarnte Fische.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Für deutsche Gewässer eher offshore geprägt; spätere Prüfung sinnvoll."
+  },
+  {
+    "id": "fisch_franzosendorsch",
+    "habitats": [
+      "Nordsee",
+      "Küstenmeer",
+      "Schelfmeer",
+      "Steingründe"
+    ],
+    "distributionGermany": "In der Nordsee und angrenzenden Meeresgebieten regelmäßig, aber nicht überall häufig.",
+    "rarityGame": "gelegentlich",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, auf See und in Küstennähe gut zu beobachten",
+    "shortDescription": "Schlanker Dorschfisch mit hellen Flanken, großen Augen und gegabelter Schwanzflosse.",
+    "observationTip": "Achte auf See oder in Küstennähe auf kleinere dorschartige Schwarmfische.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Abgrenzung zu anderen Trisopterus-Arten später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_froschdorsch",
+    "habitats": [
+      "Nordsee",
+      "Küstenmeer",
+      "Steingründe",
+      "Tangzonen"
+    ],
+    "distributionGermany": "In deutschen Nordseegewässern regional nachweisbar, insgesamt eher selten.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, besonders in ruhigen Abendstunden",
+    "shortDescription": "Kräftiger Dorschfisch mit breitem Kopf, kurzer Schnauze und marmorierter Zeichnung.",
+    "observationTip": "Achte in küstennahen Bereichen auf bodennahe dorschartige Fische zwischen Steinen und Tang.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Häufigkeit in der Nordsee später genauer prüfen."
+  },
+  {
+    "id": "fisch_fuenfbaertelige_seequappe",
+    "habitats": [
+      "Nordsee",
+      "Küstenmeer",
+      "Tangzonen",
+      "Felsgründe"
+    ],
+    "distributionGermany": "In deutschen Nordseegewässern regional vorhanden.",
+    "rarityGame": "gelegentlich",
+    "activity": "nachtaktiv",
+    "season": "Frühjahr bis Herbst, besonders in ruhigen Nachtstunden",
+    "shortDescription": "Langgestreckter Fisch mit mehreren Bartfäden am Kopf und gebänderter Musterung.",
+    "observationTip": "Achte nachts in küstennahen Bereichen zwischen Algen und Steinen auf langsame Bodenbewegungen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Artenabgrenzung innerhalb der Seequappen später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_glattbutt",
+    "habitats": [
+      "Nordsee",
+      "Küstenmeer",
+      "Sandgründe",
+      "offenes Meer"
+    ],
+    "distributionGermany": "In Nordseegewässern regelmäßig, aber nicht in allen Bereichen gleich häufig.",
+    "rarityGame": "gelegentlich",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, bei ruhiger See und in flacheren Meeresbereichen günstig",
+    "shortDescription": "Breiter Plattfisch mit glatter Oberseite, beiden Augen auf einer Seite und dunkler Fleckung.",
+    "observationTip": "Achte auf sandigen Küstenböden auf flach anliegende gut getarnte Plattfische.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "In deutschen Gewässern regelmäßig, genaue Häufigkeit später aber noch prüfen."
+  },
+  {
+    "id": "fisch_haarbutt",
+    "habitats": [
+      "Nordsee",
+      "Küstenmeer",
+      "Felsgründe",
+      "Tangzonen"
+    ],
+    "distributionGermany": "In deutschen Meeresgewässern regional nachweisbar, insgesamt eher selten.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, bei ruhiger See günstig",
+    "shortDescription": "Kleiner Plattfisch mit ovalem Körper, feiner Fleckung und fransig wirkenden Flossensäumen.",
+    "observationTip": "Achte in küstennahen Bereichen mit Felsen oder Bewuchs auf kleine getarnte Plattfische.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Für deutsche Gewässer eher selten; Vorkommen später mit Küstendaten prüfen."
+  },
+  {
+    "id": "fisch_heilbutt",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Tiefenwasser",
+      "Bodengrund"
+    ],
+    "distributionGermany": "In deutschen Gewässern selten, am ehesten in der nördlichen Nordsee.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, auf See bei ruhiger Witterung am ehesten bemerkbar",
+    "shortDescription": "Sehr großer Plattfisch mit langem breitem Körper, dunkler Oberseite und großem Maul.",
+    "observationTip": "In Deutschland eher selten; Sichtungen gelingen meist auf See oder über Fänge.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Häufigkeit in deutschen Gewässern später mit aktuellen Nordseedaten abgleichen."
+  },
+  {
+    "id": "fisch_hundszunge",
+    "habitats": [
+      "Nordsee",
+      "Schelfmeer",
+      "Sandgründe",
+      "Tiefe Bereiche"
+    ],
+    "distributionGermany": "In der Nordsee regional vorhanden, insgesamt aber nicht häufig.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, auf See bei ruhiger See am ehesten bemerkbar",
+    "shortDescription": "Langlicher Plattfisch mit schmalem Körper, kleiner Kopfform und unauffälliger Fleckung.",
+    "observationTip": "Achte auf sandig-schlickigen Meeresböden auf schmale gut getarnte Plattfische.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Nachweise in deutschen Gewässern bitte später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_kabeljau",
+    "habitats": [
+      "Nordsee",
+      "Ostsee",
+      "Küstenmeer",
+      "offenes Meer"
+    ],
+    "distributionGermany": "In Nord- und Ostsee weit verbreitet, regional aber stark schwankend.",
+    "rarityGame": "häufig",
+    "activity": "schwimmaktiv",
+    "season": "Ganzjährig, besonders in den kühleren Monaten und bei ruhiger See gut bemerkbar",
+    "shortDescription": "Kräftiger Dorschfisch mit hellem Seitenstreifen, grünlich-brauner Oberseite und Bartel am Kinn.",
+    "observationTip": "Achte an Küsten und auf See auf kräftige Schwarmfische im Mittelwasser oder nahe dem Grund.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Bestandslage regional sehr dynamisch; Häufigkeit später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_kliesche",
+    "habitats": [
+      "Nordsee",
+      "Ostsee",
+      "Sandgründe",
+      "Küstenmeer"
+    ],
+    "distributionGermany": "In Nord- und Ostsee regelmäßig und in vielen Bereichen häufig.",
+    "rarityGame": "häufig",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, in Küstennähe und bei ruhiger See gut bemerkbar",
+    "shortDescription": "Mittelgroßer Plattfisch mit ovalem Körper, rauer Oberseite und orangebrauner Fleckung.",
+    "observationTip": "Achte in flachen Küstengewässern auf getarnte Plattfische auf Sand- und Mischböden.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Unter dem Namen Scharbe regional unterschiedlich gebraucht; später ggf. Textabgleich."
+  },
+  {
+    "id": "fisch_lammzunge",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Sandgründe",
+      "Schelfmeer"
+    ],
+    "distributionGermany": "In der Nordsee regional vorhanden, aber insgesamt eher selten.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, auf See bei ruhiger Witterung günstig",
+    "shortDescription": "Kleiner flacher Fisch mit ovalem Körper, beiden Augen auf einer Seite und feiner Musterung.",
+    "observationTip": "Achte auf sandigen bis schlickigen Böden auf kleine gut getarnte Plattfische.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Nachweise in deutschen Gewässern später mit aktuellen Nordsee-Daten prüfen."
+  },
+  {
+    "id": "fisch_leng",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Felsgründe",
+      "Tiefenwasser"
+    ],
+    "distributionGermany": "In deutschen Meeresgewässern selten und vor allem offshore nachweisbar.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, auf See in tieferen Bereichen am ehesten bemerkbar",
+    "shortDescription": "Langgestreckter dorschartiger Fisch mit marmorierter Färbung, großem Kopf und langer Rückenflosse.",
+    "observationTip": "Achte auf See über tieferen Fels- und Hartgründen auf langgestreckte bodennahe Fische.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Für deutsche Gewässer eher selten; Verbreitung später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_noerdliche_fuenfbaertelige_seequappe",
+    "habitats": [
+      "Nordsee",
+      "Küstenmeer",
+      "Kaltwasser",
+      "Felsgründe"
+    ],
+    "distributionGermany": "In deutschen Gewässern selten und eher in nördlicheren Meeresbereichen zu erwarten.",
+    "rarityGame": "selten",
+    "activity": "nachtaktiv",
+    "season": "Frühjahr bis Herbst, besonders in ruhigen Nachtstunden",
+    "shortDescription": "Langgestreckter Fisch mit mehreren Bartfäden, schlankem Körper und gebänderter Zeichnung.",
+    "observationTip": "Achte nachts in kühleren Küstenbereichen auf kleine dorschartige Bodenfische zwischen Steinen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "In deutschen Gewässern eher randlich; Nachweise später gegenprüfen."
+  },
+  {
+    "id": "fisch_pollack",
+    "habitats": [
+      "Nordsee",
+      "Küstenmeer",
+      "Felsgründe",
+      "offenes Meer"
+    ],
+    "distributionGermany": "In der Nordsee regional vorhanden, in deutschen Gewässern aber nicht flächig häufig.",
+    "rarityGame": "gelegentlich",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, an Küsten und auf See gut bemerkbar",
+    "shortDescription": "Kräftiger Dorschfisch mit dunklem Rücken, heller Unterseite und großem Maul.",
+    "observationTip": "Achte in Küstennähe oder auf See auf größere dorschartige Fische im freien Wasser.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Abgrenzung zu Köhler/Seelachs im Alltagsgebrauch später noch einmal textlich prüfen."
+  },
+  {
+    "id": "fisch_rotzunge",
+    "habitats": [
+      "Nordsee",
+      "Schelfmeer",
+      "Sandgründe",
+      "Tiefe Bereiche"
+    ],
+    "distributionGermany": "In deutschen Nordseegewässern regional vorhanden, aber nicht häufig.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, auf See bei ruhiger Witterung günstig",
+    "shortDescription": "Flacher Fisch mit langovalem Körper, beiden Augen auf einer Seite und feiner rötlich-brauner Zeichnung.",
+    "observationTip": "Achte auf sandig-schlickigen Meeresböden auf gut getarnte langliche Plattfische.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Bezeichnung Limande ist regional uneinheitlich; später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_sandzunge",
+    "habitats": [
+      "Nordsee",
+      "Küstenmeer",
+      "Sandgründe",
+      "Flachwasser"
+    ],
+    "distributionGermany": "In deutschen Gewässern selten, vor allem in wärmeren Küstenbereichen zu erwarten.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Sommer bis Herbst, bei warmem Wasser und ruhiger See günstig",
+    "shortDescription": "Schmaler Plattfisch mit ovalem Körper, beiden Augen auf einer Seite und feiner Fleckung.",
+    "observationTip": "Achte in flachen sandigen Küstenbereichen auf schmale, gut getarnte Plattfische.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "In deutschen Gewässern eher selten; Verbreitung später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_schellfisch",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Schelfmeer",
+      "Sandgründe"
+    ],
+    "distributionGermany": "In der Nordsee regelmäßig nachweisbar, regional unterschiedlich häufig.",
+    "rarityGame": "gelegentlich",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, auf See und in tieferen Küstenbereichen gut bemerkbar",
+    "shortDescription": "Silbrig grauer Dorschfisch mit dunklem Seitenfleck, heller Seitenlinie und gegabelter Schwanzflosse.",
+    "observationTip": "Achte auf See auf schwimmaktive dorschartige Fische im Mittelwasser oder in Fängen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Häufigkeit in der Nordsee später mit aktuellen Daten vergleichen."
+  },
+  {
+    "id": "fisch_scholle",
+    "habitats": [
+      "Nordsee",
+      "Ostsee",
+      "Küstenmeer",
+      "Sandgründe"
+    ],
+    "distributionGermany": "In Nord- und Ostsee weit verbreitet und gut bekannt.",
+    "rarityGame": "häufig",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, in flachen Küstengewässern und bei ruhiger See günstig",
+    "shortDescription": "Runder Plattfisch mit orangefarbenen Flecken, beiden Augen auf einer Seite und glatter Oberseite.",
+    "observationTip": "Achte in flachen Küstenbereichen auf gut getarnte Plattfische auf sandigem Boden.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Häufige Art, aber regionale Bestandsentwicklungen später bei Bedarf prüfen."
+  },
+  {
+    "id": "fisch_seehecht",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Tiefenwasser",
+      "Schelfmeer"
+    ],
+    "distributionGermany": "In deutschen Gewässern vor allem in der Nordsee und eher offshore nachweisbar.",
+    "rarityGame": "gelegentlich",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, auf See bei ruhiger Witterung gut bemerkbar",
+    "shortDescription": "Langgestreckter dorschartiger Fisch mit großem Maul, silbrigen Flanken und dunkler Oberseite.",
+    "observationTip": "Achte auf See auf langgestreckte Freiwasserfische über tieferen Bereichen oder in Fängen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Vorkommen in deutschen Gewässern eher offshore; später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_seelachs",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Küstenmeer",
+      "Felsgründe"
+    ],
+    "distributionGermany": "In der Nordsee regelmäßig, aber nicht in allen deutschen Gewässern gleich häufig.",
+    "rarityGame": "gelegentlich",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, auf See und in Küstennähe gut bemerkbar",
+    "shortDescription": "Schlanker dorschartiger Fisch mit dunklem Rücken, heller Seitenlinie und gegabelter Schwanzflosse.",
+    "observationTip": "Achte auf größere dorschartige Schwarmfische im freien Wasser oder in Fängen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Im Handel oft anders benannt; Bestandslage später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_seezunge",
+    "habitats": [
+      "Nordsee",
+      "Küstenmeer",
+      "Sandgründe",
+      "Flachwasser"
+    ],
+    "distributionGermany": "In Nordsee und teils angrenzenden Küstengewässern regional vorhanden.",
+    "rarityGame": "gelegentlich",
+    "activity": "bodenorientiert",
+    "season": "Sommer bis Herbst, bei warmem Wasser und ruhiger See günstig",
+    "shortDescription": "Langer schmaler Plattfisch mit kleiner Kopfform, beiden Augen auf einer Seite und unauffälliger Zeichnung.",
+    "observationTip": "Achte auf sandigen Küstenböden auf schmale bodennahe Plattfische.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Häufigkeit in deutschen Gewässern später noch einmal abgleichen."
+  },
+  {
+    "id": "fisch_steinbutt",
+    "habitats": [
+      "Nordsee",
+      "Ostsee",
+      "Küstenmeer",
+      "Sandgründe"
+    ],
+    "distributionGermany": "In Nord- und Ostsee vorhanden, regional unterschiedlich häufig.",
+    "rarityGame": "gelegentlich",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, in flachen Küstenbereichen und bei ruhiger See gut bemerkbar",
+    "shortDescription": "Breiter fast kreisrunder Plattfisch mit knotiger Oberseite und großem Maul.",
+    "observationTip": "Achte in küstennahen Sandgebieten auf flache gut getarnte Plattfische mit breitem Umriss.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Häufigkeit regional unterschiedlich; später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_stintdorsch",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Schelfmeer",
+      "Tiefere Bereiche"
+    ],
+    "distributionGermany": "In deutschen Nordseegewässern regional vorhanden, aber nicht häufig.",
+    "rarityGame": "selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, auf See bei ruhiger Witterung am ehesten bemerkbar",
+    "shortDescription": "Kleiner dorschartiger Fisch mit schlankem Körper, großen Augen und silbrig-brauner Färbung.",
+    "observationTip": "Achte auf See auf kleinere dorschartige Schwarmfische im Freiwasser oder in Fängen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Häufigkeit später mit Nordsee-Daten verfeinern."
+  },
+  {
+    "id": "fisch_streifenzunge",
+    "habitats": [
+      "Nordsee",
+      "Küstenmeer",
+      "Sandgründe",
+      "Flachwasser"
+    ],
+    "distributionGermany": "In deutschen Gewässern selten, am ehesten in der Nordsee.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Sommer bis Herbst, bei warmem Wasser und ruhiger See günstig",
+    "shortDescription": "Kleiner Plattfisch mit schmalem Körper, feinen Querstreifen und beiden Augen auf einer Seite.",
+    "observationTip": "Achte in flachen sandigen Küstenbereichen auf kleine schmale Plattfische am Boden.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Für deutsche Gewässer eher selten; Verbreitung später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_vierbaertelige_seequappe",
+    "habitats": [
+      "Nordsee",
+      "Küstenmeer",
+      "Felsgründe",
+      "Tangzonen"
+    ],
+    "distributionGermany": "In deutschen Nordseegewässern regional vorhanden.",
+    "rarityGame": "gelegentlich",
+    "activity": "nachtaktiv",
+    "season": "Frühjahr bis Herbst, besonders in ruhigen Nachtstunden",
+    "shortDescription": "Langgestreckter Fisch mit mehreren Bartfäden, schmalem Körper und marmorierter Zeichnung.",
+    "observationTip": "Achte nachts in küstennahen Bereichen zwischen Tang und Steinen auf langsame Bodenbewegungen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Artenabgrenzung innerhalb der Seequappen später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_wittling",
+    "habitats": [
+      "Nordsee",
+      "Küstenmeer",
+      "offenes Meer",
+      "Schelfmeer"
+    ],
+    "distributionGermany": "In Nordsee und angrenzenden deutschen Meeresgewässern regelmäßig nachweisbar.",
+    "rarityGame": "häufig",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, auf See und in Küstennähe gut bemerkbar",
+    "shortDescription": "Schlanker Dorschfisch mit silbrigen Flanken, dunklem Rücken und kleiner Bartel am Kinn.",
+    "observationTip": "Achte auf kleinere dorschartige Schwarmfische im freien Wasser oder in Fängen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "In deutschen Gewässern regelmäßig, Häufigkeit regional aber unterschiedlich."
+  },
+  {
+    "id": "fisch_zwergbutt",
+    "habitats": [
+      "Nordsee",
+      "Schelfmeer",
+      "Sandgründe",
+      "Tiefe Bereiche"
+    ],
+    "distributionGermany": "In der Nordsee regional nachweisbar, insgesamt eher selten.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, auf See bei ruhiger Witterung günstig",
+    "shortDescription": "Kleiner ovaler Plattfisch mit feiner Fleckung und beiden Augen auf einer Seite.",
+    "observationTip": "Achte auf tieferen sandigen Meeresböden auf kleine gut getarnte Plattfische.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Für deutsche Gewässer eher selten; später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_zwergdorsch",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Schelfmeer",
+      "Küstenmeer"
+    ],
+    "distributionGermany": "In der Nordsee regional nachweisbar, insgesamt aber eher selten.",
+    "rarityGame": "selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, auf See bei ruhiger Witterung am ehesten bemerkbar",
+    "shortDescription": "Kleiner dorschartiger Fisch mit schlankem Körper, großen Augen und heller Seitenlinie.",
+    "observationTip": "Achte auf See auf kleine dorschartige Schwarmfische im Freiwasser oder in Fängen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Abgrenzung zu anderen kleinen Dorscharten später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_zwergzunge",
+    "habitats": [
+      "Nordsee",
+      "Küstenmeer",
+      "Sandgründe",
+      "Flachwasser"
+    ],
+    "distributionGermany": "In deutschen Gewässern selten, vor allem in der Nordsee.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Sommer bis Herbst, bei ruhiger See und warmem Wasser günstig",
+    "shortDescription": "Sehr kleiner schmaler Plattfisch mit feiner Zeichnung und beiden Augen auf einer Seite.",
+    "observationTip": "Achte in flachen sandigen Küstenzonen auf winzige gut getarnte Plattfische.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Für deutsche Gewässer eher selten; später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_seelaube",
+    "habitats": [
+      "Seen",
+      "Freiwasser",
+      "Alpenseen",
+      "Uferzonen"
+    ],
+    "distributionGermany": "Regional in süddeutschen und alpinen Seen nachweisbar.",
+    "rarityGame": "selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders an klaren ruhigen Tagen über offenem Wasser",
+    "shortDescription": "Schlanker silbriger Fisch mit schmalem Körper, heller Flanke und feinen durchscheinenden Flossen.",
+    "observationTip": "Achte in klaren Seen auf kleine silbrige Schwarmfische knapp unter der Oberfläche im Freiwasser.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "In Deutschland regional begrenzt; Verbreitung später noch einmal mit Seendaten prüfen."
+  },
+  {
+    "id": "fisch_maifisch",
+    "habitats": [
+      "Flussmündungen",
+      "Küstenmeer",
+      "Freiwasser",
+      "Wanderstrecken"
+    ],
+    "distributionGermany": "Historisch in großen Flusssystemen, heute nur regional und selten nachweisbar.",
+    "rarityGame": "sehr selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Frühsommer, besonders während der Wanderzeit",
+    "shortDescription": "Silbrig glänzender Heringsfisch mit hochrückigem Körper und dunkler Punktreihe hinter dem Kiemendeckel.",
+    "observationTip": "Achte in Wanderzeiten in Mündungsbereichen und großen Strömen auf silbrige Freiwasserschwärme.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Aktuelle deutsche Vorkommen stark von Wiederansiedlung und Wanderhindernissen abhängig."
+  },
+  {
+    "id": "fisch_stint",
+    "habitats": [
+      "Flussmündungen",
+      "Seen",
+      "Brackwasser",
+      "Freiwasser"
+    ],
+    "distributionGermany": "Regional in Norddeutschland und in geeigneten Mündungs- und Seenlandschaften verbreitet.",
+    "rarityGame": "gelegentlich",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr, besonders zur Wander- und Laichzeit",
+    "shortDescription": "Kleiner schlanker Fisch mit silbrigen Flanken, großem Auge und leicht durchscheinendem Körper.",
+    "observationTip": "Achte im Frühjahr in Mündungen, Häfen und Seen auf kleine silbrige Schwärme im Freiwasser.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Bestände schwanken teils stark; Verbreitung später noch einmal abgleichen."
+  },
+  {
+    "id": "fisch_ziege",
+    "habitats": [
+      "Seen",
+      "Ströme",
+      "Freiwasser",
+      "Brackwasser"
+    ],
+    "distributionGermany": "Regional in größeren Seen und Stromsystemen nachweisbar.",
+    "rarityGame": "selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders an ruhigen warmen Tagen",
+    "shortDescription": "Sehr schlanker, seitlich stark abgeflachter Fisch mit silbrigem Körper und langem spitzem Bauchprofil.",
+    "observationTip": "Achte in größeren Gewässern auf schmale silbrige Schwarmfische im offenen Wasser.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "In Deutschland regional begrenzt; Nachweise später mit aktuellen Gewässerdaten prüfen."
+  },
+  {
+    "id": "fisch_adlerfisch",
+    "habitats": [
+      "Nordsee",
+      "Küstenmeer",
+      "offenes Meer",
+      "Freiwasser"
+    ],
+    "distributionGermany": "In deutschen Gewässern selten und eher als Ausnahmegast zu erwarten.",
+    "rarityGame": "sehr selten",
+    "activity": "schwimmaktiv",
+    "season": "Sommer bis Herbst, bei ruhiger See am ehesten bemerkbar",
+    "shortDescription": "Langgestreckter kräftiger Fisch mit silbrigem Körper, großem Maul und dunklerem Rücken.",
+    "observationTip": "In Deutschland meist nur selten zu beobachten; Sichtungen gelingen am ehesten zufällig an der Küste oder auf See.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Für deutsche Gewässer eher randständig; Vorkommen später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_atlantische_makrele",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Küstenmeer",
+      "Freiwasser"
+    ],
+    "distributionGermany": "In Nordseegewässern regelmäßig nachweisbar, saisonal unterschiedlich häufig.",
+    "rarityGame": "häufig",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders bei ruhiger See und wärmerem Oberflächenwasser",
+    "shortDescription": "Spindelförmiger Fisch mit metallisch blaugrünem Rücken und dunklen Wellenstreifen auf der Oberseite.",
+    "observationTip": "Achte auf See auf schnelle silbrig-blau schimmernde Schwärme im Freiwasser oder nahe der Oberfläche.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Häufigkeit in deutschen Gewässern ist saisonal unterschiedlich; später noch einmal verfeinern."
+  },
+  {
+    "id": "fisch_atlantischer_hering",
+    "habitats": [
+      "Nordsee",
+      "Ostsee",
+      "Küstenmeer",
+      "Freiwasser"
+    ],
+    "distributionGermany": "In Nord- und Ostsee weit verbreitet und ökologisch sehr bedeutend.",
+    "rarityGame": "häufig",
+    "activity": "schwimmaktiv",
+    "season": "Ganzjährig, besonders bei Schwarmbildung in küstennahen Meeresbereichen",
+    "shortDescription": "Silbrig glänzender Fisch mit seitlich abgeflachtem Körper, dunklem Rücken und feinen Flossen.",
+    "observationTip": "Achte in Küstengewässern und auf See auf größere silbrige Schwärme im Freiwasser.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Bestände regional und jahresweise unterschiedlich; spätere Feinprüfung sinnvoll."
+  },
+  {
+    "id": "fisch_brachsenmakrele",
+    "habitats": [
+      "offenes Meer",
+      "Nordsee",
+      "Freiwasser",
+      "Schelfmeer"
+    ],
+    "distributionGermany": "In deutschen Gewässern selten und eher offshore nachweisbar.",
+    "rarityGame": "selten",
+    "activity": "schwimmaktiv",
+    "season": "Sommer bis Herbst, auf See bei ruhiger Witterung am ehesten bemerkbar",
+    "shortDescription": "Hochrückiger silbrig-dunkler Fisch mit stark abgeflachtem Körper und langen Brustflossen.",
+    "observationTip": "Achte auf See auf hochrückige Freiwasserfische in tieferen Meeresbereichen oder in Fängen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Für deutsche Gewässer eher selten; Verbreitung später noch einmal abgleichen."
+  },
+  {
+    "id": "fisch_finte",
+    "habitats": [
+      "Flussmündungen",
+      "Küstenmeer",
+      "Brackwasser",
+      "Freiwasser"
+    ],
+    "distributionGermany": "Regional in Norddeutschland und an großen Mündungsräumen nachweisbar.",
+    "rarityGame": "selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Frühsommer, besonders während der Wanderzeit",
+    "shortDescription": "Silbriger Heringsfisch mit hochrückigem Körper und dunkler Fleckenreihe hinter dem Kiemendeckel.",
+    "observationTip": "Achte in Wanderzeiten in Flussmündungen und Küstenbereichen auf silbrige Freiwasserschwärme.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Vorkommen in Deutschland regional und teils von Renaturierungsmaßnahmen abhängig."
+  },
+  {
+    "id": "fisch_glasauge",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Tiefenwasser",
+      "Freiwasser"
+    ],
+    "distributionGermany": "In deutschen Meeresgewässern regional nachweisbar, insgesamt eher wenig auffällig.",
+    "rarityGame": "selten",
+    "activity": "schwimmaktiv",
+    "season": "Sommer bis Herbst, auf See bei ruhiger Witterung günstiger",
+    "shortDescription": "Schlanker silbriger Fisch mit großem Auge, heller Flanke und feinen durchscheinenden Flossen.",
+    "observationTip": "Achte auf See auf kleine silbrige Freiwasserfische in tieferen Wasserschichten oder in Fängen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Häufigkeit in deutschen Gewässern später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_holzmakrele",
+    "habitats": [
+      "Nordsee",
+      "Küstenmeer",
+      "offenes Meer",
+      "Freiwasser"
+    ],
+    "distributionGermany": "In deutschen Gewässern regional nachweisbar, vor allem in der Nordsee.",
+    "rarityGame": "gelegentlich",
+    "activity": "schwimmaktiv",
+    "season": "Sommer bis Herbst, besonders bei ruhiger See und in Schwarmphasen",
+    "shortDescription": "Schlanker silbriger Fisch mit großen Augen, gegabelter Schwanzflosse und dunklem Fleck am Kiemendeckel.",
+    "observationTip": "Achte auf schnelle Freiwasserschwärme in Küstennähe oder auf See.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Häufigkeit und Saison in deutschen Gewässern später noch verfeinern."
+  },
+  {
+    "id": "fisch_hornhecht",
+    "habitats": [
+      "Nordsee",
+      "Ostsee",
+      "Küstenmeer",
+      "Oberflächenwasser"
+    ],
+    "distributionGermany": "In Nord- und Ostsee regelmäßig und saisonal gut nachweisbar.",
+    "rarityGame": "häufig",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Sommer, besonders bei ruhiger See und in Küstennähe",
+    "shortDescription": "Sehr langgestreckter silbriger Fisch mit schnabelartig verlängerten Kiefern und schlankem Körper.",
+    "observationTip": "Achte in Küstennähe auf lange schlanke Fische dicht unter der Oberfläche oder bei Sprüngen aus dem Wasser.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "In Deutschland gut bekannt, aber regionale Saisonunterschiede später noch verfeinern."
+  },
+  {
+    "id": "fisch_makrelenhecht",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Oberflächenwasser",
+      "Freiwasser"
+    ],
+    "distributionGermany": "In deutschen Gewässern eher selten und vor allem in der Nordsee nachweisbar.",
+    "rarityGame": "selten",
+    "activity": "schwimmaktiv",
+    "season": "Sommer bis Herbst, bei ruhiger See am ehesten bemerkbar",
+    "shortDescription": "Langgestreckter silbriger Fisch mit schnabelartigem Maul und spindelförmigem Körper.",
+    "observationTip": "Achte auf See auf schlanke oberflächennahe Freiwasserfische mit schnellen Richtungswechseln.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Für deutsche Gewässer eher selten; spätere Prüfung mit aktuellen Meeressichtungen sinnvoll."
+  },
+  {
+    "id": "fisch_roter_thun",
+    "habitats": [
+      "Nordsee",
+      "offenes Meer",
+      "Freiwasser",
+      "Küstenmeer"
+    ],
+    "distributionGermany": "In deutschen Gewässern selten, aber in Nordsee und angrenzenden Gebieten möglich.",
+    "rarityGame": "sehr selten",
+    "activity": "schwimmaktiv",
+    "season": "Sommer bis Herbst, auf See bei ruhiger Witterung am ehesten bemerkbar",
+    "shortDescription": "Großer kräftiger Thunfisch mit spindelförmigem Körper, dunklem Rücken und sichelförmigen Flossen.",
+    "observationTip": "In Deutschland meist nur selten zu beobachten; Sichtungen gelingen am ehesten zufällig auf See.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Aktuelle Vorkommen in deutschen Gewässern bitte später mit neueren Nordsee-Daten abgleichen."
+  },
+  {
+    "id": "fisch_sardelle",
+    "habitats": [
+      "Nordsee",
+      "Küstenmeer",
+      "Freiwasser",
+      "Brackwasser"
+    ],
+    "distributionGermany": "In deutschen Meeresgewässern regional und saisonal nachweisbar.",
+    "rarityGame": "gelegentlich",
+    "activity": "schwimmaktiv",
+    "season": "Sommer bis Herbst, besonders bei ruhiger See und wärmerem Oberflächenwasser",
+    "shortDescription": "Kleiner schlanker Fisch mit silbrigen Flanken, großem Auge und unterständigem Maul.",
+    "observationTip": "Achte in Küstengewässern und auf See auf kleine dichte Freiwasserschwärme nahe der Oberfläche.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Häufigkeit in deutschen Gewässern regional und saisonal unterschiedlich."
+  },
+  {
+    "id": "fisch_sardine",
+    "habitats": [
+      "Nordsee",
+      "Küstenmeer",
+      "offenes Meer",
+      "Freiwasser"
+    ],
+    "distributionGermany": "In deutschen Gewässern eher selten und vor allem in wärmeren Meeresphasen nachweisbar.",
+    "rarityGame": "selten",
+    "activity": "schwimmaktiv",
+    "season": "Sommer bis Herbst, bei ruhiger See und wärmerem Wasser günstig",
+    "shortDescription": "Silbrig glänzender Fisch mit hochrückigem Körper, dunklem Rücken und feinen Flossen.",
+    "observationTip": "Achte auf kleine silbrige Freiwasserschwärme in Küstennähe oder auf See.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Für deutsche Gewässer eher randlich; Vorkommen später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_sprotte",
+    "habitats": [
+      "Nordsee",
+      "Ostsee",
+      "Küstenmeer",
+      "Freiwasser"
+    ],
+    "distributionGermany": "In Nord- und Ostsee weit verbreitet und häufig in Schwärmen unterwegs.",
+    "rarityGame": "häufig",
+    "activity": "schwimmaktiv",
+    "season": "Ganzjährig, besonders bei sichtbarer Schwarmbildung in Küstengewässern",
+    "shortDescription": "Kleiner silbriger Fisch mit schlankem seitlich abgeflachtem Körper und dunklem Rücken.",
+    "observationTip": "Achte in Küstengewässern auf dichte silbrige Schwärme im Freiwasser oder nahe der Oberfläche.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Bestände in deutschen Gewässern grundsätzlich häufig, aber regional schwankend."
+  },
+  {
+    "id": "fisch_blei",
+    "habitats": [
+      "Seen",
+      "Flüsse",
+      "Altarme",
+      "Uferzonen"
+    ],
+    "distributionGermany": "In Deutschland weit verbreitet in langsam fließenden und stehenden Gewässern.",
+    "rarityGame": "häufig",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in ruhigen warmen Gewässerabschnitten",
+    "shortDescription": "Hochrückiger silbrig-bronzener Fisch mit langem Afterflossenansatz und seitlich abgeflachtem Körper.",
+    "observationTip": "Achte in ruhigen Seen und Flussbuchten auf größere hochrückige Schwarmfische im Mittelwasser.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Häufige Art, regionale Bestandsunterschiede später bei Bedarf verfeinern."
+  },
+  {
+    "id": "fisch_schneider",
+    "habitats": [
+      "Flüsse",
+      "Bäche",
+      "Kiesgründe",
+      "Strömungszonen"
+    ],
+    "distributionGermany": "Regional in klaren Fließgewässern Mittel- und Süddeutschlands verbreitet.",
+    "rarityGame": "gelegentlich",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders bei klarem Wasser und sonnigen Tagen",
+    "shortDescription": "Kleiner schlanker Silberfisch mit feiner Seitenzeichnung und durchscheinenden Flossen.",
+    "observationTip": "Achte in klaren strömungsreichen Bächen und Flüssen auf kleine silbrige Schwärme knapp über dem Grund.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Verbreitung später noch mit aktuellen Fließgewässerdaten abgleichen."
+  },
+  {
+    "id": "fisch_ukelei",
+    "habitats": [
+      "Seen",
+      "Flüsse",
+      "Kanäle",
+      "Oberflächenwasser"
+    ],
+    "distributionGermany": "In Deutschland weit verbreitet und in vielen Gewässertypen häufig.",
+    "rarityGame": "häufig",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders an warmen ruhigen Tagen nahe der Oberfläche",
+    "shortDescription": "Schlanker silbriger Fisch mit stark glänzenden Flanken und schmalem Körper.",
+    "observationTip": "Achte in ruhigen Gewässern auf kleine silbrige Schwärme direkt unter der Oberfläche.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Häufige Art; Bestände regional meist stabil, aber später bei Bedarf verfeinern."
+  },
+  {
+    "id": "fisch_schwarzer_katzenwels",
+    "habitats": [
+      "Teiche",
+      "Seen",
+      "Altarme",
+      "Langsame Flüsse"
+    ],
+    "distributionGermany": "In Deutschland nur regional aus Besatz oder Ausbreitung bekannt.",
+    "rarityGame": "selten",
+    "activity": "nachtaktiv",
+    "season": "Frühjahr bis Herbst, besonders in milden Abend- und Nachtstunden",
+    "shortDescription": "Gedrungener dunkler Welsfisch mit breitem Kopf, Barteln und hoher Rückenflosse.",
+    "observationTip": "Achte in warmen stillen Gewässern nachts auf bodennahe Bewegungen und Bartelträger im Uferbereich.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Gebietsfremde Art; aktuelle regionale Vorkommen später noch prüfen."
+  },
+  {
+    "id": "fisch_brauner_katzenwels",
+    "habitats": [
+      "Teiche",
+      "Seen",
+      "Altarme",
+      "Langsame Flüsse"
+    ],
+    "distributionGermany": "In Deutschland regional und meist aus eingebrachten Beständen bekannt.",
+    "rarityGame": "selten",
+    "activity": "nachtaktiv",
+    "season": "Frühjahr bis Herbst, besonders in warmen Abend- und Nachtstunden",
+    "shortDescription": "Gedrungener brauner Welsfisch mit breitem Kopf, Barteln und kräftigen Flossenstacheln.",
+    "observationTip": "Achte in warmen stillen Gewässern nachts auf kleine barteltragende Welse nahe dem Grund.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Gebietsfremde Art; Verbreitung in Deutschland später noch verifizieren."
+  },
+  {
+    "id": "fisch_nackthalsgrundel",
+    "habitats": [
+      "Flüsse",
+      "Häfen",
+      "Steinschüttungen",
+      "Brackwasser"
+    ],
+    "distributionGermany": "In Deutschland vor allem in großen Stromsystemen und angebundenen Bereichen regional nachweisbar.",
+    "rarityGame": "gelegentlich",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, besonders bei klarem niedrigem Wasser",
+    "shortDescription": "Kleine Grundel mit gedrungenem Körper, großem Kopf und marmorierter Zeichnung.",
+    "observationTip": "Achte an steinigen Ufern und in Hafenbereichen auf kleine bodennahe Fische mit ruckartigen Bewegungen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Neubürger in Ausbreitung; deutsche Verbreitung später noch einmal abgleichen."
+  },
+  {
+    "id": "fisch_zope",
+    "habitats": [
+      "Seen",
+      "Ströme",
+      "Breite Flüsse",
+      "Freiwasser"
+    ],
+    "distributionGermany": "Regional in größeren Gewässern Nord- und Ostdeutschlands nachweisbar.",
+    "rarityGame": "selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in ruhigen Freiwasserzonen",
+    "shortDescription": "Silbriger hochrückiger Fisch mit langem Körperprofil und spitzem Kopf.",
+    "observationTip": "Achte in größeren Seen und Strömen auf silbrige Schwarmfische im offenen Wasser.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "In Deutschland regional begrenzt; Verbreitung später mit aktuellen Gewässerdaten prüfen."
+  },
+  {
+    "id": "fisch_zobel",
+    "habitats": [
+      "Ströme",
+      "Seen",
+      "Freiwasser",
+      "Tiefe Rinnen"
+    ],
+    "distributionGermany": "In Deutschland sehr regional und vor allem im Donauraum relevant.",
+    "rarityGame": "sehr selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in größeren ruhigen Stromabschnitten",
+    "shortDescription": "Schlanker silbriger Fisch mit langem Körper und spitz zulaufendem Kopfprofil.",
+    "observationTip": "Achte in großen Strömen auf schlanke silbrige Freiwasserfische in tieferen Bereichen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Für Deutschland stark regional begrenzt; Nachweise später noch einmal verifizieren."
+  },
+  {
+    "id": "fisch_bachschmerle",
+    "habitats": [
+      "Bäche",
+      "Kleine Flüsse",
+      "Kiesgründe",
+      "Quellbäche"
+    ],
+    "distributionGermany": "In Deutschland in vielen geeigneten Fließgewässern weit verbreitet.",
+    "rarityGame": "häufig",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, besonders bei klarem Wasser und niedrigem Stand",
+    "shortDescription": "Kleiner langgestreckter Bodenfisch mit Barteln und braun gesprenkelter Musterung.",
+    "observationTip": "Achte in klaren Bächen auf kleine getarnte Bodenfische zwischen Kies und Steinen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Häufige Art, regionale Unterschiede später bei Bedarf verfeinern."
+  },
+  {
+    "id": "fisch_barbe",
+    "habitats": [
+      "Flüsse",
+      "Kiesgründe",
+      "Strömungszonen",
+      "Nebenarme"
+    ],
+    "distributionGermany": "In Deutschland regional verbreitet, vor allem in größeren Fließgewässern.",
+    "rarityGame": "gelegentlich",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders bei klarem Wasser in strömungsreichen Abschnitten",
+    "shortDescription": "Langgestreckter kräftiger Fisch mit unterständigem Maul und Barteln an der Schnauze.",
+    "observationTip": "Achte in klaren Flüssen mit Kiesgrund auf größere Fische nahe dem Boden in der Strömung.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Verbreitung später noch einmal mit aktuellen Flussdaten abgleichen."
+  },
+  {
+    "id": "fisch_guester",
+    "habitats": [
+      "Seen",
+      "Teiche",
+      "Langsame Flüsse",
+      "Altarme"
+    ],
+    "distributionGermany": "In Deutschland weit verbreitet in ruhigen nährstoffreichen Gewässern.",
+    "rarityGame": "häufig",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in warmen ruhigen Gewässern",
+    "shortDescription": "Kleiner hochrückiger Silberfisch mit seitlich abgeflachtem Körper und relativ großem Auge.",
+    "observationTip": "Achte in ruhigen Gewässern auf kleinere hochrückige Schwarmfische im Ufer- und Mittelwasserbereich.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Häufige Art; Abgrenzung zu ähnlichen Brassenfischen später bei Bedarf textlich schärfen."
+  },
+  {
+    "id": "fisch_goldfisch_komplex",
+    "habitats": [
+      "Teiche",
+      "Parksgewässer",
+      "Seen",
+      "Langsame Kanäle"
+    ],
+    "distributionGermany": "In Deutschland vor allem aus Haltung, Besatz und verwilderten Beständen bekannt.",
+    "rarityGame": "gelegentlich",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in warmen ruhigen Gewässern",
+    "shortDescription": "Hochrückiger Karpfenfisch mit variabler Gold-, Orange- oder heller Färbung und kurzem Kopf.",
+    "observationTip": "Achte in Teichen und Parkgewässern auf auffällig helle oder goldene Schwarmfische nahe der Oberfläche.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sammelbegriff im Datensatz; Zusammensetzung und Abgrenzung später noch prüfen."
+  },
+  {
+    "id": "fisch_goldfisch",
+    "habitats": [
+      "Teiche",
+      "Parksgewässer",
+      "Seen",
+      "Langsame Kanäle"
+    ],
+    "distributionGermany": "In Deutschland häufig in künstlichen Gewässern und verwilderten Beständen.",
+    "rarityGame": "gelegentlich",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in warmen ruhigen Gewässern",
+    "shortDescription": "Hochrückiger Karpfenfisch mit goldener bis orangefarbener Färbung und rundlichem Körper.",
+    "observationTip": "Achte in Teichen und Parkanlagen auf auffällig gefärbte Fische im flachen Wasser.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Meist auf Besatz zurückgehend; Ausbreitung regional unterschiedlich."
+  },
+  {
+    "id": "fisch_kleine_maraene",
+    "habitats": [
+      "Seen",
+      "Tiefenwasser",
+      "Freiwasser",
+      "Klare Gewässer"
+    ],
+    "distributionGermany": "Regional in nord- und ostdeutschen Seen sowie im Alpenvorland nachweisbar.",
+    "rarityGame": "gelegentlich",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in klaren tiefen Seen",
+    "shortDescription": "Schlanker silbriger Salmonidenfisch mit kleiner Schnauze und feinen Flossen.",
+    "observationTip": "Achte in klaren tiefen Seen auf silbrige Freiwasserschwärme fern der Ufer.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Maraenenverbreitung regional unterschiedlich; spätere Feinprüfung sinnvoll."
+  },
+  {
+    "id": "fisch_sandfelchen",
+    "habitats": [
+      "Seen",
+      "Freiwasser",
+      "Tiefenwasser",
+      "Alpenseen"
+    ],
+    "distributionGermany": "In Deutschland sehr regional und vor allem im südlichen Seenraum relevant.",
+    "rarityGame": "sehr selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in klaren großen Seen",
+    "shortDescription": "Silbriger schlanker Salmonidenfisch mit feinem Kopfprofil und glatter Flankenlinie.",
+    "observationTip": "Achte in großen klaren Seen auf silbrige Schwarmfische im offenen Wasser.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Stark regional begrenzt; Nachweise später noch einmal mit aktuellen Seendaten prüfen."
+  },
+  {
+    "id": "fisch_ammersee_kilch",
+    "habitats": [
+      "Seen",
+      "Tiefenwasser",
+      "Freiwasser",
+      "Alpenseen"
+    ],
+    "distributionGermany": "Nur sehr regional im süddeutschen Seengebiet nachweisbar.",
+    "rarityGame": "sehr selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in klaren tiefen Seen",
+    "shortDescription": "Schlanker silbriger Coregonenfisch mit feinem Kopf und unauffälligen Flossen.",
+    "observationTip": "Achte in tiefen klaren Seen auf silbrige Freiwasserfische in größeren Wasserkörpern.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr lokal; Status in Deutschland später besonders sorgfältig prüfen."
+  },
+  {
+    "id": "fisch_fontane_maraene",
+    "habitats": [
+      "Seen",
+      "Freiwasser",
+      "Tiefenwasser",
+      "Norddeutsche Seen"
+    ],
+    "distributionGermany": "In Deutschland sehr regional in wenigen Seen nachweisbar.",
+    "rarityGame": "sehr selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in klaren tiefen Seen",
+    "shortDescription": "Schlanker silbriger Salmonidenfisch mit feiner Gestalt und kleinem Kopf.",
+    "observationTip": "Achte in klaren Seen auf kleine silbrige Freiwasserfische fern vom Ufer.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Nur lokal bekannt; spätere Prüfung mit aktuellen Seenachweisen nötig."
+  },
+  {
+    "id": "fisch_bodensee_kilch",
+    "habitats": [
+      "Seen",
+      "Tiefenwasser",
+      "Freiwasser",
+      "Bodensee"
+    ],
+    "distributionGermany": "In Deutschland historisch bzw. regional auf den Bodenseeraum bezogen.",
+    "rarityGame": "sehr selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in tiefem klarem Freiwasser",
+    "shortDescription": "Silbriger schlanker Coregonenfisch mit feinem Kopfprofil und zierlichen Flossen.",
+    "observationTip": "Achte in großen klaren Seen auf silbrige Freiwasserfische in tieferen Bereichen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Taxonomie und aktueller Status später noch einmal gesondert prüfen."
+  },
+  {
+    "id": "fisch_chiemsee_renke",
+    "habitats": [
+      "Seen",
+      "Freiwasser",
+      "Tiefenwasser",
+      "Alpenseen"
+    ],
+    "distributionGermany": "Regional im süddeutschen Seengebiet, besonders im Chiemseeumfeld.",
+    "rarityGame": "selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in klaren tiefen Seen",
+    "shortDescription": "Silbriger Coregonenfisch mit schlankem Körper und feiner Kopfform.",
+    "observationTip": "Achte in großen klaren Seen auf silbrige Schwarmfische im offenen Wasser.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Seenform; spätere Abgrenzung zu nahen Renkenformen sinnvoll."
+  },
+  {
+    "id": "fisch_schaalsee_maraene",
+    "habitats": [
+      "Seen",
+      "Freiwasser",
+      "Tiefenwasser",
+      "Norddeutsche Seen"
+    ],
+    "distributionGermany": "Sehr regional in einzelnen norddeutschen Seen nachweisbar.",
+    "rarityGame": "sehr selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in klaren tiefen Seen",
+    "shortDescription": "Schlanker silbriger Fisch mit kleiner Schnauze und unauffälligen Flossen.",
+    "observationTip": "Achte in tiefen klaren Seen auf kleine silbrige Freiwasserfische.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Nur lokal in Deutschland; aktuelle Vorkommen später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_luzin_maraene",
+    "habitats": [
+      "Seen",
+      "Freiwasser",
+      "Tiefenwasser",
+      "Nordostdeutsche Seen"
+    ],
+    "distributionGermany": "Sehr regional in wenigen Seen Nordostdeutschlands nachweisbar.",
+    "rarityGame": "sehr selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in klaren tiefen Seen",
+    "shortDescription": "Silbriger schlanker Coregonenfisch mit feinem Körperbau und kleinem Kopf.",
+    "observationTip": "Achte in klaren Seen auf silbrige Freiwasserfische fern vom Ufer.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Stark lokal begrenzt; spätere Verifikation mit aktuellen Seendaten nötig."
+  },
+  {
+    "id": "fisch_gangfisch",
+    "habitats": [
+      "Seen",
+      "Freiwasser",
+      "Tiefenwasser",
+      "Alpenseen"
+    ],
+    "distributionGermany": "In Deutschland regional in größeren Seen nachweisbar.",
+    "rarityGame": "selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in klarem offenen Wasser",
+    "shortDescription": "Silbriger schlanker Fisch mit langem Körper und feinen Flossen.",
+    "observationTip": "Achte in großen Seen auf schlanke silbrige Freiwasserfische in tieferen Zonen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Seenform; Verbreitung später noch einmal präzisieren."
+  },
+  {
+    "id": "fisch_ostsee_schnaepel",
+    "habitats": [
+      "Flussmündungen",
+      "Brackwasser",
+      "Küstenmeer",
+      "Wanderstrecken"
+    ],
+    "distributionGermany": "Regional in norddeutschen Küsten- und Mündungsräumen nachweisbar.",
+    "rarityGame": "selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders während Wanderphasen",
+    "shortDescription": "Silbriger länglicher Fisch mit deutlichem spitzem Schnauzenprofil und feinen Flossen.",
+    "observationTip": "Achte in Mündungsräumen und Küstenbereichen auf silbrige wandernde Freiwasserfische.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Wiederansiedlungen und Wanderhindernisse beeinflussen das Vorkommen stark."
+  },
+  {
+    "id": "fisch_giebel",
+    "habitats": [
+      "Teiche",
+      "Seen",
+      "Altarme",
+      "Langsame Flüsse"
+    ],
+    "distributionGermany": "In Deutschland weit verbreitet, regional auch sehr häufig.",
+    "rarityGame": "häufig",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in warmen ruhigen Gewässern",
+    "shortDescription": "Hochrückiger silbrig-grauer Karpfenfisch mit rundlichem Körper und kurzem Kopf.",
+    "observationTip": "Achte in warmen stillen Gewässern auf hochrückige Schwarmfische nahe Pflanzenzonen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Häufige Art; regionale Ausbreitung und Konkurrenz zur Karausche später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_ginbuna",
+    "habitats": [
+      "Teiche",
+      "Seen",
+      "Langsame Flüsse",
+      "Parksgewässer"
+    ],
+    "distributionGermany": "In Deutschland nur regional aus Besatz oder Verwilderung bekannt.",
+    "rarityGame": "selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in warmen ruhigen Gewässern",
+    "shortDescription": "Hochrückiger silbrig-bronzener Karpfenfisch mit rundlichem Körper und kurzer Schnauze.",
+    "observationTip": "Achte in stillen Gewässern auf hochrückige karpfenartige Fische in Ufernähe.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Gebietsfremde Form; deutsche Nachweise später noch einmal verifizieren."
+  },
+  {
+    "id": "fisch_karausche",
+    "habitats": [
+      "Teiche",
+      "Kleingewässer",
+      "Altarme",
+      "Moore"
+    ],
+    "distributionGermany": "In Deutschland regional verbreitet, aber vielerorts rückläufig.",
+    "rarityGame": "gelegentlich",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in ruhigen pflanzenreichen Gewässern",
+    "shortDescription": "Hochrückiger bronzefarbener Karpfenfisch mit rundem Körper und stumpfem Kopf.",
+    "observationTip": "Achte in stillen bewachsenen Gewässern auf ruhige hochrückige Fische im flachen Wasser.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Bestände regional teils rückläufig; spätere Abgleichung mit Schutzdaten sinnvoll."
+  },
+  {
+    "id": "fisch_nase",
+    "habitats": [
+      "Flüsse",
+      "Kiesgründe",
+      "Strömungszonen",
+      "Nebenarme"
+    ],
+    "distributionGermany": "Regional in größeren Fließgewässern Deutschlands verbreitet.",
+    "rarityGame": "gelegentlich",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in klaren strömungsreichen Flüssen",
+    "shortDescription": "Langgestreckter silbriger Fisch mit unterständigem Maul und markanter Schnauzenkante.",
+    "observationTip": "Achte in klaren Flüssen auf schwimmaktive Grundfische in strömenden Abschnitten.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Verbreitung später mit aktuellen Fließgewässerdaten verfeinern."
+  },
+  {
+    "id": "fisch_italienischer_steinbeisser",
+    "habitats": [
+      "Bäche",
+      "Flüsse",
+      "Sandgründe",
+      "Ruhezonen"
+    ],
+    "distributionGermany": "In Deutschland nur regional und vor allem in südlichen Einzugsgebieten relevant.",
+    "rarityGame": "sehr selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, besonders bei klarem niedrigem Wasser",
+    "shortDescription": "Kleiner langgestreckter Bodenfisch mit Barteln und feiner Fleckenzeichnung.",
+    "observationTip": "Achte in klaren sandigen Fließgewässern auf sehr kleine getarnte Bodenfische.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Artabgrenzung später noch einmal mit aktuellen taxonomischen Daten prüfen."
+  },
+  {
+    "id": "fisch_donau_steinbeisser",
+    "habitats": [
+      "Bäche",
+      "Flüsse",
+      "Sandgründe",
+      "Donauzuflüsse"
+    ],
+    "distributionGermany": "In Deutschland regional vor allem im Donauraum nachweisbar.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, besonders bei klarem niedrigem Wasser",
+    "shortDescription": "Kleiner langgestreckter Bodenfisch mit Barteln und gebänderter Fleckung.",
+    "observationTip": "Achte in klaren sandigen Fließgewässern des Donauraums auf kleine Bodenfische zwischen Sedimenten.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Donau-Art; spätere Prüfung der Verbreitungsgrenzen sinnvoll."
+  },
+  {
+    "id": "fisch_steinbeisser",
+    "habitats": [
+      "Bäche",
+      "Flüsse",
+      "Sandgründe",
+      "Altarme"
+    ],
+    "distributionGermany": "In Deutschland regional verbreitet, aber leicht zu übersehen.",
+    "rarityGame": "gelegentlich",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, besonders bei klarem niedrigem Wasser",
+    "shortDescription": "Kleiner langgestreckter Bodenfisch mit Barteln und feiner gebänderter Musterung.",
+    "observationTip": "Achte in flachen sandigen Gewässerabschnitten auf kleine getarnte Bodenfische.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Aufgrund versteckter Lebensweise regional oft untererfasst."
+  },
+  {
+    "id": "fisch_peipus_maraene",
+    "habitats": [
+      "Seen",
+      "Freiwasser",
+      "Tiefenwasser",
+      "Nordostdeutsche Seen"
+    ],
+    "distributionGermany": "In Deutschland sehr regional und nur in wenigen Seen nachweisbar.",
+    "rarityGame": "sehr selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in klaren tiefen Seen",
+    "shortDescription": "Schlanker silbriger Coregonenfisch mit feinen Flossen und kleiner Schnauze.",
+    "observationTip": "Achte in tiefen klaren Seen auf silbrige Schwarmfische im offenen Wasser.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Nur lokal vertreten; spätere Prüfung mit aktuellen Seenachweisen nötig."
+  },
+  {
+    "id": "fisch_nordsee_schnaepel",
+    "habitats": [
+      "Flussmündungen",
+      "Brackwasser",
+      "Küstenmeer",
+      "Wanderstrecken"
+    ],
+    "distributionGermany": "Historisch in Deutschland bedeutend, heute nur sehr eingeschränkt oder unsicher nachweisbar.",
+    "rarityGame": "sehr selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders während Wanderphasen",
+    "shortDescription": "Silbriger länglicher Fisch mit spitzem Schnauzenprofil und zierlichen Flossen.",
+    "observationTip": "Achte in Küsten- und Mündungsräumen auf silbrige wandernde Freiwasserfische.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Status in Deutschland später besonders sorgfältig prüfen."
+  },
+  {
+    "id": "fisch_peled_maraene",
+    "habitats": [
+      "Seen",
+      "Freiwasser",
+      "Tiefenwasser",
+      "Kühlere Gewässer"
+    ],
+    "distributionGermany": "In Deutschland eher aus Besatz oder lokalen Vorkommen bekannt.",
+    "rarityGame": "selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in klaren Seen",
+    "shortDescription": "Silbriger schlanker Salmonidenfisch mit hohem Rücken und kleinem Kopf.",
+    "observationTip": "Achte in größeren Seen auf silbrige Freiwasserschwärme fern vom Ufer.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Nicht überall ursprünglich heimisch; Herkunft regional später noch prüfen."
+  },
+  {
+    "id": "fisch_starnberger_renke",
+    "habitats": [
+      "Seen",
+      "Freiwasser",
+      "Tiefenwasser",
+      "Alpenseen"
+    ],
+    "distributionGermany": "In Deutschland regional im südlichen Seenraum nachweisbar.",
+    "rarityGame": "selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in klaren tiefen Seen",
+    "shortDescription": "Silbriger Coregonenfisch mit schlankem Körper und feinem Kopfprofil.",
+    "observationTip": "Achte in großen klaren Seen auf silbrige Schwärme im offenen Wasser.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Seenform; Abgrenzung zu anderen Renkenformen später noch prüfen."
+  },
+  {
+    "id": "fisch_blaufelchen",
+    "habitats": [
+      "Seen",
+      "Freiwasser",
+      "Tiefenwasser",
+      "Bodenseeraum"
+    ],
+    "distributionGermany": "In Deutschland regional in großen klaren Seen des Südens nachweisbar.",
+    "rarityGame": "selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in tiefen klaren Seen",
+    "shortDescription": "Silbriger Fisch mit leicht bläulichem Schimmer, schlankem Körper und kleinen Flossen.",
+    "observationTip": "Achte in großen klaren Seen auf silbrige Freiwasserfische in tieferen Bereichen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Seenform; Verbreitung später noch einmal mit aktuellen Seendaten abgleichen."
+  },
+  {
+    "id": "fisch_buckelmaraene",
+    "habitats": [
+      "Seen",
+      "Freiwasser",
+      "Tiefenwasser",
+      "Nordostdeutsche Seen"
+    ],
+    "distributionGermany": "In Deutschland regional in wenigen Seen nachweisbar.",
+    "rarityGame": "sehr selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in klaren tiefen Seen",
+    "shortDescription": "Silbriger schlanker Coregonenfisch mit leicht gewölbtem Rückenprofil und feinen Flossen.",
+    "observationTip": "Achte in tiefen klaren Seen auf kleine silbrige Freiwasserschwärme.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Nur lokal bekannt; spätere Prüfung mit aktuellen Seenachweisen nötig."
+  },
+  {
+    "id": "fisch_koppe",
+    "habitats": [
+      "Bäche",
+      "Flüsse",
+      "Steingründe",
+      "Kühle Gewässer"
+    ],
+    "distributionGermany": "In Deutschland in vielen geeigneten Fließgewässern verbreitet.",
+    "rarityGame": "häufig",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, besonders bei klarem niedrigem Wasser",
+    "shortDescription": "Kleiner gedrungener Bodenfisch mit breitem Kopf, großen Brustflossen und marmorierter Tarnzeichnung.",
+    "observationTip": "Achte in klaren Bächen unter Steinen und an Kiesufern auf ruhige Bodenfische.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Häufige Art; regionale Unterschiede später bei Bedarf verfeinern."
+  },
+  {
+    "id": "fisch_baltische_koppe",
+    "habitats": [
+      "Flüsse",
+      "Bäche",
+      "Steingründe",
+      "Norddeutsche Gewässer"
+    ],
+    "distributionGermany": "In Deutschland regional in nördlichen Gewässersystemen nachweisbar.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, besonders bei klarem niedrigem Wasser",
+    "shortDescription": "Kleiner gedrungener Bodenfisch mit breitem Kopf, großen Brustflossen und dunkler Fleckung.",
+    "observationTip": "Achte in klaren steinigen Gewässern Norddeutschlands auf getarnte Bodenfische.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Artabgrenzung innerhalb der Koppengruppe später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_stachel_koppe",
+    "habitats": [
+      "Bäche",
+      "Flüsse",
+      "Steingründe",
+      "Rheingebiet"
+    ],
+    "distributionGermany": "In Deutschland regional und vor allem in westlichen Gewässersystemen nachweisbar.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, besonders bei klarem niedrigem Wasser",
+    "shortDescription": "Kleiner Bodenfisch mit breitem Kopf, stacheligen Strukturen und dunkler Tarnzeichnung.",
+    "observationTip": "Achte in steinigen Fließgewässern auf kleine getarnte Bodenfische zwischen Kies und Geröll.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Art; Verbreitung später noch einmal mit aktuellen Daten abgleichen."
+  },
+  {
+    "id": "fisch_buntflossen_koppe",
+    "habitats": [
+      "Bäche",
+      "Gebirgsflüsse",
+      "Steingründe",
+      "Kühle Gewässer"
+    ],
+    "distributionGermany": "In Deutschland regional in kühleren und höher gelegenen Gewässern nachweisbar.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, besonders bei klarem kaltem Wasser",
+    "shortDescription": "Kleiner Bodenfisch mit breitem Kopf, gemustertem Körper und auffällig gebänderten Flossen.",
+    "observationTip": "Achte in kalten steinigen Fließgewässern auf getarnte Bodenfische zwischen Steinen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regional begrenzt; spätere Prüfung mit Gebirgsgewässerdaten sinnvoll."
+  },
+  {
+    "id": "fisch_rhein_koppe",
+    "habitats": [
+      "Bäche",
+      "Flüsse",
+      "Steingründe",
+      "Rheinsystem"
+    ],
+    "distributionGermany": "In Deutschland regional im Rheingebiet und benachbarten Gewässern nachweisbar.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, besonders bei klarem niedrigem Wasser",
+    "shortDescription": "Kleiner gedrungener Bodenfisch mit breitem Kopf und dunkler Marmormusterung.",
+    "observationTip": "Achte in klaren steinigen Fließgewässern des Rheinsystems auf getarnte Bodenfische.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Artabgrenzung später noch einmal mit aktuellen Daten prüfen."
+  },
+  {
+    "id": "fisch_graskarpfen",
+    "habitats": [
+      "Seen",
+      "Teiche",
+      "Kanäle",
+      "Langsame Flüsse"
+    ],
+    "distributionGermany": "In Deutschland vor allem aus Besatz und regionalen Vorkommen bekannt.",
+    "rarityGame": "gelegentlich",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in warmen ruhigen Gewässern",
+    "shortDescription": "Langgestreckter kräftiger Karpfenfisch mit großem Schuppenkleid und breitem Kopf.",
+    "observationTip": "Achte in warmen ruhigen Gewässern auf große pflanzenfressende Fische im flachen Wasser.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Nicht überall ursprünglich heimisch; regionale Vorkommen später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_karpfen",
+    "habitats": [
+      "Teiche",
+      "Seen",
+      "Altarme",
+      "Langsame Flüsse"
+    ],
+    "distributionGermany": "In Deutschland weit verbreitet und in vielen Gewässern häufig.",
+    "rarityGame": "häufig",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in warmen ruhigen Gewässern",
+    "shortDescription": "Kräftiger hochrückiger Fisch mit großen Schuppen, dicken Lippen und Barteln am Maul.",
+    "observationTip": "Achte in warmen Teichen und Seen auf größere gründelnde Fische nahe Pflanzenzonen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Häufige Art mit vielen Besatzformen; regionale Unterschiede später bei Bedarf verfeinern."
+  },
+  {
+    "id": "fisch_hecht",
+    "habitats": [
+      "Seen",
+      "Flüsse",
+      "Altarme",
+      "Schilfzonen"
+    ],
+    "distributionGermany": "In Deutschland weit verbreitet in vielen geeigneten Gewässern.",
+    "rarityGame": "häufig",
+    "activity": "laueraktiv",
+    "season": "Frühjahr bis Herbst, besonders bei klarem Wasser und ruhigen Uferzonen",
+    "shortDescription": "Langer torpedoförmiger Raubfisch mit breitem Entenschnabelmaul und grünlich gefleckter Zeichnung.",
+    "observationTip": "Achte in pflanzenreichen Uferzonen auf reglos stehende langgestreckte Räuber.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Häufige Art; regionale Bestandsunterschiede später bei Bedarf verfeinern."
+  },
+  {
+    "id": "fisch_donau_bachneunauge",
+    "habitats": [
+      "Bäche",
+      "Flüsse",
+      "Kiesgründe",
+      "Donauzuflüsse"
+    ],
+    "distributionGermany": "In Deutschland regional vor allem im Donauraum nachweisbar.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Frühsommer, besonders zur Fortpflanzungszeit in klaren Fließgewässern",
+    "shortDescription": "Aalförmiger kieferloser Fisch mit rundem Saugmaul und schlankem glattem Körper.",
+    "observationTip": "Achte in klaren kleinen Fließgewässern auf aalartige bodennahe Tiere in Kiesbereichen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Donau-Art; Verbreitung später noch einmal gesondert prüfen."
+  },
+  {
+    "id": "fisch_dreistachliger_stichling",
+    "habitats": [
+      "Teiche",
+      "Bäche",
+      "Flüsse",
+      "Küstennahe Binnengewässer"
+    ],
+    "distributionGermany": "In Deutschland sehr weit verbreitet und oft häufig.",
+    "rarityGame": "häufig",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Sommer, besonders in flachen klaren Gewässern",
+    "shortDescription": "Kleiner schlanker Fisch mit drei freien Rückenstacheln und silbrig-grüner Färbung.",
+    "observationTip": "Achte in flachen Gewässern auf kleine agile Fische mit ruckartigen Bewegungen nahe Pflanzen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr häufige Art; regionale Formen und Wanderverhalten später bei Bedarf verfeinern."
+  },
+  {
+    "id": "fisch_gruendling",
+    "habitats": [
+      "Bäche",
+      "Flüsse",
+      "Kiesgründe",
+      "Ruhezonen"
+    ],
+    "distributionGermany": "In Deutschland regional verbreitet in klaren Fließgewässern.",
+    "rarityGame": "gelegentlich",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, besonders bei klarem Wasser und mäßiger Strömung",
+    "shortDescription": "Kleiner langgestreckter Bodenfisch mit Barteln und dunkler Fleckenreihe entlang der Flanke.",
+    "observationTip": "Achte in klaren kiesigen Fließgewässern auf kleine Grundfische dicht über dem Boden.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Häufigkeit später noch einmal mit aktuellen Gewässerdaten abgleichen."
+  },
+  {
+    "id": "fisch_ammersee_kaulbarsch",
+    "habitats": [
+      "Seen",
+      "Tiefenzonen",
+      "Bodengrund",
+      "Alpenseen"
+    ],
+    "distributionGermany": "Sehr regional in wenigen süddeutschen Seen nachweisbar.",
+    "rarityGame": "sehr selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, besonders in tieferen klaren Seen",
+    "shortDescription": "Kleiner barschartiger Fisch mit stachliger Rückenflosse, großem Auge und gesprenkelter Zeichnung.",
+    "observationTip": "Achte in klaren Seen auf kleine barschartige Bodenfische in tieferen Zonen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Stark lokalisierte Seenform; spätere Verifikation mit aktuellen Daten nötig."
+  },
+  {
+    "id": "fisch_donau_kaulbarsch",
+    "habitats": [
+      "Flüsse",
+      "Ströme",
+      "Kiesgründe",
+      "Donauzuflüsse"
+    ],
+    "distributionGermany": "In Deutschland regional vor allem im Donauraum nachweisbar.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, besonders in größeren Fließgewässern",
+    "shortDescription": "Kleiner barschartiger Fisch mit stachliger Rückenflosse und dunkler Musterung.",
+    "observationTip": "Achte in strömungsreichen größeren Flüssen auf kleine barschartige Bodenfische.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Donau-Art; Verbreitung später noch einmal gesondert prüfen."
+  },
+  {
+    "id": "fisch_kaulbarsch",
+    "habitats": [
+      "Seen",
+      "Flüsse",
+      "Kanäle",
+      "Bodengrund"
+    ],
+    "distributionGermany": "In Deutschland weit verbreitet und regional häufig.",
+    "rarityGame": "häufig",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, besonders in ruhigen Gewässern mit Grundkontakt",
+    "shortDescription": "Kleiner barschartiger Fisch mit großem Auge, stachliger Rückenflosse und feiner Fleckung.",
+    "observationTip": "Achte in Seen und ruhigen Flüssen auf kleine barschartige Fische nahe dem Boden.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Häufige Art; regionale Unterschiede später bei Bedarf verfeinern."
+  },
+  {
+    "id": "fisch_schraetzer",
+    "habitats": [
+      "Ströme",
+      "Flüsse",
+      "Kiesgründe",
+      "Donauabschnitte"
+    ],
+    "distributionGermany": "In Deutschland regional und vor allem im Donauraum nachweisbar.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, besonders in größeren strömungsreichen Flüssen",
+    "shortDescription": "Langgestreckter barschartiger Fisch mit spitzem Kopf, stachliger Rückenflosse und gebänderter Zeichnung.",
+    "observationTip": "Achte in größeren Flüssen mit Kiesgrund auf schlanke barschartige Bodenfische.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Donau-Art; spätere Verifikation der Bestände sinnvoll."
+  },
+  {
+    "id": "fisch_huchen",
+    "habitats": [
+      "Flüsse",
+      "Ströme",
+      "Kühle Gewässer",
+      "Kiesgründe"
+    ],
+    "distributionGermany": "In Deutschland nur regional in wenigen südlichen Flusssystemen nachweisbar.",
+    "rarityGame": "sehr selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders bei klarem kaltem Wasser",
+    "shortDescription": "Großer langgestreckter Salmonidenfisch mit kräftigem Kopf, silbrig-bräunlichen Flanken und dunklen Punkten.",
+    "observationTip": "Achte in klaren kühlen Flüssen auf große räuberische Freiwasserfische nahe tieferen Rinnen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Stark regional und oft geschützt; deutsche Bestände später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_hausen",
+    "habitats": [
+      "Große Ströme",
+      "Mündungsräume",
+      "Freiwasser",
+      "Wanderstrecken"
+    ],
+    "distributionGermany": "In Deutschland historisch heimisch, heute nur sehr selten oder durch Wiederansiedlung relevant.",
+    "rarityGame": "sehr selten",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Sommer, besonders in Wanderphasen",
+    "shortDescription": "Sehr großer störartiger Fisch mit langem Körper, knöchernen Reihen und spitzem Schnauzenprofil.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in großen Flusssystemen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Historischer Status und aktuelle Nachweise später besonders sorgfältig prüfen."
+  },
+  {
+    "id": "fisch_silberkarpfen",
+    "habitats": [
+      "Seen",
+      "Teiche",
+      "Langsame Flüsse",
+      "Freiwasser"
+    ],
+    "distributionGermany": "In Deutschland regional aus Besatz oder Ausbreitung bekannt.",
+    "rarityGame": "gelegentlich",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in warmen nährstoffreichen Gewässern",
+    "shortDescription": "Großer hochrückiger Karpfenfisch mit silbrigem Körper, tief sitzenden Augen und großem Kopf.",
+    "observationTip": "Achte in warmen ruhigen Gewässern auf große silbrige Freiwasserfische nahe der Oberfläche.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Nicht überall ursprünglich heimisch; regionale Vorkommen später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_marmorkarpfen",
+    "habitats": [
+      "Seen",
+      "Teiche",
+      "Langsame Flüsse",
+      "Freiwasser"
+    ],
+    "distributionGermany": "In Deutschland regional aus Besatz oder Ausbreitung bekannt.",
+    "rarityGame": "gelegentlich",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in warmen ruhigen Gewässern",
+    "shortDescription": "Großer hochrückiger Karpfenfisch mit marmorierter dunkler Zeichnung und großem Kopf.",
+    "observationTip": "Achte in warmen stillen Gewässern auf große gefleckte Freiwasserfische nahe der Oberfläche.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Nicht überall ursprünglich heimisch; regionale Vorkommen später noch einmal prüfen."
+  },
+  {
+    "id": "fisch_kaukasische_zwerggrundel",
+    "habitats": [
+      "Flüsse",
+      "Häfen",
+      "Brackwasser",
+      "Steinschüttungen"
+    ],
+    "distributionGermany": "In Deutschland regional in großen Stromsystemen und Hafenbereichen nachweisbar.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Herbst, besonders bei klarem niedrigem Wasser",
+    "shortDescription": "Sehr kleine Grundel mit gedrungenem Körper, großem Kopf und feiner Fleckzeichnung.",
+    "observationTip": "Achte an steinigen Ufern und Hafenstrukturen auf winzige bodennahe Fische mit ruckartigen Bewegungen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Neubürger mit regionaler Ausbreitung; spätere Abgleichung mit aktuellen Daten sinnvoll."
+  },
+  {
+    "id": "fisch_flussneunauge",
+    "habitats": [
+      "Flüsse",
+      "Mündungsräume",
+      "Wanderstrecken",
+      "Kiesgründe"
+    ],
+    "distributionGermany": "In Deutschland regional in größeren Flusssystemen und Mündungsräumen nachweisbar.",
+    "rarityGame": "selten",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Frühsommer, besonders während der Wander- und Laichzeit",
+    "shortDescription": "Aalförmiger kieferloser Fisch mit rundem Saugmaul und langem glattem Körper.",
+    "observationTip": "Achte in größeren Flüssen und Mündungsbereichen auf aalartige Tiere nahe dem Grund in Wanderzeiten.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Bestände regional empfindlich; spätere Prüfung mit aktuellen Gewässerdaten sinnvoll."
+  },
+  {
+    "id": "fisch_bachneunauge",
+    "habitats": [
+      "Bäche",
+      "Kleine Flüsse",
+      "Kiesgründe",
+      "Quellbereiche"
+    ],
+    "distributionGermany": "In Deutschland regional in vielen geeigneten Fließgewässern nachweisbar.",
+    "rarityGame": "gelegentlich",
+    "activity": "bodenorientiert",
+    "season": "Frühjahr bis Frühsommer, besonders in klaren kleinen Fließgewässern",
+    "shortDescription": "Kleiner aalartiger kieferloser Fisch mit rundem Saugmaul und schlankem Körper.",
+    "observationTip": "Achte in klaren kleinen Bächen auf aalartige Bodentiere in Kiesbereichen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Art wird oft übersehen; regionale Daten später noch einmal verfeinern."
+  },
+  {
+    "id": "fisch_sonnenbarsch",
+    "habitats": [
+      "Teiche",
+      "Seen",
+      "Langsame Flüsse",
+      "Parksgewässer"
+    ],
+    "distributionGermany": "In Deutschland regional aus Besatz oder Verwilderung bekannt.",
+    "rarityGame": "gelegentlich",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in warmen flachen Gewässern",
+    "shortDescription": "Kleiner hochrückiger Fisch mit bunt schillernden Flanken und rundem dunklem Kiemendeckelfleck.",
+    "observationTip": "Achte in warmen stillen Gewässern auf kleine auffällig gefärbte Fische nahe Pflanzenzonen.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Gebietsfremde Art; Verbreitung regional unterschiedlich."
+  },
+  {
+    "id": "fisch_moderlieschen",
+    "habitats": [
+      "Teiche",
+      "Kleingewässer",
+      "Seen",
+      "Pflanzenzonen"
+    ],
+    "distributionGermany": "In Deutschland regional verbreitet, aber leicht zu übersehen.",
+    "rarityGame": "gelegentlich",
+    "activity": "schwimmaktiv",
+    "season": "Frühjahr bis Herbst, besonders in ruhigen pflanzenreichen Gewässern",
+    "shortDescription": "Kleiner silbriger Fisch mit schlankem Körper, heller Seitenlinie und zarten Flossen.",
+    "observationTip": "Achte in stillen Kleingewässern auf kleine silbrige Schwärme im flachen Wasser.",
+    "sources": [
+      "BfN",
+      "FishBase",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Aufgrund kleiner Gewässerbindung regional uneinheitlich häufig; später noch einmal prüfen."
+  }
+]
