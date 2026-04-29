@@ -3596,9 +3596,14 @@ fun AnimalDetailScreen(
     val hasAnyFinding = findings.isNotEmpty()
     val detailFindings = remember(findings) { findings.asReversed() }
     val additionalAnimalInfo = listOf(
+        "Lebensräume" to animal.habitats.joinToString(", "),
         "Lebensraum" to animal.habitat,
+        "Verbreitung in Deutschland" to animal.distributionGermany,
         "Verbreitung" to animal.distribution,
-        "Seltenheit" to animal.rarity
+        "Seltenheit im Spiel" to animal.rarityGame,
+        "Seltenheit" to animal.rarity,
+        "Aktivität" to animal.activity,
+        "Saison" to animal.season
     ).filter { (_, value) -> value.isNotBlank() }
 
     val requestCurrentLocation = {
@@ -3707,6 +3712,13 @@ fun AnimalDetailScreen(
                             style = MaterialTheme.typography.titleMedium,
                             color = TextSecondary
                         )
+                        animal.shortDescription.takeIf { it.isNotBlank() }?.let {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextPrimary
+                            )
+                        }
                         Text(
                             text = animal.group,
                             style = MaterialTheme.typography.bodyLarge,
@@ -4007,7 +4019,7 @@ fun AnimalDetailScreen(
                             color = TextPrimary
                         )
 
-                        if (additionalAnimalInfo.isEmpty()) {
+                        if (additionalAnimalInfo.isEmpty() && animal.observationTip.isBlank()) {
                             Text(
                                 text = "Hier können später Lebensraum, Verbreitung, Seltenheit und weitere Informationen erscheinen.",
                                 style = MaterialTheme.typography.bodyMedium,
@@ -4027,6 +4039,21 @@ fun AnimalDetailScreen(
                                         color = TextPrimary
                                     )
                                 }
+                            }
+                        }
+
+                        animal.observationTip.takeIf { it.isNotBlank() }?.let {
+                            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                Text(
+                                    text = "Beobachtungstipp",
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = TextSecondary
+                                )
+                                Text(
+                                    text = it,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = TextPrimary
+                                )
                             }
                         }
                     }
