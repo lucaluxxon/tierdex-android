@@ -1484,6 +1484,25 @@ fun HomeSectionTitle(
 }
 
 @Composable
+fun CompactSectionError(
+    summary: String,
+    technicalDetails: String
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+        Text(
+            text = summary,
+            style = MaterialTheme.typography.bodySmall,
+            color = Color(0xFF9A3D3D)
+        )
+        Text(
+            text = technicalDetails,
+            style = MaterialTheme.typography.labelSmall,
+            color = TextSecondary
+        )
+    }
+}
+
+@Composable
 fun HomeStatTile(
     title: String,
     value: String,
@@ -2854,6 +2873,7 @@ fun FriendsScreen(
     var isSearching by remember { mutableStateOf(false) }
     var isRefreshing by remember { mutableStateOf(false) }
     var friendToRemove by remember { mutableStateOf<FriendUser?>(null) }
+    var isFriendsListExpanded by rememberSaveable { mutableStateOf(false) }
     val animalById = remember(allAnimals) { allAnimals.associateBy { it.id } }
 
     fun feedKey(feedItem: FriendFeedItem): String = "${feedItem.friendUserId}_${feedItem.findingId}"
@@ -3254,33 +3274,26 @@ fun FriendsScreen(
                 }
             }
 
-            item {
-                Text(
-                    text = "Eingehende Anfragen",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = TextPrimary
-                )
+            if (incomingRequests.isNotEmpty() || requestsErrorMessage != null) {
+                item {
+                    Text(
+                        text = "Eingehende Anfragen",
+                        style = MaterialTheme.typography.titleSmall,
+                        color = TextPrimary
+                    )
+                }
             }
 
             requestsErrorMessage?.let { message ->
                 item {
-                    Text(
-                        text = message,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFF9A3D3D)
+                    CompactSectionError(
+                        summary = "Anfragen konnten nicht geladen werden.",
+                        technicalDetails = message
                     )
                 }
             }
 
-            if (incomingRequests.isEmpty()) {
-                item {
-                    Text(
-                        text = if (isRefreshing) "Anfragen werden geladen..." else "Keine offenen Anfragen",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextSecondary
-                    )
-                }
-            } else {
+            if (incomingRequests.isNotEmpty()) {
                 items(incomingRequests, key = { it.fromUserId }) { request ->
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -3364,78 +3377,6 @@ fun FriendsScreen(
 
             item {
                 Text(
-                    text = "Deine Freunde",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = TextPrimary
-                )
-            }
-
-            friendsErrorMessage?.let { message ->
-                item {
-                    Text(
-                        text = message,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFF9A3D3D)
-                    )
-                }
-            }
-
-            if (friends.isEmpty()) {
-                item {
-                    Text(
-                        text = if (isRefreshing) "Freundesliste wird geladen..." else "Noch keine Freunde hinzugefügt",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextSecondary
-                    )
-                }
-            } else {
-                items(friends, key = { it.userId }) { friend ->
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = CardBackground,
-                            contentColor = TextPrimary
-                        )
-                    ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(4.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column(
-                                    modifier = Modifier.weight(1f),
-                                    verticalArrangement = Arrangement.spacedBy(4.dp)
-                                ) {
-                                    Text(
-                                        text = friend.displayName.ifBlank { "Unbenannter Nutzer" },
-                                        style = MaterialTheme.typography.titleSmall,
-                                        color = TextPrimary
-                                    )
-                                    Text(
-                                        text = friend.userId,
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = TextSecondary
-                                    )
-                                }
-                                OutlinedButton(
-                                    onClick = { friendToRemove = friend },
-                                    border = BorderStroke(1.dp, BorderColor)
-                                ) {
-                                    Text("Entfernen")
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            item {
-                Text(
                     text = "Aktuelle Funde deiner Freunde",
                     style = MaterialTheme.typography.titleMedium,
                     color = TextPrimary
@@ -3444,10 +3385,9 @@ fun FriendsScreen(
 
             feedErrorMessage?.let { message ->
                 item {
-                    Text(
-                        text = message,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = Color(0xFF9A3D3D)
+                    CompactSectionError(
+                        summary = "Feed konnte nicht geladen werden.",
+                        technicalDetails = message
                     )
                 }
             }
@@ -3469,7 +3409,7 @@ fun FriendsScreen(
                             text = if (isRefreshing) {
                                 "Feed wird geladen..."
                             } else {
-                                "Deine Freunde haben noch keine Funde geteilt."
+                                "Noch keine Funde von Freunden."
                             },
                             style = MaterialTheme.typography.bodyMedium,
                             color = TextSecondary
@@ -3725,6 +3665,103 @@ fun FriendsScreen(
                                             ) {
                                                 Text("Senden")
                                             }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = CardBackground,
+                        contentColor = TextPrimary
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                Text(
+                                    text = "Deine Freunde",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = TextPrimary
+                                )
+                                Text(
+                                    text = if (friends.isEmpty()) {
+                                        "Noch keine Freunde hinzugefügt"
+                                    } else {
+                                        "${friends.size} Freunde"
+                                    },
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = TextSecondary
+                                )
+                            }
+                            if (friends.isNotEmpty()) {
+                                OutlinedButton(
+                                    onClick = { isFriendsListExpanded = !isFriendsListExpanded },
+                                    border = BorderStroke(1.dp, BorderColor)
+                                ) {
+                                    Text(if (isFriendsListExpanded) "Ausblenden" else "Anzeigen")
+                                }
+                            }
+                        }
+
+                        friendsErrorMessage?.let { message ->
+                            CompactSectionError(
+                                summary = "Freundesliste konnte nicht geladen werden.",
+                                technicalDetails = message
+                            )
+                        }
+
+                        if (friends.isNotEmpty()) {
+                            Text(
+                                text = friends.take(4)
+                                    .joinToString(", ") { it.displayName.ifBlank { "Unbenannter Nutzer" } },
+                                style = MaterialTheme.typography.bodySmall,
+                                color = TextSecondary
+                            )
+                        }
+
+                        if (isFriendsListExpanded && friends.isNotEmpty()) {
+                            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                                friends.forEach { friend ->
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Column(
+                                            modifier = Modifier.weight(1f),
+                                            verticalArrangement = Arrangement.spacedBy(2.dp)
+                                        ) {
+                                            Text(
+                                                text = friend.displayName.ifBlank { "Unbenannter Nutzer" },
+                                                style = MaterialTheme.typography.titleSmall,
+                                                color = TextPrimary
+                                            )
+                                            Text(
+                                                text = friend.userId,
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = TextSecondary
+                                            )
+                                        }
+                                        OutlinedButton(
+                                            onClick = { friendToRemove = friend },
+                                            border = BorderStroke(1.dp, BorderColor)
+                                        ) {
+                                            Text("Entfernen")
                                         }
                                     }
                                 }
