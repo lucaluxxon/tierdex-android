@@ -568,6 +568,21 @@ fun TierdexApp(database: AnimalFindingDatabase) {
             questLevelUpMessage = null
         }
     }
+    LaunchedEffect(ownerId, currentDisplayName) {
+        if (!ownerId.isNullOrBlank()) {
+            FriendRepository.ensureUserProfile(
+                userId = ownerId,
+                displayName = currentDisplayName
+            ) { success, result ->
+                if (!success) {
+                    Log.e(
+                        "FriendProfile",
+                        "User profile ensure failed: ${result ?: "Unbekannter Fehler"}"
+                    )
+                }
+            }
+        }
+    }
 
 
     val animalLoadResult: CsvLoadResult = remember(context) {
@@ -1114,6 +1129,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
 
                 currentTab == AppTab.FRIENDS -> {
                     FriendsScreen(
+                        currentUserId = currentOwnerId,
                         extraTopPadding = innerPadding.calculateTopPadding(),
                         extraBottomPadding = innerPadding.calculateBottomPadding()
                     )
@@ -1461,12 +1477,13 @@ fun HomeQuestCompactCard(
     quest: QuestUiModel,
     modifier: Modifier = Modifier
 ) {
+    val completedCardColor = PrimaryGreenSoft.copy(alpha = 0.9f)
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(18.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (quest.isCompleted) PrimaryGreenSoft.copy(alpha = 0.45f) else CardBackground,
+            containerColor = if (quest.isCompleted) completedCardColor else CardBackground,
             contentColor = TextPrimary
         )
     ) {
@@ -1495,15 +1512,17 @@ fun HomeQuestCompactCard(
                     color = if (quest.isCompleted) PrimaryGreen else TextSecondary
                 )
             }
-            LinearProgressIndicator(
-                progress = { quest.progressFraction },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(6.dp)
-                    .clip(RoundedCornerShape(999.dp)),
-                color = PrimaryGreen,
-                trackColor = PrimaryGreenSoft.copy(alpha = 0.45f)
-            )
+            if (!quest.isCompleted) {
+                LinearProgressIndicator(
+                    progress = { quest.progressFraction },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(6.dp)
+                        .clip(RoundedCornerShape(999.dp)),
+                    color = PrimaryGreen,
+                    trackColor = PrimaryGreenSoft.copy(alpha = 0.45f)
+                )
+            }
             Text(
                 text = quest.encouragementLabel,
                 style = MaterialTheme.typography.bodySmall,
@@ -2756,9 +2775,67 @@ fun detectQuestLevelUpMessage(
 
 @Composable
 fun FriendsScreen(
+    currentUserId: String?,
     extraTopPadding: Dp = 0.dp,
     extraBottomPadding: Dp = 0.dp
 ) {
+    var searchQuery by rememberSaveable { mutableStateOf("") }
+    var searchResults by remember { mutableStateOf<List<PublicUserProfile>>(emptyList()) }
+    var friends by remember { mutableStateOf<List<FriendUser>>(emptyList()) }
+    var incomingRequests by remember { mutableStateOf<List<FriendRequest>>(emptyList()) }
+    var infoMessage by rememberSaveable { mutableStateOf<String?>(null) }
+    var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
+    var isSearching by remember { mutableStateOf(false) }
+    var isRefreshing by remember { mutableStateOf(false) }
+
+    fun refreshFriendsData() {
+        val safeUserId = currentUserId ?: return
+        isRefreshing = true
+        var pendingLoads = 2
+
+        fun finishLoad() {
+            pendingLoads -= 1
+            if (pendingLoads <= 0) {
+                isRefreshing = false
+            }
+        }
+
+        FriendRepository.loadFriends(
+            currentUserId = safeUserId,
+            onResult = {
+                friends = it
+                finishLoad()
+            },
+            onError = { error ->
+                errorMessage = error ?: "Freundesliste konnte nicht geladen werden"
+                finishLoad()
+            }
+        )
+
+        FriendRepository.loadIncomingFriendRequests(
+            currentUserId = safeUserId,
+            onResult = {
+                incomingRequests = it
+                finishLoad()
+            },
+            onError = { error ->
+                errorMessage = error ?: "Anfragen konnten nicht geladen werden"
+                finishLoad()
+            }
+        )
+    }
+
+    LaunchedEffect(currentUserId) {
+        searchResults = emptyList()
+        friends = emptyList()
+        incomingRequests = emptyList()
+        infoMessage = null
+        errorMessage = null
+        if (!currentUserId.isNullOrBlank()) {
+            refreshFriendsData()
+        }
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -2778,16 +2855,301 @@ fun FriendsScreen(
             Text(
                 text = "Freunde",
                 style = MaterialTheme.typography.headlineMedium,
-                modifier = Modifier
+                color = TextPrimary
             )
         }
 
         item {
-            Spacer(modifier = Modifier.height(16.dp))
+            if (currentUserId.isNullOrBlank()) {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = CardBackground,
+                        contentColor = TextPrimary
+                    )
+                ) {
+                    Text(
+                        text = "Melde dich an, um Freunde zu suchen und Anfragen zu verwalten.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+            } else {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = CardBackground,
+                        contentColor = TextPrimary
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Text(
+                            text = "Neue Freunde finden",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = TextPrimary
+                        )
+                        OutlinedTextField(
+                            value = searchQuery,
+                            onValueChange = { searchQuery = it },
+                            modifier = Modifier.fillMaxWidth(),
+                            label = { Text("Name suchen") },
+                            singleLine = true,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        Button(
+                            onClick = {
+                                val trimmedQuery = searchQuery.trim()
+                                if (trimmedQuery.isBlank()) {
+                                    infoMessage = "Bitte einen Namen eingeben"
+                                    return@Button
+                                }
+                                isSearching = true
+                                errorMessage = null
+                                infoMessage = null
+                                FriendRepository.searchUsersByDisplayName(
+                                    query = trimmedQuery,
+                                    currentUserId = currentUserId,
+                                    onResult = {
+                                        searchResults = it
+                                        infoMessage = if (it.isEmpty()) {
+                                            "Keine passenden Nutzer gefunden"
+                                        } else {
+                                            null
+                                        }
+                                        isSearching = false
+                                    },
+                                    onError = { error ->
+                                        errorMessage = error ?: "Suche fehlgeschlagen"
+                                        isSearching = false
+                                    }
+                                )
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
+                        ) {
+                            Text("Suchen")
+                        }
+                    }
+                }
+            }
         }
 
-        item {
-            Text("Dieser Bereich ist noch in Arbeit.")
+        infoMessage?.let { message ->
+            item {
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextSecondary
+                )
+            }
+        }
+
+        errorMessage?.let { message ->
+            item {
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color(0xFF9A3D3D)
+                )
+            }
+        }
+
+        if (!currentUserId.isNullOrBlank()) {
+            item {
+                if (isSearching) {
+                    Text(
+                        text = "Suche läuft...",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
+                }
+            }
+
+            if (searchResults.isNotEmpty()) {
+                item {
+                    Text(
+                        text = "Suchergebnisse",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = TextPrimary
+                    )
+                }
+                items(searchResults, key = { it.userId }) { user ->
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = CardBackground,
+                            contentColor = TextPrimary
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Text(
+                                    text = user.displayName.ifBlank { "Unbenannter Nutzer" },
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = TextPrimary
+                                )
+                                Text(
+                                    text = user.userId,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = TextSecondary
+                                )
+                            }
+                            OutlinedButton(
+                                onClick = {
+                                    errorMessage = null
+                                    FriendRepository.sendFriendRequest(
+                                        currentUserId = currentUserId,
+                                        targetUserId = user.userId
+                                    ) { success, result ->
+                                        if (success) {
+                                            infoMessage = "Anfrage gesendet"
+                                        } else {
+                                            errorMessage =
+                                                result ?: "Freundschaftsanfrage fehlgeschlagen"
+                                        }
+                                    }
+                                },
+                                border = BorderStroke(1.dp, BorderColor)
+                            ) {
+                                Text("Anfragen")
+                            }
+                        }
+                    }
+                }
+            }
+
+            item {
+                Text(
+                    text = "Eingehende Anfragen",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = TextPrimary
+                )
+            }
+
+            if (incomingRequests.isEmpty()) {
+                item {
+                    Text(
+                        text = if (isRefreshing) "Anfragen werden geladen..." else "Keine offenen Anfragen",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
+                }
+            } else {
+                items(incomingRequests, key = { it.fromUserId }) { request ->
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = CardBackground,
+                            contentColor = TextPrimary
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.spacedBy(4.dp)
+                            ) {
+                                Text(
+                                    text = request.displayName.ifBlank { "Unbenannter Nutzer" },
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = TextPrimary
+                                )
+                                Text(
+                                    text = request.fromUserId,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = TextSecondary
+                                )
+                            }
+                            Button(
+                                onClick = {
+                                    errorMessage = null
+                                    FriendRepository.acceptFriendRequest(
+                                        currentUserId = currentUserId,
+                                        requesterUserId = request.fromUserId
+                                    ) { success, result ->
+                                        if (success) {
+                                            infoMessage = "Freund hinzugefügt"
+                                            refreshFriendsData()
+                                        } else {
+                                            errorMessage =
+                                                result ?: "Anfrage konnte nicht angenommen werden"
+                                        }
+                                    }
+                                },
+                                colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
+                            ) {
+                                Text("Annehmen")
+                            }
+                        }
+                    }
+                }
+            }
+
+            item {
+                Text(
+                    text = "Deine Freunde",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = TextPrimary
+                )
+            }
+
+            if (friends.isEmpty()) {
+                item {
+                    Text(
+                        text = if (isRefreshing) "Freundesliste wird geladen..." else "Noch keine Freunde hinzugefügt",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
+                }
+            } else {
+                items(friends, key = { it.userId }) { friend ->
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = CardBackground,
+                            contentColor = TextPrimary
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Text(
+                                text = friend.displayName.ifBlank { "Unbenannter Nutzer" },
+                                style = MaterialTheme.typography.titleSmall,
+                                color = TextPrimary
+                            )
+                            Text(
+                                text = friend.userId,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = TextSecondary
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -3292,14 +3654,20 @@ fun ProfileScreen(
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
+                            horizontalArrangement = if (profileBio.isBlank()) {
+                                Arrangement.SpaceBetween
+                            } else {
+                                Arrangement.End
+                            },
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
-                                text = "Bio",
-                                style = MaterialTheme.typography.titleSmall,
-                                color = TextPrimary
-                            )
+                            if (profileBio.isBlank()) {
+                                Text(
+                                    text = "Bio",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = TextPrimary
+                                )
+                            }
                             IconButton(
                                 onClick = {
                                     bioDraft = profileBio
