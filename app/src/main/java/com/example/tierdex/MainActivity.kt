@@ -99,6 +99,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Search
 import kotlinx.coroutines.Dispatchers
@@ -178,6 +179,8 @@ import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.clustering.Clustering
 import com.google.maps.android.clustering.ClusterItem
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FirebaseFirestore
 
 
 private const val ANIMALS_JSON_FILE_NAME = "animals.json"
@@ -190,6 +193,7 @@ private const val WISHLIST_ANIMAL_KEY_PREFIX = "wishAnimalId_"
 private const val FAVORITE_ANIMAL_KEY_PREFIX = "favoriteAnimalId_"
 private const val PROFILE_BIO_KEY_PREFIX = "profileBio_"
 private const val PROFILE_IMAGE_KEY_PREFIX = "profileImage_"
+private const val NOTIFICATION_READ_IDS_KEY_PREFIX = "notification_read_ids_"
 private const val LOCAL_PREFERENCES_OWNER_ID = "local"
 private val AppGreenBackground = Color(0xFF51734A)
 
@@ -198,6 +202,7 @@ private fun favoriteAnimalKey(ownerId: String): String = "$FAVORITE_ANIMAL_KEY_P
 private fun wishlistAnimalKey(ownerId: String): String = "$WISHLIST_ANIMAL_KEY_PREFIX$ownerId"
 private fun profileBioKey(ownerId: String): String = "$PROFILE_BIO_KEY_PREFIX$ownerId"
 private fun profileImageKey(ownerId: String): String = "$PROFILE_IMAGE_KEY_PREFIX$ownerId"
+private fun notificationReadIdsKey(ownerId: String): String = "$NOTIFICATION_READ_IDS_KEY_PREFIX$ownerId"
 
 private fun introPendingKey(ownerId: String): String = "$INTRO_PENDING_KEY_PREFIX$ownerId"
 
@@ -327,6 +332,26 @@ data class CsvLoadResult(
     val debugMessage: String
 )
 
+data class TierdexNotification(
+    val id: String,
+    val type: String,
+    val title: String,
+    val message: String,
+    val createdAtText: String,
+    val createdAt: Timestamp? = null,
+    val isRead: Boolean,
+    val relatedUserId: String? = null
+)
+
+private fun friendRequestNotificationId(request: FriendRequest): String =
+    "friend_request_${request.fromUserId}_${request.toUserId}"
+
+private fun formatNotificationTimestamp(timestamp: Timestamp?): String {
+    return timestamp?.toDate()?.let {
+        SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(it)
+    }.orEmpty()
+}
+
 
 enum class AppTab {
     HOME,
@@ -405,6 +430,8 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     var showFoundOnly by rememberSaveable { mutableStateOf(false) }
     var currentTab by rememberSaveable { mutableStateOf(AppTab.HOME) }
     var isFriendSearchOpen by rememberSaveable { mutableStateOf(false) }
+    var incomingRequestCount by rememberSaveable { mutableStateOf(0) }
+    var showNotificationsScreen by rememberSaveable { mutableStateOf(false) }
     var authEntryMode by rememberSaveable { mutableStateOf<String?>(null) }
     var showAnimalPicker by rememberSaveable { mutableStateOf(false) }
     var selectedFindingToEdit by remember { mutableStateOf<AnimalFinding?>(null) }
@@ -605,6 +632,8 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     val collectedAnimalCount = animals.count { it.id in collectedAnimalIds }
 
     var selectedSortOption by rememberSaveable { mutableStateOf("A_Z") }
+    var notifications by remember { mutableStateOf<List<TierdexNotification>>(emptyList()) }
+    var notificationsErrorMessage by rememberSaveable { mutableStateOf<String?>(null) }
 
     val filteredAnimals = animals.filter { animal: AnimalEntry ->
         val searchTokens = tokenizeSearchText(searchText)
@@ -658,6 +687,230 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     val showAuthEntryScreen = ownerId == null && authEntryMode != null
     val isIntroFromSettings = introLaunchSource == IntroLaunchSource.SETTINGS.name
 
+    fun currentReadNotificationIds(): Set<String> {
+        val safeOwnerId = currentOwnerId ?: return emptySet()
+        return prefs.getStringSet(notificationReadIdsKey(safeOwnerId), emptySet())?.toSet().orEmpty()
+    }
+
+    fun storeReadNotificationIds(ids: Set<String>) {
+        val safeOwnerId = currentOwnerId ?: return
+        prefs.edit().putStringSet(notificationReadIdsKey(safeOwnerId), ids).apply()
+    }
+
+    fun mapFriendRequestsToNotifications(requests: List<FriendRequest>): List<TierdexNotification> {
+        val readIds = currentReadNotificationIds()
+        return requests
+            .sortedByDescending { it.createdAt?.toDate()?.time ?: 0L }
+            .map { request ->
+                val notificationId = friendRequestNotificationId(request)
+                TierdexNotification(
+                    id = notificationId,
+                    type = "friend_request",
+                    title = "Neue Freundschaftsanfrage",
+                    message = "${request.displayName.ifBlank { "Jemand" }} möchte dich als Freund hinzufügen.",
+                    createdAtText = formatNotificationTimestamp(request.createdAt),
+                    createdAt = request.createdAt,
+                    isRead = notificationId in readIds,
+                    relatedUserId = request.fromUserId
+                )
+            }
+    }
+
+    fun loadInteractionNotifications(
+        currentUserId: String,
+        onResult: (List<TierdexNotification>) -> Unit,
+        onError: (String?) -> Unit
+    ) {
+        val readIds = currentReadNotificationIds()
+        val firestore = FirebaseFirestore.getInstance()
+
+        firestore.collection("users")
+            .document(currentUserId)
+            .collection("findings")
+            .get()
+            .addOnSuccessListener { findingsSnapshot ->
+                if (findingsSnapshot.isEmpty) {
+                    onResult(emptyList())
+                    return@addOnSuccessListener
+                }
+
+                val interactionNotifications = mutableListOf<TierdexNotification>()
+                var pendingLoads = findingsSnapshot.documents.size * 2
+                var firstError: String? = null
+
+                fun finishLoad() {
+                    pendingLoads -= 1
+                    if (pendingLoads <= 0) {
+                        if (interactionNotifications.isEmpty() && firstError != null) {
+                            onError(firstError)
+                        } else {
+                            onResult(interactionNotifications.distinctBy { it.id })
+                        }
+                    }
+                }
+
+                findingsSnapshot.documents.forEach { findingDocument ->
+                    val findingId = findingDocument.id
+
+                    findingDocument.reference.collection("likes")
+                        .get()
+                        .addOnSuccessListener { likeSnapshot ->
+                            likeSnapshot.documents.forEach { likeDocument ->
+                                val likerUid = likeDocument.getString("likerUid").orEmpty()
+                                if (likerUid.isBlank() || likerUid == currentUserId) return@forEach
+
+                                val createdAt = likeDocument.getTimestamp("createdAt")
+                                val likerDisplayName = likeDocument.getString("likerDisplayName").orEmpty()
+                                val notificationId = "like_${findingId}_${likeDocument.id}"
+                                interactionNotifications += TierdexNotification(
+                                    id = notificationId,
+                                    type = "like",
+                                    title = "Neuer Like",
+                                    message = "${likerDisplayName.ifBlank { "Jemand" }} gefällt dein Fund.",
+                                    createdAtText = formatNotificationTimestamp(createdAt),
+                                    createdAt = createdAt,
+                                    isRead = notificationId in readIds,
+                                    relatedUserId = likerUid
+                                )
+                            }
+                            finishLoad()
+                        }
+                        .addOnFailureListener { exception ->
+                            if (firstError == null) {
+                                firstError = exception.message ?: "Likes konnten nicht geladen werden"
+                            }
+                            finishLoad()
+                        }
+
+                    findingDocument.reference.collection("comments")
+                        .get()
+                        .addOnSuccessListener { commentSnapshot ->
+                            commentSnapshot.documents.forEach { commentDocument ->
+                                val commenterUid = commentDocument.getString("commenterUid").orEmpty()
+                                if (commenterUid.isBlank() || commenterUid == currentUserId) return@forEach
+
+                                val createdAt = commentDocument.getTimestamp("createdAt")
+                                val commenterDisplayName =
+                                    commentDocument.getString("commenterDisplayName").orEmpty()
+                                val commentText = commentDocument.getString("text").orEmpty().trim()
+                                val notificationId = "comment_${findingId}_${commentDocument.id}"
+                                interactionNotifications += TierdexNotification(
+                                    id = notificationId,
+                                    type = "comment",
+                                    title = "Neuer Kommentar",
+                                    message = "${commenterDisplayName.ifBlank { "Jemand" }}: $commentText",
+                                    createdAtText = formatNotificationTimestamp(createdAt),
+                                    createdAt = createdAt,
+                                    isRead = notificationId in readIds,
+                                    relatedUserId = commenterUid
+                                )
+                            }
+                            finishLoad()
+                        }
+                        .addOnFailureListener { exception ->
+                            if (firstError == null) {
+                                firstError = exception.message ?: "Kommentare konnten nicht geladen werden"
+                            }
+                            finishLoad()
+                        }
+                }
+            }
+            .addOnFailureListener { exception ->
+                onError(exception.message ?: "Eigene Funde konnten nicht geladen werden")
+            }
+    }
+
+    fun updateNotificationState(
+        requests: List<FriendRequest>,
+        interactionNotifications: List<TierdexNotification>
+    ) {
+        notifications = (mapFriendRequestsToNotifications(requests) + interactionNotifications)
+            .distinctBy { it.id }
+            .sortedByDescending { it.createdAt?.toDate()?.time ?: Long.MIN_VALUE }
+        incomingRequestCount = notifications.count { !it.isRead }
+    }
+
+    fun refreshNotifications() {
+        val safeUserId = currentOwnerId
+        if (safeUserId.isNullOrBlank()) {
+            incomingRequestCount = 0
+            notifications = emptyList()
+            notificationsErrorMessage = null
+            return
+        }
+
+        var friendRequests: List<FriendRequest> = emptyList()
+        var interactionNotifications: List<TierdexNotification> = emptyList()
+        var pendingLoads = 2
+        var firstError: String? = null
+
+        fun finishRefresh() {
+            pendingLoads -= 1
+            if (pendingLoads <= 0) {
+                updateNotificationState(friendRequests, interactionNotifications)
+                notificationsErrorMessage = firstError
+            }
+        }
+
+        FriendRepository.loadIncomingFriendRequests(
+            currentUserId = safeUserId,
+            onResult = { requests ->
+                friendRequests = requests
+                finishRefresh()
+            },
+            onError = { error ->
+                firstError = firstError ?: error ?: "Freundschaftsanfragen konnten nicht geladen werden"
+                finishRefresh()
+            }
+        )
+
+        loadInteractionNotifications(
+            currentUserId = safeUserId,
+            onResult = { loadedNotifications ->
+                interactionNotifications = loadedNotifications
+                finishRefresh()
+            },
+            onError = { error ->
+                firstError = firstError ?: error ?: "Interaktionen konnten nicht geladen werden"
+                finishRefresh()
+            }
+        )
+    }
+
+    fun markAllNotificationsAsRead() {
+        if (notifications.isEmpty()) return
+        storeReadNotificationIds(currentReadNotificationIds() + notifications.map { it.id })
+        notifications = notifications.map { it.copy(isRead = true) }
+        incomingRequestCount = 0
+    }
+
+    fun markNotificationAsRead(notificationId: String) {
+        if (notificationId.isBlank()) return
+        val updatedReadIds = currentReadNotificationIds() + notificationId
+        storeReadNotificationIds(updatedReadIds)
+        notifications = notifications.map { notification ->
+            if (notification.id == notificationId) {
+                notification.copy(isRead = true)
+            } else {
+                notification
+            }
+        }
+        incomingRequestCount = notifications.count { !it.isRead }
+    }
+
+    LaunchedEffect(currentOwnerId) {
+        refreshNotifications()
+    }
+
+    LaunchedEffect(currentTab, currentOwnerId, showNotificationsScreen) {
+        if (currentTab == AppTab.FRIENDS && !currentOwnerId.isNullOrBlank()) {
+            refreshNotifications()
+        }
+        if (showNotificationsScreen && !currentOwnerId.isNullOrBlank()) {
+            refreshNotifications()
+        }
+    }
+
     val groupOptions = listOf("Alle") + animals.map { it.group }.distinct().sorted()
 
     val subgroupOptions =
@@ -688,6 +941,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     }
     BackHandler(enabled = currentTab == AppTab.STATS && showTierdexMapScreen) {
         showTierdexMapScreen = false
+    }
+    BackHandler(enabled = showNotificationsScreen) {
+        showNotificationsScreen = false
     }
     BackHandler(enabled = showAuthEntryScreen && !showSettingsScreen) {
         resetSearchState()
@@ -727,18 +983,32 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                     !showIntroScreen &&
                     !showSettingsScreen,
                 isFriendSearchOpen = isFriendSearchOpen,
+                incomingRequestCount = incomingRequestCount,
                 onFriendSearchClick = {
                     isFriendSearchOpen = !isFriendSearchOpen
+                },
+                onNotificationsClick = {
+                    resetSearchState()
+                    isFriendSearchOpen = false
+                    selectedAnimalId = null
+                    selectedFindingToEdit = null
+                    openCreateFindingMode = false
+                    showAnimalPicker = false
+                    showTierdexMapScreen = false
+                    showSettingsScreen = false
+                    showNotificationsScreen = true
+                    refreshNotifications()
                 },
                 onSettingsClick = {
                     resetSearchState()
                     isFriendSearchOpen = false
+                    showNotificationsScreen = false
                     showSettingsScreen = true
                 }
             )
         },
         bottomBar = {
-            if (selectedAnimal == null && !showAnimalPicker && !showAuthStartScreen && !showAuthEntryScreen && !showIntroScreen && !showSettingsScreen) {
+            if (selectedAnimal == null && !showAnimalPicker && !showAuthStartScreen && !showAuthEntryScreen && !showIntroScreen && !showSettingsScreen && !showNotificationsScreen) {
                 MainBottomBar(
                     currentTab = currentTab,
                     onTabSelected = {
@@ -746,13 +1016,14 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         if (it != AppTab.FRIENDS) {
                             isFriendSearchOpen = false
                         }
+                        showNotificationsScreen = false
                         currentTab = it
                     }
                 )
             }
         },
         floatingActionButton = {
-            if (selectedAnimal == null && !showAnimalPicker && !showAuthStartScreen && !showAuthEntryScreen && !showIntroScreen && !showSettingsScreen) {
+            if (selectedAnimal == null && !showAnimalPicker && !showAuthStartScreen && !showAuthEntryScreen && !showIntroScreen && !showSettingsScreen && !showNotificationsScreen) {
                 FloatingActionButton(
                     onClick = {
                         resetSearchState()
@@ -900,6 +1171,23 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                 }
                             }
                         },
+                        extraTopPadding = innerPadding.calculateTopPadding(),
+                        extraBottomPadding = innerPadding.calculateBottomPadding()
+                    )
+                }
+
+                showNotificationsScreen -> {
+                    NotificationsScreen(
+                        notifications = notifications,
+                        errorMessage = notificationsErrorMessage,
+                        onBack = { showNotificationsScreen = false },
+                        onNotificationClick = { notification ->
+                            markNotificationAsRead(notification.id)
+                            showNotificationsScreen = false
+                            currentTab = AppTab.FRIENDS
+                            refreshNotifications()
+                        },
+                        onMarkAllAsRead = { markAllNotificationsAsRead() },
                         extraTopPadding = innerPadding.calculateTopPadding(),
                         extraBottomPadding = innerPadding.calculateBottomPadding()
                     )
@@ -1160,6 +1448,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         allAnimals = animals,
                         isFriendSearchOpen = isFriendSearchOpen,
                         onCloseFriendSearch = { isFriendSearchOpen = false },
+                        onIncomingRequestsChanged = { refreshNotifications() },
                         extraTopPadding = innerPadding.calculateTopPadding(),
                         extraBottomPadding = innerPadding.calculateBottomPadding()
                     )
@@ -1335,7 +1624,9 @@ fun TierdexTopBar(
     currentTab: AppTab,
     showFriendSearchAction: Boolean,
     isFriendSearchOpen: Boolean,
+    incomingRequestCount: Int,
     onFriendSearchClick: () -> Unit,
+    onNotificationsClick: () -> Unit,
     onSettingsClick: () -> Unit
 ) {
     Surface(
@@ -1370,7 +1661,7 @@ fun TierdexTopBar(
             )
 
             Row(
-                modifier = Modifier.width(88.dp),
+                modifier = Modifier.width(132.dp),
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -1391,12 +1682,174 @@ fun TierdexTopBar(
                         )
                     }
                 }
+                Box {
+                    IconButton(onClick = onNotificationsClick) {
+                        Icon(
+                            imageVector = Icons.Filled.Notifications,
+                            contentDescription = "Freundesanfragen",
+                            tint = TextPrimary
+                        )
+                    }
+                    if (incomingRequestCount > 0) {
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .offset(x = (-2).dp, y = 2.dp)
+                                .background(Color(0xFFD84C4C), CircleShape)
+                                .padding(horizontal = 6.dp, vertical = 1.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = if (incomingRequestCount > 9) "9+" else incomingRequestCount.toString(),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = Color.White,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
+                    }
+                }
                 IconButton(onClick = onSettingsClick) {
                     Icon(
                         imageVector = Icons.Filled.Settings,
                         contentDescription = "Einstellungen",
                         tint = TextPrimary
                     )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun NotificationsScreen(
+    notifications: List<TierdexNotification>,
+    errorMessage: String?,
+    onBack: () -> Unit,
+    onNotificationClick: (TierdexNotification) -> Unit,
+    onMarkAllAsRead: () -> Unit,
+    extraTopPadding: Dp = 0.dp,
+    extraBottomPadding: Dp = 0.dp
+) {
+    val unreadCount = notifications.count { !it.isRead }
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .padding(
+                start = 16.dp,
+                top = 16.dp + extraTopPadding,
+                end = 16.dp
+            ),
+        contentPadding = PaddingValues(
+            top = 0.dp,
+            bottom = extraBottomPadding + 24.dp
+        ),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(
+                        text = "Benachrichtigungen",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = TextPrimary
+                    )
+                    Text(
+                        text = if (unreadCount > 0) {
+                            "$unreadCount neu"
+                        } else {
+                            "Keine neuen Benachrichtigungen"
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextSecondary
+                    )
+                }
+                OutlinedButton(
+                    onClick = onBack,
+                    border = BorderStroke(1.dp, BorderColor)
+                ) {
+                    Text("Schließen")
+                }
+            }
+        }
+
+        if (notifications.isNotEmpty()) {
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    OutlinedButton(
+                        onClick = onMarkAllAsRead,
+                        border = BorderStroke(1.dp, BorderColor)
+                    ) {
+                        Text("Alle als gelesen markieren")
+                    }
+                }
+            }
+        }
+
+        errorMessage?.let { message ->
+            item {
+                CompactSectionError(
+                    summary = "Benachrichtigungen konnten gerade nicht geladen werden.",
+                    technicalDetails = message
+                )
+            }
+        }
+
+        if (notifications.isEmpty()) {
+            item {
+                Text(
+                    text = "Noch keine Benachrichtigungen.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextSecondary
+                )
+            }
+        } else {
+            items(notifications, key = { it.id }) { notification ->
+                Card(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onNotificationClick(notification) },
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = if (notification.isRead) {
+                            CardBackground
+                        } else {
+                            PrimaryGreenSoft.copy(alpha = 0.32f)
+                        },
+                        contentColor = TextPrimary
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(
+                            text = notification.title,
+                            style = MaterialTheme.typography.titleSmall,
+                            color = TextPrimary,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                        Text(
+                            text = notification.message,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextPrimary
+                        )
+                        if (notification.createdAtText.isNotBlank()) {
+                            Text(
+                                text = notification.createdAtText,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = TextSecondary
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -2851,6 +3304,7 @@ fun FriendsScreen(
     allAnimals: List<AnimalEntry>,
     isFriendSearchOpen: Boolean,
     onCloseFriendSearch: () -> Unit,
+    onIncomingRequestsChanged: () -> Unit,
     extraTopPadding: Dp = 0.dp,
     extraBottomPadding: Dp = 0.dp
 ) {
@@ -2889,7 +3343,7 @@ fun FriendsScreen(
                 loadingCommentKeys = loadingCommentKeys - key
             },
             onError = {
-                errorMessage = "Kommentare konnten nicht geladen werden"
+                errorMessage = "Kommentare konnten gerade nicht geladen werden"
                 loadingCommentKeys = loadingCommentKeys - key
             }
         )
@@ -2917,7 +3371,7 @@ fun FriendsScreen(
                 finishLoad()
             },
             onError = { error ->
-                friendsErrorMessage = error ?: "Freundesliste konnte nicht geladen werden"
+                friendsErrorMessage = error ?: "Freunde konnten gerade nicht geladen werden"
                 finishLoad()
             }
         )
@@ -2926,10 +3380,12 @@ fun FriendsScreen(
             currentUserId = safeUserId,
             onResult = {
                 incomingRequests = it
+                onIncomingRequestsChanged()
                 finishLoad()
             },
             onError = { error ->
-                requestsErrorMessage = error ?: "Anfragen konnten nicht geladen werden"
+                onIncomingRequestsChanged()
+                requestsErrorMessage = error ?: "Anfragen konnten gerade nicht geladen werden"
                 finishLoad()
             }
         )
@@ -2941,7 +3397,7 @@ fun FriendsScreen(
                 finishLoad()
             },
             onError = { error ->
-                requestsErrorMessage = error ?: "Ausgehende Anfragen konnten nicht geladen werden"
+                requestsErrorMessage = error ?: "Anfragen konnten gerade nicht vollständig geladen werden"
                 finishLoad()
             }
         )
@@ -2953,7 +3409,7 @@ fun FriendsScreen(
                 finishLoad()
             },
             onError = { error ->
-                feedErrorMessage = error.message ?: "Feed konnte nicht geladen werden"
+                feedErrorMessage = error.message ?: "Der Freunde-Feed konnte gerade nicht geladen werden"
                 finishLoad()
             }
         )
@@ -2968,6 +3424,7 @@ fun FriendsScreen(
         loadingCommentKeys = emptySet()
         commentInputs = emptyMap()
         incomingRequests = emptyList()
+        onIncomingRequestsChanged()
         outgoingRequestIds = emptySet()
         infoMessage = null
         errorMessage = null
@@ -3024,7 +3481,7 @@ fun FriendsScreen(
                         )
                     ) {
                         Text(
-                            text = "Melde dich an, um Freunde zu suchen und Anfragen zu verwalten.",
+                            text = "Melde dich an, um Freunde zu finden und Anfragen zu verwalten.",
                             style = MaterialTheme.typography.bodyMedium,
                             color = TextSecondary,
                             modifier = Modifier.padding(16.dp)
@@ -3044,7 +3501,7 @@ fun FriendsScreen(
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             Text(
-                                text = "Neue Freunde finden",
+                                text = "Freunde suchen",
                                 style = MaterialTheme.typography.titleMedium,
                                 color = TextPrimary
                             )
@@ -3064,7 +3521,7 @@ fun FriendsScreen(
                                     onClick = {
                                         val trimmedQuery = searchQuery.trim()
                                         if (trimmedQuery.isBlank()) {
-                                            infoMessage = "Bitte einen Namen eingeben"
+                                            infoMessage = "Gib bitte einen Namen ein."
                                             return@Button
                                         }
                                         isSearching = true
@@ -3077,14 +3534,14 @@ fun FriendsScreen(
                                             onResult = {
                                                 searchResults = it
                                                 infoMessage = if (it.isEmpty()) {
-                                                    "Keine passenden Nutzer gefunden"
+                                                    "Keine passenden Freunde gefunden."
                                                 } else {
                                                     null
                                                 }
                                                 isSearching = false
                                             },
                                             onError = { error ->
-                                                searchErrorMessage = error ?: "Suche fehlgeschlagen"
+                                                searchErrorMessage = error ?: "Die Suche ist gerade nicht verfügbar."
                                                 isSearching = false
                                             }
                                         )
@@ -3116,7 +3573,7 @@ fun FriendsScreen(
             item {
                 Text(
                     text = message,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodySmall,
                     color = TextSecondary
                 )
             }
@@ -3126,7 +3583,7 @@ fun FriendsScreen(
             item {
                 Text(
                     text = message,
-                    style = MaterialTheme.typography.bodyMedium,
+                    style = MaterialTheme.typography.bodySmall,
                     color = Color(0xFF9A3D3D)
                 )
             }
@@ -3137,8 +3594,8 @@ fun FriendsScreen(
                 item {
                     if (isSearching) {
                         Text(
-                            text = "Suche läuft...",
-                            style = MaterialTheme.typography.bodyMedium,
+                            text = "Suche läuft …",
+                            style = MaterialTheme.typography.bodySmall,
                             color = TextSecondary
                         )
                     }
@@ -3147,7 +3604,7 @@ fun FriendsScreen(
                     item {
                         Text(
                             text = message,
-                            style = MaterialTheme.typography.bodyMedium,
+                            style = MaterialTheme.typography.bodySmall,
                             color = Color(0xFF9A3D3D)
                         )
                     }
@@ -3222,11 +3679,11 @@ fun FriendsScreen(
                                                     targetUserId = user.userId
                                                 ) { success, result ->
                                                     if (success) {
-                                                        infoMessage = "Anfrage zurückgezogen"
+                                                        infoMessage = "Anfrage zurückgezogen."
                                                         refreshFriendsData()
                                                     } else {
                                                         errorMessage =
-                                                            result ?: "Fehler beim Zurückziehen"
+                                                            result ?: "Die Anfrage konnte nicht zurückgezogen werden."
                                                     }
                                                 }
                                             },
@@ -3246,17 +3703,17 @@ fun FriendsScreen(
                                                 targetUserId = user.userId
                                             ) { success, result ->
                                                 if (success) {
-                                                    infoMessage = "Anfrage gesendet"
+                                                    infoMessage = "Anfrage gesendet."
                                                     refreshFriendsData()
                                                 } else {
                                                     infoMessage = when (result) {
-                                                        "Anfrage wurde bereits gesendet" -> "Anfrage wurde bereits gesendet"
-                                                        "Ihr seid bereits befreundet" -> "Ihr seid bereits befreundet"
+                                                        "Anfrage wurde bereits gesendet" -> "Die Anfrage wurde bereits gesendet."
+                                                        "Ihr seid bereits befreundet" -> "Ihr seid bereits befreundet."
                                                         else -> null
                                                     }
                                                     if (infoMessage == null) {
                                                         errorMessage =
-                                                            result ?: "Fehler beim Senden"
+                                                            result ?: "Die Anfrage konnte nicht gesendet werden."
                                                     } else {
                                                         refreshFriendsData()
                                                     }
@@ -3277,7 +3734,7 @@ fun FriendsScreen(
             if (incomingRequests.isNotEmpty() || requestsErrorMessage != null) {
                 item {
                     Text(
-                        text = "Eingehende Anfragen",
+                        text = "Freundschaftsanfragen",
                         style = MaterialTheme.typography.titleSmall,
                         color = TextPrimary
                     )
@@ -3337,11 +3794,11 @@ fun FriendsScreen(
                                             requesterUserId = request.fromUserId
                                         ) { success, result ->
                                             if (success) {
-                                                infoMessage = "Anfrage angenommen"
+                                                infoMessage = "Anfrage angenommen."
                                                 refreshFriendsData()
                                             } else {
                                                 errorMessage =
-                                                    result ?: "Anfrage konnte nicht angenommen werden"
+                                                    result ?: "Die Anfrage konnte nicht angenommen werden."
                                             }
                                         }
                                     },
@@ -3357,11 +3814,11 @@ fun FriendsScreen(
                                             requesterUserId = request.fromUserId
                                         ) { success, result ->
                                             if (success) {
-                                                infoMessage = "Anfrage abgelehnt"
+                                                infoMessage = "Anfrage abgelehnt."
                                                 refreshFriendsData()
                                             } else {
                                                 errorMessage =
-                                                    result ?: "Anfrage konnte nicht abgelehnt werden"
+                                                    result ?: "Die Anfrage konnte nicht abgelehnt werden."
                                             }
                                         }
                                     },
@@ -3439,7 +3896,7 @@ fun FriendsScreen(
                         ) {
                             Column(
                                 modifier = Modifier.padding(16.dp),
-                                verticalArrangement = Arrangement.spacedBy(14.dp)
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
                             ) {
                                 Row(
                                     horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -3556,13 +4013,13 @@ fun FriendsScreen(
                                                             }
                                                         }
                                                         infoMessage = if (isNowLiked) {
-                                                            "Gefällt mir gesetzt"
+                                                            "Gefällt mir gesetzt."
                                                         } else {
-                                                            "Gefällt mir entfernt"
+                                                            "Gefällt mir entfernt."
                                                         }
                                                     },
                                                     onError = {
-                                                        errorMessage = "Fehler beim Liken"
+                                                        errorMessage = "Der Like konnte nicht gespeichert werden."
                                                     }
                                                 )
                                             }
@@ -3630,7 +4087,7 @@ fun FriendsScreen(
                                         when {
                                             isLoadingComments -> {
                                                 Text(
-                                                    text = "Kommentare werden geladen...",
+                                                    text = "Kommentare werden geladen …",
                                                     style = MaterialTheme.typography.bodySmall,
                                                     color = TextSecondary
                                                 )
@@ -3686,7 +4143,7 @@ fun FriendsScreen(
                                                 onClick = {
                                                     val trimmedComment = commentInput.trim()
                                                     if (trimmedComment.isBlank()) {
-                                                        errorMessage = "Kommentar darf nicht leer sein"
+                                                        errorMessage = "Bitte gib einen Kommentar ein."
                                                         return@Button
                                                     }
                                                     errorMessage = null
@@ -3701,11 +4158,11 @@ fun FriendsScreen(
                                                                 commentInputs = commentInputs + (feedItemKey to "")
                                                                 loadCommentsForFeedItem(feedItem)
                                                             } else {
-                                                                errorMessage = "Kommentar konnte nicht gespeichert werden"
+                                                                errorMessage = "Der Kommentar konnte nicht gespeichert werden."
                                                             }
                                                         },
                                                         onError = {
-                                                            errorMessage = "Kommentar konnte nicht gespeichert werden"
+                                                            errorMessage = "Der Kommentar konnte nicht gespeichert werden."
                                                         }
                                                     )
                                                 },
@@ -3748,7 +4205,7 @@ fun FriendsScreen(
                                 )
                                 Text(
                                     text = if (friends.isEmpty()) {
-                                        "Noch keine Freunde hinzugefügt"
+                                        "Noch keine Freunde hinzugefügt."
                                     } else {
                                         "${friends.size} Freunde"
                                     },
@@ -3857,7 +4314,7 @@ fun FriendsScreen(
                                 infoMessage = "Freund entfernt"
                                 refreshFriendsData()
                             } else {
-                                errorMessage = result ?: "Freund konnte nicht entfernt werden"
+                                errorMessage = result ?: "Der Freund konnte nicht entfernt werden."
                             }
                         }
                         friendToRemove = null
