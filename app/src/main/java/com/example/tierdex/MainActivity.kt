@@ -3425,6 +3425,10 @@ fun FriendsScreen(
                         val comments = commentsByFeedKey[feedItemKey].orEmpty()
                         val isLoadingComments = feedItemKey in loadingCommentKeys
                         val commentInput = commentInputs[feedItemKey].orEmpty()
+                        val metaParts = buildList {
+                            feedItem.finding.date.takeIf { it.isNotBlank() }?.let { add(it) }
+                            feedItem.finding.location.takeIf { it.isNotBlank() }?.let { add(it) }
+                        }
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(16.dp),
@@ -3435,48 +3439,86 @@ fun FriendsScreen(
                         ) {
                             Column(
                                 modifier = Modifier.padding(16.dp),
-                                verticalArrangement = Arrangement.spacedBy(6.dp)
+                                verticalArrangement = Arrangement.spacedBy(14.dp)
                             ) {
-                                Text(
-                                    text = feedItem.friendDisplayName.ifBlank { "Unbenannter Nutzer" },
-                                    style = MaterialTheme.typography.titleSmall,
-                                    color = TextPrimary
-                                )
-                                Text(
-                                    text = animal?.germanName ?: "Unbekanntes Tier",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = TextPrimary
-                                )
-                                Text(
-                                    text = animal?.group ?: "Unbekannte Gruppe",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = TextSecondary
-                                )
-                                feedItem.finding.date.takeIf { it.isNotBlank() }?.let {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(38.dp)
+                                            .background(
+                                                color = PrimaryGreen.copy(alpha = 0.12f),
+                                                shape = CircleShape
+                                            ),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = feedItem.friendDisplayName
+                                                .trim()
+                                                .firstOrNull()
+                                                ?.uppercase()
+                                                ?: "?",
+                                            style = MaterialTheme.typography.labelLarge,
+                                            color = PrimaryGreen,
+                                            fontWeight = FontWeight.SemiBold
+                                        )
+                                    }
+                                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                        Text(
+                                            text = feedItem.friendDisplayName.ifBlank { "Unbenannter Nutzer" },
+                                            style = MaterialTheme.typography.titleSmall,
+                                            color = TextPrimary,
+                                            fontWeight = FontWeight.SemiBold
+                                        )
+                                        Text(
+                                            text = "hat einen Fund eingetragen",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = TextSecondary
+                                        )
+                                    }
+                                }
+
+                                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                     Text(
-                                        text = "Datum: $it",
-                                        style = MaterialTheme.typography.bodyMedium,
+                                        text = animal?.germanName ?: "Unbekanntes Tier",
+                                        style = MaterialTheme.typography.titleLarge,
+                                        color = TextPrimary,
+                                        fontWeight = FontWeight.SemiBold
+                                    )
+                                    Text(
+                                        text = animal?.group ?: "Unbekannte Gruppe",
+                                        style = MaterialTheme.typography.labelMedium,
                                         color = TextSecondary
                                     )
+                                    if (metaParts.isNotEmpty()) {
+                                        Text(
+                                            text = metaParts.joinToString(" • "),
+                                            style = MaterialTheme.typography.labelMedium,
+                                            color = TextSecondary
+                                        )
+                                    }
                                 }
-                                feedItem.finding.location.takeIf { it.isNotBlank() }?.let {
-                                    Text(
-                                        text = "Fundort: $it",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = TextSecondary
-                                    )
-                                }
+
                                 feedItem.finding.note.takeIf { it.isNotBlank() }?.let {
-                                    Text(
-                                        text = "Notiz: $it",
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = TextSecondary
-                                    )
+                                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                        Text(
+                                            text = "Notiz",
+                                            style = MaterialTheme.typography.labelMedium,
+                                            color = TextSecondary
+                                        )
+                                        Text(
+                                            text = it,
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = TextPrimary
+                                        )
+                                    }
                                 }
                                 if (feedItem.finding.photoUri.isNotBlank()) {
                                     Text(
                                         text = "Foto vorhanden",
-                                        style = MaterialTheme.typography.bodySmall,
+                                        style = MaterialTheme.typography.labelMedium,
                                         color = TextSecondary
                                     )
                                 }
@@ -3487,6 +3529,7 @@ fun FriendsScreen(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         TextButton(
+                                            contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
                                             onClick = {
                                                 errorMessage = null
                                                 FriendRepository.toggleLikeForFinding(
@@ -3537,6 +3580,7 @@ fun FriendsScreen(
                                             Spacer(modifier = Modifier.width(6.dp))
                                             Text(
                                                 text = "Gefällt mir",
+                                                style = MaterialTheme.typography.bodyMedium,
                                                 color = if (feedItem.likedByCurrentUser) {
                                                     PrimaryGreen
                                                 } else {
@@ -3546,12 +3590,14 @@ fun FriendsScreen(
                                         }
                                         Text(
                                             text = "${feedItem.likeCount} Likes",
-                                            style = MaterialTheme.typography.bodySmall,
+                                            style = MaterialTheme.typography.labelMedium,
                                             color = TextSecondary
                                         )
                                     }
                                 }
                                 TextButton(
+                                    modifier = Modifier.align(Alignment.Start),
+                                    contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp),
                                     onClick = {
                                         errorMessage = null
                                         if (isCommentsExpanded) {
@@ -3572,13 +3618,14 @@ fun FriendsScreen(
                                         } else {
                                             "Kommentare"
                                         },
+                                        style = MaterialTheme.typography.bodyMedium,
                                         color = TextSecondary
                                     )
                                 }
                                 if (isCommentsExpanded) {
                                     Column(
                                         modifier = Modifier.fillMaxWidth(),
-                                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                                        verticalArrangement = Arrangement.spacedBy(10.dp)
                                     ) {
                                         when {
                                             isLoadingComments -> {
@@ -3600,7 +3647,8 @@ fun FriendsScreen(
                                             else -> {
                                                 comments.forEach { comment ->
                                                     Column(
-                                                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                                                        modifier = Modifier.fillMaxWidth(),
+                                                        verticalArrangement = Arrangement.spacedBy(3.dp)
                                                     ) {
                                                         Text(
                                                             text = comment.commenterDisplayName.ifBlank { "Unbenannter Nutzer" },
@@ -3611,7 +3659,7 @@ fun FriendsScreen(
                                                         Text(
                                                             text = comment.text,
                                                             style = MaterialTheme.typography.bodySmall,
-                                                            color = TextSecondary
+                                                            color = TextPrimary
                                                         )
                                                     }
                                                 }
