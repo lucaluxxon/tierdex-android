@@ -100,6 +100,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Search
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
@@ -403,6 +404,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     var storageDebug by rememberSaveable { mutableStateOf("Funde werden geladen...") }
     var showFoundOnly by rememberSaveable { mutableStateOf(false) }
     var currentTab by rememberSaveable { mutableStateOf(AppTab.HOME) }
+    var isFriendSearchOpen by rememberSaveable { mutableStateOf(false) }
     var authEntryMode by rememberSaveable { mutableStateOf<String?>(null) }
     var showAnimalPicker by rememberSaveable { mutableStateOf(false) }
     var selectedFindingToEdit by remember { mutableStateOf<AnimalFinding?>(null) }
@@ -706,12 +708,31 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         }
     }
 
+    LaunchedEffect(currentTab) {
+        if (currentTab != AppTab.FRIENDS) {
+            isFriendSearchOpen = false
+        }
+    }
+
     Scaffold(
         containerColor = Color.White,
         topBar = {
             TierdexTopBar(
+                currentTab = currentTab,
+                showFriendSearchAction = currentTab == AppTab.FRIENDS &&
+                    selectedAnimal == null &&
+                    !showAnimalPicker &&
+                    !showAuthStartScreen &&
+                    !showAuthEntryScreen &&
+                    !showIntroScreen &&
+                    !showSettingsScreen,
+                isFriendSearchOpen = isFriendSearchOpen,
+                onFriendSearchClick = {
+                    isFriendSearchOpen = !isFriendSearchOpen
+                },
                 onSettingsClick = {
                     resetSearchState()
+                    isFriendSearchOpen = false
                     showSettingsScreen = true
                 }
             )
@@ -722,6 +743,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                     currentTab = currentTab,
                     onTabSelected = {
                         resetSearchState()
+                        if (it != AppTab.FRIENDS) {
+                            isFriendSearchOpen = false
+                        }
                         currentTab = it
                     }
                 )
@@ -884,6 +908,8 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                 selectedAnimal != null -> {
                     AnimalDetailScreen(
                         modifier = Modifier.padding(innerPadding),
+                        currentUserId = currentOwnerId,
+                        currentDisplayName = currentDisplayName,
                         animal = selectedAnimal,
                         findings = findingsFromRoom.filter { it.animalId == selectedAnimal.id },
                         storageDebug = storageDebug,
@@ -1130,6 +1156,10 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                 currentTab == AppTab.FRIENDS -> {
                     FriendsScreen(
                         currentUserId = currentOwnerId,
+                        currentDisplayName = currentDisplayName,
+                        allAnimals = animals,
+                        isFriendSearchOpen = isFriendSearchOpen,
+                        onCloseFriendSearch = { isFriendSearchOpen = false },
                         extraTopPadding = innerPadding.calculateTopPadding(),
                         extraBottomPadding = innerPadding.calculateBottomPadding()
                     )
@@ -1302,6 +1332,10 @@ fun CelebrationBanner(
 
 @Composable
 fun TierdexTopBar(
+    currentTab: AppTab,
+    showFriendSearchAction: Boolean,
+    isFriendSearchOpen: Boolean,
+    onFriendSearchClick: () -> Unit,
     onSettingsClick: () -> Unit
 ) {
     Surface(
@@ -1335,10 +1369,28 @@ fun TierdexTopBar(
                 textAlign = TextAlign.Center
             )
 
-            Box(
-                modifier = Modifier.width(40.dp),
-                contentAlignment = Alignment.CenterEnd
+            Row(
+                modifier = Modifier.width(88.dp),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
             ) {
+                if (showFriendSearchAction && currentTab == AppTab.FRIENDS) {
+                    IconButton(onClick = onFriendSearchClick) {
+                        Icon(
+                            imageVector = if (isFriendSearchOpen) {
+                                Icons.Filled.Close
+                            } else {
+                                Icons.Filled.Search
+                            },
+                            contentDescription = if (isFriendSearchOpen) {
+                                "Freundesuche schließen"
+                            } else {
+                                "Freundesuche öffnen"
+                            },
+                            tint = TextPrimary
+                        )
+                    }
+                }
                 IconButton(onClick = onSettingsClick) {
                     Icon(
                         imageVector = Icons.Filled.Settings,
@@ -2776,22 +2828,60 @@ fun detectQuestLevelUpMessage(
 @Composable
 fun FriendsScreen(
     currentUserId: String?,
+    currentDisplayName: String?,
+    allAnimals: List<AnimalEntry>,
+    isFriendSearchOpen: Boolean,
+    onCloseFriendSearch: () -> Unit,
     extraTopPadding: Dp = 0.dp,
     extraBottomPadding: Dp = 0.dp
 ) {
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var searchResults by remember { mutableStateOf<List<PublicUserProfile>>(emptyList()) }
     var friends by remember { mutableStateOf<List<FriendUser>>(emptyList()) }
+    var friendFeed by remember { mutableStateOf<List<FriendFeedItem>>(emptyList()) }
+    var expandedCommentKeys by remember { mutableStateOf<Set<String>>(emptySet()) }
+    var commentsByFeedKey by remember { mutableStateOf<Map<String, List<FriendFindingComment>>>(emptyMap()) }
+    var loadingCommentKeys by remember { mutableStateOf<Set<String>>(emptySet()) }
+    var commentInputs by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
     var incomingRequests by remember { mutableStateOf<List<FriendRequest>>(emptyList()) }
+    var outgoingRequestIds by remember { mutableStateOf<Set<String>>(emptySet()) }
     var infoMessage by rememberSaveable { mutableStateOf<String?>(null) }
     var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
+    var searchErrorMessage by rememberSaveable { mutableStateOf<String?>(null) }
+    var requestsErrorMessage by rememberSaveable { mutableStateOf<String?>(null) }
+    var friendsErrorMessage by rememberSaveable { mutableStateOf<String?>(null) }
+    var feedErrorMessage by rememberSaveable { mutableStateOf<String?>(null) }
     var isSearching by remember { mutableStateOf(false) }
     var isRefreshing by remember { mutableStateOf(false) }
+    var friendToRemove by remember { mutableStateOf<FriendUser?>(null) }
+    val animalById = remember(allAnimals) { allAnimals.associateBy { it.id } }
+
+    fun feedKey(feedItem: FriendFeedItem): String = "${feedItem.friendUserId}_${feedItem.findingId}"
+
+    fun loadCommentsForFeedItem(feedItem: FriendFeedItem) {
+        val key = feedKey(feedItem)
+        loadingCommentKeys = loadingCommentKeys + key
+        FriendRepository.loadCommentsForFinding(
+            ownerUserId = feedItem.friendUserId,
+            findingId = feedItem.findingId,
+            onResult = { comments ->
+                commentsByFeedKey = commentsByFeedKey + (key to comments)
+                loadingCommentKeys = loadingCommentKeys - key
+            },
+            onError = {
+                errorMessage = "Kommentare konnten nicht geladen werden"
+                loadingCommentKeys = loadingCommentKeys - key
+            }
+        )
+    }
 
     fun refreshFriendsData() {
         val safeUserId = currentUserId ?: return
         isRefreshing = true
-        var pendingLoads = 2
+        requestsErrorMessage = null
+        friendsErrorMessage = null
+        feedErrorMessage = null
+        var pendingLoads = 4
 
         fun finishLoad() {
             pendingLoads -= 1
@@ -2807,7 +2897,7 @@ fun FriendsScreen(
                 finishLoad()
             },
             onError = { error ->
-                errorMessage = error ?: "Freundesliste konnte nicht geladen werden"
+                friendsErrorMessage = error ?: "Freundesliste konnte nicht geladen werden"
                 finishLoad()
             }
         )
@@ -2819,7 +2909,31 @@ fun FriendsScreen(
                 finishLoad()
             },
             onError = { error ->
-                errorMessage = error ?: "Anfragen konnten nicht geladen werden"
+                requestsErrorMessage = error ?: "Anfragen konnten nicht geladen werden"
+                finishLoad()
+            }
+        )
+
+        FriendRepository.loadOutgoingFriendRequestIds(
+            currentUserId = safeUserId,
+            onResult = {
+                outgoingRequestIds = it
+                finishLoad()
+            },
+            onError = { error ->
+                requestsErrorMessage = error ?: "Ausgehende Anfragen konnten nicht geladen werden"
+                finishLoad()
+            }
+        )
+
+        FriendRepository.loadFriendsFeed(
+            currentUserId = safeUserId,
+            onResult = {
+                friendFeed = it
+                finishLoad()
+            },
+            onError = { error ->
+                feedErrorMessage = error.message ?: "Feed konnte nicht geladen werden"
                 finishLoad()
             }
         )
@@ -2828,11 +2942,30 @@ fun FriendsScreen(
     LaunchedEffect(currentUserId) {
         searchResults = emptyList()
         friends = emptyList()
+        friendFeed = emptyList()
+        expandedCommentKeys = emptySet()
+        commentsByFeedKey = emptyMap()
+        loadingCommentKeys = emptySet()
+        commentInputs = emptyMap()
         incomingRequests = emptyList()
+        outgoingRequestIds = emptySet()
         infoMessage = null
         errorMessage = null
+        searchErrorMessage = null
+        requestsErrorMessage = null
+        friendsErrorMessage = null
+        feedErrorMessage = null
         if (!currentUserId.isNullOrBlank()) {
             refreshFriendsData()
+        }
+    }
+
+    LaunchedEffect(isFriendSearchOpen) {
+        if (!isFriendSearchOpen) {
+            searchQuery = ""
+            searchResults = emptyList()
+            isSearching = false
+            searchErrorMessage = null
         }
     }
 
@@ -2859,80 +2992,100 @@ fun FriendsScreen(
             )
         }
 
-        item {
-            if (currentUserId.isNullOrBlank()) {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(18.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = CardBackground,
-                        contentColor = TextPrimary
-                    )
-                ) {
-                    Text(
-                        text = "Melde dich an, um Freunde zu suchen und Anfragen zu verwalten.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextSecondary,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
-            } else {
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(18.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = CardBackground,
-                        contentColor = TextPrimary
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+        if (isFriendSearchOpen) {
+            item {
+                if (currentUserId.isNullOrBlank()) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(18.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = CardBackground,
+                            contentColor = TextPrimary
+                        )
                     ) {
                         Text(
-                            text = "Neue Freunde finden",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = TextPrimary
+                            text = "Melde dich an, um Freunde zu suchen und Anfragen zu verwalten.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextSecondary,
+                            modifier = Modifier.padding(16.dp)
                         )
-                        OutlinedTextField(
-                            value = searchQuery,
-                            onValueChange = { searchQuery = it },
-                            modifier = Modifier.fillMaxWidth(),
-                            label = { Text("Name suchen") },
-                            singleLine = true,
-                            shape = RoundedCornerShape(12.dp)
+                    }
+                } else {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(18.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = CardBackground,
+                            contentColor = TextPrimary
                         )
-                        Button(
-                            onClick = {
-                                val trimmedQuery = searchQuery.trim()
-                                if (trimmedQuery.isBlank()) {
-                                    infoMessage = "Bitte einen Namen eingeben"
-                                    return@Button
-                                }
-                                isSearching = true
-                                errorMessage = null
-                                infoMessage = null
-                                FriendRepository.searchUsersByDisplayName(
-                                    query = trimmedQuery,
-                                    currentUserId = currentUserId,
-                                    onResult = {
-                                        searchResults = it
-                                        infoMessage = if (it.isEmpty()) {
-                                            "Keine passenden Nutzer gefunden"
-                                        } else {
-                                            null
-                                        }
-                                        isSearching = false
-                                    },
-                                    onError = { error ->
-                                        errorMessage = error ?: "Suche fehlgeschlagen"
-                                        isSearching = false
-                                    }
-                                )
-                            },
-                            colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
-                            Text("Suchen")
+                            Text(
+                                text = "Neue Freunde finden",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = TextPrimary
+                            )
+                            OutlinedTextField(
+                                value = searchQuery,
+                                onValueChange = { searchQuery = it },
+                                modifier = Modifier.fillMaxWidth(),
+                                label = { Text("Name suchen") },
+                                singleLine = true,
+                                shape = RoundedCornerShape(12.dp)
+                            )
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Button(
+                                    onClick = {
+                                        val trimmedQuery = searchQuery.trim()
+                                        if (trimmedQuery.isBlank()) {
+                                            infoMessage = "Bitte einen Namen eingeben"
+                                            return@Button
+                                        }
+                                        isSearching = true
+                                        searchErrorMessage = null
+                                        errorMessage = null
+                                        infoMessage = null
+                                        FriendRepository.searchUsersByDisplayName(
+                                            query = trimmedQuery,
+                                            currentUserId = currentUserId,
+                                            onResult = {
+                                                searchResults = it
+                                                infoMessage = if (it.isEmpty()) {
+                                                    "Keine passenden Nutzer gefunden"
+                                                } else {
+                                                    null
+                                                }
+                                                isSearching = false
+                                            },
+                                            onError = { error ->
+                                                searchErrorMessage = error ?: "Suche fehlgeschlagen"
+                                                isSearching = false
+                                            }
+                                        )
+                                    },
+                                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
+                                ) {
+                                    Text("Suchen")
+                                }
+                                OutlinedButton(
+                                    onClick = {
+                                        searchQuery = ""
+                                        searchResults = emptyList()
+                                        isSearching = false
+                                        searchErrorMessage = null
+                                        onCloseFriendSearch()
+                                    },
+                                    border = BorderStroke(1.dp, BorderColor)
+                                ) {
+                                    Text("Schließen")
+                                }
+                            }
                         }
                     }
                 }
@@ -2960,17 +3113,28 @@ fun FriendsScreen(
         }
 
         if (!currentUserId.isNullOrBlank()) {
-            item {
-                if (isSearching) {
-                    Text(
-                        text = "Suche läuft...",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextSecondary
-                    )
+            if (isFriendSearchOpen) {
+                item {
+                    if (isSearching) {
+                        Text(
+                            text = "Suche läuft...",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextSecondary
+                        )
+                    }
+                }
+                searchErrorMessage?.let { message ->
+                    item {
+                        Text(
+                            text = message,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = Color(0xFF9A3D3D)
+                        )
+                    }
                 }
             }
 
-            if (searchResults.isNotEmpty()) {
+            if (isFriendSearchOpen && searchResults.isNotEmpty()) {
                 item {
                     Text(
                         text = "Suchergebnisse",
@@ -2979,6 +3143,8 @@ fun FriendsScreen(
                     )
                 }
                 items(searchResults, key = { it.userId }) { user ->
+                    val isAlreadyFriend = friends.any { it.userId == user.userId }
+                    val hasOutgoingRequest = user.userId in outgoingRequestIds
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
@@ -3009,24 +3175,79 @@ fun FriendsScreen(
                                     color = TextSecondary
                                 )
                             }
-                            OutlinedButton(
-                                onClick = {
-                                    errorMessage = null
-                                    FriendRepository.sendFriendRequest(
-                                        currentUserId = currentUserId,
-                                        targetUserId = user.userId
-                                    ) { success, result ->
-                                        if (success) {
-                                            infoMessage = "Anfrage gesendet"
-                                        } else {
-                                            errorMessage =
-                                                result ?: "Freundschaftsanfrage fehlgeschlagen"
+                            when {
+                                isAlreadyFriend -> {
+                                    Text(
+                                        text = "Bereits befreundet",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = PrimaryGreen
+                                    )
+                                }
+
+                                hasOutgoingRequest -> {
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = "Anfrage gesendet",
+                                            style = MaterialTheme.typography.labelMedium,
+                                            color = TextSecondary
+                                        )
+                                        OutlinedButton(
+                                            onClick = {
+                                                errorMessage = null
+                                                FriendRepository.cancelFriendRequest(
+                                                    currentUserId = currentUserId,
+                                                    targetUserId = user.userId
+                                                ) { success, result ->
+                                                    if (success) {
+                                                        infoMessage = "Anfrage zurückgezogen"
+                                                        refreshFriendsData()
+                                                    } else {
+                                                        errorMessage =
+                                                            result ?: "Fehler beim Zurückziehen"
+                                                    }
+                                                }
+                                            },
+                                            border = BorderStroke(1.dp, BorderColor)
+                                        ) {
+                                            Text("Zurückziehen")
                                         }
                                     }
-                                },
-                                border = BorderStroke(1.dp, BorderColor)
-                            ) {
-                                Text("Anfragen")
+                                }
+
+                                else -> {
+                                    OutlinedButton(
+                                        onClick = {
+                                            errorMessage = null
+                                            FriendRepository.sendFriendRequest(
+                                                currentUserId = currentUserId,
+                                                targetUserId = user.userId
+                                            ) { success, result ->
+                                                if (success) {
+                                                    infoMessage = "Anfrage gesendet"
+                                                    refreshFriendsData()
+                                                } else {
+                                                    infoMessage = when (result) {
+                                                        "Anfrage wurde bereits gesendet" -> "Anfrage wurde bereits gesendet"
+                                                        "Ihr seid bereits befreundet" -> "Ihr seid bereits befreundet"
+                                                        else -> null
+                                                    }
+                                                    if (infoMessage == null) {
+                                                        errorMessage =
+                                                            result ?: "Fehler beim Senden"
+                                                    } else {
+                                                        refreshFriendsData()
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        border = BorderStroke(1.dp, BorderColor)
+                                    ) {
+                                        Text("Anfragen")
+                                    }
+                                }
                             }
                         }
                     }
@@ -3039,6 +3260,16 @@ fun FriendsScreen(
                     style = MaterialTheme.typography.titleMedium,
                     color = TextPrimary
                 )
+            }
+
+            requestsErrorMessage?.let { message ->
+                item {
+                    Text(
+                        text = message,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFF9A3D3D)
+                    )
+                }
             }
 
             if (incomingRequests.isEmpty()) {
@@ -3081,25 +3312,50 @@ fun FriendsScreen(
                                     color = TextSecondary
                                 )
                             }
-                            Button(
-                                onClick = {
-                                    errorMessage = null
-                                    FriendRepository.acceptFriendRequest(
-                                        currentUserId = currentUserId,
-                                        requesterUserId = request.fromUserId
-                                    ) { success, result ->
-                                        if (success) {
-                                            infoMessage = "Freund hinzugefügt"
-                                            refreshFriendsData()
-                                        } else {
-                                            errorMessage =
-                                                result ?: "Anfrage konnte nicht angenommen werden"
-                                        }
-                                    }
-                                },
-                                colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Text("Annehmen")
+                                Button(
+                                    onClick = {
+                                        errorMessage = null
+                                        FriendRepository.acceptFriendRequest(
+                                            currentUserId = currentUserId,
+                                            requesterUserId = request.fromUserId
+                                        ) { success, result ->
+                                            if (success) {
+                                                infoMessage = "Anfrage angenommen"
+                                                refreshFriendsData()
+                                            } else {
+                                                errorMessage =
+                                                    result ?: "Anfrage konnte nicht angenommen werden"
+                                            }
+                                        }
+                                    },
+                                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
+                                ) {
+                                    Text("Annehmen")
+                                }
+                                OutlinedButton(
+                                    onClick = {
+                                        errorMessage = null
+                                        FriendRepository.declineFriendRequest(
+                                            currentUserId = currentUserId,
+                                            requesterUserId = request.fromUserId
+                                        ) { success, result ->
+                                            if (success) {
+                                                infoMessage = "Anfrage abgelehnt"
+                                                refreshFriendsData()
+                                            } else {
+                                                errorMessage =
+                                                    result ?: "Anfrage konnte nicht abgelehnt werden"
+                                            }
+                                        }
+                                    },
+                                    border = BorderStroke(1.dp, BorderColor)
+                                ) {
+                                    Text("Ablehnen")
+                                }
                             }
                         }
                     }
@@ -3112,6 +3368,16 @@ fun FriendsScreen(
                     style = MaterialTheme.typography.titleMedium,
                     color = TextPrimary
                 )
+            }
+
+            friendsErrorMessage?.let { message ->
+                item {
+                    Text(
+                        text = message,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFF9A3D3D)
+                    )
+                }
             }
 
             if (friends.isEmpty()) {
@@ -3136,21 +3402,392 @@ fun FriendsScreen(
                             modifier = Modifier.padding(16.dp),
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                            Text(
-                                text = friend.displayName.ifBlank { "Unbenannter Nutzer" },
-                                style = MaterialTheme.typography.titleSmall,
-                                color = TextPrimary
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(
+                                    modifier = Modifier.weight(1f),
+                                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Text(
+                                        text = friend.displayName.ifBlank { "Unbenannter Nutzer" },
+                                        style = MaterialTheme.typography.titleSmall,
+                                        color = TextPrimary
+                                    )
+                                    Text(
+                                        text = friend.userId,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = TextSecondary
+                                    )
+                                }
+                                OutlinedButton(
+                                    onClick = { friendToRemove = friend },
+                                    border = BorderStroke(1.dp, BorderColor)
+                                ) {
+                                    Text("Entfernen")
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            item {
+                Text(
+                    text = "Aktuelle Funde deiner Freunde",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = TextPrimary
+                )
+            }
+
+            feedErrorMessage?.let { message ->
+                item {
+                    Text(
+                        text = message,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = Color(0xFF9A3D3D)
+                    )
+                }
+            }
+
+            when {
+                friends.isEmpty() -> {
+                    item {
+                        Text(
+                            text = "Füge Freunde hinzu, um ihre Funde hier zu sehen.",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextSecondary
+                        )
+                    }
+                }
+
+                friendFeed.isEmpty() -> {
+                    item {
+                        Text(
+                            text = if (isRefreshing) {
+                                "Feed wird geladen..."
+                            } else {
+                                "Deine Freunde haben noch keine Funde geteilt."
+                            },
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextSecondary
+                        )
+                    }
+                }
+
+                else -> {
+                    items(friendFeed, key = { it.friendUserId + "_" + it.findingId }) { feedItem ->
+                        val animal = animalById[feedItem.finding.animalId]
+                        val feedItemKey = feedKey(feedItem)
+                        val isCommentsExpanded = feedItemKey in expandedCommentKeys
+                        val comments = commentsByFeedKey[feedItemKey].orEmpty()
+                        val isLoadingComments = feedItemKey in loadingCommentKeys
+                        val commentInput = commentInputs[feedItemKey].orEmpty()
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(16.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = CardBackground,
+                                contentColor = TextPrimary
                             )
-                            Text(
-                                text = friend.userId,
-                                style = MaterialTheme.typography.bodySmall,
-                                color = TextSecondary
-                            )
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(16.dp),
+                                verticalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Text(
+                                    text = feedItem.friendDisplayName.ifBlank { "Unbenannter Nutzer" },
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = TextPrimary
+                                )
+                                Text(
+                                    text = animal?.germanName ?: "Unbekanntes Tier",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = TextPrimary
+                                )
+                                Text(
+                                    text = animal?.group ?: "Unbekannte Gruppe",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = TextSecondary
+                                )
+                                feedItem.finding.date.takeIf { it.isNotBlank() }?.let {
+                                    Text(
+                                        text = "Datum: $it",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = TextSecondary
+                                    )
+                                }
+                                feedItem.finding.location.takeIf { it.isNotBlank() }?.let {
+                                    Text(
+                                        text = "Fundort: $it",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = TextSecondary
+                                    )
+                                }
+                                feedItem.finding.note.takeIf { it.isNotBlank() }?.let {
+                                    Text(
+                                        text = "Notiz: $it",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = TextSecondary
+                                    )
+                                }
+                                if (feedItem.finding.photoUri.isNotBlank()) {
+                                    Text(
+                                        text = "Foto vorhanden",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = TextSecondary
+                                    )
+                                }
+                                if (feedItem.friendUserId != currentUserId) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        TextButton(
+                                            onClick = {
+                                                errorMessage = null
+                                                FriendRepository.toggleLikeForFinding(
+                                                    ownerUserId = feedItem.friendUserId,
+                                                    findingId = feedItem.findingId,
+                                                    currentUserId = currentUserId.orEmpty(),
+                                                    currentDisplayName = currentDisplayName,
+                                                    currentlyLiked = feedItem.likedByCurrentUser,
+                                                    onResult = { isNowLiked ->
+                                                        friendFeed = friendFeed.map { existingItem ->
+                                                            if (existingItem.friendUserId == feedItem.friendUserId &&
+                                                                existingItem.findingId == feedItem.findingId
+                                                            ) {
+                                                                existingItem.copy(
+                                                                    likedByCurrentUser = isNowLiked,
+                                                                    likeCount = if (isNowLiked) {
+                                                                        existingItem.likeCount + 1
+                                                                    } else {
+                                                                        max(0, existingItem.likeCount - 1)
+                                                                    }
+                                                                )
+                                                            } else {
+                                                                existingItem
+                                                            }
+                                                        }
+                                                        infoMessage = if (isNowLiked) {
+                                                            "Gefällt mir gesetzt"
+                                                        } else {
+                                                            "Gefällt mir entfernt"
+                                                        }
+                                                    },
+                                                    onError = {
+                                                        errorMessage = "Fehler beim Liken"
+                                                    }
+                                                )
+                                            }
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Filled.Favorite,
+                                                contentDescription = null,
+                                                tint = if (feedItem.likedByCurrentUser) {
+                                                    PrimaryGreen
+                                                } else {
+                                                    TextSecondary
+                                                },
+                                                modifier = Modifier.size(18.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(6.dp))
+                                            Text(
+                                                text = "Gefällt mir",
+                                                color = if (feedItem.likedByCurrentUser) {
+                                                    PrimaryGreen
+                                                } else {
+                                                    TextSecondary
+                                                }
+                                            )
+                                        }
+                                        Text(
+                                            text = "${feedItem.likeCount} Likes",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = TextSecondary
+                                        )
+                                    }
+                                }
+                                TextButton(
+                                    onClick = {
+                                        errorMessage = null
+                                        if (isCommentsExpanded) {
+                                            expandedCommentKeys = expandedCommentKeys - feedItemKey
+                                        } else {
+                                            expandedCommentKeys = expandedCommentKeys + feedItemKey
+                                            if (feedItemKey !in commentsByFeedKey &&
+                                                feedItemKey !in loadingCommentKeys
+                                            ) {
+                                                loadCommentsForFeedItem(feedItem)
+                                            }
+                                        }
+                                    }
+                                ) {
+                                    Text(
+                                        text = if (isCommentsExpanded) {
+                                            "Kommentare ausblenden"
+                                        } else {
+                                            "Kommentare"
+                                        },
+                                        color = TextSecondary
+                                    )
+                                }
+                                if (isCommentsExpanded) {
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        when {
+                                            isLoadingComments -> {
+                                                Text(
+                                                    text = "Kommentare werden geladen...",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = TextSecondary
+                                                )
+                                            }
+
+                                            comments.isEmpty() -> {
+                                                Text(
+                                                    text = "Noch keine Kommentare.",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = TextSecondary
+                                                )
+                                            }
+
+                                            else -> {
+                                                comments.forEach { comment ->
+                                                    Column(
+                                                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                                                    ) {
+                                                        Text(
+                                                            text = comment.commenterDisplayName.ifBlank { "Unbenannter Nutzer" },
+                                                            style = MaterialTheme.typography.labelMedium,
+                                                            color = TextPrimary,
+                                                            fontWeight = FontWeight.SemiBold
+                                                        )
+                                                        Text(
+                                                            text = comment.text,
+                                                            style = MaterialTheme.typography.bodySmall,
+                                                            color = TextSecondary
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        if (currentUserId.isNullOrBlank()) {
+                                            Text(
+                                                text = "Melde dich an, um zu kommentieren.",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = TextSecondary
+                                            )
+                                        } else if (feedItem.friendUserId != currentUserId) {
+                                            OutlinedTextField(
+                                                value = commentInput,
+                                                onValueChange = {
+                                                    commentInputs = commentInputs + (feedItemKey to it)
+                                                },
+                                                modifier = Modifier.fillMaxWidth(),
+                                                label = { Text("Kommentar") },
+                                                shape = RoundedCornerShape(12.dp)
+                                            )
+                                            Button(
+                                                onClick = {
+                                                    val trimmedComment = commentInput.trim()
+                                                    if (trimmedComment.isBlank()) {
+                                                        errorMessage = "Kommentar darf nicht leer sein"
+                                                        return@Button
+                                                    }
+                                                    errorMessage = null
+                                                    FriendRepository.addCommentToFinding(
+                                                        ownerUserId = feedItem.friendUserId,
+                                                        findingId = feedItem.findingId,
+                                                        currentUserId = currentUserId,
+                                                        currentDisplayName = currentDisplayName,
+                                                        text = trimmedComment,
+                                                        onResult = { success ->
+                                                            if (success) {
+                                                                commentInputs = commentInputs + (feedItemKey to "")
+                                                                loadCommentsForFeedItem(feedItem)
+                                                            } else {
+                                                                errorMessage = "Kommentar konnte nicht gespeichert werden"
+                                                            }
+                                                        },
+                                                        onError = {
+                                                            errorMessage = "Kommentar konnte nicht gespeichert werden"
+                                                        }
+                                                    )
+                                                },
+                                                colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
+                                            ) {
+                                                Text("Senden")
+                                            }
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
         }
+    }
+
+    friendToRemove?.let { friend ->
+        AlertDialog(
+            onDismissRequest = { friendToRemove = null },
+            title = {
+                Text(
+                    text = "Freund entfernen",
+                    style = MaterialTheme.typography.titleLarge,
+                    color = TextPrimary
+                )
+            },
+            text = {
+                Text(
+                    text = "Möchtest du diesen Freund wirklich entfernen?",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextSecondary
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val safeUserId = currentUserId
+                        if (safeUserId.isNullOrBlank()) {
+                            errorMessage = "Freund konnte nicht entfernt werden"
+                            friendToRemove = null
+                            return@TextButton
+                        }
+
+                        errorMessage = null
+                        FriendRepository.removeFriend(
+                            currentUserId = safeUserId,
+                            friendUserId = friend.userId
+                        ) { success, result ->
+                            if (success) {
+                                infoMessage = "Freund entfernt"
+                                refreshFriendsData()
+                            } else {
+                                errorMessage = result ?: "Freund konnte nicht entfernt werden"
+                            }
+                        }
+                        friendToRemove = null
+                    }
+                ) {
+                    Text("Entfernen", color = PrimaryGreen)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { friendToRemove = null }) {
+                    Text("Abbrechen", color = TextSecondary)
+                }
+            },
+            containerColor = Color.White
+        )
     }
 }
 
@@ -4184,6 +4821,8 @@ fun StatisticsScreen(
 @Composable
 fun AnimalDetailScreen(
     modifier: Modifier = Modifier,
+    currentUserId: String?,
+    currentDisplayName: String?,
     animal: AnimalEntry,
     findings: List<AnimalFinding>,
     storageDebug: String,
@@ -4230,6 +4869,11 @@ fun AnimalDetailScreen(
     var pendingLatitude by remember { mutableStateOf<Double?>(null) }
     var pendingLongitude by remember { mutableStateOf<Double?>(null) }
     var cropPhotoUri by remember { mutableStateOf<String?>(null) }
+    var friendFindings by remember(animal.id, currentUserId) {
+        mutableStateOf<List<FriendFeedItem>>(emptyList())
+    }
+    var friendFindingsError by remember(animal.id, currentUserId) { mutableStateOf<String?>(null) }
+    var isLoadingFriendFindings by remember(animal.id, currentUserId) { mutableStateOf(false) }
     val isWishlistSelected = animal.id == currentWishlistAnimalId
     val isFavoriteSelected = animal.id == currentFavoriteAnimalId
     var editingFinding by remember(initial?.roomId) { mutableStateOf(initial) }
@@ -4315,6 +4959,30 @@ fun AnimalDetailScreen(
             !currentFinding?.location.isNullOrBlank() ||
             !currentFinding?.note.isNullOrBlank()
     val hasFindingPhoto = !editablePhotoUri.isNullOrBlank()
+
+    LaunchedEffect(currentUserId, animal.id) {
+        friendFindings = emptyList()
+        friendFindingsError = null
+
+        if (currentUserId.isNullOrBlank()) {
+            isLoadingFriendFindings = false
+            return@LaunchedEffect
+        }
+
+        isLoadingFriendFindings = true
+        FriendRepository.loadFriendFindingsForAnimal(
+            currentUserId = currentUserId,
+            animalId = animal.id,
+            onResult = {
+                friendFindings = it
+                isLoadingFriendFindings = false
+            },
+            onError = {
+                friendFindingsError = "Freundesfunde konnten nicht geladen werden."
+                isLoadingFriendFindings = false
+            }
+        )
+    }
 
     LazyColumn(
         modifier = modifier
@@ -4720,11 +5388,162 @@ fun AnimalDetailScreen(
                             style = MaterialTheme.typography.titleMedium,
                             color = TextPrimary
                         )
-                        Text(
-                            text = "Später siehst du hier, welche Freunde dieses Tier bereits gefunden haben.",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = TextSecondary
-                        )
+                        when {
+                            currentUserId.isNullOrBlank() -> {
+                                Text(
+                                    text = "Melde dich an, um Funde von Freunden zu sehen.",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = TextSecondary
+                                )
+                            }
+
+                            isLoadingFriendFindings -> {
+                                Text(
+                                    text = "Freundesfunde werden geladen...",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = TextSecondary
+                                )
+                            }
+
+                            friendFindingsError != null -> {
+                                Text(
+                                    text = friendFindingsError.orEmpty(),
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = TextSecondary
+                                )
+                            }
+
+                            friendFindings.isEmpty() -> {
+                                Text(
+                                    text = "Noch keiner deiner Freunde hat dieses Tier gefunden.",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = TextSecondary
+                                )
+                            }
+
+                            else -> {
+                                Text(
+                                    text = "Von Freunden gefunden",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = TextSecondary
+                                )
+                                friendFindings.forEach { feedItem ->
+                                    Card(
+                                        shape = RoundedCornerShape(16.dp),
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = Color.White.copy(alpha = 0.82f),
+                                            contentColor = TextPrimary
+                                        ),
+                                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                                    ) {
+                                        Column(
+                                            modifier = Modifier.padding(16.dp),
+                                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                                        ) {
+                                            Text(
+                                                text = feedItem.friendDisplayName.ifBlank { "Unbenannter Nutzer" },
+                                                style = MaterialTheme.typography.titleSmall,
+                                                color = TextPrimary
+                                            )
+                                            feedItem.finding.date.takeIf { it.isNotBlank() }?.let {
+                                                Text(
+                                                    text = "Datum: $it",
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    color = TextSecondary
+                                                )
+                                            }
+                                            feedItem.finding.location.takeIf { it.isNotBlank() }?.let {
+                                                Text(
+                                                    text = "Fundort: $it",
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    color = TextSecondary
+                                                )
+                                            }
+                                            feedItem.finding.note.takeIf { it.isNotBlank() }?.let {
+                                                Text(
+                                                    text = "Notiz: $it",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = TextSecondary
+                                                )
+                                            }
+                                            if (feedItem.finding.photoUri.isNotBlank()) {
+                                                Text(
+                                                    text = "Foto vorhanden",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = TextSecondary
+                                                )
+                                            }
+                                            if (feedItem.friendUserId != currentUserId) {
+                                                Row(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                                    verticalAlignment = Alignment.CenterVertically
+                                                ) {
+                                                    TextButton(
+                                                        onClick = {
+                                                            friendFindingsError = null
+                                                            FriendRepository.toggleLikeForFinding(
+                                                                ownerUserId = feedItem.friendUserId,
+                                                                findingId = feedItem.findingId,
+                                                                currentUserId = currentUserId.orEmpty(),
+                                                                currentDisplayName = currentDisplayName,
+                                                                currentlyLiked = feedItem.likedByCurrentUser,
+                                                                onResult = { isNowLiked ->
+                                                                    friendFindings = friendFindings.map { existingItem ->
+                                                                        if (existingItem.friendUserId == feedItem.friendUserId &&
+                                                                            existingItem.findingId == feedItem.findingId
+                                                                        ) {
+                                                                            existingItem.copy(
+                                                                                likedByCurrentUser = isNowLiked,
+                                                                                likeCount = if (isNowLiked) {
+                                                                                    existingItem.likeCount + 1
+                                                                                } else {
+                                                                                    max(0, existingItem.likeCount - 1)
+                                                                                }
+                                                                            )
+                                                                        } else {
+                                                                            existingItem
+                                                                        }
+                                                                    }
+                                                                },
+                                                                onError = {
+                                                                    friendFindingsError = "Fehler beim Liken"
+                                                                }
+                                                            )
+                                                        }
+                                                    ) {
+                                                        Icon(
+                                                            imageVector = Icons.Filled.Favorite,
+                                                            contentDescription = null,
+                                                            tint = if (feedItem.likedByCurrentUser) {
+                                                                PrimaryGreen
+                                                            } else {
+                                                                TextSecondary
+                                                            },
+                                                            modifier = Modifier.size(18.dp)
+                                                        )
+                                                        Spacer(modifier = Modifier.width(6.dp))
+                                                        Text(
+                                                            text = "Gefällt mir",
+                                                            color = if (feedItem.likedByCurrentUser) {
+                                                                PrimaryGreen
+                                                            } else {
+                                                                TextSecondary
+                                                            }
+                                                        )
+                                                    }
+                                                    Text(
+                                                        text = "${feedItem.likeCount} Likes",
+                                                        style = MaterialTheme.typography.bodySmall,
+                                                        color = TextSecondary
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
