@@ -320,6 +320,26 @@
     "reviewNote": "In vielen Regionen präsent, aber stark an Ameisenreichtum gebunden; Häufigkeit später noch einmal prüfen."
   },
   {
+    "id": "vogel_habichtskauz",
+    "habitats": [
+      "Bergwälder",
+      "alte Mischwälder",
+      "störungsarme Waldgebiete"
+    ],
+    "distributionGermany": "In Deutschland nur lokal und selten, vor allem in wenigen Wiederansiedlungs- und Grenzregionen.",
+    "rarityGame": "sehr selten",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Spätwinter bis Frühjahr, wenn Rufe am ehesten wahrnehmbar sind.",
+    "shortDescription": "Großer, langschwänziger Kauz mit hellem Gesicht, dunklen Augen und braun grau quergebändertem Gefieder.",
+    "observationTip": "Nur mit viel Geduld in ruhigen Bergwäldern und abgelegenen alten Waldgebieten suchen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Status in Deutschland ist sehr kleinräumig und dynamisch; Verbreitung später noch einmal gegen aktuelle Projekte abgleichen."
+  },
+  {
     "id": "vogel_haselhuhn",
     "habitats": [
       "Nadelwälder",
@@ -537,6 +557,27 @@
     "reviewNote": "Verbreitungsgrenze zur Nebelkrähe regional beachten; Spielhäufigkeit später noch differenzieren."
   },
   {
+    "id": "vogel_raufusskauz",
+    "habitats": [
+      "Nadelwälder",
+      "Bergwälder",
+      "alte Mischwälder"
+    ],
+    "distributionGermany": "Vor allem in den Alpen und waldreichen Mittelgebirgen verbreitet, sonst lokal.",
+    "rarityGame": "selten",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Spätwinter bis Frühjahr, wenn die Rufe am deutlichsten sind.",
+    "shortDescription": "Kleiner Kauz mit rundem Kopf, gelben Augen und dicht braun weiß gesprenkeltem Gefieder.",
+    "observationTip": "Suche ihn in ruhigen Nadel- und Bergwäldern bei Nacht oder in der Dämmerung zur Rufzeit.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Die Art ist akustisch leichter festzustellen als optisch; Beobachtbarkeit im Spiel später noch einmal prüfen."
+  },
+  {
     "id": "vogel_rebhuhn",
     "habitats": [
       "Äcker",
@@ -603,6 +644,49 @@
     "reviewNote": "Kolonien machen die Art lokal auffällig, fehlen aber regional ganz; Häufigkeit später noch einmal fein abstimmen."
   },
   {
+    "id": "vogel_schleiereule",
+    "habitats": [
+      "Scheunen",
+      "Dörfer",
+      "offene Kulturlandschaften",
+      "Stadtränder"
+    ],
+    "distributionGermany": "Regional verbreitet, besonders in offenen Landschaften mit Gebäuden und geeigneten Brutplätzen.",
+    "rarityGame": "gelegentlich",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Frühjahr bis Herbst, besonders in milden Nächten.",
+    "shortDescription": "Helle Eule mit herzförmigem Gesichtsschleier, langen Beinen und goldbeigem Rücken.",
+    "observationTip": "Am ehesten in der Dämmerung an Scheunen, Dörfern und offenen Wiesenlandschaften beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Bestände schwanken regional stark; Abhängigkeit von Nistplätzen und harten Wintern später noch genauer prüfen."
+  },
+  {
+    "id": "vogel_schneeeule",
+    "habitats": [
+      "Küsten",
+      "offene Ebenen",
+      "Flughafenumfelder",
+      "winterliche Freiflächen"
+    ],
+    "distributionGermany": "In Deutschland nur als seltener Wintergast oder Ausnahmeerscheinung.",
+    "rarityGame": "sehr selten",
+    "activity": "tag- und dämmerungsaktiv",
+    "season": "Vor allem im Winter bei seltenen Einflügen.",
+    "shortDescription": "Große fast weiße Eule mit dunklen Flecken, rundem Kopf und gelben Augen.",
+    "observationTip": "Allenfalls im Winter an offenen Küsten- und Freiflächen aufmerksam nach auffallend hellen Eulen Ausschau halten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Art ist in Deutschland nur Ausnahmegast; Einordnung für Verbreitung und Saison später noch einmal prüfen."
+  },
+  {
     "id": "vogel_schwarzspecht",
     "habitats": [
       "Wälder",
@@ -625,6 +709,48 @@
     "reviewNote": "In geeigneten Wäldern regelmäßig, aber großräumig unterwegs; Spielhäufigkeit später ggf. noch feinjustieren."
   },
   {
+    "id": "vogel_sperbereule",
+    "habitats": [
+      "Nadelwälder",
+      "Moorwälder",
+      "offene Waldlandschaften",
+      "kühle Hochlagen"
+    ],
+    "distributionGermany": "In Deutschland nur als seltener Ausnahme- oder Wintergast nachgewiesen.",
+    "rarityGame": "sehr selten",
+    "activity": "tag- und dämmerungsaktiv",
+    "season": "Vor allem im Winterhalbjahr bei seltenen Einflügen.",
+    "shortDescription": "Langschwänzige Eule mit rundem Kopf, gelben Augen und fein braun weiß gebändertem Gefieder.",
+    "observationTip": "Allenfalls in offenen, kühlen Waldlandschaften oder Moorgebieten im Winter aufmerksam beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Deutsche Nachweise sind selten und unregelmäßig; Saison- und Häufigkeitsangaben später noch einmal prüfen."
+  },
+  {
+    "id": "vogel_sperlingskauz",
+    "habitats": [
+      "Nadelwälder",
+      "Bergwälder",
+      "Mischwälder"
+    ],
+    "distributionGermany": "Regional in den Alpen und einigen Mittelgebirgen verbreitet, sonst selten.",
+    "rarityGame": "selten",
+    "activity": "dämmerungs- und tagaktiv",
+    "season": "Herbst bis Frühjahr, besonders in ruhigen Morgen- und Abendstunden.",
+    "shortDescription": "Sehr kleine Eule mit rundem Kopf, gelben Augen und braun weiß gesprenkeltem Gefieder.",
+    "observationTip": "Suche sie in ruhigen Nadel- und Bergwäldern, besonders in den kühleren Monaten bei Tagesrandzeiten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Die Art wird leicht übersehen; regionale Vorkommen und Beobachtbarkeit später noch einmal fein abstimmen."
+  },
+  {
     "id": "vogel_steinhuhn",
     "habitats": [
       "felsige Berghänge",
@@ -643,6 +769,28 @@
     ],
     "needsReview": true,
     "reviewNote": "Status in Deutschland ist sehr randständig; Einordnung für die Spielhäufigkeit später noch einmal absichern."
+  },
+  {
+    "id": "vogel_steinkauz",
+    "habitats": [
+      "Streuobstwiesen",
+      "Weiden",
+      "Dörfer",
+      "offene Kulturlandschaften"
+    ],
+    "distributionGermany": "Regional verbreitet, besonders in offenen Kulturlandschaften mit alten Obstbäumen und Weiden.",
+    "rarityGame": "selten",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Frühjahr bis Herbst, besonders in milden Dämmerungsstunden.",
+    "shortDescription": "Kleine, gedrungene Eule mit flachem Kopf, gelben Augen und braun weiß geflecktem Gefieder.",
+    "observationTip": "Achte in Streuobstwiesen, Weidelandschaften und alten Dörfern in der Dämmerung auf Ansitze und Rufe.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regional stark vom Erhalt traditioneller Landschaften abhängig; Verbreitung später noch einmal prüfen."
   },
   {
     "id": "vogel_strassentaube",
@@ -664,6 +812,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Abgrenzung zu verwilderten Haustaubenformen ist fließend; Spielhäufigkeit später eventuell noch feiner abstimmen."
+  },
+  {
+    "id": "vogel_sumpfohreule",
+    "habitats": [
+      "Moore",
+      "Feuchtwiesen",
+      "Küstengrünland",
+      "offene Ebenen"
+    ],
+    "distributionGermany": "Regional und oft unregelmäßig, vor allem in offenen Feuchtgebieten und Küstenlandschaften.",
+    "rarityGame": "selten",
+    "activity": "dämmerungs- und tagaktiv",
+    "season": "Frühjahr und Herbst sowie im Winter in offenen Landschaften am ehesten sichtbar.",
+    "shortDescription": "Hellbraune Eule mit langen Federohren, gelben Augen und deutlich dunklem Augenfeld.",
+    "observationTip": "Suche sie in offenen Mooren, Feuchtwiesen und Küstenlandschaften bei Dämmerung oder an trübem Tag.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Vorkommen sind regional und jahreszeitlich wechselhaft; Verbreitung und Häufigkeit später noch einmal prüfen."
   },
   {
     "id": "vogel_tannenhaeher",
@@ -730,6 +899,28 @@
     "reviewNote": "Bestände sind stark rückläufig; Verbreitung und Spielhäufigkeit später noch einmal besonders sorgfältig prüfen."
   },
   {
+    "id": "vogel_uhu",
+    "habitats": [
+      "Felslandschaften",
+      "Wälder",
+      "Steinbrüche",
+      "Mittelgebirge"
+    ],
+    "distributionGermany": "Regional weit verbreitet, besonders in strukturreichen Mittelgebirgen und geeigneten Felslandschaften.",
+    "rarityGame": "gelegentlich",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Ganzjährig, besonders im Spätwinter und Frühjahr durch Rufe auffälliger.",
+    "shortDescription": "Sehr große Eule mit kräftigem Körper, orangefarbenen Augen und markanten Federohren.",
+    "observationTip": "Halte in felsigen Waldlandschaften und Steinbrüchen in der Dämmerung nach Rufen und Silhouetten Ausschau.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Vorkommen sind regional unterschiedlich; Beobachtbarkeit außerhalb der Rufzeit später noch einmal feiner bewerten."
+  },
+  {
     "id": "vogel_wachtel",
     "habitats": [
       "Felder",
@@ -773,6 +964,50 @@
     "reviewNote": "Abgrenzung zum Gartenbaumläufer ist im Feld nicht immer einfach; Verbreitungsangaben später noch einmal prüfen."
   },
   {
+    "id": "vogel_waldkauz",
+    "habitats": [
+      "Laubwälder",
+      "Parks",
+      "große Gärten",
+      "Waldränder"
+    ],
+    "distributionGermany": "Bundesweit verbreitet in Wäldern, Parks und baumreichen Siedlungsräumen.",
+    "rarityGame": "häufig",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Ganzjährig, besonders im Spätwinter und Frühjahr gut zu hören.",
+    "shortDescription": "Mittelgroße, gedrungene Eule mit rundem Kopf, dunklen Augen und braun oder grau gebändertem Gefieder.",
+    "observationTip": "In Parks, alten Gärten und Laubwäldern in ruhigen Abendstunden auf Rufe und Ansitze achten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Häufig, aber oft akustisch nachgewiesen; Beobachtbarkeit im Spiel später ggf. von bloßer Anwesenheit trennen."
+  },
+  {
+    "id": "vogel_waldohreule",
+    "habitats": [
+      "Waldränder",
+      "Feldgehölze",
+      "Parks",
+      "offene Landschaften"
+    ],
+    "distributionGermany": "Weit verbreitet, besonders in halboffenen Landschaften mit Gehölzen.",
+    "rarityGame": "gelegentlich",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Herbst bis Frühjahr, besonders in Dämmerung und an Schlafplätzen gut zu beobachten.",
+    "shortDescription": "Schlanke Eule mit aufgerichteten Federohren, orangefarbenen Augen und fein braun gebändertem Gefieder.",
+    "observationTip": "Achte an Waldrändern, Feldgehölzen und in Parks auf Schlafbäume und lautlose Dämmerungsflüge.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Außerhalb der Winter-Schlafplätze oft unauffällig; Häufigkeit und Sichtbarkeit später ggf. getrennt bewerten."
+  },
+  {
     "id": "vogel_weissrueckenspecht",
     "habitats": [
       "Berglaubwälder",
@@ -813,5 +1048,26 @@
     ],
     "needsReview": true,
     "reviewNote": "Bestände sind regional rückläufig; Spielhäufigkeit und Verbreitung später noch einmal sorgfältig prüfen."
+  },
+  {
+    "id": "vogel_zwergohreule",
+    "habitats": [
+      "warme Waldränder",
+      "Obstwiesen",
+      "Parks",
+      "lichte Gehölze"
+    ],
+    "distributionGermany": "In Deutschland nur sehr lokal und selten, vor allem im Süden als Brutvogel oder Ausnahmegast.",
+    "rarityGame": "sehr selten",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Spätfrühling bis Sommer in warmen Abendstunden.",
+    "shortDescription": "Kleine Eule mit feiner graubrauner Tarnzeichnung, gelben Augen und kurzen Federohren.",
+    "observationTip": "Suche sie in warmen Nächten an Obstwiesen, Waldrändern und lichten Gehölzen im Süden.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Deutscher Status ist sehr randständig; aktuelle Nachweise und Häufigkeit später noch einmal absichern."
   }
 ]
