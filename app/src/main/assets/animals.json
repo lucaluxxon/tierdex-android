@@ -14097,18 +14097,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "trockene Felslandschaften",
+      "Steppenflächen",
+      "Brachland",
+      "steinige Hänge"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr bei sehr wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner Fink mit sandrosafarbenem Gefieder, hellem kräftigem Schnabel und dunklen Flügelpartien.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig auf offenen trockenen Flächen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; spätere Prüfung der Beobachtungen nötig."
   },
   {
     "id": "vogel_karmingimpel",
@@ -14119,18 +14127,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gebüsche",
+      "Auen",
+      "feuchte Waldränder",
+      "Gärten"
+    ],
+    "distributionGermany": "In Deutschland regional und eher selten, vor allem im Nordosten und auf dem Zug.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätfrühling bis Sommer in Brutgebieten, sonst auf dem Zug.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftiger Fink; Männchen mit karminrotem Kopf und Brust, Weibchen braun gestrichelt mit hellem Überaugenstreif.",
+    "observationTip": "In feuchten Gebüschen und Auenlandschaften oft eher über den Gesang oder kurze Ansitze zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regionale Art in Deutschland; Beobachtbarkeit eher lokal."
   },
   {
     "id": "vogel_gruenfink",
@@ -14141,18 +14157,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gärten",
+      "Parks",
+      "Hecken",
+      "Obstwiesen"
+    ],
+    "distributionGermany": "Bundesweit weit verbreitet und häufig.",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut an Futterstellen und in Gärten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftiger Fink mit grünlichem Körper, gelblichen Flügel- und Schwanzpartien sowie dickem hellem Schnabel.",
+    "observationTip": "In Gärten, Parks und Heckenlandschaften oft gut an Futterstellen oder in kleinen Trupps zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Häufige und gut bekannte Art."
   },
   {
     "id": "vogel_berghaenfling",
@@ -14163,18 +14188,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küstenheiden",
+      "karge Wiesen",
+      "offene Weiden",
+      "Küstenbrachen"
+    ],
+    "distributionGermany": "In Deutschland regional und eher selten, vor allem an Küsten und im Winter.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Herbst bis Frühjahr an offenen Küsten- und Weidelandschaften.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner Fink mit braun gestrichelter Oberseite, heller Unterseite und gelbem Schnabel.",
+    "observationTip": "An Küstenheiden und offenen Weiden oft in kleinen Trupps am Boden oder auf niedrigen Ansitzen zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regionale Art mit Schwerpunkt in offenen windigen Landschaften."
   },
   {
     "id": "vogel_bluthaenfling",
@@ -14185,18 +14218,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Hecken",
+      "Brachen",
+      "Gärten",
+      "offene Feldlandschaften"
+    ],
+    "distributionGermany": "Weit verbreitet, aber regional rückläufig.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst, auch im Winter in Trupps sichtbar.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker Fink; Männchen mit roter Stirn und Brust, braunem Rücken und hellem Bauch, Weibchen matter braun.",
+    "observationTip": "In Hecken, Brachen und offenen Gärten oft in kleinen Gruppen oder singend auf Sträuchern zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige Art, aber in manchen Regionen deutlich zurückgegangen."
   },
   {
     "id": "vogel_taigabirkenzeisig",
@@ -14207,18 +14249,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Birkenbestände",
+      "Erlenbrüche",
+      "Gärten",
+      "offene Gehölze"
+    ],
+    "distributionGermany": "In Deutschland unregelmäßiger Wintergast, in Einflugjahren häufiger.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Winter bei Einflügen am besten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner gestreifter Fink mit roter Stirn, dunklem Kinnfleck und feinem kegelförmigem Schnabel.",
+    "observationTip": "Bei Einflügen am ehesten in Birken, Erlen und an Futterstellen in kleinen Trupps zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Auftreten schwankt stark; Taxonomie und Abgrenzung später prüfen."
   },
   {
     "id": "vogel_alpenbirkenzeisig",
@@ -14229,18 +14279,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gebirgswälder",
+      "Birkenbestände",
+      "Heiden",
+      "offene Hochlagen"
+    ],
+    "distributionGermany": "In Deutschland regional in höheren Lagen und als Wintergast verbreitet.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig in Hochlagen, im Winter auch tiefer.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner gestreifter Fink mit roter Stirn, dunklem Kinnfleck und hellerem Gesamteindruck.",
+    "observationTip": "In Gebirgs- und Birkengehölzen oft in kleinen Zeisigtrupps zu beobachten, besonders im Winterhalbjahr.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Abgrenzung zu anderen Birkenzeisigen später nochmals prüfen."
   },
   {
     "id": "vogel_polarbirkenzeisig",
@@ -14251,18 +14309,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Birkenbestände",
+      "offene Gehölze",
+      "Küstenwiesen",
+      "winterliche Parks"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Wintergast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Winter bei seltenen Einflügen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Heller, stark weiß wirkender Birkenzeisig mit roter Stirn, feinem Schnabel und schwächerer Flankenzeichnung.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in Birken- und Zeisigtrupps.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; Abgrenzung zu anderen Birkenzeisigen später absichern."
   },
   {
     "id": "vogel_kiefernkreuzschnabel",
@@ -14273,18 +14339,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Nadelwälder",
+      "Kiefernwälder",
+      "Mischwälder",
+      "Forste"
+    ],
+    "distributionGermany": "In Deutschland regional und meist eher selten bis unregelmäßig.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders bei guter Samenverfügbarkeit.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftiger Fink mit gekreuzten Schnabelspitzen; Männchen rötlich, Weibchen olivgrau, insgesamt bulliger als andere Kreuzschnäbel.",
+    "observationTip": "Am ehesten in kiefernreichen Nadelwäldern über Rufe oder an zapfenreichen Bäumen zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Abgrenzung zu anderen Kreuzschnäbeln später genau prüfen."
   },
   {
     "id": "vogel_fichtenkreuzschnabel",
@@ -14295,18 +14369,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Nadelwälder",
+      "Fichtenforste",
+      "Mischwälder",
+      "Gebirgswälder"
+    ],
+    "distributionGermany": "Regional verbreitet und in guten Samenjahren häufiger.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, mit Schwankungen je nach Samenangebot.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftiger Fink mit gekreuzten Schnabelspitzen; Männchen rot, Weibchen grünlichgelb bis grau.",
+    "observationTip": "In Nadelwäldern oft über die klirrenden Rufe oder bei der Nahrungssuche an Zapfen zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Vorkommen schwankt stark mit der Nadelbaum-Samenproduktion."
   },
   {
     "id": "vogel_bindenkreuzschnabel",
@@ -14317,18 +14399,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Nadelwälder",
+      "Mischwälder",
+      "Forste",
+      "Parks mit Koniferen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst und Winter bei sehr wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kreuzschnabel mit auffälligen hellen Flügelbinden; Männchen rosarot, Weibchen gelbgrün bis grau.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in Nadelwäldern bei Kreuzschnabeltrupps.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; spätere Überprüfung der Beobachtungen sinnvoll."
   },
   {
     "id": "vogel_stieglitz",
@@ -14339,18 +14429,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gärten",
+      "Brachen",
+      "Obstwiesen",
+      "Siedlungsränder"
+    ],
+    "distributionGermany": "Weit verbreitet und regelmäßig in offenen baumreichen Landschaften.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut an Samenpflanzen und Futterstellen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner bunter Fink mit rotem Gesicht, schwarz-weißem Kopf und auffälligem gelbem Flügelband.",
+    "observationTip": "An Disteln, Samenständen und in Gärten oft in kleinen Trupps oder an Futterstellen gut sichtbar.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Auffällige und relativ gut beobachtbare Art."
   },
   {
     "id": "vogel_zitronenzeisig",
@@ -14361,18 +14460,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gebirgsnadelwälder",
+      "Bergweiden",
+      "Lärchenbestände",
+      "Hochlagen"
+    ],
+    "distributionGermany": "In Deutschland sehr selten und regional auf Alpenräume beschränkt.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer in Hochlagen, im Winter teils tiefer.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner gelbgrüner Fink mit dunklen Flügeln und feinem spitzem Schnabel.",
+    "observationTip": "Nicht leicht zu finden; am ehesten in alpinen Nadelgehölzen und offenen Hochlagen in kleinen Trupps.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr regionale Gebirgsart in Deutschland."
   },
   {
     "id": "vogel_girlitz",
@@ -14383,18 +14490,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gärten",
+      "Parks",
+      "Obstwiesen",
+      "Siedlungsränder"
+    ],
+    "distributionGermany": "Regional weit verbreitet und besonders in warmen Gegenden häufig.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst, besonders in der Gesangszeit.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner Fink mit gelbgrüner Brust, gestrichelten Flanken und relativ kurzem kräftigem Schnabel.",
+    "observationTip": "In Gärten, Parks und Obstwiesen oft über den schnellen Gesang oder auf Baumspitzen singend gut zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regional häufig, aber nicht überall gleich verbreitet."
   },
   {
     "id": "vogel_erlenzeisig",
@@ -14405,18 +14520,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Nadelwälder",
+      "Erlenbestände",
+      "Birken",
+      "Gärten"
+    ],
+    "distributionGermany": "Regelmäßiger Brut- und Wintervogel, teils schwankend häufig.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut im Herbst und Winter.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner grün-gelber Zeisig; Männchen mit schwarzer Kopfkappe und Kinnfleck, Weibchen stärker gestrichelt.",
+    "observationTip": "An Erlen, Birken und Futterstellen oft in lebhaften Trupps gut zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige Art, aber Häufigkeit schwankt regional und jahreszeitlich."
   },
   {
     "id": "vogel_spornammer",
@@ -14427,18 +14551,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küstenwiesen",
+      "Salzwiesen",
+      "offene Felder",
+      "Rastflächen"
+    ],
+    "distributionGermany": "Vor allem im Winterhalbjahr seltener Gast an Küsten und offenen Flächen.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Herbst bis Frühjahr bei Rastbeobachtungen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige Ammer mit warmbraunem Nacken, heller Unterseite und auffälligem Kopfmuster, im Brutkleid kontrastreicher.",
+    "observationTip": "An Küstenwiesen und offenen Winterfeldern mit etwas Glück in kleinen Trupps zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßiger, aber nicht häufiger Wintergast."
   },
   {
     "id": "vogel_schneeammer",
@@ -14449,18 +14581,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "offene Felder",
+      "Dünen",
+      "winterliche Brachflächen"
+    ],
+    "distributionGermany": "Vor allem im Winterhalbjahr an Küsten und offenen Flächen regelmäßiger, aber nicht häufiger Gast.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Winter an offenen Küsten- und Feldlandschaften.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige Ammer mit viel Weiß in Flügeln und Körper, dazu braune bis schwarze Zeichnung je nach Jahreszeit.",
+    "observationTip": "An Küsten, Dünen und offenen winterlichen Feldern oft in kleinen Trupps am Boden zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Wintergast mit Schwerpunkt an offenen, windigen Flächen."
   },
   {
     "id": "vogel_grauammer",
@@ -14471,18 +14611,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "offene Äcker",
+      "Wiesen",
+      "Brachflächen",
+      "Feldränder"
+    ],
+    "distributionGermany": "Regional verbreitet, aber vielerorts zurückgehend.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer in offenen Agrarlandschaften.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Große einfarbig graubraune Ammer mit kräftigem Schnabel und wenig auffälliger Zeichnung.",
+    "observationTip": "In offenen Feldern und Wiesen oft auf hohen Stängeln, Zäunen oder Drähten singend zu sehen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Bestände regional rückläufig; Beobachtbarkeit abhängig von extensiven Offenlandschaften."
   },
   {
     "id": "vogel_goldammer",
@@ -14493,18 +14641,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Heckenlandschaften",
+      "Feldränder",
+      "Brachen",
+      "Waldränder"
+    ],
+    "distributionGermany": "Bundesweit weit verbreitet und häufig in halboffenen Landschaften.",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut im Frühjahr und Sommer.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige Ammer; Männchen mit leuchtend gelbem Kopf und Unterseite, Weibchen stärker braun gestrichelt.",
+    "observationTip": "An Hecken, Feldrändern und Brachflächen oft auf Sträuchern oder Zäunen singend leicht zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr regelmäßige und gut sichtbare Art."
   },
   {
     "id": "vogel_fichtenammer",
@@ -14515,18 +14672,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "offene Gehölzlandschaften",
+      "Felder",
+      "Gebüsche",
+      "Rastplätze"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Gast.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Winterhalbjahr bei wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige Ammer; Männchen mit heller Kopfpartie, gelblichem Ton und kastanienbraunen Flanken, Weibchen matter.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig in Ammertrupps an offenen Winterhabitaten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Gastart; spätere Bestimmungsprüfung empfohlen."
   },
   {
     "id": "vogel_zippammer",
@@ -14537,18 +14702,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "warme Fels- und Buschhänge",
+      "Trockenrasen",
+      "lichte Hänge",
+      "Steinterrassen"
+    ],
+    "distributionGermany": "In Deutschland regional und eher selten, vor allem in wenigen wärmebegünstigten Gebieten.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer an wenigen Standorten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige Ammer mit grauem Kopf, rostbraun gestrichelter Oberseite und markanten Kopfstreifen.",
+    "observationTip": "Am ehesten in warmen trockenen Hängen mit Gebüsch und Felsen über Gesang oder exponierte Ansitze zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr regionale Art in Deutschland; Beobachtbarkeit lokal begrenzt."
   },
   {
     "id": "vogel_steinortolan",
@@ -14559,18 +14732,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "trockene felsige Hänge",
+      "offene Buschlandschaften",
+      "Steppenartige Flächen",
+      "warme Brachhänge"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr bei sehr wenigen Beobachtungen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Ammer mit grauem Kopf, warmbraunem Rücken und markanten hell-dunklen Kopfstreifen.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in trockenen offenen Landschaften.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Ausnahmegast; spätere Prüfung der Angaben nötig."
   },
   {
     "id": "vogel_tuerkenammer",
@@ -14581,18 +14762,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "warme Buschlandschaften",
+      "Felsfluren",
+      "Trockenhänge",
+      "lichte Gehölze"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr bei seltenen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Helle Ammer mit grauem Kopf, gelblicher Unterseite und auffälligem Kopfmuster.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig in warmen offenen Buschlandschaften.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; Beobachtungsangaben später absichern."
   },
   {
     "id": "vogel_ortolan",
@@ -14603,18 +14792,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Ackerlandschaften",
+      "Obstwiesen",
+      "lichte Gehölze",
+      "warme Offenflächen"
+    ],
+    "distributionGermany": "Regional verbreitet, aber vielerorts stark zurückgegangen.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätfrühling bis Sommer in Brutgebieten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige Ammer mit gelblicher Kehle, graugrünem Kopf und warmbraunem Rücken.",
+    "observationTip": "In offenen warmen Agrarlandschaften oft eher über den Gesang auf exponierten Ansitzen zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Bestände stark rückläufig; Beobachtbarkeit regional stark begrenzt."
   },
   {
     "id": "vogel_grauortolan",
@@ -14625,18 +14822,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "warme Buschhänge",
+      "Trockenrasen",
+      "lichte Hänge",
+      "offene Gehölze"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Gast.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Frühsommer.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Ammer mit grauem Kopf, warmer Unterseite und feinerer Zeichnung als verwandte Ortolane.",
+    "observationTip": "Nicht gezielt gut findbar; am ehesten zufällig in warmen offenen Hängen und Gebüschen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Gastart; spätere Prüfung sinnvoll."
   },
   {
     "id": "vogel_zaunammer",
@@ -14647,18 +14852,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "warme Heckenlandschaften",
+      "Weinberge",
+      "Gebüschhänge",
+      "Trockenrasen"
+    ],
+    "distributionGermany": "In Deutschland regional und eher selten in wenigen wärmebegünstigten Gebieten.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer an wenigen Standorten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige Ammer mit gelber Unterseite, olivgrauem Kopf und markanten dunklen Kopfstreifen.",
+    "observationTip": "An warmen Hängen, Weinbergen und gebüschreichen Offenflächen oft auf exponierten Ansitzen singend zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regionale Art in Deutschland; Beobachtbarkeit örtlich gut, sonst fehlend."
   },
   {
     "id": "vogel_zwergammer",
@@ -14669,18 +14882,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Schilfränder",
+      "Feuchtgebüsche",
+      "nasse Wiesen",
+      "Rastflächen"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Gast.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine Ammer mit warmbrauner Oberseite, heller Unterseite und markantem Gesichts- und Scheitelmuster.",
+    "observationTip": "Am ehesten zufällig an Feuchtgebieten, Schilfrändern oder in Ammertrupps auf Rastflächen zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Gastart; spätere Prüfung der Bestimmung empfohlen."
   },
   {
     "id": "vogel_waldammer",
@@ -14691,18 +14912,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feuchtwälder",
+      "Gebüsche",
+      "Erlenbrüche",
+      "nasse Waldränder"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei sehr wenigen Beobachtungen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige Ammer mit warmbrauner Oberseite, heller Unterseite und markantem Kopfstreifenmuster.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in deckungsreichen Feuchtgehölzen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; spätere Prüfung der Beobachtungsdaten nötig."
   },
   {
     "id": "vogel_weidenammer",
@@ -14713,18 +14942,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Schilfgebiete",
+      "Feuchtgebüsche",
+      "Röhrichte",
+      "nasse Wiesen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast und heute extreme Ausnahmeerscheinung.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Historisch vor allem auf dem Zug beobachtet.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Ammer mit gelblicher Unterseite, gestreifter Oberseite und markanter Kopfzeichnung mit dunklen Partien.",
+    "observationTip": "In Deutschland praktisch nicht gezielt findbar; Sichtungen wären allenfalls außergewöhnliche Zufallsbeobachtungen in Feuchtgebieten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Extrem seltene und stark bedrohte Art; Angaben später besonders kritisch prüfen."
   },
   {
     "id": "vogel_kappenammer",
@@ -14735,18 +14972,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "warme Offenlandschaften",
+      "Buschhänge",
+      "Obstgärten",
+      "Feldgehölze"
+    ],
+    "distributionGermany": "In Deutschland seltener Gast und regional ausnahmsweise Brutvogel.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Sommer bei wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige Ammer; Männchen mit schwarzem Kopf und gelber Unterseite, Weibchen matter braun.",
+    "observationTip": "Nicht gezielt gut findbar; am ehesten zufällig in warmen offenen Buschlandschaften und Obstgebieten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Art in Deutschland; Beobachtungen später prüfen."
   },
   {
     "id": "vogel_braunkopfammer",
@@ -14757,18 +15002,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "offene warme Landschaften",
+      "Buschlandschaften",
+      "Ackerflächen",
+      "Gebüschhänge"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr bei seltenen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Ammer mit braunem Kopf beim Männchen, gelber Unterseite und warmbraunem Rücken.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in offenen warmen Landschaften.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; spätere Prüfung der Angaben sinnvoll."
   },
   {
     "id": "vogel_maskenammer",
@@ -14779,18 +15032,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feuchtgebüsche",
+      "Röhrichte",
+      "Schilfränder",
+      "Auwälder"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei sehr wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige Ammer mit markanter dunkler Gesichtszeichnung, gelblicher Unterseite und braun gestreifter Oberseite.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig in dichten Feuchtgehölzen und Schilfrändern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; Beobachtungsangaben später absichern."
   },
   {
     "id": "vogel_rohrammer",
@@ -14801,18 +15062,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Schilfgebiete",
+      "Röhrichte",
+      "Gräben",
+      "Feuchtwiesen"
+    ],
+    "distributionGermany": "Weit verbreiteter Brutvogel in Feuchtgebieten und Schilfrändern.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst, auch im Winter in geeigneten Gebieten sichtbar.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige Ammer; Männchen mit schwarzem Kopf und weißem Halskragen, Weibchen braun gestreift.",
+    "observationTip": "An Schilfrändern und Gräben oft auf Halmen sitzend oder in niedriger Vegetation gut zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige Feuchtgebietsart mit guter Sichtbarkeit an passenden Standorten."
   },
   {
     "id": "vogel_meisenwaldsaenger",
@@ -14823,18 +15093,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Laubwälder",
+      "Parks",
+      "Gehölze",
+      "Waldränder"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Irrgast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei sehr wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner Waldsänger mit kontrastreichem gelbem Gesicht, dunkler Oberseite und feiner Flügelzeichnung.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in herbstlichen Gehölzen und Parks.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Ausnahmegast; spätere Prüfung der Beobachtungen wichtig."
   },
   {
     "id": "vogel_gruenmantel-waldsaenger",
@@ -14845,18 +15123,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Laubwälder",
+      "Parks",
+      "Gebüsche",
+      "Waldränder"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Irrgast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei seltenen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner Waldsänger mit olivgrüner Oberseite, heller Unterseite und deutlicher schwarz-weißer Kopf- und Flügelzeichnung.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; am ehesten zufällig in Gehölzen und Parks zur Zugzeit.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; spätere Kontrolle der Angaben empfohlen."
   },
   {
     "id": "saeugetier_mensch",
