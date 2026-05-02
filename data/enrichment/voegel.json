@@ -210,6 +210,27 @@
     "reviewNote": "Sehr seltener Gast; Bestimmung später gegen ähnliche Arten absichern."
   },
   {
+    "id": "vogel_atlantiksturmtaucher",
+    "habitats": [
+      "offene See",
+      "Küstengewässer",
+      "Meeresbuchten",
+      "äußere Küstenzonen"
+    ],
+    "distributionGermany": "In Deutschland seltener Gast, vor allem an Nord- und Ostseeküste im Spätsommer und Herbst.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Spätsommer bis Herbst an Küste und auf See.",
+    "shortDescription": "Mittelgroßer Sturmtaucher mit dunkler Oberseite, heller Unterseite und schnellem flachem Gleitflug dicht über dem Wasser.",
+    "observationTip": "Am ehesten an der Küste oder auf See bei günstigen Wetterlagen im Spätsommer und Herbst zu beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regelmäßiger, aber insgesamt seltener Küstengast in Deutschland."
+  },
+  {
     "id": "vogel_auerhuhn",
     "habitats": [
       "Nadelwälder",
@@ -316,6 +337,48 @@
     "reviewNote": "Seltene Art in Deutschland; Bestimmung später gegen ähnliche kleine Strandläufer absichern."
   },
   {
+    "id": "vogel_balearensturmtaucher",
+    "habitats": [
+      "offene See",
+      "Küstengewässer",
+      "äußere Küstenzonen",
+      "Meeresbuchten"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener bis seltener Gast, vor allem an der Nordsee.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Spätsommer bis Herbst bei Küstenbeobachtungen und auf See.",
+    "shortDescription": "Mittelgroßer bräunlicher Sturmtaucher mit relativ einheitlicher Oberseite und heller Unterseite.",
+    "observationTip": "Nicht gezielt gut findbar; am ehesten an der Küste oder auf See bei günstigen Hochseebedingungen zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Seltene Hochseeart; spätere Prüfung der Häufigkeit und Gefährdung sinnvoll."
+  },
+  {
+    "id": "vogel_barolosturmtaucher",
+    "habitats": [
+      "offene See",
+      "Küstengewässer",
+      "äußere Meeresbereiche",
+      "stürmische Küstenzonen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem Spätsommer bis Herbst bei wenigen Hochseebeobachtungen.",
+    "shortDescription": "Kleinerer Sturmtaucher mit dunkler Oberseite, heller Unterseite und langem schmalem Flügelprofil.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder auf See.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr seltener Gast; spätere Bestimmungsprüfung empfohlen."
+  },
+  {
     "id": "vogel_bartgeier",
     "habitats": [
       "Hochgebirge",
@@ -376,6 +439,28 @@
     ],
     "needsReview": true,
     "reviewNote": "Stark an ausgedehnte Röhrichte gebunden; Beobachtbarkeit regional."
+  },
+  {
+    "id": "vogel_basstoelpel",
+    "habitats": [
+      "Küstengewässer",
+      "offene See",
+      "Felsküsten",
+      "Meeresbuchten"
+    ],
+    "distributionGermany": "An Nordseeküste und auf offener See regelmäßiger Gast, regional gut zu beobachten.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst an Küsten und auf See besonders gut.",
+    "shortDescription": "Großer weißer Meeresvogel mit langen schmalen Flügeln, gelblichem Kopf und langem spitzem Schnabel.",
+    "observationTip": "An Nordseeküste und auf See oft gut im Flug oder beim Stoßtauchen auf offenem Wasser zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Gut sichtbare Meeresart mit Schwerpunkt an Nordsee und Seevogelbeobachtung."
   },
   {
     "id": "vogel_baumfalke",
@@ -1227,6 +1312,48 @@
     "reviewNote": "Sehr häufige und gut sichtbare Art."
   },
   {
+    "id": "vogel_bulwersturmvogel",
+    "habitats": [
+      "offene See",
+      "Küstengewässer",
+      "äußere Küstenzonen",
+      "Hochseegebiete"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast an Nordsee und auf See.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem Spätsommer bis Herbst bei sehr wenigen Nachweisen.",
+    "shortDescription": "Schlanker dunkler Sturmvogel mit langen schmalen Flügeln, langem Schwanz und gleichmäßig dunkler Färbung.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig auf See oder an Küsten bei passenden Wetterlagen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Ausgesprochene Hochseeart; Beobachtungen in Deutschland sind Ausnahmefälle."
+  },
+  {
+    "id": "vogel_buntfuss-sturmschwalbe",
+    "habitats": [
+      "offene See",
+      "Küstengewässer",
+      "stürmische Meeresbereiche",
+      "äußere Küstenzonen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast an Nord- und Ostsee.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem Spätsommer bis Herbst bei starken Winden und Hochseeeinflüssen.",
+    "shortDescription": "Sehr kleiner dunkler Hochseevogel mit hellen Partien an den Füßen, schmalen Flügeln und flatterndem Flug dicht über dem Wasser.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an der Küste bei stürmischem Wetter oder auf See.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Ausgesprochene Hochseeart; Beobachtungen in Deutschland stark wetterabhängig."
+  },
+  {
     "id": "vogel_buntspecht",
     "habitats": [
       "Wälder",
@@ -1331,6 +1458,48 @@
     ],
     "needsReview": true,
     "reviewNote": "Status in Deutschland ist sehr unsicher und meist ausnahmsweise; Einordnung später unbedingt noch einmal prüfen."
+  },
+  {
+    "id": "vogel_corysturmtaucher",
+    "habitats": [
+      "offene See",
+      "Küstengewässer",
+      "äußere Küstenzonen",
+      "Meeresbuchten"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem Spätsommer bis Herbst bei sehr wenigen Nachweisen.",
+    "shortDescription": "Großer Sturmtaucher mit graubrauner Oberseite, heller Unterseite und langem schmalem Flügelprofil.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an der Küste oder auf See bei starken Winden.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr seltener Gast; Abgrenzung zu ähnlichen Sturmtauchern später absichern."
+  },
+  {
+    "id": "vogel_dickschnabellumme",
+    "habitats": [
+      "offene See",
+      "Küstengewässer",
+      "Meereskliffs",
+      "winterliche Küstenbereiche"
+    ],
+    "distributionGermany": "In Deutschland seltener Gast an Nord- und Ostsee, vor allem im Winterhalbjahr.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Frühjahr an Küsten und auf offener See.",
+    "shortDescription": "Kräftiger schwarz-weißer Alkenvogel mit gedrungenem Körper und relativ dickem dunklem Schnabel.",
+    "observationTip": "Nicht leicht gezielt zu finden; am ehesten an Küsten oder auf See im Winterhalbjahr zu beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Seltene Meeresart in Deutschland; spätere Abgrenzung zur Trottellumme sinnvoll."
   },
   {
     "id": "vogel_dohle",
@@ -1544,6 +1713,27 @@
     "reviewNote": "Seltene Art; unauffälliges Aussehen macht spätere Prüfung sinnvoll."
   },
   {
+    "id": "vogel_dunkelsturmtaucher",
+    "habitats": [
+      "offene See",
+      "Küstengewässer",
+      "äußere Meeresbereiche",
+      "stürmische Küstenzonen"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Gast, vor allem an der Küste.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Spätsommer bis Herbst an Nordsee und auf offener See.",
+    "shortDescription": "Großer dunkel wirkender Sturmtaucher mit langen schmalen Flügeln und insgesamt einfarbig dunklerem Körper.",
+    "observationTip": "Nicht gezielt gut findbar; am ehesten an der Küste oder auf See bei windigem Wetter zwischen anderen Hochseevögeln zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Hochseeart mit Beobachtungsschwerpunkt an Küste und auf See."
+  },
+  {
     "id": "vogel_dunkelwasserlaeufer",
     "habitats": [
       "Wattflächen",
@@ -1690,6 +1880,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Vor allem an den Küsten seltener Wintergast; Bestimmung und Häufigkeit später prüfen."
+  },
+  {
+    "id": "vogel_eissturmvogel",
+    "habitats": [
+      "offene See",
+      "Küstengewässer",
+      "stürmische Meeresbereiche",
+      "äußere Küstenzonen"
+    ],
+    "distributionGermany": "In Deutschland seltener Gast, vor allem an Nordsee und auf offener See.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Herbst bis Frühjahr, besonders bei windigem Wetter an der Küste.",
+    "shortDescription": "Mittelgroßer Hochseevogel mit kräftigem röhrenförmigem Schnabel, grauweißem Körper und langen steifen Flügeln.",
+    "observationTip": "Am ehesten an Nordseeküste oder auf See bei windigem Wetter zu beobachten, wenn Hochseevögel küstennäher ziehen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Hochseeart mit Beobachtungsschwerpunkt an der Nordsee und auf See."
   },
   {
     "id": "vogel_eistaucher",
@@ -2885,6 +3096,27 @@
     "reviewNote": "In vielen Regionen präsent, aber stark an Ameisenreichtum gebunden; Häufigkeit später noch einmal prüfen."
   },
   {
+    "id": "vogel_gryllteiste",
+    "habitats": [
+      "felsige Küsten",
+      "Küstengewässer",
+      "offene See",
+      "Meeresufer"
+    ],
+    "distributionGermany": "In Deutschland seltener Gast, besonders an den Küsten im Winterhalbjahr.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Herbst bis Frühjahr an Küstengewässern.",
+    "shortDescription": "Schwarzweißer Alkenvogel mit dunklem Körper, weißen Flügelfeldern und rotem Beinen im Prachtkleid.",
+    "observationTip": "Nicht leicht gezielt zu finden; am ehesten an Küsten oder auf ruhigen Meeresflächen im Winterhalbjahr zu beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Seltene Küstenart in Deutschland; Beobachtungsangaben später prüfen."
+  },
+  {
     "id": "vogel_habicht",
     "habitats": [
       "Wälder",
@@ -3007,6 +3239,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Regionale Art in Deutschland; Abgrenzung zum Trauerschnäpper später beachten."
+  },
+  {
+    "id": "vogel_halsbandsittich",
+    "habitats": [
+      "Städte",
+      "Parks",
+      "Gärten",
+      "baumreiche Siedlungen"
+    ],
+    "distributionGermany": "In mehreren Städten mit etablierten gebietsfremden Beständen regelmäßig vorhanden.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut in Städten und Parks sichtbar.",
+    "shortDescription": "Mittelgroßer grüner Sittich mit langem Schwanz, rotem Schnabel und beim Männchen dunklem Halsband.",
+    "observationTip": "In städtischen Parks, Gärten und baumreichen Wohngebieten oft laut rufend in kleinen Trupps zu beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Gebietsfremde etablierte Art; regionale Häufigkeit in Deutschland später prüfen."
   },
   {
     "id": "vogel_haselhuhn",
@@ -3582,6 +3835,27 @@
     "reviewNote": "Seltene Art in Deutschland; Beobachtungen später prüfen."
   },
   {
+    "id": "vogel_kappensturmtaucher",
+    "habitats": [
+      "offene See",
+      "Küstengewässer",
+      "äußere Küstenzonen",
+      "stürmische Meeresbereiche"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem Herbst bei sehr wenigen Nachweisen.",
+    "shortDescription": "Großer Sturmtaucher mit dunkelbrauner bis schwarzer Oberseite, heller Unterseite und markantem Kopfprofil.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder auf See bei guten Hochseebedingungen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr seltener Gast; Beobachtungsangaben später sorgfältig prüfen."
+  },
+  {
     "id": "vogel_karmingimpel",
     "habitats": [
       "Gebüsche",
@@ -3966,6 +4240,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Brut- und Wintervorkommen unterscheiden sich stark; Saison und Häufigkeit später noch trennen."
+  },
+  {
+    "id": "vogel_krabbentaucher",
+    "habitats": [
+      "Küstengewässer",
+      "offene See",
+      "felsige Meeresküsten",
+      "winterliche Küstenbereiche"
+    ],
+    "distributionGermany": "In Deutschland seltener Gast, vor allem an Nord- und Ostseeküste im Winterhalbjahr.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Frühjahr an Küsten und auf offener See.",
+    "shortDescription": "Sehr kleiner, schwarz-weißer Alkenvogel mit kurzem Schnabel, gedrungener Gestalt und heller Unterseite.",
+    "observationTip": "Am ehesten an Küsten oder auf offener See im Winterhalbjahr mit etwas Glück zwischen anderen Meeresvögeln zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Kleine Hochseeart; Beobachtbarkeit in Deutschland stark an Küste und Wetter gebunden."
   },
   {
     "id": "vogel_kraehenscharbe",
@@ -4498,6 +4793,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Ausnahmegast; spätere Prüfung der Angaben nötig."
+  },
+  {
+    "id": "vogel_mauerlaeufer",
+    "habitats": [
+      "Felswände",
+      "Gebirge",
+      "Steilklippen",
+      "felsige Schluchten"
+    ],
+    "distributionGermany": "In Deutschland sehr selten und vor allem in alpinen oder felsigen Regionen lokal nachgewiesen.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Am ehesten in Gebirgslagen oder im Winter an geeigneten Felswänden zu beobachten.",
+    "shortDescription": "Kleiner grauer Klettervogel mit langem dünnem Schnabel und auffälligen roten Flügelpartien mit weißen Flecken im Flug.",
+    "observationTip": "In Deutschland eher nicht gezielt gut auffindbar; Sichtungen gelingen am ehesten an hohen Felswänden oder Gebirgsstandorten mit viel Glück.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr seltene und spezielle Art in Deutschland; Beobachtungsangaben später sorgfältig prüfen."
   },
   {
     "id": "vogel_mauersegler",
@@ -5176,6 +5492,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Seltene Gastart; spätere Bestimmungsprüfung sinnvoll."
+  },
+  {
+    "id": "vogel_papageitaucher",
+    "habitats": [
+      "offene See",
+      "Küstengewässer",
+      "Felsinseln",
+      "winterliche Küstenbereiche"
+    ],
+    "distributionGermany": "In Deutschland seltener Gast an Nord- und Ostsee, vor allem außerhalb der Brutzeit.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Frühjahr an Küsten und auf offener See.",
+    "shortDescription": "Kompakter Alkenvogel mit schwarz-weißer Zeichnung, großem buntem dreieckigem Schnabel und kurzem Hals.",
+    "observationTip": "An Küsten oder auf offener See im Winterhalbjahr mit etwas Glück zwischen anderen Meeresvögeln zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Beliebte Meeresart, in Deutschland aber nur als Gast und nicht häufig."
   },
   {
     "id": "vogel_pazifikpieper",
@@ -7121,6 +7458,27 @@
     "reviewNote": "Regelmäßige Art, aber ständig in Bewegung."
   },
   {
+    "id": "vogel_schwarzbrauenalbatros",
+    "habitats": [
+      "offene See",
+      "Küstengewässer",
+      "stürmische Meeresbereiche",
+      "äußere Küstenzonen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Ausnahmegast an der Nordsee.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem bei besonderen Wetterlagen und sehr seltenen Hochseebeobachtungen.",
+    "shortDescription": "Großer Albatros mit langen schmalen Flügeln, weißem Körper, dunklen Flügeloberseiten und dunklem Augenstreif.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an der Küste oder auf See bei außergewöhnlichen Bedingungen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Extreme Ausnahmeart in Deutschland; Beobachtungsangaben später sehr kritisch prüfen."
+  },
+  {
     "id": "vogel_schwarzfluegel-brachschwalbe",
     "habitats": [
       "offene Feuchtflächen",
@@ -7523,6 +7881,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Auftreten schwankt stark je nach Einflugjahr."
+  },
+  {
+    "id": "vogel_sepiasturmtaucher",
+    "habitats": [
+      "offene See",
+      "Küstengewässer",
+      "Meeresbuchten",
+      "äußere Küstenzonen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem Spätsommer bis Herbst bei seltenen Hochseebeobachtungen.",
+    "shortDescription": "Großer Sturmtaucher mit langen schmalen Flügeln, bräunlich-grauer Oberseite und heller Unterseite.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig auf See oder an der Küste bei geeigneten Wetterlagen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Seltene Hochseeart in Deutschland; genaue Bestimmung später prüfen."
   },
   {
     "id": "vogel_sichelstrandlaeufer",
@@ -8837,6 +9216,27 @@
     "reviewNote": "Seltene Gastart; Bestimmung später gegen ähnliche Laubsänger absichern."
   },
   {
+    "id": "vogel_tordalk",
+    "habitats": [
+      "Küstengewässer",
+      "offene See",
+      "felsige Küsten",
+      "winterliche Meeresbereiche"
+    ],
+    "distributionGermany": "Regelmäßiger Wintergast an Nord- und Ostsee, insgesamt eher selten.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Frühjahr an Küsten und auf offener See.",
+    "shortDescription": "Kräftiger schwarz-weißer Alkenvogel mit tiefem dunklem Schnabel und kompakter Gestalt.",
+    "observationTip": "An Küsten und auf offener See im Winterhalbjahr am ehesten zwischen anderen Alkenvögeln zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regelmäßiger Gast, aber meist nur küstennah oder auf See gut zu beobachten."
+  },
+  {
     "id": "vogel_trauerente",
     "habitats": [
       "Küstengewässer",
@@ -8920,6 +9320,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Sehr seltene Art in Deutschland; Angaben später besonders sorgfältig prüfen."
+  },
+  {
+    "id": "vogel_trottellumme",
+    "habitats": [
+      "Küstengewässer",
+      "offene See",
+      "Meereskliffs",
+      "winterliche Küstenbereiche"
+    ],
+    "distributionGermany": "Regelmäßiger, aber nicht häufiger Gast an Nord- und Ostsee, vor allem im Winterhalbjahr.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Frühjahr an Küsten und auf offener See.",
+    "shortDescription": "Schwarz-weißer Alkenvogel mit schlankerem dunklem Schnabel und gestreckterem Körper als andere Alken.",
+    "observationTip": "An Küsten oder auf offener See im Winterhalbjahr am ehesten auf ruhigem Wasser oder im Flug zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regelmäßiger Küstengast, aber Beobachtbarkeit in Deutschland insgesamt begrenzt."
   },
   {
     "id": "vogel_tuepfelsumpfhuhn",
@@ -9626,6 +10047,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Vorkommen sind lokal und teils unregelmäßig; Verbreitung später noch prüfen."
+  },
+  {
+    "id": "vogel_weissbauchtoelpel",
+    "habitats": [
+      "offene See",
+      "Küstengewässer",
+      "äußere Küstenzonen",
+      "Meeresbuchten"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Irrgast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Bei sehr wenigen Nachweisen vor allem im Sommer oder Herbst.",
+    "shortDescription": "Großer Tölpel mit dunkelbrauner Oberseite, weißem Bauch und langem hellen Schnabel.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an der Küste oder auf See.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr seltener Gast; Beobachtungsdaten später sorgfältig prüfen."
   },
   {
     "id": "vogel_weissbrauendrossel",
