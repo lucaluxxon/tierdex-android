@@ -1717,24 +1717,32 @@ fun TierdexTopBar(
                 horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (showFriendSearchAction && currentTab == AppTab.FRIENDS) {
-                    IconButton(onClick = onFriendSearchClick) {
-                        Icon(
-                            imageVector = if (isFriendSearchOpen) {
-                                Icons.Filled.Close
-                            } else {
-                                Icons.Filled.Search
-                            },
-                            contentDescription = if (isFriendSearchOpen) {
-                                "Freundesuche schließen"
-                            } else {
-                                "Freundesuche öffnen"
-                            },
-                            tint = TextPrimary
-                        )
+                Box(
+                    modifier = Modifier.width(44.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (showFriendSearchAction && currentTab == AppTab.FRIENDS) {
+                        IconButton(onClick = onFriendSearchClick) {
+                            Icon(
+                                imageVector = if (isFriendSearchOpen) {
+                                    Icons.Filled.Close
+                                } else {
+                                    Icons.Filled.Search
+                                },
+                                contentDescription = if (isFriendSearchOpen) {
+                                    "Freundesuche schließen"
+                                } else {
+                                    "Freundesuche öffnen"
+                                },
+                                tint = TextPrimary
+                            )
+                        }
                     }
                 }
-                Box {
+                Box(
+                    modifier = Modifier.width(44.dp),
+                    contentAlignment = Alignment.Center
+                ) {
                     IconButton(onClick = onNotificationsClick) {
                         Icon(
                             imageVector = Icons.Filled.Notifications,
@@ -1760,12 +1768,17 @@ fun TierdexTopBar(
                         }
                     }
                 }
-                IconButton(onClick = onSettingsClick) {
-                    Icon(
-                        imageVector = Icons.Filled.Settings,
-                        contentDescription = "Einstellungen",
-                        tint = TextPrimary
-                    )
+                Box(
+                    modifier = Modifier.width(44.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    IconButton(onClick = onSettingsClick) {
+                        Icon(
+                            imageVector = Icons.Filled.Settings,
+                            contentDescription = "Einstellungen",
+                            tint = TextPrimary
+                        )
+                    }
                 }
             }
         }
