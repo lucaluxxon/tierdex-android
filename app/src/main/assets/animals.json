@@ -248,18 +248,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Wattenmeer",
+      "Salzwiesen",
+      "Meeresbuchten"
+    ],
+    "distributionGermany": "Vor allem an Nord- und Ostseeküsten als Wintergast und Durchzügler.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Herbst bis Frühjahr, besonders an den Küsten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine dunkle Gans mit schwarzem Hals, kleinem weißem Halsfleck und kompakter Gestalt.",
+    "observationTip": "An Nord- und Ostseeküsten auf Salzwiesen und Wattflächen in ruhigen Trupps gut zu beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Küstenvorkommen sind regelmäßig, Binnenlandbeobachtungen deutlich seltener."
   },
   {
     "id": "vogel_rothalsgans",
@@ -270,18 +278,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küstenwiesen",
+      "Salzwiesen",
+      "Seen",
+      "offene Feuchtflächen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast, meist im Winterhalbjahr.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Winter bei seltenen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine auffällige Gans mit rostrotem Halsfeld, schwarzem Kopf und stark kontrastreichen weißen Zeichnungen.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in Gänsetrupps an Küsten oder großen Seen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Irrgast; Beobachtungsangaben später besonders sorgfältig prüfen."
   },
   {
     "id": "vogel_kanadagans",
@@ -292,18 +308,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Flüsse",
+      "Parks",
+      "Wiesen an Gewässern"
+    ],
+    "distributionGermany": "In vielen Regionen etabliert und an größeren Gewässern weit verbreitet.",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut an Gewässern und auf angrenzenden Wiesen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Große braune Gans mit schwarzem Hals und markantem weißem Wangenfleck.",
+    "observationTip": "An Seen, Flüssen und Parkgewässern oft leicht auf Uferwiesen oder im flachen Wasser zu sehen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Gebietsfremde, vielerorts eingebürgerte Art; Häufigkeit regional sehr unterschiedlich."
   },
   {
     "id": "vogel_weisswangengans",
@@ -314,18 +339,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Salzwiesen",
+      "Seen",
+      "Grünland"
+    ],
+    "distributionGermany": "Vor allem an den Küsten regelmäßig, im Binnenland auf dem Zug und im Winter lokal.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Herbst bis Frühjahr, besonders auf Küstenwiesen und Rastplätzen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kompakte Gans mit schwarzem Hals und Brustbereich sowie weißem Gesicht.",
+    "observationTip": "An Nord- und Ostseeküsten auf Salzwiesen und kurzrasigen Flächen häufig in Trupps zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "An den Küsten regelmäßig, im Binnenland deutlich unbeständiger."
   },
   {
     "id": "vogel_streifengans",
@@ -336,18 +369,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Flussauen",
+      "offene Wiesen",
+      "Parkgewässer"
+    ],
+    "distributionGermany": "In Deutschland unregelmäßig und meist als entflogene oder eingebürgerte Vögel festgestellt.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst bei einzelnen Nachweisen an Gewässern.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Helle Gans mit zwei dunklen Querstreifen am Hinterkopf und orangegelbem Schnabel.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig an größeren Seen oder in Gänsetrupps.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Gebietsfremde Art; Status in Deutschland regional uneinheitlich."
   },
   {
     "id": "vogel_graugans",
@@ -358,18 +399,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Teiche",
+      "Flussauen",
+      "Feuchtwiesen"
+    ],
+    "distributionGermany": "Bundesweit an geeigneten Gewässern und Feuchtgebieten häufig bis regelmäßig.",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut an Gewässern und auf angrenzenden Wiesen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Große grau-braune Gans mit kräftigem orangefarbenem Schnabel und hellem Bauch.",
+    "observationTip": "An Seen, Flussauen und Feuchtwiesen oft gut sichtbar, besonders morgens und abends auf offenen Flächen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr bekannte und vielerorts häufige Art; Beobachtbarkeit im Spiel wohl hoch."
   },
   {
     "id": "vogel_waldsaatgans",
@@ -380,18 +430,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Stauseen",
+      "Ackerflächen",
+      "Feuchtwiesen"
+    ],
+    "distributionGermany": "Vor allem im Winterhalbjahr regional als Rast- und Wintergast.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Winter auf offenen Rastplätzen und Feldern.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige braune Gans mit dunklem Kopf, langem Hals und überwiegend dunklem Schnabel mit orangefarbenem Anteil.",
+    "observationTip": "Im Winter auf größeren Seen, Feuchtflächen und abgeernteten Feldern nach rastenden Gänsetrupps suchen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Auftreten regional unterschiedlich; genaue Abgrenzung zu anderen Saatgänsen später prüfen."
   },
   {
     "id": "vogel_kurzschnabelgans",
@@ -402,18 +460,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küstenwiesen",
+      "Grünland",
+      "Seen",
+      "Ackerflächen"
+    ],
+    "distributionGermany": "In Deutschland seltener Durchzügler und Wintergast, vor allem im Norden.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Herbst bis Winter, meist in Gänsetrupps.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroße graubraune Gans mit kurzem rosafarbenem Schnabel und dunklem Kopf.",
+    "observationTip": "Nicht überall gezielt zu finden; am ehesten im Winter in Gänsetrupps auf Küstenwiesen und großen Feldern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Art in Deutschland; Bestimmung innerhalb von Gänsetrupps später gegenprüfen."
   },
   {
     "id": "vogel_tundrasaatgans",
@@ -424,18 +490,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Feuchtwiesen",
+      "Ackerflächen",
+      "Flussniederungen"
+    ],
+    "distributionGermany": "Vor allem im Winterhalbjahr als Rast- und Wintergast in mehreren Regionen.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Winter auf offenen Feldern und Gewässern.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Braune Saatgans mit dunklem Kopf und variablem orangefarbenem Band auf dem Schnabel.",
+    "observationTip": "Im Winter auf großen Feldern, Flussniederungen und Seen in rastenden Gänsetrupps nach dieser Art Ausschau halten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Häufigkeit regional unterschiedlich; Abgrenzung zur Waldsaatgans später nochmals prüfen."
   },
   {
     "id": "vogel_blaessgans",
@@ -446,18 +520,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Auen",
+      "Ackerflächen",
+      "Feuchtwiesen"
+    ],
+    "distributionGermany": "Vor allem im Winterhalbjahr verbreiteter Rast- und Wintergast, regional regelmäßig.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Herbst bis Frühjahr an offenen Gewässern und Feldern.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Braungraue Gans mit weißer Stirnblesse und dunklen Querflecken am Bauch.",
+    "observationTip": "Im Winter auf Feldern und Feuchtflächen oft in größeren Gänsetrupps zu beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßiger Wintergast, aber regional unterschiedlich häufig."
   },
   {
     "id": "vogel_zwerggans",
@@ -468,18 +550,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Feuchtwiesen",
+      "Ackerflächen",
+      "Küstenbereiche"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast im Winterhalbjahr.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Winter bei seltenen Beobachtungen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine Gans mit weißer Stirnblesse, kurzem rosa Schnabel und auffälligem gelbem Augenring.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in Blässgans-Trupps.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; Bestimmung und Häufigkeitsangaben später sorgfältig prüfen."
   },
   {
     "id": "vogel_hoeckerschwan",
@@ -490,18 +580,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Teiche",
+      "Flüsse",
+      "Parks"
+    ],
+    "distributionGermany": "Bundesweit an vielen Gewässern häufig und ganzjährig präsent.",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut auf ruhigen Gewässern sichtbar.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Großer weißer Schwan mit orangefarbenem Schnabel und schwarzem Höcker an der Schnabelbasis.",
+    "observationTip": "An Seen, Parkteichen und langsam fließenden Gewässern oft sehr leicht zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr auffällige und häufige Art; Beobachtbarkeit im Spiel vermutlich hoch."
   },
   {
     "id": "vogel_zwergschwan",
@@ -512,18 +611,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Flachgewässer",
+      "Küstenbuchten",
+      "Feuchtwiesen"
+    ],
+    "distributionGermany": "Seltener Wintergast, vor allem im Norden und Nordosten.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Winter auf offenen Gewässern und Wiesen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner weißer Schwan mit kurzem Hals und überwiegend schwarzem Schnabel mit gelbem Vorderteil.",
+    "observationTip": "Im Winter an größeren Seen und Küstenbuchten gelegentlich unter anderen Schwänen zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Art in Deutschland; Abgrenzung zum Singschwan später prüfen."
   },
   {
     "id": "vogel_singschwan",
@@ -534,18 +641,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Flachgewässer",
+      "Feuchtwiesen",
+      "Küstenbuchten"
+    ],
+    "distributionGermany": "Regelmäßiger Wintergast an größeren Gewässern und offenen Feuchtflächen.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Winter auf größeren offenen Gewässern.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Großer weißer Schwan mit langem Hals und gelb-schwarzem Schnabel.",
+    "observationTip": "Im Winter an Seen, Küstenbuchten und überstauten Wiesen oft gut sichtbar.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßiger Wintergast, aber regional unterschiedlich häufig."
   },
   {
     "id": "vogel_nilgans",
@@ -556,18 +671,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Flüsse",
+      "Teiche",
+      "Parkanlagen"
+    ],
+    "distributionGermany": "In vielen Regionen eingebürgert und an Gewässern inzwischen regelmäßig.",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig an Gewässern, Wiesen und Parkflächen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Große hellbraune Gans mit dunklem Augenfleck, rötlichem Rücken und langen rosa Beinen.",
+    "observationTip": "An städtischen und ländlichen Gewässern häufig offen auf Uferflächen oder Wiesen anzutreffen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Gebietsfremde und vielerorts etablierte Art; Häufigkeit regional prüfen."
   },
   {
     "id": "vogel_brandgans",
@@ -578,18 +701,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Wattenmeer",
+      "Salzwiesen",
+      "Brackgewässer"
+    ],
+    "distributionGermany": "Vor allem an Nord- und Ostseeküste regelmäßig, im Binnenland deutlich seltener.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst an den Küsten besonders auffällig.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Große auffällige Ente mit weißem Körper, dunklem Kopf und breitem kastanienbraunem Brustband.",
+    "observationTip": "An Küstenwatten, Salzwiesen und flachen Buchten oft gut auf offenen Flächen oder im seichten Wasser zu sehen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "An Küsten regelmäßig, im Binnenland nur lokal oder auf dem Durchzug."
   },
   {
     "id": "vogel_rostgans",
@@ -600,18 +732,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Kiesgruben",
+      "Stauseen",
+      "offene Uferbereiche"
+    ],
+    "distributionGermany": "In Deutschland lokal eingebürgert und regional unregelmäßig.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst an größeren offenen Gewässern.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Große orangebraune Gansente mit hellem Kopf und langen Beinen.",
+    "observationTip": "Nicht überall gezielt zu finden; am ehesten an größeren Seen, Kiesgruben oder Stauseen mit offenen Ufern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Gebietsfremde bzw. regionale Vorkommen; Beobachtbarkeit später regional einordnen."
   },
   {
     "id": "vogel_mandarinente",
@@ -622,18 +762,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Parks",
+      "Teiche",
+      "Seen",
+      "baumreiche Gewässer"
+    ],
+    "distributionGermany": "Lokal eingebürgert und vor allem in Parks und an ruhigen Gewässern regelmäßig.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut an ruhigen Park- und Waldgewässern.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine auffällige Ente; Männchen mit orangefarbenen Segeln, weißem Gesichtsmuster und buntem Gefieder, Weibchen grau-braun mit hellem Augenring.",
+    "observationTip": "An parkartigen Gewässern, Teichen und baumreichen Ufern oft früh morgens oder tagsüber gut sichtbar.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Gebietsfremde Art mit lokal etablierten Beständen; regionale Verbreitung später prüfen."
   },
   {
     "id": "vogel_knaekente",
@@ -644,18 +792,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Flachgewässer",
+      "Röhrichte",
+      "Teiche",
+      "Auen"
+    ],
+    "distributionGermany": "Seltene Brut- und Zugvogelart in geeigneten Feuchtgebieten.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer in flachen, vegetationsreichen Gewässern.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine schlanke Ente; Männchen mit markantem weißem Überaugenstreif und fein gemustertem Körper, Weibchen unscheinbar braun.",
+    "observationTip": "An flachen, ruhigen Teichen und Auen mit viel Röhricht vor allem im Frühjahr nach ruhenden Paaren suchen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Brutvorkommen lückenhaft; Beobachtbarkeit in Deutschland eher begrenzt."
   },
   {
     "id": "vogel_blaufluegelente",
@@ -666,18 +822,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Flachgewässer",
+      "Sümpfe",
+      "Teiche",
+      "Feuchtwiesen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Irrgast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Herbst bei seltenen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine Ente; Männchen mit dunklem Kopf, weißem Gesichtshalbmond und blauem Flügelvorderfeld, Weibchen braun gesprenkelt.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an geeigneten Feuchtgebieten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Irrgast; Nachweise und Häufigkeit später gesondert prüfen."
   },
   {
     "id": "vogel_loeffelente",
@@ -688,18 +852,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Flachgewässer",
+      "Teiche",
+      "Feuchtwiesen",
+      "Röhrichte"
+    ],
+    "distributionGermany": "Regional verbreiteter Brut- und Rastvogel in geeigneten Feuchtgebieten.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst an flachen, nahrungsreichen Gewässern.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroße Ente mit sehr breitem löffelförmigem Schnabel; Männchen mit grünem Kopf und weißer Brust, Weibchen braun gemustert.",
+    "observationTip": "An flachen Teichen und Feuchtwiesen tagsüber im Uferbereich oder beim gründelnden Nahrungssuchen entdecken.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Vorkommen regional konzentriert; Beobachtbarkeit an guten Feuchtgebieten dennoch ordentlich."
   },
   {
     "id": "vogel_schnatterente",
@@ -710,18 +883,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Teiche",
+      "Auen",
+      "Röhrichtzonen"
+    ],
+    "distributionGermany": "Regional regelmäßig, vor allem an nährstoffreichen Gewässern und im Winterhalbjahr verbreiteter.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst, im Winter an eisfreien Gewässern ebenfalls gut.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroße Ente; Männchen fein grau gemustert mit schwarzem Hinterteil, Weibchen unauffällig braun.",
+    "observationTip": "An ruhigen Seen und Teichen mit Röhricht tagsüber oft zwischen anderen Schwimmenten zu sehen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regional unterschiedlich häufig; unauffällige Weibchen erschweren die Bestimmung."
   },
   {
     "id": "vogel_pfeifente",
@@ -732,18 +913,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Küstenbuchten",
+      "Feuchtwiesen",
+      "Flachwasserzonen"
+    ],
+    "distributionGermany": "Vor allem im Winterhalbjahr und auf dem Zug regelmäßiger Gast.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Herbst bis Frühjahr an offenen Gewässern und Küsten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kompakte Ente; Männchen mit kastanienbraunem Kopf und gelblicher Stirn, Weibchen warmbraun und eher schlicht.",
+    "observationTip": "Im Winter an Seen, Küstenbuchten und überschwemmten Wiesen oft in gemischten Ententrupps zu finden.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßiger Zug- und Wintergast; regionale Schwerpunkte beachten."
   },
   {
     "id": "vogel_kanadapfeifente",
@@ -754,18 +943,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Küstenbuchten",
+      "Teiche",
+      "Feuchtwiesen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Irrgast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Winterhalbjahr bei seltenen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schwimmente; Männchen mit weißlicher Stirn, grünem Augenfeld und rosabrauner Brust, Weibchen unauffällig braun.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; am ehesten zufällig unter Pfeifenten an größeren Gewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; Verwechslungsgefahr mit Pfeifente später prüfen."
   },
   {
     "id": "vogel_stockente",
@@ -776,18 +973,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Teiche",
+      "Flüsse",
+      "Parks"
+    ],
+    "distributionGermany": "Bundesweit an nahezu allen geeigneten Gewässern sehr weit verbreitet.",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut tagsüber an Gewässern sichtbar.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroße Ente; Männchen mit grünem Kopf und gelbem Schnabel, Weibchen braun gemustert mit orangebraunem Schnabel.",
+    "observationTip": "An Seen, Teichen, Flüssen und Parkgewässern fast immer leicht zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr häufige Art und wichtige Vergleichsart für andere Enten; Beobachtbarkeit im Spiel wohl hoch."
   },
   {
     "id": "vogel_spiessente",
@@ -798,18 +1004,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Flachseen",
+      "Küstenbuchten",
+      "Feuchtwiesen",
+      "Rastgewässer"
+    ],
+    "distributionGermany": "Vor allem auf dem Zug und im Winterhalbjahr regelmäßiger Gast.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Herbst bis Frühjahr an flachen offenen Gewässern.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanke Ente mit langem Hals; Männchen mit spitz ausgezogenem Schwanz und braunem Kopf, Weibchen braun gemustert.",
+    "observationTip": "Auf flachen Seen und Küstenbuchten oft in ruhenden Ententrupps, besonders außerhalb der Brutzeit.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßiger Gast, aber Brutvorkommen in Deutschland nur lokal."
   },
   {
     "id": "vogel_krickente",
@@ -820,18 +1034,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Teiche",
+      "Flachgewässer",
+      "Auen",
+      "Feuchtwiesen"
+    ],
+    "distributionGermany": "Regelmäßiger Durchzügler und Wintergast, lokal auch Brutvogel.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Herbst bis Frühjahr an flachen, vegetationsreichen Gewässern.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr kleine Ente; Männchen mit kastanienbraunem Kopf und grünem Augenfeld, Weibchen fein braun gemustert.",
+    "observationTip": "An flachen Uferzonen, Teichen und Auwasserflächen oft in kleinen Trupps gut zu sehen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige Art in Zug- und Winterzeit; Bestände regional verschieden."
   },
   {
     "id": "vogel_carolinakrickente",
@@ -842,18 +1065,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Teiche",
+      "Seen",
+      "Feuchtgebiete",
+      "Rastgewässer"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Gast.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Winterhalbjahr bei einzelnen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine Ente; Männchen mit grünem Augenfeld bis in den Nacken und heller Seitenzeichnung, Weibchen braun gemustert.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig in Krickentrupps an Gewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Art in Deutschland; teils auch Herkunft aus Gefangenschaft denkbar."
   },
   {
     "id": "vogel_marmelente",
@@ -864,18 +1095,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Flachgewässer",
+      "Lagunen",
+      "Feuchtgebiete",
+      "Schilfgewässer"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Irrgast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Bei sehr seltenen Beobachtungen vor allem im Frühjahr oder Herbst.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelkleine hellbraune Ente mit dicht gesprenkeltem Gefieder, dunkler Augenmaske und blassem Schnabel.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an größeren Feuchtgebieten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Irrgast; Beobachtungsangaben später mit besonderer Vorsicht behandeln."
   },
   {
     "id": "vogel_kolbenente",
@@ -886,18 +1125,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Teiche",
+      "Altwasser",
+      "Röhrichtgewässer"
+    ],
+    "distributionGermany": "Regional verbreitet, vor allem an größeren vegetationsreichen Gewässern.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst an stillen Gewässern besonders gut zu beobachten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige Tauchente; Männchen mit rundem orangebraunem Kopf und rotem Schnabel, Weibchen graubraun mit heller Wange.",
+    "observationTip": "An größeren Seen und Altwässern tagsüber oft schwimmend oder tauchend in Ufernähe zu sehen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regionale Schwerpunkte in Deutschland; außerhalb davon deutlich seltener."
   },
   {
     "id": "vogel_tafelente",
@@ -908,18 +1155,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Teiche",
+      "Baggerseen",
+      "Altwasser"
+    ],
+    "distributionGermany": "Regelmäßiger Brut- und Wintervogel an größeren Gewässern, regional verbreitet.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Herbst bis Frühjahr sowie in der Brutzeit an geeigneten Gewässern.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige Tauchente; Männchen mit rotbraunem Kopf, schwarzer Brust und grauem Rücken, Weibchen braun mit dunklem Schnabel.",
+    "observationTip": "An größeren Seen und Baggerseen oft in Trupps auf offenem Wasser oder tauchend nach Nahrung.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Bestände regional unterschiedlich; häufigkeit im Spiel später gegen aktuelle Entwicklung prüfen."
   },
   {
     "id": "vogel_moorente",
@@ -930,18 +1186,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Flachseen",
+      "Altwasser",
+      "Schilfgewässer",
+      "Teiche"
+    ],
+    "distributionGermany": "In Deutschland selten und lokal, vor allem in wenigen geeigneten Feuchtgebieten.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst an ruhigen, gut bewachsenen Gewässern.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Dunkel kastanienbraune Tauchente mit heller Unterseite und auffallend weißem Unterschwanz.",
+    "observationTip": "Nur lokal anzutreffen; am ehesten an ruhigen Schilfseen und Altwässern mit dichter Vegetation.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Art mit kleinem Vorkommen; Beobachtungsangaben später genau prüfen."
   },
   {
     "id": "vogel_ringschnabelente",
@@ -952,18 +1216,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Teiche",
+      "Baggerseen",
+      "Rastgewässer"
+    ],
+    "distributionGermany": "In Deutschland seltener Gast, meist im Winterhalbjahr.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Frühjahr bei vereinzelten Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroße Tauchente; Männchen mit dunklem Kopf, grauem Körper und hellem Ring am Schnabel, Weibchen braun mit hellem Augenring.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig unter Tafel- oder Reiherenten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltener Gast; Bestimmungsmerkmale gegen ähnliche Arten später prüfen."
   },
   {
     "id": "vogel_reiherente",
@@ -974,18 +1246,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Baggerseen",
+      "Flüsse",
+      "Hafenbecken"
+    ],
+    "distributionGermany": "Weit verbreiteter Brut- und Wintervogel an größeren Gewässern.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut auf offenen Gewässern sichtbar.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schwarzweiße Tauchente; Männchen mit schwarzem Kopf und kleiner Federhaube, Weibchen dunkelbraun mit hellerem Bauch.",
+    "observationTip": "An Seen, Baggerseen und ruhigen Flussabschnitten oft in Trupps auf offenem Wasser zu finden.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige und gut beobachtbare Art, besonders im Winterhalbjahr."
   },
   {
     "id": "vogel_bergente",
@@ -996,18 +1277,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küstengewässer",
+      "große Seen",
+      "Buchten",
+      "Stauseen"
+    ],
+    "distributionGermany": "Vor allem im Winterhalbjahr regelmäßiger Gast an Küsten und größeren Seen.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Frühjahr auf offenem Wasser.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige Tauchente; Männchen mit hellem Rücken, dunkler Brust und schwarz glänzendem Kopf, Weibchen braun mit heller Schnabelbasis.",
+    "observationTip": "Im Winter an Küstenbuchten und großen offenen Seen in Ententrupps nach tauchenden Vögeln Ausschau halten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßiger Wintergast, aber nicht überall gleich häufig."
   },
   {
     "id": "vogel_kanadabergente",
@@ -1018,18 +1307,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "große Seen",
+      "Stauseen",
+      "Küstenbuchten",
+      "Hafenbereiche"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Winterhalbjahr bei seltenen Beobachtungen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Tauchente ähnlich der Bergente, mit dunklem Kopf, hellem Rücken und kompakter Gestalt.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; am ehesten zufällig auf größeren Seen oder an Küsten unter Bergenten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; Abgrenzung zur Bergente später sorgfältig prüfen."
   },
   {
     "id": "vogel_scheckente",
@@ -1040,18 +1337,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küstengewässer",
+      "Buchten",
+      "Meeresufer",
+      "Inselküsten"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast an der Küste.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Winterhalbjahr bei seltenen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine kompakte Meeresente mit auffälligem Kopfprofil und kontrastreicher Zeichnung.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten und größeren Meeresbuchten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Irrgast; Beobachtungsdaten später genau prüfen."
   },
   {
     "id": "vogel_prachteiderente",
@@ -1062,18 +1367,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küstengewässer",
+      "Meeresbuchten",
+      "Inselküsten",
+      "offenes Meer"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast an Nord- und Ostsee.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Winterhalbjahr bei einzelnen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Auffällig gezeichnete Meeresente; Männchen mit hellem Kopf, bunten Kopfpartien und kräftigem Körperbau, Weibchen dunkelbraun.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder größeren Meeresbuchten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Extrem seltener Gast; später mit besonderer Vorsicht einordnen."
   },
   {
     "id": "vogel_eiderente",
@@ -1084,18 +1397,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küstengewässer",
+      "Inseln",
+      "Meeresbuchten",
+      "Häfen"
+    ],
+    "distributionGermany": "An Nord- und Ostseeküste regelmäßiger Brut- und Wintervogel.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig an den Küsten, besonders gut im Winterhalbjahr.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Große kräftige Meeresente; Männchen schwarzweiß mit grünlichem Nacken, Weibchen braun quergebändert.",
+    "observationTip": "An Küsten, Häfen und Meeresbuchten häufig auf offenem Wasser oder nahe Uferstrukturen zu sehen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Küstenart mit recht guten Beobachtungsmöglichkeiten an Nord- und Ostsee."
   },
   {
     "id": "vogel_kragenente",
@@ -1106,18 +1428,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küstengewässer",
+      "schnelle Bäche",
+      "Felsbuchten",
+      "große Seen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Winterhalbjahr bei vereinzelten Beobachtungen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine kontrastreiche Meeresente; Männchen mit dunklem Kopf, weißer Zeichnung und kastanienbraunen Flanken, Weibchen graubraun.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder großen Seen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; Beobachtungsangaben später gegenprüfen."
   },
   {
     "id": "vogel_brillenente",
@@ -1128,18 +1458,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küstengewässer",
+      "Meeresbuchten",
+      "offenes Meer",
+      "Hafenbereiche"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Irrgast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Bei sehr seltenen Nachweisen meist im Winterhalbjahr.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige dunkle Meeresente; Männchen mit markantem weißem Fleck an Schnabel und Auge, Weibchen braun.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder größeren Gewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Irrgast; Datenlage später besonders sorgfältig prüfen."
   },
   {
     "id": "vogel_samtente",
@@ -1150,18 +1488,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küstengewässer",
+      "Seen",
+      "Buchten",
+      "offenes Meer"
+    ],
+    "distributionGermany": "Regelmäßiger Wintergast, vor allem an den Küsten und auf großen Seen.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Frühjahr an offenem Wasser.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Große dunkle Meeresente; Männchen schwarz mit kleinem weißem Augenfleck, Weibchen braun mit hellen Wangenpartien.",
+    "observationTip": "Im Winter an Küsten und großen Seen oft auf offenem Wasser in kleinen Gruppen zu beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßiger Wintergast, Schwerpunkt an Küsten und großen Binnengewässern."
   },
   {
     "id": "vogel_kamtschatkasamtente",
@@ -1172,18 +1518,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küstengewässer",
+      "Meeresbuchten",
+      "große Seen",
+      "offenes Meer"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Winterhalbjahr bei seltenen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Große dunkle Meeresente mit kräftigem Schnabel und hellen Partien am Kopf.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder großen Seen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltene Art; Abgrenzung zur Samtente später gründlich prüfen."
   },
   {
     "id": "vogel_trauerente",
@@ -1194,18 +1548,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küstengewässer",
+      "Buchten",
+      "große Seen",
+      "offenes Meer"
+    ],
+    "distributionGermany": "Regelmäßiger Wintergast, besonders an Nord- und Ostseeküste.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Frühjahr an Küsten und großen Seen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kompakte dunkle Meeresente; Männchen schwarz mit gelboranger Schnabelbasis, Weibchen braun mit heller Wange.",
+    "observationTip": "Im Winter an Küstengewässern und größeren Seen auf offenem Wasser nach kleinen Trupps suchen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßiger Wintergast; deutscher Name im Tierbestand später auf Schreibfehler prüfen."
   },
   {
     "id": "vogel_pazifiktrauerente",
@@ -1216,18 +1578,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küstengewässer",
+      "Buchten",
+      "offenes Meer",
+      "große Seen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Winterhalbjahr bei sehr seltenen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Dunkle Meeresente ähnlich der Trauerente, mit markantem Schnabelprofil und kompakter Gestalt.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder großen Seen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; deutscher Name im Tierbestand später auf Schreibfehler prüfen."
   },
   {
     "id": "vogel_eisente",
@@ -1238,18 +1608,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küstengewässer",
+      "Meeresbuchten",
+      "große Seen",
+      "offenes Meer"
+    ],
+    "distributionGermany": "Vor allem im Winterhalbjahr an Nord- und Ostsee sowie auf großen Seen zu beobachten.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Frühjahr auf offenem Wasser.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanke Meeresente mit langem Schwanz; Männchen auffällig schwarzweiß, Weibchen braun mit hellem Kopfbereich.",
+    "observationTip": "Im Winter vor allem an Küsten und auf großen Seen auf offene Wasserflächen achten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßiger Wintergast, aber mit deutlichen regionalen Schwerpunkten."
   },
   {
     "id": "vogel_schellente",
@@ -1260,18 +1638,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Flüsse",
+      "Stauseen",
+      "große Teiche"
+    ],
+    "distributionGermany": "Regelmäßiger Wintergast und regional auch Brutvogel an geeigneten Gewässern.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Frühjahr, regional auch zur Brutzeit.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige Taucherente; Männchen schwarzweiß mit rundem weißen Wangenfleck, Weibchen graubraun mit dunkelbraunem Kopf.",
+    "observationTip": "An Seen und langsam fließenden Gewässern oft tauchend oder ruhend auf offenem Wasser zu sehen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Gut beobachtbare Art im Winterhalbjahr; Brutvorkommen regional begrenzt."
   },
   {
     "id": "vogel_spatelente",
@@ -1282,18 +1669,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "große Seen",
+      "Küstengewässer",
+      "Buchten",
+      "offenes Wasser"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Winterhalbjahr bei sehr seltenen Beobachtungen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige Tauchente; Männchen mit hellem Kopf, dunklem Rücken und auffälligem Kopfprofil, Weibchen braun.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig auf großen Seen oder an Küsten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; Bestimmung später gegen ähnliche Arten absichern."
   },
   {
     "id": "vogel_zwergsaeger",
@@ -1304,18 +1699,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Flüsse",
+      "Stauseen",
+      "Hafenbecken"
+    ],
+    "distributionGermany": "Regelmäßiger Wintergast an größeren Gewässern.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Frühjahr auf ruhigen Gewässern.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner schlanker Säger; Männchen überwiegend weiß mit schwarzer Gesichtszeichnung, Weibchen grau mit kastanienbraunem Kopf und Federhaube.",
+    "observationTip": "Im Winter an Seen und langsam fließenden Flüssen oft in kleinen Trupps auf offenem Wasser zu sehen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßiger Wintergast, regional unterschiedlich häufig."
   },
   {
     "id": "vogel_gaensesaeger",
@@ -1326,18 +1729,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Flüsse",
+      "Stauseen",
+      "Küstenbuchten"
+    ],
+    "distributionGermany": "Regelmäßiger Wintergast und regional Brutvogel an größeren Gewässern.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Herbst bis Frühjahr, regional auch im Sommer an Brutgewässern.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Großer schlanker Säger mit langem rotem Hakenschnabel; Männchen hell mit dunklem Kopf, Weibchen grau mit rotbraunem Kopf.",
+    "observationTip": "An Seen und Flüssen oft auf offenem Wasser schwimmend oder nach Fischen tauchend zu entdecken.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßig zu beobachten, besonders an größeren Gewässern im Winter."
   },
   {
     "id": "vogel_mittelsaeger",
@@ -1348,18 +1760,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küstengewässer",
+      "Seen",
+      "Buchten",
+      "Hafenbecken"
+    ],
+    "distributionGermany": "Regelmäßiger Küsten- und Wintergast, an Binnengewässern seltener.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Herbst bis Frühjahr an Küsten und größeren Seen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker Säger mit schmalem rotem Schnabel und zottiger Federhaube; Männchen kontrastreich schwarzweiß mit rostbrauner Brust, Weibchen graubraun.",
+    "observationTip": "An Küsten und großen Seen oft auf offenem Wasser nach fischenden Einzelvögeln oder kleinen Gruppen suchen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "An Küsten regelmäßiger als im Binnenland; regionale Unterschiede beachten."
   },
   {
     "id": "vogel_schwarzkopf-ruderente",
@@ -1370,18 +1790,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Lagunen",
+      "Teiche",
+      "Schilfgewässer"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Gast, teils aus eingebürgerten Beständen stammend.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Winterhalbjahr an ruhigen Gewässern.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine kompakte Ente mit steifem Schwanz; Männchen kastanienbraun mit schwarzem Kopf und bläulichem Schnabel, Weibchen braun.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig an größeren ruhigen Seen oder Teichen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Gebietsfremde bzw. problematische Art; Status und Häufigkeit später genau prüfen."
   },
   {
     "id": "vogel_weisskopf-ruderente",
@@ -1392,18 +1820,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Lagunen",
+      "Flachgewässer",
+      "Schilfgebiete"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast und lokale Ausnahmeerscheinung.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Winterhalbjahr bei seltenen Beobachtungen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine kräftige Ente mit weißem Kopf, blauem Schnabel beim Männchen und steifem Schwanz.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder größeren Gewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene und schutzrelevante Art; Angaben später besonders sorgfältig prüfen."
   },
   {
     "id": "vogel_nachtschwalbe",
