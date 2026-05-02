@@ -3562,6 +3562,27 @@
     "reviewNote": "Sehr seltener Gast; Beobachtungsangaben später gegenprüfen."
   },
   {
+    "id": "vogel_krauskopfpelikan",
+    "habitats": [
+      "große Seen",
+      "Flussdeltas",
+      "Lagunen",
+      "weite Flachwasserzonen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast und Ausnahmeerscheinung.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Sommer bei einzelnen Nachweisen.",
+    "shortDescription": "Sehr großer grauweißer Pelikan mit gewelltem Nacken- und Kopfgefieder, langem Schnabel und großem Kehlsack.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an großen offenen Gewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Ausnahmeart in Deutschland; Beobachtungsangaben später sorgfältig prüfen."
+  },
+  {
     "id": "vogel_krickente",
     "habitats": [
       "Teiche",
@@ -5255,6 +5276,48 @@
     ],
     "needsReview": true,
     "reviewNote": "In geeigneten Feuchtgebieten regelmäßig, regional aber stark gebunden; Häufigkeit später noch prüfen."
+  },
+  {
+    "id": "vogel_rosaflamingo",
+    "habitats": [
+      "Lagunen",
+      "Salinen",
+      "flache Küstengewässer",
+      "große Flachseen"
+    ],
+    "distributionGermany": "In Deutschland unregelmäßig, teils als Ausnahmegast, teils aus Gefangenschaft entflogen; lokale Brutversuche sind selten und besonders einzuordnen.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Am ehesten Frühjahr bis Herbst bei einzelnen Nachweisen an großen Flachgewässern.",
+    "shortDescription": "Großer langbeiniger Vogel mit blass rosa Gefieder, sehr langem Hals und abwärts geknicktem rosa-schwarzem Schnabel.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig an großen flachen Gewässern, Salinen oder Küstenlagunen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Status in Deutschland kann zwischen Wildvogel, Gefangenschaftsflüchtling und lokalem Brutereignis schwanken; Angaben später sorgfältig prüfen."
+  },
+  {
+    "id": "vogel_rosapelikan",
+    "habitats": [
+      "große Seen",
+      "Lagunen",
+      "Küstengewässer",
+      "weite Flachwasserbereiche"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast; einzelne Beobachtungen können auch auf Gefangenschaftsflüchtlinge zurückgehen.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Sommer bei sehr wenigen Nachweisen.",
+    "shortDescription": "Sehr großer heller Pelikan mit langem Schnabel, großem Kehlsack und überwiegend weißlich-rosafarbener Gesamterscheinung.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an großen Seen oder Küstengewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr seltener Gast; Herkunft einzelner Vögel später besonders kritisch prüfen."
   },
   {
     "id": "vogel_rosenmoewe",
