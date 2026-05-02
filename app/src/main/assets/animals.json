@@ -2882,18 +2882,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "kleine Seen",
+      "Teiche",
+      "Altwasser",
+      "ruhige Gräben"
+    ],
+    "distributionGermany": "Regional weit verbreitet an kleinen bis mittelgroßen ruhigen Gewässern.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut an ruhigen Gewässern sichtbar.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr kleiner Taucher mit rundlichem Körper, kurzem Hals, dunkler Oberseite und im Prachtkleid kastanienbraunem Halsbereich.",
+    "observationTip": "An kleinen ruhigen Teichen und Altwässern oft schwimmend oder kurz abtauchend gut zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige Art geeigneter Kleingewässer mit meist guter Beobachtbarkeit."
   },
   {
     "id": "vogel_bindentaucher",
@@ -2904,18 +2913,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Teiche",
+      "Flachgewässer",
+      "Rastgewässer"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Winterhalbjahr bei sehr wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner gedrungener Taucher mit dickem hellem Schnabel, dunkler Oberseite und heller Kehle.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig auf größeren ruhigen Seen oder Rastgewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; spätere Prüfung der Angaben und Bestimmung sinnvoll."
   },
   {
     "id": "vogel_rothalstaucher",
@@ -2926,18 +2943,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Stauseen",
+      "Küstenbuchten",
+      "offene größere Gewässer"
+    ],
+    "distributionGermany": "Regional Brutvogel und regelmäßiger Durchzügler, vor allem an größeren Gewässern.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr und Herbst auf dem Zug, lokal auch in der Brutzeit.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroßer Taucher mit langem Hals; im Prachtkleid mit rostrotem Hals, dunklem Kopf und hellem Gesicht.",
+    "observationTip": "An größeren Seen und Küstenbuchten am ehesten auf offenem Wasser zu beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regional unterschiedlich häufig; Beobachtbarkeit meist an größeren Gewässern."
   },
   {
     "id": "vogel_haubentaucher",
@@ -2948,18 +2973,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Teiche",
+      "Stauseen",
+      "größere Parkgewässer"
+    ],
+    "distributionGermany": "Bundesweit an größeren geeigneten Gewässern weit verbreitet und regelmäßig.",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders auffällig in Frühjahr und Sommer.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Großer Taucher mit langem Hals, schlankem Schnabel und im Prachtkleid auffälliger Federhaube und rostschwarzem Kragen.",
+    "observationTip": "Auf größeren Seen und Teichen oft sehr gut auf offenem Wasser oder bei Balz und Nahrungssuche zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Häufige und gut erkennbare Art größerer Gewässer."
   },
   {
     "id": "vogel_ohrentaucher",
@@ -2970,18 +3004,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küstengewässer",
+      "Seen",
+      "Buchten",
+      "Rastgewässer"
+    ],
+    "distributionGermany": "Regelmäßiger, aber eher seltener Gast, vor allem im Winterhalbjahr.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Frühjahr an Küsten und größeren Seen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner bis mittelgroßer Taucher mit dunklem Kopf, rotem Auge und im Prachtkleid goldenen Federbüscheln seitlich am Kopf.",
+    "observationTip": "Am ehesten auf größeren Seen und Küstengewässern im Winterhalbjahr zwischen anderen Tauchern zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßiger Gast, aber insgesamt nicht häufig; Küsten und große Seen sind wichtig."
   },
   {
     "id": "vogel_schwarzhalstaucher",
@@ -2992,18 +3034,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Teiche",
+      "Lagunen",
+      "größere Flachgewässer"
+    ],
+    "distributionGermany": "Regional Brutvogel und regelmäßiger Durchzügler an geeigneten Gewässern.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst, auf dem Zug und an Brutgewässern am besten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner Taucher mit dunklem Hals, rotem Auge und im Prachtkleid goldfarbenen Federbüscheln seitlich am Kopf.",
+    "observationTip": "An größeren flachen Seen und Lagunen am ehesten auf offenem Wasser oder in lockeren Trupps zu beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regionale Art; Beobachtbarkeit hängt stark von passenden Gewässern ab."
   },
   {
     "id": "vogel_rosaflamingo",
@@ -6415,18 +6465,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küstengewässer",
+      "größere Seen",
+      "Buchten",
+      "offenes Wasser"
+    ],
+    "distributionGermany": "Regelmäßiger, aber eher seltener Gast, vor allem im Winterhalbjahr und auf dem Zug.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Frühjahr an Küsten und großen Seen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker Seetaucher mit langem Hals, feinem Schnabel und im Prachtkleid rotem Kehlfleck.",
+    "observationTip": "Am ehesten an Küstengewässern oder auf großen Seen im Winterhalbjahr auf offenem Wasser zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßiger Gast, aber Beobachtungen konzentrieren sich auf größere offene Gewässer."
   },
   {
     "id": "vogel_prachttaucher",
@@ -6437,18 +6495,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küstengewässer",
+      "Buchten",
+      "große Seen",
+      "offenes Wasser"
+    ],
+    "distributionGermany": "Regelmäßiger Gast im Winterhalbjahr und auf dem Zug, vor allem an Küsten und größeren Seen.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Frühjahr an offenen Gewässern.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Großer Seetaucher mit kräftigem Schnabel, dunklem Kopf und im Prachtkleid auffälliger schwarz-weiß gemusterter Halszeichnung.",
+    "observationTip": "An größeren Seen und Küstengewässern im Winterhalbjahr am ehesten auf offenem Wasser zu beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßiger Gast; Beobachtbarkeit meist auf größere offene Wasserflächen beschränkt."
   },
   {
     "id": "vogel_eistaucher",
@@ -6459,18 +6525,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küstengewässer",
+      "große Seen",
+      "offenes Wasser",
+      "Buchten"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Wintergast.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Frühjahr an Küsten und großen Seen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr großer Seetaucher mit massivem Schnabel, dunklem Kopf und kontrastreicher hell-dunkler Körperzeichnung.",
+    "observationTip": "Nicht gezielt leicht zu finden; am ehesten auf großen Seen oder Küstengewässern im Winterhalbjahr zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Gastart; spätere Prüfung der Häufigkeit und Bestimmung sinnvoll."
   },
   {
     "id": "vogel_gelbschnabeltaucher",
@@ -6481,18 +6555,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küstengewässer",
+      "große Seen",
+      "offenes Wasser",
+      "Meeresbuchten"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Irrgast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Winterhalbjahr bei sehr wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr großer Seetaucher mit hellem kräftigem gelblichem Schnabel, dunklem Kopf und schwerem Körperbau.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder großen Seen im Winter.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; Beobachtungsangaben später besonders vorsichtig prüfen."
   },
   {
     "id": "vogel_buntfuss-sturmschwalbe",
@@ -6893,18 +6975,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Flüsse",
+      "Lagunen",
+      "Schilfgewässer"
+    ],
+    "distributionGermany": "In Deutschland regional und eher selten, mit Schwerpunkten im Osten und Südosten.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst an geeigneten Gewässern, teils auch im Winter sichtbar.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine dunkle Scharbe mit schlankem Hals, kurzem Haken­schnabel und kompakter Gestalt.",
+    "observationTip": "An größeren Seen, Flüssen und Schilfgewässern oft auf Ästen, Pfählen oder offenem Wasser zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regionale Art in Deutschland; Beobachtbarkeit an passenden Gewässern möglich."
   },
   {
     "id": "vogel_kraehenscharbe",
@@ -6915,18 +7005,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Felsküsten",
+      "Meeresufer",
+      "Küstenkliffe",
+      "Küstengewässer"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast, vor allem an den Küsten.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Winterhalbjahr an Küsten bei wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Dunkle Scharbe mit schlankem Hals, relativ langem Schnabel und insgesamt zierlicherem Körperbau als der Kormoran.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an felsigen Küstenabschnitten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Küstenart; spätere Bestimmungsprüfung gegen Kormoran sinnvoll."
   },
   {
     "id": "vogel_kormoran",
@@ -6937,18 +7035,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Flüsse",
+      "Küstengewässer",
+      "Stauseen"
+    ],
+    "distributionGermany": "Bundesweit an größeren Gewässern weit verbreitet und regelmäßig.",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut an offenen Gewässern sichtbar.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Großer dunkler Wasservogel mit langem Hals, Haken­schnabel und ausgebreiteten Flügeln beim Trocknen.",
+    "observationTip": "An Seen, Flüssen und Küstengewässern oft auf Pfählen, Bäumen oder offenem Wasser leicht zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Häufige und gut sichtbare Art vieler größerer Gewässer."
   },
   {
     "id": "vogel_sichler",
