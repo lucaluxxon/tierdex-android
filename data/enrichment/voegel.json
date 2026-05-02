@@ -1,5 +1,47 @@
 [
   {
+    "id": "vogel_alpendohle",
+    "habitats": [
+      "Hochgebirge",
+      "Felsregionen",
+      "Almen",
+      "Gebirgssiedlungen"
+    ],
+    "distributionGermany": "In Deutschland auf die Alpen beschränkt, dort regional regelmäßig.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Sommer bis Herbst, besonders in offenen Hochlagen und an Bergstationen.",
+    "shortDescription": "Schwarzer, glänzender Rabenvogel mit gelbem Schnabel, heller Iris und kurzerem Schwanz.",
+    "observationTip": "In alpinen Lagen an Felswänden, Almen und Berghütten oft in Trupps gut zu beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Außerhalb der Alpen in Deutschland kaum relevant; Häufigkeit im Spiel später ggf. noch enger an alpine Regionen koppeln."
+  },
+  {
+    "id": "vogel_alpenkraehe",
+    "habitats": [
+      "Felswände",
+      "Almen",
+      "Hochgebirge",
+      "steile Berghänge"
+    ],
+    "distributionGermany": "In Deutschland auf alpine Gebirgslagen der Alpen beschränkt.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Sommer bis Herbst in offenen Hochlagen am besten sichtbar.",
+    "shortDescription": "Schlanker schwarzer Rabenvogel mit glänzendem Gefieder, rotem Schnabel und roten Beinen.",
+    "observationTip": "In hochalpinen Felslandschaften und an Almhängen nach truppweise fliegenden oder rufenden Vögeln Ausschau halten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Deutsche Vorkommen sind auf wenige alpine Gebiete beschränkt; Status später noch einmal mit aktuellen Quellen abgleichen."
+  },
+  {
     "id": "vogel_alpenschneehuhn",
     "habitats": [
       "Alpine Matten",
@@ -126,6 +168,28 @@
     "reviewNote": "Status in Deutschland ist sehr unsicher und meist ausnahmsweise; Einordnung später unbedingt noch einmal prüfen."
   },
   {
+    "id": "vogel_dohle",
+    "habitats": [
+      "Städte",
+      "Dörfer",
+      "Parks",
+      "offene Landschaften"
+    ],
+    "distributionGermany": "Regional weit verbreitet, besonders in Siedlungen, Kirchtürmen und offenen Kulturlandschaften.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut tagsüber in Siedlungen und auf Feldern sichtbar.",
+    "shortDescription": "Kleiner schwarzer Rabenvogel mit grauem Nacken, heller Iris und kompaktem Körper.",
+    "observationTip": "Achte in Städten, Dörfern und auf Feldern auf lebhafte Trupps sowie Höhlen in Gebäuden oder Bäumen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Bestände schwanken; Siedlungs- und Koloniebezug später ggf. noch genauer einarbeiten."
+  },
+  {
     "id": "vogel_dreizehenspecht",
     "habitats": [
       "Nadelwälder",
@@ -144,6 +208,50 @@
     ],
     "needsReview": true,
     "reviewNote": "Sehr lokal und an naturnahe Bergwälder gebunden; Status in Deutschland später noch einmal gegen aktuelle Daten prüfen."
+  },
+  {
+    "id": "vogel_eichelhaeher",
+    "habitats": [
+      "Laubwälder",
+      "Mischwälder",
+      "Parks",
+      "Waldränder"
+    ],
+    "distributionGermany": "Bundesweit in Wäldern, größeren Parks und strukturreichen Gehölzen verbreitet.",
+    "rarityGame": "häufig",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut im Herbst und an ruhigen Vormittagen sichtbar.",
+    "shortDescription": "Rostbrauner Rabenvogel mit hellblau schwarz gebändertem Flügelfeld, hellem Bürzel und schwarzem Schnurrbartstreif.",
+    "observationTip": "Suche ihn an Waldrändern, in Parks und alten Gärten, oft laut rufend oder zwischen Eichen unterwegs.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "In vielen Regionen häufig; Beobachtbarkeit in Siedlungsnähe könnte später noch feiner gewichtet werden."
+  },
+  {
+    "id": "vogel_elster",
+    "habitats": [
+      "Siedlungen",
+      "Parks",
+      "Gärten",
+      "Feldgehölze"
+    ],
+    "distributionGermany": "Bundesweit verbreitet, besonders in Siedlungen und halboffenen Landschaften.",
+    "rarityGame": "häufig",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut tagsüber in Siedlungen sichtbar.",
+    "shortDescription": "Auffälliger schwarz-weißer Rabenvogel mit sehr langem Schwanz und metallisch schimmernden Flügeln.",
+    "observationTip": "In Wohngebieten, Parks und an Feldrändern tagsüber leicht auf Bäumen, Dächern und Wiesen zu entdecken.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Als Kulturfolger oft sehr präsent; Spielhäufigkeit kann später eventuell noch mit anderen Siedlungsvögeln abgeglichen werden."
   },
   {
     "id": "vogel_gartenbaumlaeufer",
@@ -320,6 +428,28 @@
     "reviewNote": "Wegen seiner Unauffälligkeit oft untererfasst; Häufigkeit für das Spiel später noch einmal abgleichen."
   },
   {
+    "id": "vogel_kolkrabe",
+    "habitats": [
+      "Wälder",
+      "Mittelgebirge",
+      "Küstenfelsen",
+      "offene Landschaften"
+    ],
+    "distributionGermany": "Bundesweit verbreitet, besonders in waldreichen und störungsarmen Regionen.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut in den kühleren Jahreszeiten und an klaren Tagen sichtbar.",
+    "shortDescription": "Sehr großer schwarzer Rabenvogel mit massivem Schnabel, keilförmigem Schwanz und struppiger Kehle.",
+    "observationTip": "Halte in großen Waldgebieten, an Felsen oder über offenen Hängen nach tief rufenden, hoch kreisenden Vögeln Ausschau.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Art ist weit verbreitet, aber nicht überall gleich sichtbar; regionale Beobachtbarkeit später noch einmal feinjustieren."
+  },
+  {
     "id": "vogel_mittelspecht",
     "habitats": [
       "Laubwälder",
@@ -342,6 +472,28 @@
     "reviewNote": "Verbreitung ist stark an alte Laubwälder gebunden; regionale Häufigkeit später noch einmal verfeinern."
   },
   {
+    "id": "vogel_nebelkraehe",
+    "habitats": [
+      "Felder",
+      "Küsten",
+      "Siedlungen",
+      "Auenlandschaften"
+    ],
+    "distributionGermany": "Vor allem in Nord- und Ostdeutschland verbreitet, regional häufig.",
+    "rarityGame": "häufig",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut tagsüber in offenen Landschaften sichtbar.",
+    "shortDescription": "Großer Rabenvogel mit grauem Körper, schwarzem Kopf, schwarzen Flügeln und schwarzem Schwanz.",
+    "observationTip": "Suche sie in offenen Kulturlandschaften, an Küsten und in Siedlungsnähe oft einzeln oder paarweise.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Verbreitung grenzt regional an die der Rabenkrähe; Kartenstand später noch einmal prüfen."
+  },
+  {
     "id": "vogel_orientturteltaube",
     "habitats": [
       "lichte Wälder",
@@ -361,6 +513,28 @@
     ],
     "needsReview": true,
     "reviewNote": "Deutscher Status als Ausnahmeerscheinung sollte später mit aktuellen Nachweislisten noch einmal abgeglichen werden."
+  },
+  {
+    "id": "vogel_rabenkraehe",
+    "habitats": [
+      "Siedlungen",
+      "Felder",
+      "Wälder",
+      "Küstenlandschaften"
+    ],
+    "distributionGermany": "Vor allem in West- und Süddeutschland weit verbreitet, regional häufig.",
+    "rarityGame": "häufig",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut tagsüber in offenen und halboffenen Landschaften sichtbar.",
+    "shortDescription": "Kräftiger, ganz schwarzer Rabenvogel mit glänzendem Gefieder, starkem Schnabel und breiten Flügeln.",
+    "observationTip": "In Feldern, an Waldrändern, Küsten und in Siedlungsnähe tagsüber sehr gut zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Verbreitungsgrenze zur Nebelkrähe regional beachten; Spielhäufigkeit später noch differenzieren."
   },
   {
     "id": "vogel_rebhuhn",
@@ -405,6 +579,28 @@
     ],
     "needsReview": true,
     "reviewNote": "In vielen Regionen häufiger Kulturfolger; Saisonangabe später ggf. noch regional differenzieren."
+  },
+  {
+    "id": "vogel_saatkraehe",
+    "habitats": [
+      "Ackerlandschaften",
+      "Wiesen",
+      "Stadtränder",
+      "Parks"
+    ],
+    "distributionGermany": "Regional verbreitet, besonders in offenen Agrarlandschaften mit Brutkolonien.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders im Winterhalbjahr und an Brutkolonien auffällig.",
+    "shortDescription": "Schwarzer Rabenvogel mit schlankem Schnabel, glänzendem Gefieder und heller unbefiederter Schnabelbasis bei Altvögeln.",
+    "observationTip": "Suche große Trupps und Kolonien in Ackerlandschaften, auf Wiesen und an Stadträndern.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Kolonien machen die Art lokal auffällig, fehlen aber regional ganz; Häufigkeit später noch einmal fein abstimmen."
   },
   {
     "id": "vogel_schwarzspecht",
@@ -468,6 +664,26 @@
     ],
     "needsReview": true,
     "reviewNote": "Abgrenzung zu verwilderten Haustaubenformen ist fließend; Spielhäufigkeit später eventuell noch feiner abstimmen."
+  },
+  {
+    "id": "vogel_tannenhaeher",
+    "habitats": [
+      "Nadelwälder",
+      "Bergwälder",
+      "subalpine Wälder"
+    ],
+    "distributionGermany": "Vor allem in den Alpen und regional in höheren Mittelgebirgen verbreitet.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders im Herbst in Gebirgswäldern gut zu beobachten.",
+    "shortDescription": "Dunkelbrauner Rabenvogel mit dicht weiß geflecktem Gefieder, kräftigem Schnabel und hellem Sprenkelmuster.",
+    "observationTip": "Suche ihn in Bergnadelwäldern, besonders dort, wo Zirben, Kiefern oder andere Samenbäume stehen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Auftreten schwankt regional und jahreszeitlich; Verbreitung und Häufigkeit später noch einmal prüfen."
   },
   {
     "id": "vogel_tuerkentaube",
