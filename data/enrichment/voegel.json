@@ -124,6 +124,27 @@
     "reviewNote": "Deutsche Vorkommen sind auf wenige Hochlagen beschränkt; saisonale Sichtbarkeit später noch feiner prüfen."
   },
   {
+    "id": "vogel_alpensegler",
+    "habitats": [
+      "Gebirge",
+      "felsige Siedlungsränder",
+      "Steilwände",
+      "größere Städte in warmen Regionen"
+    ],
+    "distributionGermany": "In Deutschland regional und eher selten, mit Schwerpunkten in südlichen Gebieten und an wenigen Brutplätzen.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Spätfrühling bis Sommer in Brutgebieten am besten.",
+    "shortDescription": "Großer Segler mit langen sichelförmigen Flügeln, dunkler Oberseite und deutlich weißer Unterseite.",
+    "observationTip": "Am ehesten über größeren Gebäuden, Felswänden oder warmen Gebirgsorten im schnellen Jagdflug zu beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Art in Deutschland; Beobachtbarkeit an wenigen geeigneten Orten möglich."
+  },
+  {
     "id": "vogel_alpenstrandlaeufer",
     "habitats": [
       "Wattflächen",
@@ -1734,6 +1755,27 @@
     "reviewNote": "Regelmäßige Art, aber Häufigkeit schwankt regional und jahreszeitlich."
   },
   {
+    "id": "vogel_fahlsegler",
+    "habitats": [
+      "warme Städte",
+      "felsige Küstenorte",
+      "Siedlungen",
+      "Gebäudereiche Landschaften"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Gast und regionaler Brutvogel in wenigen warmen Gebieten.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Spätfrühling bis Sommer an wenigen geeigneten Standorten.",
+    "shortDescription": "Segler mit langen sichelförmigen Flügeln, etwas blasserer braun-dunkler Gesamterscheinung und heller Kehle.",
+    "observationTip": "Nicht gezielt leicht zu finden; am ehesten in warmen Städten oder Küstenorten im Flug zwischen anderen Seglern zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Seltene Art in Deutschland; Abgrenzung zum Mauersegler später prüfen."
+  },
+  {
     "id": "vogel_falkenraubmoewe",
     "habitats": [
       "Küsten",
@@ -2901,6 +2943,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Sehr häufige und gut erkennbare Art im Siedlungsraum."
+  },
+  {
+    "id": "vogel_haussegler",
+    "habitats": [
+      "Siedlungen",
+      "warme Städte",
+      "Gebäudereiche Landschaften",
+      "offene Ortsränder"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Sommer bei sehr wenigen Nachweisen.",
+    "shortDescription": "Kleiner dunkler Segler mit sichelförmigen Flügeln, heller Kehle und etwas kompakterem Körperbau als größere Seglerarten.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in warmen Siedlungsräumen zwischen anderen Seglern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr seltener Gast; spätere Prüfung von Status und Bestimmung sinnvoll."
   },
   {
     "id": "vogel_haussperling",
@@ -4095,6 +4158,28 @@
     "reviewNote": "Ausnahmegast; spätere Prüfung der Angaben nötig."
   },
   {
+    "id": "vogel_mauersegler",
+    "habitats": [
+      "Städte",
+      "Dörfer",
+      "Siedlungen",
+      "offene Landschaften mit Gebäuden"
+    ],
+    "distributionGermany": "Bundesweit weit verbreitet und im Sommer in Siedlungen sehr regelmäßig.",
+    "rarityGame": "häufig",
+    "activity": "tagaktiv",
+    "season": "Spätfrühling bis Hochsommer, wenn die Art in Deutschland anwesend ist.",
+    "shortDescription": "Dunkler schlanker Segler mit sehr langen sichelförmigen Flügeln, kurzem gegabeltem Schwanz und einheitlich dunkel wirkendem Körper.",
+    "observationTip": "In Ortschaften und Städten an warmen Tagen oft hoch oder zwischen Gebäuden jagend leicht zu beobachten, ohne Brutplätze gezielt aufzusuchen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr gut beobachtbare Sommerart; Fundtipp bewusst ohne Nestbezug formuliert."
+  },
+  {
     "id": "vogel_meerstrandlaeufer",
     "habitats": [
       "felsige Küsten",
@@ -4434,6 +4519,28 @@
     "reviewNote": "Akustisch sehr auffällig, optisch aber oft verborgen."
   },
   {
+    "id": "vogel_nachtschwalbe",
+    "habitats": [
+      "Heiden",
+      "lichte Kiefernwälder",
+      "Moorränder",
+      "sandige Offenflächen"
+    ],
+    "distributionGermany": "Regional verbreitet, aber insgesamt eher lückig in geeigneten offenen Wald- und Heidelandschaften.",
+    "rarityGame": "selten",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Spätfrühling bis Sommer, besonders in warmen Dämmerungsstunden.",
+    "shortDescription": "Schlanker Vogel mit langem Flügelprofil, graubraun gemustertem Tarngefieder und breitem flachem Kopf.",
+    "observationTip": "Nur störungsarm aus Distanz an offenen Heiden und lichten Waldwegen in der Dämmerung beobachten, ohne Brut- und Ruheplätze aufzusuchen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Dämmerungsaktive und störungsempfindliche Art; Fundtipp bewusst vorsichtig formuliert."
+  },
+  {
     "id": "vogel_nebelkraehe",
     "habitats": [
       "Felder",
@@ -4708,6 +4815,27 @@
     "reviewNote": "Sehr seltener Gast; spätere Prüfung der Beobachtungen wichtig."
   },
   {
+    "id": "vogel_pazifiksegler",
+    "habitats": [
+      "Siedlungen",
+      "offene Landschaften",
+      "Küstenorte",
+      "Gebäudebereiche"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Irrgast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Herbst bei sehr wenigen Nachweisen.",
+    "shortDescription": "Großer dunkler Segler mit langen sichelförmigen Flügeln, heller Kehle und markant geschuppt wirkender Unterseite.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig im Zug oder zwischen anderen Seglern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr seltener Gast; Beobachtungsangaben später besonders sorgfältig prüfen."
+  },
+  {
     "id": "vogel_pazifiktrauerente",
     "habitats": [
       "Küstengewässer",
@@ -4790,6 +4918,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Regelmäßige Zugart mit Schwerpunkt an Nordsee und Wattenmeer."
+  },
+  {
+    "id": "vogel_pharaonennachtschwalbe",
+    "habitats": [
+      "trockene Offenflächen",
+      "sandige Flächen",
+      "karge Buschlandschaften",
+      "warme Brachgebiete"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Irrgast.",
+    "rarityGame": "sehr selten",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Vor allem im Frühjahr und Sommer bei sehr wenigen Nachweisen.",
+    "shortDescription": "Nachtschwalbe mit sandfarbenem bis graubraunem Tarngefieder, langem Flügelprofil und flachem Kopf.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in offenen warmen Landschaften bei Dämmerung.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr seltener Gast; Beobachtungsangaben später besonders vorsichtig prüfen."
   },
   {
     "id": "vogel_pirol",
