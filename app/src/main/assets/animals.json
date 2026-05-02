@@ -10354,18 +10354,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Parks",
+      "Gärten",
+      "Gehölze",
+      "Waldränder"
+    ],
+    "distributionGermany": "In Deutschland seltener bis inzwischen regelmäßiger Herbstgast, regional aber weiterhin ungleichmäßig.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbstzug.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr kleiner Laubsänger mit olivgrüner Oberseite, heller Unterseite, deutlichem hellen Überaugenstreif und zwei hellen Flügelbinden.",
+    "observationTip": "Am ehesten im Herbst in Parks, Gärten und Gehölzen in gemischten Kleinvogeltrupps zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Häufigkeit regional und jahresweise unterschiedlich; deutsche Schreibweise im Bestand später prüfen."
   },
   {
     "id": "vogel_goldhaehnchen-laubsaenger",
@@ -10376,18 +10384,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Parks",
+      "Gärten",
+      "Nadelgehölze",
+      "Waldränder"
+    ],
+    "distributionGermany": "In Deutschland seltener bis regional regelmäßiger Herbstgast.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Winziger Laubsänger mit grünlicher Oberseite, hellem Überaugenstreif, markanten Flügelbinden und leuchtendem Scheitelstreif.",
+    "observationTip": "Im Herbst am ehesten in Parks und Gärten mit Nadel- oder Mischgehölzen in kleinen Trupps zu beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Kleine, oft sehr aktive Art; Bestimmung später bei Bedarf absichern."
   },
   {
     "id": "vogel_bartlaubsaenger",
@@ -10398,18 +10414,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gebüsche",
+      "Parks",
+      "Gärten",
+      "Waldränder"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Gast.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner Laubsänger mit braungrauer Oberseite, heller Unterseite, auffälligem hellen Überaugenstreif und kräftigem Schnabel.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig in Gebüschen und Parkgehölzen zur Zugzeit.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Gastart; Bestimmung gegen ähnliche Laubsänger später prüfen."
   },
   {
     "id": "vogel_dunkellaubsaenger",
@@ -10420,18 +10444,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gebüsche",
+      "Schilfränder",
+      "Parks",
+      "verwachsene Gärten"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Gast.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst und Spätherbst.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr kleiner dunkelbrauner Laubsänger mit heller Unterseite, feinem hellem Überaugenstreif und insgesamt schlichtem Erscheinungsbild.",
+    "observationTip": "Am ehesten zufällig in dichtem Gebüsch, Schilfrändern oder Gärten während des Herbstzugs zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Art; unauffälliges Aussehen macht spätere Prüfung sinnvoll."
   },
   {
     "id": "vogel_fitis",
@@ -10442,18 +10474,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "lichte Wälder",
+      "Birkenwälder",
+      "Heiden",
+      "Waldränder"
+    ],
+    "distributionGermany": "Weit verbreiteter Brutvogel in vielen lichten Gehölzlandschaften.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer, besonders während des Gesangs.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Zierlicher Laubsänger mit grünlichbrauner Oberseite, gelblicher Brust und heller Unterseite.",
+    "observationTip": "In lichten Wäldern und an Waldrändern oft über den weichen Gesang oder suchende Vögel in niedrigen Gehölzen zu finden.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Häufige Art, aber im Feld leicht mit Zilpzalp zu verwechseln."
   },
   {
     "id": "vogel_zilpzalp",
@@ -10464,18 +10505,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Parks",
+      "Gärten",
+      "Gebüsche"
+    ],
+    "distributionGermany": "Bundesweit sehr weit verbreitet und häufig.",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst, in milden Regionen teils auch im Winter.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner olivbrauner Laubsänger mit heller Unterseite, dunklen Beinen und schlichtem Gesichtsmuster.",
+    "observationTip": "In fast allen Gehölzlebensräumen leicht über den markanten Ruf und den ständigen Bewegungsdrang zu entdecken.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr häufige Art mit hoher Beobachtbarkeit."
   },
   {
     "id": "vogel_iberienzilpzalp",
@@ -10486,18 +10536,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "lichte Wälder",
+      "Parks",
+      "Auwälder",
+      "Gebüschreiche Landschaften"
+    ],
+    "distributionGermany": "In Deutschland seltener Gast und nur ausnahmsweise Brutvogel.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Frühsommer bei wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner Laubsänger mit olivgrüner Oberseite, heller Unterseite und sehr ähnlichem Erscheinungsbild wie der Zilpzalp.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig in ziehenden oder singenden Laubsängern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Abgrenzung zu Zilpzalp komplex; spätere Prüfung besonders wichtig."
   },
   {
     "id": "vogel_kronenlaubsaenger",
@@ -10508,18 +10566,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Laubwälder",
+      "Parks",
+      "Gehölze",
+      "Waldränder"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei seltenen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner grünlicher Laubsänger mit auffälligem Scheitelstreif, heller Unterseite und deutlichen Flügelbinden.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in Gehölzen und Parks zur Zugzeit.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; Beobachtungsangaben später genau prüfen."
   },
   {
     "id": "vogel_wacholderlaubsaenger",
@@ -10530,18 +10596,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gebirgswälder",
+      "Parks",
+      "Gehölze",
+      "Waldränder"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Gast.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Herbst.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner Laubsänger mit grünlicher Oberseite, gelblichem Gesicht und deutlichem hellen Überaugenstreif.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig in Gebüschen und Gehölzen während des Zugs.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Gastart; Bestimmung später gegen ähnliche grüne Laubsänger prüfen."
   },
   {
     "id": "vogel_middendorff-laubsaenger",
@@ -10552,18 +10626,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gebüsche",
+      "Parks",
+      "Gärten",
+      "Waldränder"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei sehr wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner braunoliver Laubsänger mit heller Unterseite, feinem Überaugenstreif und heller Flügelzeichnung.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in dichtem Gehölz zur Zugzeit.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; spätere Überprüfung der Angaben sinnvoll."
   },
   {
     "id": "vogel_gruenlaubsaenger",
@@ -10574,18 +10656,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Laubwälder",
+      "Parks",
+      "Gebüsche",
+      "Waldränder"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Gast.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Herbst.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner Laubsänger mit grünlicher Oberseite, heller Unterseite, kräftigem Überaugenstreif und oft deutlicher Flügelzeichnung.",
+    "observationTip": "Nicht gezielt gut findbar; am ehesten zufällig in ziehenden Kleinvogeltrupps in Gehölzen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Art; Zuordnung innerhalb der Laubsänger später absichern."
   },
   {
     "id": "vogel_wanderlaubsaenger",
@@ -10596,18 +10686,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Nadelgehölze",
+      "Parks",
+      "Waldränder",
+      "Gärten"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Gast.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner Laubsänger mit olivbrauner Oberseite, heller Unterseite und feinen hellen Flügelbinden.",
+    "observationTip": "Am ehesten zufällig in herbstlichen Kleinvogeltrupps in Nadel- und Mischgehölzen zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Gastart; Bestimmung später gegen ähnliche Arten prüfen."
   },
   {
     "id": "vogel_drosselrohrsaenger",
@@ -10618,18 +10716,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Schilfgebiete",
+      "Röhrichte",
+      "Seen",
+      "Teiche"
+    ],
+    "distributionGermany": "Regional verbreiteter Brutvogel größerer Röhrichtbestände.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätfrühling bis Sommer, besonders während des Gesangs.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Großer kräftiger Rohrsänger mit warmbrauner Oberseite, heller Unterseite und starkem Schnabel.",
+    "observationTip": "In ausgedehnten Schilfgebieten oft über den lauten Gesang von exponierten Halmen aus gut wahrnehmbar.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "An geeignete große Röhrichte gebunden; Beobachtbarkeit über Gesang meist gut."
   },
   {
     "id": "vogel_mariskenrohrsaenger",
@@ -10640,18 +10747,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Röhrichte",
+      "Seggenriede",
+      "Verlandungszonen",
+      "Feuchtgebiete"
+    ],
+    "distributionGermany": "In Deutschland sehr selten und nur lokal in wenigen Feuchtgebieten.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer an wenigen Brutplätzen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner Rohrsänger mit warmbrauner Oberseite, heller Unterseite und auffälligem hellem Überaugenstreif.",
+    "observationTip": "Nicht leicht zu finden; am ehesten in dichten Röhrichten und Seggenbeständen über den Gesang bemerkbar.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr lokale Art in Deutschland; Beobachtbarkeit gering."
   },
   {
     "id": "vogel_seggenrohrsaenger",
@@ -10662,18 +10777,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feuchtwiesen",
+      "Seggenriede",
+      "Niedermoore",
+      "nasse Wiesen"
+    ],
+    "distributionGermany": "In Deutschland extrem selten und nur ausnahmsweise brütend oder durchziehend.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer an wenigen geeigneten Flächen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker braun gestrichelter Rohrsänger mit hellem Scheitelstreif und heller Unterseite.",
+    "observationTip": "In Deutschland kaum gezielt zu finden; Sichtungen gelingen am ehesten zufällig in offenen Seggenrieden oder Feuchtwiesen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltene und schutzrelevante Art; Angaben später besonders sorgfältig prüfen."
   },
   {
     "id": "vogel_schilfrohrsaenger",
@@ -10684,18 +10807,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Röhrichte",
+      "Feuchtwiesen",
+      "Gräben",
+      "Schilfränder"
+    ],
+    "distributionGermany": "Weit verbreiteter Brutvogel in feuchten Offenlandschaften mit Röhricht.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer, besonders während des Gesangs.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner braun gestrichelter Rohrsänger mit hellem Überaugenstreif und heller Unterseite.",
+    "observationTip": "An Schilfrändern, Gräben und Feuchtwiesen oft über den Gesang oder kurze Singflüge zu entdecken.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige Art geeigneter Feuchtgebiete; gut über den Gesang wahrnehmbar."
   },
   {
     "id": "vogel_feldrohrsaenger",
@@ -10706,18 +10838,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feuchtwiesen",
+      "Schilfränder",
+      "nasse Brachen",
+      "Röhrichtzonen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Frühsommer bei wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner braunoliver Rohrsänger mit heller Unterseite und auffälligem hellen Überaugenstreif.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in Feuchtwiesen und Röhrichten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; spätere Prüfung der Beobachtungen notwendig."
   },
   {
     "id": "vogel_buschrohrsaenger",
@@ -10728,18 +10868,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gebüsche",
+      "feuchte Brachen",
+      "Schilfränder",
+      "Waldränder"
+    ],
+    "distributionGermany": "In Deutschland seltener Gast und regionaler Brutvogel im Osten.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer an wenigen geeigneten Standorten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner unauffälliger Rohrsänger mit warmbrauner Oberseite, heller Unterseite und relativ breitem Schnabel.",
+    "observationTip": "Nicht leicht zu sehen; am ehesten über den Gesang aus dichtem Gebüsch und feuchten Brachen wahrnehmbar.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regionale und unauffällige Art; Beobachtbarkeit eher gering."
   },
   {
     "id": "vogel_teichrohrsaenger",
@@ -10750,18 +10898,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Schilfgebiete",
+      "Teichufer",
+      "Gräben",
+      "Verlandungszonen"
+    ],
+    "distributionGermany": "Weit verbreiteter Brutvogel an Schilfrändern und Gewässerufern.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer, besonders in der Gesangszeit.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner schlanker Rohrsänger mit gleichmäßig brauner Oberseite, heller Unterseite und feinem Schnabel.",
+    "observationTip": "An Schilfrändern und Gräben oft gut über den anhaltenden Gesang aus mittlerer Höhe im Röhricht zu finden.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Häufige Röhrichtart mit guter Hörbarkeit, aber oft verdeckter Sicht."
   },
   {
     "id": "vogel_sumpfrohrsaenger",
@@ -10772,18 +10929,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Hochstaudenfluren",
+      "Brennnesselbestände",
+      "Gebüschränder",
+      "feuchte Wiesen"
+    ],
+    "distributionGermany": "Weit verbreiteter Brutvogel in strukturreichen feuchten Offenlandschaften.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätfrühling bis Sommer, vor allem während des Gesangs.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner brauner Sänger mit heller Unterseite, vergleichsweise schlankem Körper und unauffälligem Gesichtsmuster.",
+    "observationTip": "In Hochstaudenfluren und an feuchten Gebüschrändern meist eher über den ausdauernden Gesang zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige Art geeigneter Saum- und Feuchtbereiche."
   },
   {
     "id": "vogel_buschspoetter",
@@ -10794,18 +10959,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gebüschreiche Offenflächen",
+      "Röhrichtsäume",
+      "Brachflächen",
+      "Waldränder"
+    ],
+    "distributionGermany": "In Deutschland seltener Gast und regionaler Brutvogel im Osten.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer an wenigen Standorten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner eher unscheinbarer Sänger mit warmbrauner Oberseite, heller Unterseite und relativ kräftigem Schnabel.",
+    "observationTip": "Meist eher über den Gesang in buschreichen Offenlandschaften und feuchten Säumen zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regionale Art; Beobachtbarkeit in Deutschland eher begrenzt."
   },
   {
     "id": "vogel_steppenspoetter",
@@ -10816,18 +10989,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "trockene Gebüsche",
+      "offene Buschlandschaften",
+      "Brachflächen",
+      "Waldränder"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr bei seltenen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner heller Sänger mit sandbrauner Oberseite, heller Unterseite und lang wirkendem Schwanz.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in offenem Buschgelände.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; spätere Prüfung der Angaben sinnvoll."
   },
   {
     "id": "vogel_blassspoetter",
@@ -10838,18 +11019,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "warme Gebüschlandschaften",
+      "Gärten",
+      "Waldränder",
+      "Auen"
+    ],
+    "distributionGermany": "In Deutschland seltener Gast und lokaler Brutvogel in wenigen Gebieten.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer an wenigen geeigneten Standorten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner heller Sänger mit blassbrauner Oberseite, heller Unterseite und relativ langem Schnabel.",
+    "observationTip": "Nicht leicht zu finden; am ehesten in warmen buschreichen Landschaften über den Gesang zu bemerken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regionale und eher unauffällige Art; spätere Prüfung sinnvoll."
   },
   {
     "id": "vogel_orpheusspoetter",
@@ -10860,18 +11049,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gebüschreiche Landschaften",
+      "Parks",
+      "warme Waldränder",
+      "Obstgärten"
+    ],
+    "distributionGermany": "In Deutschland regionaler Brutvogel und lokal verbreitet, vor allem im Südwesten.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer in Brutgebieten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Größerer Spötter mit olivbrauner Oberseite, heller Unterseite und kräftigem Schnabel.",
+    "observationTip": "In warmen Gebüsch- und Gartenlandschaften meist eher über den markanten Gesang zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr regionale Art in Deutschland; Beobachtbarkeit örtlich gut, sonst fehlend."
   },
   {
     "id": "vogel_gelbspoetter",
@@ -10882,18 +11079,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Auwälder",
+      "Parks",
+      "Gärten",
+      "lichte Laubgehölze"
+    ],
+    "distributionGermany": "Weit verbreiteter Brutvogel in warmen baumreichen Landschaften.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätfrühling bis Sommer, besonders zur Gesangszeit.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner gelbgrüner Sänger mit warmer gelblicher Unterseite, relativ kräftigem Schnabel und hellerem Gesicht.",
+    "observationTip": "In Auwäldern, Parks und größeren Gärten oft eher über den variablen Gesang als direkt zu entdecken.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige Art in geeigneten Gehölzen, aber oft versteckt im Laub."
   },
   {
     "id": "vogel_streifenschwirl",
@@ -10904,18 +11110,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "feuchte Wiesen",
+      "Röhrichte",
+      "Verlandungszonen",
+      "Hochstaudenfluren"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Herbst bei seltenen Beobachtungen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner brauner Sänger mit gestreifter Oberseite, heller Unterseite und kurzem, leicht abgestuftem Schwanz.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in dichten Feuchtgebieten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; Beobachtungsdaten später besonders vorsichtig prüfen."
   },
   {
     "id": "vogel_strichelschwirl",
@@ -10926,18 +11140,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feuchtwiesen",
+      "Röhrichte",
+      "Seggenriede",
+      "nasse Brachen"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Gast.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr bei wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner braun gestreifter Schwirl mit heller Unterseite und feiner Strichelung an den Flanken.",
+    "observationTip": "Nicht leicht zu sehen; am ehesten zufällig in dichter Feuchtvegetation oder über den Gesang wahrnehmbar.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Art; spätere Absicherung der Angaben sinnvoll."
   },
   {
     "id": "vogel_feldschwirl",
@@ -10948,18 +11170,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feuchtwiesen",
+      "Hochstaudenfluren",
+      "Brachen",
+      "Röhrichtsäume"
+    ],
+    "distributionGermany": "Weit verbreiteter, aber oft unauffälliger Brutvogel feuchter Offenlandschaften.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer, wenn der Gesang besonders auffällt.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner brauner Schwirl mit gestreifter Oberseite, warm getönter Unterseite und kurzem rundem Schwanz.",
+    "observationTip": "In Feuchtwiesen und Brachen oft eher über den lang anhaltenden schnurrenden Gesang zu entdecken.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige Art, aber meist versteckt in dichter Vegetation."
   },
   {
     "id": "vogel_schlagschwirl",
@@ -10970,18 +11201,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Auwälder",
+      "Gebüschsäume",
+      "feuchte Gehölze",
+      "Hochstaudenfluren"
+    ],
+    "distributionGermany": "Regional verbreiteter Brutvogel, vor allem im Osten und in Auenlandschaften.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer in Brutgebieten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Brauner unscheinbarer Schwirl mit relativ langem Schwanz, heller Unterseite und feiner Strichelung.",
+    "observationTip": "Meist eher über den ausdauernden Gesang aus dichter Vegetation an Auwald- und Gebüschrändern zu finden.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regionale Art mit oft versteckter Lebensweise."
   },
   {
     "id": "vogel_rohrschwirl",
@@ -10992,18 +11231,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Röhrichte",
+      "Verlandungszonen",
+      "Schilfgebiete",
+      "Feuchtgebiete"
+    ],
+    "distributionGermany": "Regional verbreitet in größeren Röhrichtbeständen, besonders in Feuchtgebieten.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer an Schilfgebieten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Brauner Schwirl mit warmer Oberseite, heller Unterseite und recht langem abgestuftem Schwanz.",
+    "observationTip": "In großen Röhrichtflächen oft eher über den langgezogenen Gesang als direkt zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "An große Schilfbestände gebunden; Beobachtbarkeit lokal."
   },
   {
     "id": "vogel_zistensaenger",
@@ -11014,18 +11261,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feuchtwiesen",
+      "Grasländer",
+      "Küstenwiesen",
+      "niedrige Brachen"
+    ],
+    "distributionGermany": "In Deutschland seltener und regional unregelmäßiger Brutvogel, vor allem in milden Gebieten.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst, besonders bei Balzflügen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr kleiner warmbrauner Sänger mit kurzem Schwanz, heller Unterseite und feiner Strichelung auf Rücken und Brust.",
+    "observationTip": "An offenen grasigen Flächen am ehesten durch kurze Singflüge und die auffälligen Rufe bemerkbar.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Milde Winter und regionale Vorkommen beeinflussen die Beobachtbarkeit stark."
   },
   {
     "id": "vogel_moenchsgrasmuecke",
@@ -11036,18 +11291,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gärten",
+      "Parks",
+      "Laubwälder",
+      "Gebüsche"
+    ],
+    "distributionGermany": "Bundesweit weit verbreitet und häufig.",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst, im Süden teils auch im Winter.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Grauer bis olivgrauer Sänger; Männchen mit schwarzer, Weibchen mit rostbrauner Kopfkappe und heller Kehle.",
+    "observationTip": "In Gärten, Hecken und Wäldern oft gut über den melodischen Gesang oder in beerentragenden Sträuchern zu entdecken.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr häufige und gut bekannte Art."
   },
   {
     "id": "vogel_gartengrasmuecke",
@@ -11058,18 +11322,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gebüsche",
+      "Gärten",
+      "Waldränder",
+      "Heckenlandschaften"
+    ],
+    "distributionGermany": "Weit verbreiteter Brutvogel in buschreichen Landschaften.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätfrühling bis Sommer, besonders in der Gesangszeit.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlichte graubraune Grasmücke mit heller Unterseite und unauffälligem Gesicht ohne auffällige Kopfzeichnung.",
+    "observationTip": "In dichten Gebüschen und Gärten oft eher über den flüssigen Gesang als direkt sichtbar.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige Art, aber oft versteckt im Blattwerk."
   },
   {
     "id": "vogel_sperbergrasmuecke",
@@ -11080,18 +11352,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Heckenlandschaften",
+      "Gebüschreiche Offenflächen",
+      "Waldränder",
+      "Streuobstwiesen"
+    ],
+    "distributionGermany": "Regional verbreiteter, insgesamt eher seltener Brutvogel.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer in Brutgebieten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Größere Grasmücke mit graubrauner Oberseite, heller Unterseite und feiner Querbänderung auf Brust und Flanken.",
+    "observationTip": "An strukturreichen Hecken und Waldrändern oft eher über Gesang und kurze Ansitze zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regional begrenzte Art; Beobachtbarkeit eher mäßig."
   },
   {
     "id": "vogel_klappergrasmuecke",
@@ -11102,18 +11382,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Hecken",
+      "Gärten",
+      "Gebüsche",
+      "Waldränder"
+    ],
+    "distributionGermany": "Weit verbreiteter Brutvogel in buschreichen Lebensräumen.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer, besonders während des Gesangs.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine graubraune Grasmücke mit heller Kehle, blassgrauem Kopf und feinem Schnabel.",
+    "observationTip": "In Hecken, Gärten und Gebüschen oft durch den trockenen Gesang oder kurze exponierte Ansitze zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige Art, aber oft unauffällig gefärbt."
   },
   {
     "id": "vogel_orpheusgrasmuecke",
@@ -11124,18 +11412,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "warme Gebüschlandschaften",
+      "Waldränder",
+      "Obstgärten",
+      "Buschhänge"
+    ],
+    "distributionGermany": "In Deutschland sehr selten und nur regional als Brut- oder Gastvogel.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer an wenigen geeigneten Standorten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Größere Grasmücke mit graubrauner Oberseite, heller Unterseite und relativ kräftigem Schnabel.",
+    "observationTip": "Nicht gezielt gut findbar; am ehesten in warmen gebüschreichen Landschaften über den Gesang zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr regionale Art in Deutschland; spätere Prüfung der Angaben nötig."
   },
   {
     "id": "vogel_wuestengrasmuecke",
@@ -11146,18 +11442,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "trockene Buschlandschaften",
+      "Brachflächen",
+      "offene Steppenflächen",
+      "warme Hänge"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Irrgast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr bei seltenen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine blass sandgraue Grasmücke mit heller Unterseite, feinem Schnabel und unauffälligem Gesicht.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in offenen trockenen Landschaften.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Ausnahmegast; Beobachtungsangaben später besonders vorsichtig prüfen."
   },
   {
     "id": "vogel_dorngrasmuecke",
@@ -11168,18 +11472,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Hecken",
+      "Brachflächen",
+      "Gebüschreiche Offenflächen",
+      "Feldränder"
+    ],
+    "distributionGermany": "Weit verbreiteter Brutvogel offener Buschlandschaften.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer in Offenlandschaften am besten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanke Grasmücke; Männchen mit grauem Kopf, rostbraunem Rücken und heller Unterseite, Weibchen insgesamt bräunlicher.",
+    "observationTip": "An Hecken, Feldrändern und Brachflächen oft auf Strauchspitzen singend gut zu entdecken.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige und gut beobachtbare Art in passenden Offenlandschaften."
   },
   {
     "id": "vogel_provencegrasmuecke",
@@ -11190,18 +11503,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Heiden",
+      "Buschhänge",
+      "warme Gebüschlandschaften",
+      "Trockenrasen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast und nur lokal auftretend.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Sommer an wenigen geeigneten Standorten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine dunklere Grasmücke mit rostbraunen Flügelpartien, langem Schwanz und unauffälliger heller Unterseite.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig in warmen buschreichen Hängen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltene Art in Deutschland; Beobachtbarkeit gering."
   },
   {
     "id": "vogel_brillengrasmuecke",
@@ -11212,18 +11533,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "warme Buschlandschaften",
+      "Hecken",
+      "Trockenhänge",
+      "Brachflächen"
+    ],
+    "distributionGermany": "In Deutschland seltener Gast und regionaler Brutvogel in wenigen Gebieten.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer an warmen Standorten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine Grasmücke mit grauem Kopf, hellem Augenring, warmer Unterseite und rostbraunen Flügelpartien.",
+    "observationTip": "Am ehesten in warmen gebüschreichen Landschaften über Gesang oder kurze Ansitze im Strauch zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regionale Art; spätere Prüfung der Häufigkeit in Deutschland sinnvoll."
   },
   {
     "id": "vogel_weissbart-grasmuecke",
