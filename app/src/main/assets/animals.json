@@ -2488,18 +2488,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Schilfränder",
+      "Röhrichte",
+      "Feuchtgebiete",
+      "verlandende Gewässer"
+    ],
+    "distributionGermany": "Regional verbreitet in geeigneten Feuchtgebieten, aber oft verborgen lebend.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und tagaktiv",
+    "season": "Ganzjährig, besonders gut in ruhigen Feuchtgebieten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker rallenartiger Vogel mit langem rotem Schnabel, graublauer Brust und braun schwarz gestrichelter Oberseite.",
+    "observationTip": "In Schilf und Röhricht eher auf Rufe, kurze Bewegungen am Ufer oder flüchtige Sichtungen aus dem Deckungsbereich achten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige Art, aber meist versteckt; Beobachtbarkeit eher akustisch oder sehr kurz."
   },
   {
     "id": "vogel_wachtelkoenig",
@@ -2510,18 +2518,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feuchtwiesen",
+      "hohe Wiesen",
+      "Brachen",
+      "extensive Offenlandschaften"
+    ],
+    "distributionGermany": "In Deutschland sehr selten und stark regional, vor allem in wenigen extensiven Wiesenlandschaften.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Spätfrühling bis Sommer in wenigen Brutgebieten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Unauffälliger rallenartiger Vogel mit braun gemusterter Oberseite, grauer Unterseite und rostfarbenen Flügelpartien.",
+    "observationTip": "In hohen Wiesen eher auf die nächtlichen Rufe achten; Beobachtungen sollten stets störungsarm und aus Distanz erfolgen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltene und störungsempfindliche Art in Deutschland; Fundtipp bewusst vorsichtig formuliert."
   },
   {
     "id": "vogel_tuepfelsumpfhuhn",
@@ -2532,18 +2549,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Schilfgebiete",
+      "Seggenriede",
+      "Flachgewässer",
+      "nasse Wiesen"
+    ],
+    "distributionGermany": "Regional und eher selten in geeigneten Feuchtgebieten.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und tagaktiv",
+    "season": "Frühjahr bis Herbst an geeigneten Feuchtflächen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleines Sumpfhuhn mit braun gefleckter Oberseite, blaugrauer Unterseite und gelblich-grünen Beinen.",
+    "observationTip": "In dichter Feuchtvegetation eher auf Rufe, kleine Bewegungen am Röhrichtrand oder sehr kurze Sichtungen achten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Versteckt lebende Art; Beobachtbarkeit gering und oft eher indirekt."
   },
   {
     "id": "vogel_kleinsumpfhuhn",
@@ -2554,18 +2579,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Schilfränder",
+      "Seggenriede",
+      "Flachwasserzonen",
+      "Feuchtgebiete"
+    ],
+    "distributionGermany": "In Deutschland sehr selten und unregelmäßig, meist in wenigen Feuchtgebieten nachgewiesen.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und tagaktiv",
+    "season": "Frühjahr bis Herbst bei wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr kleines Sumpfhuhn mit olivbrauner Oberseite, graublauer Unterseite und roter Schnabelbasis.",
+    "observationTip": "Nicht gezielt leicht zu finden; in Schilf und Seggenbeständen eher auf Rufe oder flüchtige Bewegungen im Deckungsbereich achten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltene Art in Deutschland; spätere Prüfung der Angaben sinnvoll."
   },
   {
     "id": "vogel_zwergsumpfhuhn",
@@ -2576,18 +2609,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Schilfgebiete",
+      "nasse Seggenriede",
+      "Flachgewässer",
+      "Feuchtbrachen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast und Ausnahmebrutvogel.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und tagaktiv",
+    "season": "Vor allem Frühjahr bis Sommer bei sehr wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleines Sumpfhuhn mit braun gemusterter Oberseite, dunklerer Unterseite und grünlichen Beinen.",
+    "observationTip": "In dichter Feuchtvegetation nicht gezielt gut findbar; am ehesten über kurze Sichtungen oder Rufe bemerkbar.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltene Art in Deutschland; Beobachtungsdaten später besonders vorsichtig prüfen."
   },
   {
     "id": "vogel_purpurhuhn",
@@ -2598,18 +2639,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Röhrichte",
+      "Lagunen",
+      "Schilfgewässer",
+      "Feuchtgebiete"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast; Beobachtungen sind unregelmäßig.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem Frühjahr bis Herbst bei wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Großes rallenartiges Huhn mit leuchtend blau-violettem Gefieder, rotem Schnabel und langen roten Beinen.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an großen Schilfgewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Gastart; Herkunft einzelner Beobachtungen später mitbedenken."
   },
   {
     "id": "vogel_graukopf-purpurhuhn",
@@ -2620,18 +2669,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Schilfgewässer",
+      "Lagunen",
+      "Röhrichte",
+      "weite Feuchtgebiete"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem Frühjahr bis Herbst bei sehr wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Großes Purpurhuhn mit blauviolettem Körper, grauem Kopf, rotem Schnabel und langen roten Beinen.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an ausgedehnten Feuchtgebieten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Ausnahmegast; spätere Prüfung der Beobachtungen und Herkunft sinnvoll."
   },
   {
     "id": "vogel_bronzesultanshuhn",
@@ -2642,18 +2699,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Schilfgebiete",
+      "Feuchtwälder",
+      "Sümpfe",
+      "Röhrichte"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Irrgast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Bei sehr wenigen Nachweisen vor allem im Frühjahr oder Sommer.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftiges Sultanshuhn mit dunklem blaugrünem bis bronzefarbenem Gefieder, rotem Schnabel und langen Beinen.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in großen deckungsreichen Feuchtgebieten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; Angaben später besonders vorsichtig prüfen."
   },
   {
     "id": "vogel_teichhuhn",
@@ -2664,18 +2729,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Teiche",
+      "Seen",
+      "Gräben",
+      "Schilfränder"
+    ],
+    "distributionGermany": "Bundesweit an geeigneten Gewässern weit verbreitet und regelmäßig.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut an ruhigen Gewässern sichtbar.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroßes dunkles Rallenhuhn mit rotem Schnabel samt gelber Spitze, weißer Flankenlinie und langen grünen Beinen.",
+    "observationTip": "An Ufervegetation, Gräben und ruhigen Teichen oft durch kurze Sichtungen, Rufe oder offene Nahrungssuche am Rand gut zu entdecken.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige und vergleichsweise gut beobachtbare Art an vielen Gewässern."
   },
   {
     "id": "vogel_blaesshuhn",
@@ -2686,18 +2760,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Teiche",
+      "Altwasser",
+      "größere Parkgewässer"
+    ],
+    "distributionGermany": "Bundesweit an vielen geeigneten Gewässern häufig bis regelmäßig.",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut auf offenen Wasserflächen sichtbar.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Dunkles rundliches Wasserhuhn mit weißer Stirnblesse, hellem Schnabel und lappigen Zehen.",
+    "observationTip": "Auf Seen, Teichen und Parkgewässern oft sehr leicht auf offenem Wasser oder am Ufer zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Häufige und gut sichtbare Standardart vieler Gewässer."
   },
   {
     "id": "vogel_kanadakranich",
@@ -2708,18 +2791,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feuchtwiesen",
+      "Rastgewässer",
+      "Ackerflächen",
+      "offene Niederungen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst und Frühjahr bei seltenen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Großer graubrauner Kranich mit langem Hals, langen dunklen Beinen und heller Wangenpartie.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in Rastgebieten großer Kranich- oder Gänsetrupps.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; Beobachtungsangaben später besonders sorgfältig prüfen."
   },
   {
     "id": "vogel_jungfernkranich",
@@ -2730,18 +2821,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "offene Steppenflächen",
+      "Feuchtwiesen",
+      "Rastfelder",
+      "weite Offenlandschaften"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Herbst bei wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker Kranich mit grauem Gefieder, schwarzer Hals- und Brustpartie und auffälligen weißen Schmuckfedern am Kopf.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig in offenen Rastgebieten und großen Offenlandschaften.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Gastart in Deutschland; spätere Prüfung der Beobachtungen sinnvoll."
   },
   {
     "id": "vogel_kranich",
@@ -2752,18 +2851,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Moore",
+      "Feuchtwiesen",
+      "Rastgewässer",
+      "weite Offenlandschaften"
+    ],
+    "distributionGermany": "Regional verbreitet als Brutvogel und auf dem Zug in vielen Rastgebieten auffällig.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Besonders gut im Frühjahr und Herbst während des Zugs sowie im Frühjahr in Brutgebieten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Großer grauer Vogel mit langem Hals, langen Beinen, schwarzer Halszeichnung und rotem Scheitelfleck.",
+    "observationTip": "An bekannten Zug- und Rastgebieten aus großer Distanz auf offenen Feldern und Feuchtflächen beobachten und Störungen konsequent vermeiden.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Gut sichtbare Art in Zugzeiten, aber störungsempfindlich; Fundtipp bewusst distanziert formuliert."
   },
   {
     "id": "vogel_zwergtaucher",
