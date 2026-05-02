@@ -3828,18 +3828,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Inseln",
+      "offenes Meer"
+    ],
+    "distributionGermany": "In Deutschland nur sehr seltener Ausnahmegast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Sommer und Herbst bei seltenen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Dunkler Seevogel mit einfarbig braunem Gefieder, heller Stirn und schlankem Schnabel.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder größeren Gewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Tropische Art und in Deutschland nur Ausnahmegast; Angaben später noch einmal absichern."
   },
   {
     "id": "vogel_dreizehenmoewe",
@@ -3850,18 +3857,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "offenes Meer",
+      "Häfen"
+    ],
+    "distributionGermany": "Vor allem an Nord- und Ostsee regelmäßig, im Binnenland seltener.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Herbst bis Frühjahr, besonders an der Küste gut sichtbar.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroße Möwe mit hellgrauem Rücken, schwarzer Flügelspitze und zierlichem gelbem Schnabel.",
+    "observationTip": "An Nord- und Ostseeküste bei Wind und an Häfen tagsüber gut zu beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Binnenlandnachweise sind deutlich seltener als Küstenbeobachtungen; Saison später ggf. noch verfeinern."
   },
   {
     "id": "vogel_elfenbeinmoewe",
@@ -3872,18 +3886,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "offenes Meer",
+      "winterliche Küstenbereiche"
+    ],
+    "distributionGermany": "In Deutschland nur sehr seltener Ausnahmegast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Winterhalbjahr bei seltenen Einflügen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Fast reinweiße Möwe mit hellem Körper, heller Flügeloberseite und dunklen Augen.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder größeren Gewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Arktische Ausnahmeerscheinung; deutsche Nachweise sind extrem selten."
   },
   {
     "id": "vogel_schwalbenmoewe",
@@ -3894,18 +3915,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "offenes Meer",
+      "Mündungsgebiete"
+    ],
+    "distributionGermany": "In Deutschland seltener Durchzügler und Ausnahmegast, vor allem an Küsten.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei seltenen Küstenbeobachtungen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroße Möwe mit dunkler Kopfkappe, gegabeltem Schwanz und kontrastreicher schwarz-weißer Flügelzeichnung.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder größeren Gewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Küstengebundene Seltenheit; Beobachtungshinweise bewusst vorsichtig formuliert."
   },
   {
     "id": "vogel_duennschnabelmoewe",
@@ -3916,18 +3944,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Lagunen",
+      "Küsten",
+      "Salzwiesen",
+      "große Binnengewässer"
+    ],
+    "distributionGermany": "In Deutschland seltener Gast, vor allem an Küsten und großen Gewässern.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst bei seltenen Beobachtungen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Zierliche helle Möwe mit langem dünnem Schnabel, blassgrauem Rücken und leicht rosigem Anflug.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder größeren Gewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland selten und unregelmäßig; Status später noch einmal abgleichen."
   },
   {
     "id": "vogel_bonapartemoewe",
@@ -3938,18 +3974,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "große Seen",
+      "Flussmündungen"
+    ],
+    "distributionGermany": "In Deutschland seltener Ausnahmegast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst und Winter bei seltenen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleine zierliche Möwe mit hellem Körper, grauen Flügeln und im Prachtkleid dunkler Kopfkappe.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder größeren Gewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Nordamerikanische Ausnahmeerscheinung; Nachweislage später noch einmal prüfen."
   },
   {
     "id": "vogel_lachmoewe",
@@ -3960,18 +4003,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Flüsse",
+      "Küsten",
+      "Feuchtgebiete"
+    ],
+    "distributionGermany": "Bundesweit verbreitet an Gewässern, in Feuchtgebieten und auch in Siedlungsnähe.",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders im Frühjahr bis Herbst gut sichtbar.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroße helle Möwe mit rotem Schnabel, roten Beinen und im Prachtkleid dunkelbrauner Kopfkappe.",
+    "observationTip": "An Seen, Flüssen, Feuchtgebieten und in Städten tagsüber sehr gut zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr verbreitete Art; Beobachtbarkeit ist hoch und könnte später im Spiel noch besonders gewichtet werden."
   },
   {
     "id": "vogel_zwergmoewe",
@@ -3982,18 +4034,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Seen",
+      "Küsten",
+      "Feuchtgebiete",
+      "Flussmündungen"
+    ],
+    "distributionGermany": "Regelmäßiger Durchzügler, regional auch Brutvogel an geeigneten Gewässern.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr und Herbst sowie lokal im Sommer.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr kleine Möwe mit dunkler Kopfkappe, zarten Flügeln und im Flug dunkler Flügelunterseite.",
+    "observationTip": "An größeren Seen und Küstengewässern während Zugzeiten auf kleine elegante Möwen achten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Zug- und Brutvorkommen unterscheiden sich; Saison später ggf. noch regionalisieren."
   },
   {
     "id": "vogel_rosenmoewe",
@@ -4004,18 +4064,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "offenes Meer",
+      "große Gewässer"
+    ],
+    "distributionGermany": "In Deutschland nur sehr seltener Ausnahmegast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Spätherbst und Winter bei seltenen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Zierliche sehr helle Möwe mit keilförmigem Schwanz und im Prachtkleid zart rosa Unterseite.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder größeren Gewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Arktische Ausnahmeart; Nachweise in Deutschland sind extrem selten."
   },
   {
     "id": "vogel_aztekenmoewe",
@@ -4026,18 +4093,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Häfen",
+      "große Gewässer"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Ausnahmegast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Sommerhalbjahr bei seltenen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroße dunkle Möwe mit schwarzem Kopf, grauen Flügeln und kräftigem Schnabel.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder größeren Gewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Nordamerikanische Ausnahmeerscheinung; Angaben später nochmals prüfen."
   },
   {
     "id": "vogel_praeriemoewe",
@@ -4048,18 +4122,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "große Seen",
+      "Flussmündungen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Ausnahmegast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei seltenen Beobachtungen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Zierliche Möwe mit blassgrauem Rücken, hellem Körper und dunkler Kopfkappe im Prachtkleid.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder größeren Gewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene nordamerikanische Art; in Deutschland nur ausnahmsweise zu erwarten."
   },
   {
     "id": "vogel_korallenmoewe",
@@ -4070,18 +4151,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Inseln",
+      "Felsufer"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Ausnahmegast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst bei seltenen Küstenbeobachtungen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Helle mittelgroße Möwe mit rotem Schnabel, grauem Rücken und weißem Kopf.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder größeren Gewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Mediterrane Seltenheit; deutsche Nachweise sind sehr selten."
   },
   {
     "id": "vogel_schwarzkopfmoewe",
@@ -4092,18 +4180,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Seen",
+      "Feuchtgebiete",
+      "Inseln"
+    ],
+    "distributionGermany": "Regional Brutvogel und Durchzügler, besonders an Küsten und einigen Binnengewässern.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer sowie auf dem Zug.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige helle Möwe mit tiefschwarzer Kopfkappe, rotem Schnabel und roten Beinen.",
+    "observationTip": "An Küsten, Inseln und größeren Seen in Möwenkolonien und auf Zug rastend beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland lokal, aber zunehmend; Verbreitung später noch einmal aktualisieren."
   },
   {
     "id": "vogel_fischmoewe",
@@ -4114,18 +4210,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "große Seen",
+      "Flussmündungen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Ausnahmegast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Herbst bei seltenen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Große Möwe mit dunkler Kopfhaube, kräftigem gelbem Schnabel und massigem Körper.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder größeren Gewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Art ist in Deutschland nur selten nachgewiesen; Angaben später absichern."
   },
   {
     "id": "vogel_sturmmoewe",
@@ -4136,18 +4239,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Seen",
+      "Flüsse",
+      "Feuchtgebiete"
+    ],
+    "distributionGermany": "Bundesweit verbreitet, besonders an Küsten und größeren Gewässern.",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders im Winterhalbjahr und auf dem Zug auffällig.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroße helle Möwe mit grüngelbem Schnabel, gelbgrünen Beinen und sanft grauem Rücken.",
+    "observationTip": "An Küsten, Seen, Flüssen und auf Feldern tagsüber regelmäßig zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Weit verbreitet, regional aber saisonal unterschiedlich häufig; im Binnenland im Winter oft auffälliger."
   },
   {
     "id": "vogel_ringschnabelmoewe",
@@ -4158,18 +4270,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Seen",
+      "Flussmündungen",
+      "Häfen"
+    ],
+    "distributionGermany": "In Deutschland seltener Gast, vor allem an Küsten und großen Gewässern.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Winterhalbjahr bei seltenen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroße helle Möwe mit gelbem Schnabel samt schwarzem Ring und blassgrauem Rücken.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder größeren Gewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Nordamerikanischer Gastvogel; in Deutschland nur selten nachgewiesen."
   },
   {
     "id": "vogel_mantelmoewe",
@@ -4180,18 +4300,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Inseln",
+      "große Seen",
+      "Häfen"
+    ],
+    "distributionGermany": "Vor allem an Nord- und Ostsee verbreitet, im Binnenland seltener Wintergast.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Herbst bis Frühjahr, an Küsten teils ganzjährig.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr große Möwe mit tiefschwarzem Mantel, rosafarbenen Beinen und kräftigem gelbem Schnabel.",
+    "observationTip": "An Küsten, Häfen und großen Seen gut an ihrer Größe und dem dunklen Rücken zu erkennen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Küstengebunden deutlich häufiger als im Binnenland; Saisonangaben später noch fein abstimmen."
   },
   {
     "id": "vogel_eismoewe",
@@ -4202,18 +4330,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Häfen",
+      "offenes Meer"
+    ],
+    "distributionGermany": "In Deutschland seltener Wintergast, vor allem an den Küsten.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Winterhalbjahr.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Große sehr helle Möwe mit blassem Schnabel, hellgrauem bis weißlichem Gefieder und ohne schwarze Flügelspitzen.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder größeren Gewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Vor allem an den Küsten seltener Wintergast; Bestimmung und Häufigkeit später prüfen."
   },
   {
     "id": "vogel_polarmoewe",
@@ -4224,18 +4359,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Häfen",
+      "offenes Meer"
+    ],
+    "distributionGermany": "In Deutschland seltener Wintergast, vor allem an den Küsten.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Winterhalbjahr bei seltenen Küstenbeobachtungen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Große blasse Möwe mit hellgrauem bis weißlichem Gefieder und sanftem Gesichtsprofil.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder größeren Gewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Selten und oft schwer von ähnlichen Arten abzugrenzen; Angaben später noch einmal prüfen."
   },
   {
     "id": "vogel_silbermoewe",
@@ -4246,18 +4388,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Häfen",
+      "Seen",
+      "Flussmündungen"
+    ],
+    "distributionGermany": "Vor allem an Nord- und Ostsee häufig, im Binnenland regional an großen Gewässern.",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut an Küsten und Häfen sichtbar.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Große helle Möwe mit silbergrauem Rücken, kräftigem gelbem Schnabel und rosafarbenen Beinen.",
+    "observationTip": "An Küsten, Häfen und größeren Seen tagsüber sehr regelmäßig zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Komplex mit nah verwandten Formen; Bestimmung und Verbreitung später ggf. noch verfeinern."
   },
   {
     "id": "vogel_kanadamoewe",
@@ -4268,18 +4419,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Häfen",
+      "große Gewässer"
+    ],
+    "distributionGermany": "In Deutschland seltener Gast, vor allem an Küsten im Winterhalbjahr.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Winterhalbjahr bei seltenen Beobachtungen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Große helle Möwe mit kräftigem Schnabel, grauem Rücken und insgesamt massigem Eindruck.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder größeren Gewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Taxonomisch und feldornithologisch anspruchsvoll; deutsche Nachweise später noch einmal prüfen."
   },
   {
     "id": "vogel_steppenmoewe",
@@ -4290,18 +4448,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Seen",
+      "Flussauen",
+      "Häfen"
+    ],
+    "distributionGermany": "Regional regelmäßiger Gast, besonders an großen Gewässern und auf dem Zug.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Herbst bis Frühjahr, besonders an größeren Gewässern.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Große langgestreckte Möwe mit hellgrauem Rücken, langem Schnabel und langen Flügeln.",
+    "observationTip": "An großen Seen, Flussmündungen und Häfen zwischen anderen Großmöwen beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Abgrenzung zu Silber- und Mittelmeermöwe ist anspruchsvoll; Häufigkeit später noch prüfen."
   },
   {
     "id": "vogel_mittelmeermoewe",
@@ -4312,18 +4478,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Häfen",
+      "Seen",
+      "Inseln"
+    ],
+    "distributionGermany": "Regional verbreitet und zunehmend, besonders an Küsten und großen Binnengewässern.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders im Frühjahr und Sommer auffällig.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Große Möwe mit dunkelgrauem Mantel, kräftigem gelbem Schnabel und leuchtend gelben Beinen.",
+    "observationTip": "An Küsten, Häfen und großen Seen tagsüber zwischen anderen Großmöwen gut zu vergleichen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Bestände nehmen regional zu; Abgrenzung zu ähnlichen Großmöwen später noch verfeinern."
   },
   {
     "id": "vogel_heringsmoewe",
@@ -4334,18 +4508,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Inseln",
+      "Häfen",
+      "Seen"
+    ],
+    "distributionGermany": "Vor allem an Nord- und Ostsee verbreitet, im Binnenland regional auf Zug und im Winter.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst an Küsten, im Binnenland vor allem auf dem Zug.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Große schlanke Möwe mit dunkelgrauem bis schwarzem Mantel, gelbem Schnabel und gelben Beinen.",
+    "observationTip": "An Küsten, Häfen und Inseln zwischen anderen Großmöwen auf die dunkle Oberseite achten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Unterarten und Zugverhalten sind komplex; regionale Häufigkeit später noch einmal prüfen."
   },
   {
     "id": "vogel_lachseeschwalbe",
@@ -4356,18 +4538,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Lagunen",
+      "Salzwiesen",
+      "große Seen"
+    ],
+    "distributionGermany": "Seltener Brutvogel und Durchzügler, vor allem an Küsten und größeren Gewässern.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer, besonders in Brutgebieten und auf dem Zug.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige helle Seeschwalbe mit schwarzer Kopfkappe, dunklem Schnabel und hellgrauem Rücken.",
+    "observationTip": "An Küstenlagunen und größeren Gewässern tagsüber nach großen hellen Seeschwalben Ausschau halten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Deutsche Vorkommen sind lokal und wechselhaft; Verbreitung später noch absichern."
   },
   {
     "id": "vogel_raubseeschwalbe",
@@ -4378,18 +4568,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Seen",
+      "Flussmündungen",
+      "Inseln"
+    ],
+    "distributionGermany": "Regelmäßiger Gast und lokal Brutvogel an Küsten und großen Seen.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst, besonders an Küsten und auf Zug.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr große Seeschwalbe mit kräftig rotem Schnabel, heller Unterseite und dunkler Kopfkappe.",
+    "observationTip": "An Küsten und größeren Seen auf große, kraftvoll fliegende Seeschwalben achten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Brut- und Gastvorkommen sind regional; Häufigkeit später noch einmal prüfen."
   },
   {
     "id": "vogel_rueppellseeschwalbe",
@@ -4400,18 +4598,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Inseln",
+      "offenes Meer"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Ausnahmegast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Sommer und Herbst bei seltenen Küstenbeobachtungen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroße helle Seeschwalbe mit schwarzer Kopfkappe, schlankem dunklem Schnabel und grauem Rücken.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder größeren Gewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Deutschland nur ausnahmsweise zu erwarten; Angaben später noch einmal abgleichen."
   },
   {
     "id": "vogel_brandseeschwalbe",
@@ -4422,18 +4627,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Inseln",
+      "Sandbänke",
+      "Flussmündungen"
+    ],
+    "distributionGermany": "Vor allem an Nord- und Ostsee regelmäßiger Brutvogel und Durchzügler.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst, besonders in Küstenkolonien und auf dem Zug.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Helle Seeschwalbe mit schwarzer Kopfkappe, langem schwarzem Schnabel mit gelber Spitze und zottigem Schopf.",
+    "observationTip": "An Nord- und Ostseeküsten in Kolonien, an Stränden und Mündungsgebieten gut zu beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Stark küstengebunden; Binnenlandbeobachtungen sind deutlich seltener."
   },
   {
     "id": "vogel_schmuckseeschwalbe",
@@ -4444,18 +4657,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Inseln",
+      "offenes Meer"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Ausnahmegast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Sommer und Herbst bei seltenen Küstennachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Helle schlanke Seeschwalbe mit schwarzer Kopfkappe, langem gelb-orangefarbenem Schnabel und schmalen Flügeln.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder größeren Gewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Nur sehr selten in Deutschland nachgewiesen; Beobachtungshinweise bewusst vorsichtig."
   },
   {
     "id": "vogel_zwergseeschwalbe",
@@ -4466,18 +4686,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Sandbänke",
+      "Flussauen",
+      "Baggerseen"
+    ],
+    "distributionGermany": "Regional verbreiteter Brutvogel, besonders an Küsten und einigen Binnengewässern.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer, besonders in Brutgebieten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr kleine helle Seeschwalbe mit gelbem Schnabel, schwarzer Stirnbinde und schnellen leichten Flügelschlägen.",
+    "observationTip": "An Sandbänken, Küsten und flachen Gewässern tagsüber auf sehr kleine jagende Seeschwalben achten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Lokale Brutvorkommen sind empfindlich; Verbreitung und Beobachtbarkeit später noch einmal prüfen."
   },
   {
     "id": "vogel_zuegelseeschwalbe",
@@ -4488,18 +4716,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "offenes Meer",
+      "Inseln"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Ausnahmegast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Sommer und Herbst bei seltenen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanke dunkle Seeschwalbe mit weißer Stirn, langen Flügeln und gegabeltem Schwanz.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder größeren Gewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Tropische Art und in Deutschland nur ausnahmsweise zu beobachten."
   },
   {
     "id": "vogel_russseeschwalbe",
@@ -4510,18 +4745,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "offenes Meer",
+      "Inseln"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Ausnahmegast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Sommer und Herbst bei seltenen Küstenbeobachtungen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Dunkle Seeschwalbe mit schwarzem Körper, heller Stirn und schlankem gegabeltem Schwanz.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an Küsten oder größeren Gewässern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene tropische Ausnahmeerscheinung; Angaben später noch einmal prüfen."
   },
   {
     "id": "vogel_rosenseeschwalbe",
@@ -4532,18 +4774,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Inseln",
+      "Sandbänke",
+      "große Gewässer"
+    ],
+    "distributionGermany": "In Deutschland seltener Gast, lokal auch Brutvogel an wenigen Küstenstandorten.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer sowie auf dem Zug.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Zierliche helle Seeschwalbe mit langem gegabeltem Schwanz, schwarzer Kopfkappe und feinem dunklem Schnabel.",
+    "observationTip": "An Küsten und größeren Gewässern nur mit viel Glück zwischen anderen Seeschwalben zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Deutsche Brut- und Gastvorkommen sind sehr lokal; Status später noch einmal absichern."
   },
   {
     "id": "vogel_flussseeschwalbe",
@@ -4554,18 +4804,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Flüsse",
+      "Seen",
+      "Küsten",
+      "Kiesinseln"
+    ],
+    "distributionGermany": "Weit verbreiteter Brutvogel an Binnengewässern und Küsten, regional häufig.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer, besonders in Brutgebieten und auf dem Zug.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanke helle Seeschwalbe mit rotem Schnabel, schwarzer Kopfkappe und langem gegabeltem Schwanz.",
+    "observationTip": "An Flüssen, Seen und Küstengewässern auf jagende Vögel mit eleganten Sturzflügen achten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Verbreitung ist an geeignete Brutgewässer gebunden; regionale Häufigkeit später noch prüfen."
   },
   {
     "id": "vogel_kuestenseeschwalbe",
@@ -4576,18 +4835,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Inseln",
+      "Flussmündungen",
+      "Seen"
+    ],
+    "distributionGermany": "Regelmäßiger Brutvogel an den Küsten und Durchzügler an größeren Gewässern.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst, besonders an Küsten und während des Zugs.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanke helle Seeschwalbe mit rotem Schnabel, tief gegabeltem Schwanz und insgesamt kühlerem Grauton als die Flussseeschwalbe.",
+    "observationTip": "An Küsten und großen Gewässern zwischen anderen Seeschwalben auf langen Schwanz und eleganten Flug achten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Abgrenzung zur Flussseeschwalbe ist nicht immer leicht; Beobachtungshinweise später ggf. noch verfeinern."
   },
   {
     "id": "vogel_weissbart-seeschwalbe",
@@ -4598,18 +4865,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feuchtgebiete",
+      "Seen",
+      "Verlandungszonen",
+      "Schilfgewässer"
+    ],
+    "distributionGermany": "Seltener Gast und regional Brutvogel an geeigneten Feuchtgebieten.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer sowie auf dem Zug.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Dunkelgraue Seeschwalbe mit schwarzer Unterseite im Prachtkleid, hellem Bartbereich und rotem Schnabel.",
+    "observationTip": "An flachen Feuchtgebieten und Schilfseen tagsüber auf elegant jagende dunkle Seeschwalben achten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Vorkommen sind lokal und teils unregelmäßig; Verbreitung später noch prüfen."
   },
   {
     "id": "vogel_weissfluegel-seeschwalbe",
@@ -4620,18 +4895,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feuchtgebiete",
+      "Seen",
+      "Auen",
+      "Schlammflächen"
+    ],
+    "distributionGermany": "Seltener Durchzügler und Gast an Feuchtgebieten und größeren Gewässern.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Herbst auf dem Zug.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kontrastreiche Seeschwalbe mit dunklem Körper im Prachtkleid, hellen Flügelpartien und rotem Schnabel.",
+    "observationTip": "An Feuchtgebieten und flachen Seen während der Zugzeiten nach dunklen, kontrastreichen Seeschwalben Ausschau halten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Durchzugsvogel mit schwankender Häufigkeit; Saisonangaben später noch regional prüfen."
   },
   {
     "id": "vogel_trauerseeschwalbe",
@@ -4642,18 +4925,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feuchtgebiete",
+      "Seen",
+      "Schilfgewässer",
+      "Moore"
+    ],
+    "distributionGermany": "Regional Brutvogel und Durchzügler an Feuchtgebieten und Seen.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer sowie auf dem Zug.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Dunkle kleine Seeschwalbe mit schwarzem Körper im Prachtkleid, grauen Flügeln und schlankem Flugbild.",
+    "observationTip": "An Schilfseen, Mooren und flachen Feuchtgebieten tagsüber nach niedrig jagenden dunklen Seeschwalben suchen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Verbreitung ist regional und teils rückläufig; Häufigkeit später noch einmal abstimmen."
   },
   {
     "id": "vogel_skua",
@@ -4664,18 +4956,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "offenes Meer",
+      "Inseln"
+    ],
+    "distributionGermany": "Regelmäßiger, aber nicht häufiger Durchzügler an den Küsten.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem Spätsommer und Herbst an den Küsten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Große kräftige Raubmöwe mit breiten Flügeln, dunklem Gefieder und auffällig hellem Flügelfeld.",
+    "observationTip": "Bei starkem Wind an Nord- und Ostseeküste auf kraftvoll fliegende dunkle Raubmöwen achten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Vor allem Küstenzugvogel; Binnenlandbeobachtungen sind deutlich seltener."
   },
   {
     "id": "vogel_spatelraubmoewe",
@@ -4686,18 +4985,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "offenes Meer",
+      "Inseln"
+    ],
+    "distributionGermany": "Regelmäßiger Durchzügler an den Küsten, im Binnenland seltener.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Spätsommer und Herbst auf dem Zug.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige Raubmöwe mit breiten Flügeln, dunklem Gefieder und bei Altvögeln verlängerten mittleren Schwanzfedern.",
+    "observationTip": "An der Küste bei Wind und Zugwetter tagsüber nach großen dunklen Raubmöwen Ausschau halten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Küstenzugvogel mit jahreszeitlichem Schwerpunkt; Angaben später ggf. noch verfeinern."
   },
   {
     "id": "vogel_schmarotzerraubmoewe",
@@ -4708,18 +5014,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "offenes Meer",
+      "Inseln",
+      "große Seen"
+    ],
+    "distributionGermany": "Regelmäßiger Durchzügler an Küsten und regional auch im Binnenland.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Spätsommer und Herbst auf dem Zug.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroße schlanke Raubmöwe mit spitzen Flügeln, dunkler bis heller Morphe und verlängerten Schwanzfedern.",
+    "observationTip": "An Küsten und großen Seen während der Zugzeiten nach schnellen verfolgenden Raubmöwen Ausschau halten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Art ist regelmäßig, aber stark saisonal; Binnenlandbeobachtungen später ggf. gesondert behandeln."
   },
   {
     "id": "vogel_falkenraubmoewe",
@@ -4730,18 +5044,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "offenes Meer",
+      "Inseln"
+    ],
+    "distributionGermany": "Regelmäßiger, aber eher seltener Durchzügler an den Küsten.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Spätsommer und Herbst auf dem Zug.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanke Raubmöwe mit langen Flügeln, dunkler bis heller Morphe und sehr langen mittleren Schwanzfedern bei Altvögeln.",
+    "observationTip": "An Nord- und Ostseeküsten bei Zugwetter nach schnellen schlanken Raubmöwen im Verfolgungsflug Ausschau halten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Küstenzugvogel und im Binnenland deutlich seltener; Saisonangaben später noch einmal prüfen."
   },
   {
     "id": "vogel_krabbentaucher",
