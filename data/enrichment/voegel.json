@@ -1,5 +1,25 @@
 [
   {
+    "id": "vogel_adlerbussard",
+    "habitats": [
+      "offene Ebenen",
+      "warme Hügellandschaften",
+      "Felsgebiete"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Herbst bei seltenen Nachweisen.",
+    "shortDescription": "Großer Bussard mit langen Flügeln, heller bis rötlicher Grundfarbe und kontrastreichen dunklen Partien.",
+    "observationTip": "Allenfalls in offenen Hügellandschaften und weiten Feldern tagsüber nach ungewöhnlich großen Bussarden suchen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Art ist in Deutschland nur selten nachgewiesen; Angaben später nochmals prüfen."
+  },
+  {
     "id": "vogel_alpendohle",
     "habitats": [
       "Hochgebirge",
@@ -81,6 +101,48 @@
     ],
     "needsReview": true,
     "reviewNote": "Stark störungsempfindlich und regional selten; Beobachtungshinweise bewusst zurückhaltend formuliert."
+  },
+  {
+    "id": "vogel_bartgeier",
+    "habitats": [
+      "Hochgebirge",
+      "Felswände",
+      "alpine Hänge"
+    ],
+    "distributionGermany": "In Deutschland nur in den Alpen sehr lokal durch Wiederansiedlung und einzelne Beobachtungen.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Sommer bis Herbst in alpinen Lagen am ehesten sichtbar.",
+    "shortDescription": "Sehr großer Geier mit langen schmalen Flügeln, keilförmigem Schwanz, hellem Unterkörper und dunklem Bartstreif.",
+    "observationTip": "Nur in hochalpinen Felsregionen mit viel Geduld nach großen segelnden Vögeln mit langem Schwanz suchen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Deutsche Vorkommen sind auf wenige alpine Gebiete beschränkt; Status aus Wiederansiedlung später nochmals prüfen."
+  },
+  {
+    "id": "vogel_baumfalke",
+    "habitats": [
+      "Waldränder",
+      "Heiden",
+      "Seenlandschaften",
+      "offene Landschaften"
+    ],
+    "distributionGermany": "Weit verbreitet, aber lückig in offenen Landschaften mit Gehölzen.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Spätfrühling bis Frühherbst, besonders im Sommer gut sichtbar.",
+    "shortDescription": "Schlanker Falke mit sichelförmigen Flügeln, dunklem Kopf, heller Kehle und rostroten Hosen.",
+    "observationTip": "Achte an Seen, Heiden und Waldrändern auf schnelle Jagdflüge hoch in der Luft.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Kann leicht übersehen werden; Beobachtbarkeit im Sommerhalbjahr später ggf. noch anpassen."
   },
   {
     "id": "vogel_birkhuhn",
@@ -232,6 +294,26 @@
     "reviewNote": "In vielen Regionen häufig; Beobachtbarkeit in Siedlungsnähe könnte später noch feiner gewichtet werden."
   },
   {
+    "id": "vogel_eleonorenfalke",
+    "habitats": [
+      "Küsten",
+      "Inseln",
+      "offene Felslandschaften"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Ausnahmegast, vor allem an Küsten.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Spätsommer und Herbst bei seltenen Beobachtungen.",
+    "shortDescription": "Schlanker dunkler Falke mit langen sichelförmigen Flügeln und langem Schwanz, teils in heller Morphe.",
+    "observationTip": "Allenfalls an den Küsten oder auf Inseln in den Zugzeiten aufmerksam nach schnellen dunklen Falken schauen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Art ist in Deutschland nur Ausnahmegast; Saison und Beobachtungshinweise später noch einmal prüfen."
+  },
+  {
     "id": "vogel_elster",
     "habitats": [
       "Siedlungen",
@@ -254,6 +336,48 @@
     "reviewNote": "Als Kulturfolger oft sehr präsent; Spielhäufigkeit kann später eventuell noch mit anderen Siedlungsvögeln abgeglichen werden."
   },
   {
+    "id": "vogel_fischadler",
+    "habitats": [
+      "Seen",
+      "Flüsse",
+      "Küsten",
+      "Fischteiche"
+    ],
+    "distributionGermany": "Regional verbreitet, besonders an großen Gewässern im Norden und Osten sowie auf dem Zug auch anderswo.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst, besonders während Zugzeit und Brutzeit.",
+    "shortDescription": "Großer Greifvogel mit heller Unterseite, dunklem Augenstreif, langen schmalen Flügeln und deutlich geknickter Flughaltung.",
+    "observationTip": "Suche ihn an großen Seen, Flüssen und Küstengewässern tagsüber im Suchflug oder auf Sitzwarten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Brut- und Zugvorkommen unterscheiden sich regional deutlich; Verbreitung später noch feiner abstimmen."
+  },
+  {
+    "id": "vogel_gaensegeier",
+    "habitats": [
+      "Gebirge",
+      "Felslandschaften",
+      "offene Hänge"
+    ],
+    "distributionGermany": "In Deutschland seltener Gast, vor allem im Alpenraum und gelegentlich in Mittelgebirgen.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Sommer bis Herbst bei seltenen Streifzügen am ehesten sichtbar.",
+    "shortDescription": "Sehr großer Geier mit breiten Flügeln, hellem Körper, dunklen Schwungfedern und blassem Halskragen.",
+    "observationTip": "Vor allem in Gebirgsregionen und an klaren Tagen hoch kreisende große Geier beachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "In Deutschland meist nur unregelmäßiger Gast; aktuelle Nachweise später noch einmal prüfen."
+  },
+  {
     "id": "vogel_gartenbaumlaeufer",
     "habitats": [
       "Laubwälder",
@@ -274,6 +398,47 @@
     ],
     "needsReview": true,
     "reviewNote": "Unterscheidung zum Waldbaumläufer ist schwierig; Beobachtungshinweise und Häufigkeit später ggf. noch verfeinern."
+  },
+  {
+    "id": "vogel_gerfalke",
+    "habitats": [
+      "Küsten",
+      "offene Ebenen",
+      "winterliche Freiflächen"
+    ],
+    "distributionGermany": "In Deutschland nur als sehr seltener Wintergast oder Ausnahmegast nachgewiesen.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Winterhalbjahr bei seltenen Beobachtungen.",
+    "shortDescription": "Sehr großer Falke mit breiten Flügeln, langem Schwanz und heller bis dunkel gebänderter Grundfarbe.",
+    "observationTip": "Allenfalls im Winter an Küsten oder offenen Ebenen aufmerksam nach außergewöhnlich großen Falken suchen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Art ist in Deutschland nur Ausnahmegast; Angaben sollten später noch einmal gegen aktuelle Nachweise geprüft werden."
+  },
+  {
+    "id": "vogel_gleitaar",
+    "habitats": [
+      "offene Landschaften",
+      "Feuchtgebiete",
+      "Wiesen",
+      "Ackerflächen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast, vereinzelt mit Brutversuchen vor allem im Westen.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Am ehesten im Frühjahr und Sommer bei seltenen Nachweisen.",
+    "shortDescription": "Eleganter kleiner Greifvogel mit sehr hellem Gefieder, schwarzen Schulterfeldern und roten Augen.",
+    "observationTip": "Allenfalls in offenen Landschaften mit Wiesen und Feuchtgebieten aufmerksam nach rüttelnden hellen Greifvögeln Ausschau halten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Status in Deutschland ist dynamisch und sehr selten; aktuelle Brut- und Gastnachweise später prüfen."
   },
   {
     "id": "vogel_grauspecht",
@@ -318,6 +483,47 @@
     ],
     "needsReview": true,
     "reviewNote": "In vielen Regionen präsent, aber stark an Ameisenreichtum gebunden; Häufigkeit später noch einmal prüfen."
+  },
+  {
+    "id": "vogel_habicht",
+    "habitats": [
+      "Wälder",
+      "Waldränder",
+      "große Gehölze"
+    ],
+    "distributionGermany": "Bundesweit verbreitet, besonders in größeren Waldgebieten.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders im Herbst und Winter besser sichtbar.",
+    "shortDescription": "Großer kräftiger Greifvogel mit breiten Flügeln, langem Schwanz und fein gebänderter Unterseite.",
+    "observationTip": "An Waldrändern und in größeren Wäldern auf kräftige Jagdflüge oder kreisende Altvögel achten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Trotz weiter Verbreitung nicht überall gleich sichtbar; Spielhäufigkeit später eventuell noch anpassen."
+  },
+  {
+    "id": "vogel_habichtsadler",
+    "habitats": [
+      "Felslandschaften",
+      "warme Hänge",
+      "offene Gebirge"
+    ],
+    "distributionGermany": "In Deutschland nur sehr seltener Ausnahmegast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Am ehesten im Frühjahr und Sommer bei seltenen Nachweisen.",
+    "shortDescription": "Großer Adler mit heller Unterseite, dunklem Rücken und breiten Flügeln mit markanten Kontrasten.",
+    "observationTip": "Allenfalls in warmen Gebirgs- und Felsregionen tagsüber aufmerksam den Himmel beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Art ist in Deutschland nur ausnahmsweise nachgewiesen; Angaben später noch einmal absichern."
   },
   {
     "id": "vogel_habichtskauz",
@@ -470,6 +676,71 @@
     "reviewNote": "Art ist weit verbreitet, aber nicht überall gleich sichtbar; regionale Beobachtbarkeit später noch einmal feinjustieren."
   },
   {
+    "id": "vogel_kornweihe",
+    "habitats": [
+      "Moore",
+      "Heiden",
+      "Küstenwiesen",
+      "offene Agrarlandschaften"
+    ],
+    "distributionGermany": "Vor allem als Durchzügler und Wintergast verbreitet, Brutvorkommen sehr lokal.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Herbst bis Frühjahr, besonders in offenen Winterlandschaften.",
+    "shortDescription": "Schlanke Weihe mit langen Flügeln; Männchen hellgrau, Weibchen braun mit markantem weißem Bürzel.",
+    "observationTip": "Achte in offenen Mooren, Küstenwiesen und Feldern auf niedrig jagende Weihen in weitem Suchflug.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Brut- und Wintervorkommen unterscheiden sich stark; Saison und Häufigkeit später noch trennen."
+  },
+  {
+    "id": "vogel_maeusebussard",
+    "habitats": [
+      "Wälder",
+      "Felder",
+      "Wiesen",
+      "Waldränder"
+    ],
+    "distributionGermany": "Bundesweit sehr weit verbreitet in strukturreichen Offenlandschaften mit Gehölzen.",
+    "rarityGame": "häufig",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut an klaren Tagen und im Winter sichtbar.",
+    "shortDescription": "Kräftiger Bussard mit breiten Flügeln, kurzem Hals und sehr variablem braun bis hell gefärbtem Gefieder.",
+    "observationTip": "Achte auf Ansitze an Pfählen oder kreisende Vögel über Wiesen, Feldern und Waldrändern.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr häufige Art; möglicherweise für das Spiel später als besonders leicht beobachtbar einstufen."
+  },
+  {
+    "id": "vogel_merlin",
+    "habitats": [
+      "Küsten",
+      "Moore",
+      "offene Landschaften",
+      "Heiden"
+    ],
+    "distributionGermany": "Vor allem als Durchzügler und Wintergast weit verstreut in offenen Landschaften.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Herbst bis Frühjahr, besonders in offenen Winterlandschaften.",
+    "shortDescription": "Kleiner kompakter Falke mit spitzen Flügeln, langem Schwanz und grau bis braun gebändertem Gefieder.",
+    "observationTip": "Suche ihn im Winterhalbjahr über Heiden, Küsten und offenen Feldern auf niedrigem schnellem Jagdflug.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "In Deutschland vor allem Wintergast; saisonale Sichtbarkeit später noch einmal gesondert bewerten."
+  },
+  {
     "id": "vogel_mittelspecht",
     "habitats": [
       "Laubwälder",
@@ -490,6 +761,26 @@
     ],
     "needsReview": true,
     "reviewNote": "Verbreitung ist stark an alte Laubwälder gebunden; regionale Häufigkeit später noch einmal verfeinern."
+  },
+  {
+    "id": "vogel_moenchsgeier",
+    "habitats": [
+      "Gebirge",
+      "offene Hänge",
+      "Felsregionen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast, vor allem im Süden.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Am ehesten im Sommerhalbjahr bei seltenen Einflügen.",
+    "shortDescription": "Sehr großer dunkelbrauner Geier mit breiten Flügeln, massigem Körper und kräftigem Kopfprofil.",
+    "observationTip": "Allenfalls in Gebirgs- und Hügellandschaften auf sehr große dunkel wirkende kreisende Greifvögel achten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Deutsche Nachweise sind selten; Verbreitung und Saisonangaben später noch einmal mit aktuellen Daten abgleichen."
   },
   {
     "id": "vogel_nebelkraehe",
@@ -557,6 +848,27 @@
     "reviewNote": "Verbreitungsgrenze zur Nebelkrähe regional beachten; Spielhäufigkeit später noch differenzieren."
   },
   {
+    "id": "vogel_raufussbussard",
+    "habitats": [
+      "offene Winterlandschaften",
+      "Moore",
+      "Felder",
+      "Küstenebenen"
+    ],
+    "distributionGermany": "Vor allem als Wintergast und Durchzügler in offenen Landschaften verbreitet.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Herbst bis Frühjahr, besonders im Winter gut sichtbar.",
+    "shortDescription": "Heller Bussard mit langen Flügeln, dunklem Bauchfeld, befiederten Beinen und oft weißem Schwanzansatz.",
+    "observationTip": "Im Winter auf Feldern, Mooren und Küstenebenen nach rüttelnden oder sitzenden Bussarden Ausschau halten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "In Deutschland vor allem Wintergast; Saison und Häufigkeit später klar von Brutvögeln trennen."
+  },
+  {
     "id": "vogel_raufusskauz",
     "habitats": [
       "Nadelwälder",
@@ -622,6 +934,91 @@
     "reviewNote": "In vielen Regionen häufiger Kulturfolger; Saisonangabe später ggf. noch regional differenzieren."
   },
   {
+    "id": "vogel_roetelfalke",
+    "habitats": [
+      "offene Agrarlandschaften",
+      "Steppenartige Gebiete",
+      "Siedlungsränder"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast, lokal auch mit seltenen Brutnachweisen im Süden.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Spätfrühling bis Sommer bei seltenen Beobachtungen.",
+    "shortDescription": "Kleiner schlanker Falke mit langen Flügeln; Männchen rostfarben mit blaugrauem Kopf, Weibchen braun gebändert.",
+    "observationTip": "In offenen warmen Agrarlandschaften und Siedlungsrandbereichen tagsüber auf kleine Falken mit leichtem Flugbild achten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Status in Deutschland ist sehr selten und regional; Brut- und Gastvorkommen später trennen."
+  },
+  {
+    "id": "vogel_rohrweihe",
+    "habitats": [
+      "Schilfgebiete",
+      "Seen",
+      "Moore",
+      "Feuchtwiesen"
+    ],
+    "distributionGermany": "Weit verbreitet in geeigneten Feuchtgebieten, regional häufig.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst, besonders während Brut- und Zugzeit.",
+    "shortDescription": "Große Weihe mit langen Flügeln; Männchen kontrastreich grau braun, Weibchen dunkelbraun mit hellem Kopf.",
+    "observationTip": "Suche sie tagsüber niedrig über Schilf, Seen und Feuchtwiesen jagend.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "In geeigneten Feuchtgebieten regelmäßig, regional aber stark gebunden; Häufigkeit später noch prüfen."
+  },
+  {
+    "id": "vogel_rotfussfalke",
+    "habitats": [
+      "offene Ebenen",
+      "Wiesen",
+      "Felder",
+      "Feuchtgebiete"
+    ],
+    "distributionGermany": "In Deutschland seltener Durchzügler und Ausnahmegast, regional auch seltene Brutversuche.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Spätsommer auf dem Zug.",
+    "shortDescription": "Schlanker Falke mit langen Flügeln; Männchen dunkel schiefergrau mit roten Beinen, Weibchen kontrastreicher orangebraun.",
+    "observationTip": "An offenen Feuchtwiesen und Feldern während der Zugzeiten nach kleinen schlanken Falken Ausschau halten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Auftreten ist unregelmäßig; Angaben zu Häufigkeit und Saison später noch einmal abgleichen."
+  },
+  {
+    "id": "vogel_rotmilan",
+    "habitats": [
+      "offene Kulturlandschaften",
+      "Waldränder",
+      "Wiesen",
+      "Ackerland"
+    ],
+    "distributionGermany": "Schwerpunkt in Mittel- und Ostdeutschland, insgesamt in Deutschland bedeutender Bestand.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst, in manchen Regionen auch milde Wintertage.",
+    "shortDescription": "Großer Greifvogel mit rostbraunem Gefieder, heller Kopfzeichnung und tief gegabeltem Schwanz.",
+    "observationTip": "Achte über Wiesen, Feldern und an Waldrändern auf elegant kreisende Vögel mit deutlich gegabeltem Schwanz.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Deutschland hat hohe Verantwortung für die Art; regionale Häufigkeit später noch genauer differenzieren."
+  },
+  {
     "id": "vogel_saatkraehe",
     "habitats": [
       "Ackerlandschaften",
@@ -642,6 +1039,48 @@
     ],
     "needsReview": true,
     "reviewNote": "Kolonien machen die Art lokal auffällig, fehlen aber regional ganz; Häufigkeit später noch einmal fein abstimmen."
+  },
+  {
+    "id": "vogel_schelladler",
+    "habitats": [
+      "Moore",
+      "Feuchtgebiete",
+      "Wälder",
+      "offene Landschaften"
+    ],
+    "distributionGermany": "In Deutschland nur als seltener Durchzügler oder Ausnahmegast nachgewiesen.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Herbst bei seltenen Zuggästen.",
+    "shortDescription": "Großer dunkelbrauner Adler mit breiten Flügeln, kräftigem Körper und meist einfarbig dunklem Eindruck.",
+    "observationTip": "Allenfalls in großen Feuchtgebieten und offenen Zuglandschaften auf seltene große Adler achten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr seltene Art in Deutschland; Nachweisstatus und Häufigkeit später noch einmal absichern."
+  },
+  {
+    "id": "vogel_schlangenadler",
+    "habitats": [
+      "offene Wälder",
+      "Heiden",
+      "warme Hänge",
+      "Felsregionen"
+    ],
+    "distributionGermany": "In Deutschland nur sehr seltener Ausnahmegast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Sommer bei seltenen Beobachtungen.",
+    "shortDescription": "Großer Adler mit heller Unterseite, großem rundlichem Kopf und breit gebändertem Schwanz.",
+    "observationTip": "Allenfalls in warmen offenen Landschaften und Gebirgsnähe tagsüber nach großen kreisenden Adlern Ausschau halten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Art ist in Deutschland nur Ausnahmegast; Angaben später gegen aktuelle Nachweise prüfen."
   },
   {
     "id": "vogel_schleiereule",
@@ -666,6 +1105,26 @@
     "reviewNote": "Bestände schwanken regional stark; Abhängigkeit von Nistplätzen und harten Wintern später noch genauer prüfen."
   },
   {
+    "id": "vogel_schmutzgeier",
+    "habitats": [
+      "warme Felslandschaften",
+      "offene Hänge",
+      "Trockenregionen"
+    ],
+    "distributionGermany": "In Deutschland nur sehr seltener Ausnahmegast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Sommer bei seltenen Irrgästen.",
+    "shortDescription": "Kleiner heller Geier mit schmalen Flügeln, gelbem Gesicht und kontrastreichen schwarzen Handschwingen.",
+    "observationTip": "Allenfalls in offenen warmen Landschaften oder Gebirgsregionen aufmerksam den Himmel nach hellen Geiern absuchen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Art ist in Deutschland nur Ausnahmegast; Saison und Häufigkeit später noch einmal absichern."
+  },
+  {
     "id": "vogel_schneeeule",
     "habitats": [
       "Küsten",
@@ -685,6 +1144,50 @@
     ],
     "needsReview": true,
     "reviewNote": "Art ist in Deutschland nur Ausnahmegast; Einordnung für Verbreitung und Saison später noch einmal prüfen."
+  },
+  {
+    "id": "vogel_schreiadler",
+    "habitats": [
+      "Wälder",
+      "Moorränder",
+      "Feuchtwiesen",
+      "offene Agrarlandschaften"
+    ],
+    "distributionGermany": "Vor allem im Nordosten sehr lokal, insgesamt in Deutschland selten.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer in den wenigen Brutgebieten am ehesten sichtbar.",
+    "shortDescription": "Mittelgroßer dunkelbrauner Adler mit breiten Flügeln, relativ kleinem Kopf und kurzem Schwanz.",
+    "observationTip": "Wenn überhaupt, dann in offenen Feuchtlandschaften mit angrenzenden Wäldern im Nordosten nach kreisenden Adlern suchen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Deutsche Brutvorkommen sind sehr kleinräumig; Verbreitung und Häufigkeit später besonders sorgfältig prüfen."
+  },
+  {
+    "id": "vogel_schwarzmilan",
+    "habitats": [
+      "Flussauen",
+      "Seen",
+      "Feuchtgebiete",
+      "offene Landschaften"
+    ],
+    "distributionGermany": "Regional weit verbreitet, besonders in Flussniederungen und gewässerreichen Gebieten.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer, besonders in Gewässernähe.",
+    "shortDescription": "Dunkelbrauner Milan mit langen Flügeln, leicht gegabeltem Schwanz und vergleichsweise einheitlich dunklem Eindruck.",
+    "observationTip": "Suche ihn an Flüssen, Seen und Feuchtgebieten auf kreisendem Flug oder bei Beute- und Nahrungssuche.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Brutvorkommen sind regional gebunden; Abgrenzung zum Rotmilan später in Beobachtungshinweisen ggf. noch schärfen."
   },
   {
     "id": "vogel_schwarzspecht",
@@ -707,6 +1210,50 @@
     ],
     "needsReview": true,
     "reviewNote": "In geeigneten Wäldern regelmäßig, aber großräumig unterwegs; Spielhäufigkeit später ggf. noch feinjustieren."
+  },
+  {
+    "id": "vogel_seeadler",
+    "habitats": [
+      "Seen",
+      "Flussauen",
+      "Küsten",
+      "große Feuchtgebiete"
+    ],
+    "distributionGermany": "Vor allem im Norden und Osten verbreitet, zunehmend auch in anderen geeigneten Regionen.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders an klaren Tagen in Gewässernähe sichtbar.",
+    "shortDescription": "Sehr großer Adler mit breiten Flügeln, massigem Schnabel, hellem Kopf und bei Altvögeln weißem Schwanz.",
+    "observationTip": "Suche ihn an großen Seen, Flussauen und Küsten nach großen sitzenden oder kreisenden Greifvögeln.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Bestände nehmen zu, bleiben aber regional konzentriert; Verbreitung später noch aktualisieren."
+  },
+  {
+    "id": "vogel_sperber",
+    "habitats": [
+      "Wälder",
+      "Parks",
+      "Gärten",
+      "Heckenlandschaften"
+    ],
+    "distributionGermany": "Bundesweit verbreitet in Wäldern und baumreichen Siedlungsräumen.",
+    "rarityGame": "häufig",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders in den kühleren Monaten und an Futterstellen auffällig.",
+    "shortDescription": "Kleiner wendiger Greifvogel mit langen gelben Beinen, langem Schwanz und fein quergebänderter Unterseite.",
+    "observationTip": "Achte an Waldrändern, in Parks und Gärten auf schnelle Jagdflüge zwischen Bäumen und Sträuchern.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Häufige Art, aber leicht zu übersehen; Beobachtbarkeit im Siedlungsraum später ggf. noch gewichten."
   },
   {
     "id": "vogel_sperbereule",
@@ -751,6 +1298,27 @@
     "reviewNote": "Die Art wird leicht übersehen; regionale Vorkommen und Beobachtbarkeit später noch einmal fein abstimmen."
   },
   {
+    "id": "vogel_steinadler",
+    "habitats": [
+      "Hochgebirge",
+      "Felsregionen",
+      "alpine Matten"
+    ],
+    "distributionGermany": "In Deutschland auf die Alpen beschränkt, dort regional regelmäßig.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders an klaren Tagen in alpinen Lagen sichtbar.",
+    "shortDescription": "Sehr großer dunkelbrauner Adler mit langen breiten Flügeln, goldbraunem Nacken und langem Schwanz.",
+    "observationTip": "In den Alpen an sonnigen Tagen nach großen kreisenden Adlern über Hängen und Felswänden Ausschau halten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Außerhalb der Alpen kaum relevant; deutsche Verbreitung ist klar regional gebunden."
+  },
+  {
     "id": "vogel_steinhuhn",
     "habitats": [
       "felsige Berghänge",
@@ -791,6 +1359,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Regional stark vom Erhalt traditioneller Landschaften abhängig; Verbreitung später noch einmal prüfen."
+  },
+  {
+    "id": "vogel_steppenweihe",
+    "habitats": [
+      "offene Ebenen",
+      "Felder",
+      "Steppenartige Landschaften",
+      "Küstenwiesen"
+    ],
+    "distributionGermany": "In Deutschland seltener Durchzügler und Ausnahmegast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Herbst auf dem Zug.",
+    "shortDescription": "Sehr schlanke Weihe mit langen schmalen Flügeln; Männchen blass grauweiß, Weibchen braun mit hellem Bürzel.",
+    "observationTip": "An offenen Feldern und Küstenwiesen während der Zugzeiten auf niedrig jagende schlanke Weihen achten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "In Deutschland nur selten; Zugstatus und Bestimmungsprobleme später noch einmal berücksichtigen."
   },
   {
     "id": "vogel_strassentaube",
@@ -875,6 +1464,28 @@
     ],
     "needsReview": true,
     "reviewNote": "In Siedlungen sehr präsent; Häufigkeit für das Spiel später eventuell noch gegen Ringeltaube abgleichen."
+  },
+  {
+    "id": "vogel_turmfalke",
+    "habitats": [
+      "offene Landschaften",
+      "Städte",
+      "Dörfer",
+      "Wiesen"
+    ],
+    "distributionGermany": "Bundesweit verbreitet in offenen Landschaften und Siedlungen.",
+    "rarityGame": "häufig",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut tagsüber in offenen Landschaften sichtbar.",
+    "shortDescription": "Mittelgroßer Falke mit spitzen Flügeln; Männchen mit rostbraunem Rücken und grauem Kopf, Weibchen brauner gebändert.",
+    "observationTip": "Sehr leicht über Wiesen, Feldern und an Straßenrändern rüttelnd oder auf Sitzwarten zu entdecken.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Häufiger Kulturfolger; Beobachtbarkeit ist hoch und kann später im Spiel besonders gewichtet werden."
   },
   {
     "id": "vogel_turteltaube",
@@ -1008,6 +1619,28 @@
     "reviewNote": "Außerhalb der Winter-Schlafplätze oft unauffällig; Häufigkeit und Sichtbarkeit später ggf. getrennt bewerten."
   },
   {
+    "id": "vogel_wanderfalke",
+    "habitats": [
+      "Felsen",
+      "Steinbrüche",
+      "Städte",
+      "offene Landschaften"
+    ],
+    "distributionGermany": "Bundesweit verbreitet, regional in Felslandschaften und zunehmend auch in Städten.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut in offenen Landschaften und an Brutplätzen sichtbar.",
+    "shortDescription": "Kräftiger Falke mit spitzen Flügeln, dunklem Kopf, heller Unterseite und quergebänderter Brust.",
+    "observationTip": "An Felswänden, hohen Gebäuden und in offenen Landschaften auf schnelle, zielgerichtete Jagdflüge achten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Bestände haben sich erholt, bleiben aber regional unterschiedlich; urbane und naturnahe Vorkommen später noch abgleichen."
+  },
+  {
     "id": "vogel_weissrueckenspecht",
     "habitats": [
       "Berglaubwälder",
@@ -1048,6 +1681,90 @@
     ],
     "needsReview": true,
     "reviewNote": "Bestände sind regional rückläufig; Spielhäufigkeit und Verbreitung später noch einmal sorgfältig prüfen."
+  },
+  {
+    "id": "vogel_wespenbussard",
+    "habitats": [
+      "Laubwälder",
+      "Mischwälder",
+      "Waldränder",
+      "offene Landschaften"
+    ],
+    "distributionGermany": "Weit verbreitet, aber lückig in geeigneten Waldlandschaften.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Spätfrühling bis Frühherbst, besonders während des Sommerhalbjahrs.",
+    "shortDescription": "Schlanker Bussard mit kleinem taubenartigem Kopf, langem Schwanz und sehr variablem braun bis grauem Gefieder.",
+    "observationTip": "An warmen Tagen über Wäldern und Waldrändern nach kreisenden Vögeln mit schmalen Flügeln Ausschau halten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Kann leicht mit Bussarden verwechselt werden; Verbreitung und Beobachtbarkeit später noch einmal abgleichen."
+  },
+  {
+    "id": "vogel_wiesenweihe",
+    "habitats": [
+      "Wiesen",
+      "Felder",
+      "Heiden",
+      "offene Feuchtgebiete"
+    ],
+    "distributionGermany": "Regional verbreitet, vor allem in offenen Agrarlandschaften und wenigen Brutgebieten.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer, besonders in offenen Brutlandschaften sichtbar.",
+    "shortDescription": "Schlanke Weihe mit langen Flügeln; Männchen hellgrau, Weibchen braun mit hellem Bürzel.",
+    "observationTip": "Suche sie in offenen Wiesen- und Ackerlandschaften, wo sie niedrig und elegant über der Vegetation jagt.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Brutgebiete sind regional konzentriert; Beobachtbarkeit und Verbreitung später noch einmal abgleichen."
+  },
+  {
+    "id": "vogel_wuergfalke",
+    "habitats": [
+      "offene Ebenen",
+      "Steppenartige Landschaften",
+      "Felder"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast oder Ausnahmeerscheinung.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Herbst bei seltenen Nachweisen.",
+    "shortDescription": "Großer kräftiger Falke mit breiten Flügeln, braunem Obergefieder und heller Unterseite.",
+    "observationTip": "Allenfalls in offenen weiten Landschaften tagsüber nach großen Falken auf Ansitz oder Jagdflug Ausschau halten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Status in Deutschland ist sehr selten; Verbreitung und Bestimmung später nochmals prüfen."
+  },
+  {
+    "id": "vogel_zwergadler",
+    "habitats": [
+      "lichte Wälder",
+      "Hügellandschaften",
+      "warme Hänge"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Ausnahmegast mit wenigen Brutverdachtsfällen.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Spätfrühling bis Sommer bei seltenen Beobachtungen.",
+    "shortDescription": "Kleiner Adler mit schlankem Körper, hellen bis dunklen Morphen und langen relativ schmalen Flügeln.",
+    "observationTip": "Vor allem in warmen offenen Landschaften oder an Waldrändern tagsüber nach kleinen Adlern Ausschau halten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Status in Deutschland ist unsicher und selten; aktuelle Nachweise später nochmals prüfen."
   },
   {
     "id": "vogel_zwergohreule",
