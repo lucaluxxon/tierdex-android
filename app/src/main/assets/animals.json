@@ -12888,18 +12888,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "felsige Hänge",
+      "Geröllfelder",
+      "Gebirge",
+      "offene Bergweiden"
+    ],
+    "distributionGermany": "In Deutschland sehr selten und nur regional in wenigen Gebirgslagen als Brutvogel oder Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätfrühling bis Sommer an wenigen Gebirgsstandorten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftiger Singvogel; Männchen mit blaugrauem Kopf und rostorangefarbener Unterseite, Weibchen braungrau geschuppt.",
+    "observationTip": "Nicht leicht zu finden; am ehesten in felsigem Berggelände auf exponierten Steinen oder Hängen zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr regionale Art in Deutschland; Beobachtbarkeit gering."
   },
   {
     "id": "vogel_blaumerle",
@@ -12910,18 +12918,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Felswände",
+      "Schluchten",
+      "Gebirgsorte",
+      "warme Felslandschaften"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast und nur lokal in sehr wenigen Regionen.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer an wenigen geeigneten Standorten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Männchen dunkel schieferblau, Weibchen braun und geschuppt; beide mit kräftigem Drossel-artigem Körperbau.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten in felsigen warmen Landschaften und Schluchten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltene und regionale Art; spätere Prüfung der Angaben nötig."
   },
   {
     "id": "vogel_braunkehlchen",
@@ -12932,18 +12948,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feuchtwiesen",
+      "Weiden",
+      "Brachen",
+      "offene Wiesenlandschaften"
+    ],
+    "distributionGermany": "Regional verbreiteter Brutvogel, aber vielerorts zurückgehend.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer in offenen Wiesenlandschaften.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner Sänger mit warmbrauner Brust, hellem Überaugenstreif und braun gemusterter Oberseite.",
+    "observationTip": "Auf extensiven Wiesen und Weiden oft auf hohen Kräutern oder Zaunpfählen sitzend gut zu entdecken.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Bestände regional rückläufig; Beobachtbarkeit stark vom Lebensraum abhängig."
   },
   {
     "id": "vogel_schwarzkehlchen",
@@ -12954,18 +12979,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Brachen",
+      "Heiden",
+      "Wiesen",
+      "Küstenwiesen"
+    ],
+    "distributionGermany": "Regional verbreitet und an offenen buschreichen Flächen regelmäßig.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst an offenen Flächen am besten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner Sänger; Männchen mit schwarzem Kopf und Kehle, orangefarbener Brust und weißem Halsfleck, Weibchen matter.",
+    "observationTip": "An Heiden, Brachflächen und Wiesen oft auf Sträuchern oder Stängeln sitzend leicht zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "An passenden Offenlandhabitaten gut sichtbar."
   },
   {
     "id": "vogel_pallasschwarzkehlchen",
@@ -12976,18 +13010,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "offene Felder",
+      "Brachen",
+      "Küstenwiesen",
+      "Heiden"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Gast.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst und Winter bei wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner Sänger mit schwarzem Kopf und Kehle beim Männchen, heller Unterseite und auffälligem weißem Bürzelbereich.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig in offenen Winterhabitaten und Küstenwiesen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Gastart; spätere Bestimmungsprüfung sinnvoll."
   },
   {
     "id": "vogel_steinschmaetzer",
@@ -12998,18 +13040,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "offene steinige Flächen",
+      "Küsten",
+      "Brachland",
+      "Almen"
+    ],
+    "distributionGermany": "Weit verbreiteter Durchzügler und regionaler Brutvogel offener steiniger Lebensräume.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst, besonders auf dem Zug gut sichtbar.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker Steinschmätzer mit heller Unterseite, graubrauner Oberseite und auffälligem schwarz-weißem Schwanzmuster.",
+    "observationTip": "An offenen steinigen Flächen, Küsten und Brachstandorten oft auf Steinen oder Pfählen sitzend gut zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige Art mit guter Sichtbarkeit auf offenen Flächen."
   },
   {
     "id": "vogel_isabellsteinschmaetzer",
@@ -13020,18 +13070,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "trockene Offenflächen",
+      "Brachland",
+      "Steppenartige Flächen",
+      "Küstenbrachen"
+    ],
+    "distributionGermany": "In Deutschland seltener Gast.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr bei einzelnen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Blass sandfarbener Steinschmätzer mit heller Unterseite, dunklen Flügeln und relativ langer Gestalt.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig auf offenen trockenen Rastflächen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Gastart; spätere Prüfung der Angaben sinnvoll."
   },
   {
     "id": "vogel_wuestensteinschmaetzer",
@@ -13042,18 +13100,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "trockene Brachen",
+      "offene Sandflächen",
+      "Küstenbrachen",
+      "Steppenartige Habitate"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei sehr wenigen Beobachtungen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner sandfarbener Steinschmätzer mit schwarzer Gesichtsmaske und dunklen Flügeln, dazu helle Unterseite.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig auf offenen trockenen Flächen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; Beobachtungsdaten später sorgfältig prüfen."
   },
   {
     "id": "vogel_mittelmeer-steinschmaetzer",
@@ -13064,18 +13130,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "warme Hänge",
+      "Buschlandschaften",
+      "felsige Offenflächen",
+      "Trockenrasen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr bei sehr wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker Steinschmätzer; Männchen mit schwarzer Gesichtsmaske, heller Unterseite und kontrastreichem Rückenbild.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig in warmen offenen Landschaften.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; spätere Absicherung der Angaben nötig."
   },
   {
     "id": "vogel_zypernsteinschmaetzer",
@@ -13086,18 +13160,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "felsige Offenflächen",
+      "Buschhänge",
+      "Trockenrasen",
+      "warme Waldränder"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Irrgast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Herbst bei sehr wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker Steinschmätzer mit dunklem Gesicht, heller Unterseite und warmbraunem Rückenbild.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an warmen offenen Hängen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Ausnahmegast; spätere Prüfung der Beobachtungen wichtig."
   },
   {
     "id": "vogel_nonnensteinschmaetzer",
@@ -13108,18 +13190,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "offene trockene Flächen",
+      "Brachland",
+      "Steppenartige Gebiete",
+      "Küstenbrachen"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Gast.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr bei wenigen Beobachtungen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kontrastreicher Steinschmätzer; Männchen mit schwarzer Maske, heller Oberseite und dunklem Schwanzmuster, Weibchen matter.",
+    "observationTip": "Nicht gezielt gut findbar; am ehesten zufällig auf offenen trockenen Rastflächen zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Gastart; Bestimmung später prüfen."
   },
   {
     "id": "vogel_wasseramsel",
@@ -13130,18 +13220,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Bäche",
+      "Flüsse",
+      "Gebirgsgewässer",
+      "waldige Ufer"
+    ],
+    "distributionGermany": "Regional verbreitet an sauberen fließenden Gewässern, besonders im Mittelgebirge und an Alpenrändern.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig an geeigneten Gewässern.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftiger dunkelbrauner Vogel mit kurzer Schwanzpartie und markant weißer Brust und Kehle.",
+    "observationTip": "An klaren Bächen und Flüssen oft auf Steinen oder im niedrigen Flug dicht über dem Wasser gut zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "An passende Fließgewässer gebunden, dort aber oft gut sichtbar."
   },
   {
     "id": "vogel_haussperling",
@@ -13152,18 +13251,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Siedlungen",
+      "Dörfer",
+      "Städte",
+      "Bauernhöfe"
+    ],
+    "distributionGermany": "Bundesweit sehr häufig und in menschlichen Siedlungen weit verbreitet.",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut in Siedlungen sichtbar.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner kräftiger Sperling; Männchen mit grauem Scheitel, schwarzem Kehlfleck und kastanienbraunen Partien, Weibchen schlicht braun.",
+    "observationTip": "In Dörfern, Städten und an Gebäuden fast immer leicht in Trupps oder an Futterstellen zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr häufige und gut bekannte Art."
   },
   {
     "id": "vogel_feldsperling",
@@ -13174,18 +13282,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Dörfer",
+      "Obstwiesen",
+      "Heckenlandschaften",
+      "Parks"
+    ],
+    "distributionGermany": "Weit verbreitet und in halboffenen Kulturlandschaften regelmäßig.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut an Siedlungsrändern und Gärten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner Sperling mit kastanienbraunem Scheitel, schwarzem Wangenfleck und heller Unterseite.",
+    "observationTip": "An Dorfrändern, Streuobstwiesen und Gärten oft in kleinen Trupps an Hecken oder Futterstellen zu beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige Art, regional aber teils rückläufig."
   },
   {
     "id": "vogel_steinsperling",
@@ -13196,18 +13312,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "felsige Hänge",
+      "warme Trockenstandorte",
+      "Gebirgsdörfer",
+      "Steinbauten"
+    ],
+    "distributionGermany": "In Deutschland sehr selten und nur regional in wenigen wärmebegünstigten Gebieten.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer an wenigen Standorten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Größerer Sperling mit graubrauner Oberseite, heller Unterseite und gelbem Kehlfleck.",
+    "observationTip": "Nicht leicht zu finden; am ehesten an warmen felsigen Hängen oder alten Steinbauten in wenigen Gebieten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr regionale Art in Deutschland; Beobachtbarkeit gering."
   },
   {
     "id": "vogel_schneesperling",
@@ -13218,18 +13342,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Hochgebirge",
+      "Geröllfelder",
+      "Almen",
+      "felsige Hochlagen"
+    ],
+    "distributionGermany": "In Deutschland regional in den Alpen als Brutvogel vorhanden.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Sommer in Hochlagen, im Winter teils tiefer ziehend.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Heller sperlingsartiger Vogel mit graubrauner Oberseite, weißem Flügelbild und kräftigem Schnabel.",
+    "observationTip": "In alpinen Hochlagen an Almen, Geröllfeldern und Berghütten oft in kleinen Gruppen zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Gebirgsart mit Schwerpunkt in den Alpen; Beobachtbarkeit stark regional."
   },
   {
     "id": "vogel_alpenbraunelle",
@@ -13240,18 +13372,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Alpen",
+      "Felsregionen",
+      "Geröllfelder",
+      "Hochweiden"
+    ],
+    "distributionGermany": "In Deutschland regional in den Alpen verbreitet.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Sommer in Hochlagen, im Winter teils tiefer.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige braun-graue Braunelle mit feiner Strichelung, grauem Kopfbereich und rostbraunen Flankenpartien.",
+    "observationTip": "In alpinen Fels- und Gerölllandschaften oft am Boden oder auf Steinen gut zu beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Gebirgsart mit klar regionalem Schwerpunkt."
   },
   {
     "id": "vogel_bergbraunelle",
@@ -13262,18 +13402,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gebüsche",
+      "Waldränder",
+      "Buschlandschaften",
+      "Parks"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst und Winter bei wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Braunelle mit warmbrauner Oberseite, heller Unterseite und deutlicher Kopfzeichnung mit Streifen.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; am ehesten zufällig in deckungsreichen Gehölzen während des Zugs.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; spätere Prüfung der Beobachtungen nötig."
   },
   {
     "id": "vogel_schwarzkehlbraunelle",
@@ -13284,18 +13432,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Buschlandschaften",
+      "Waldränder",
+      "Gebüsche",
+      "offene Gehölzflächen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst und Winter bei seltenen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Braunelle mit kräftiger Zeichnung, heller Überaugenpartie und dunkler Kehle beim Männchen.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig in Gehölzen und Gebüschen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Ausnahmegast; Bestimmungsangaben später absichern."
   },
   {
     "id": "vogel_heckenbraunelle",
@@ -13306,18 +13462,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gärten",
+      "Hecken",
+      "Waldränder",
+      "Gebüsche"
+    ],
+    "distributionGermany": "Bundesweit weit verbreitet und regelmäßig.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut in Gärten und Heckenlandschaften.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner braungrauer Vogel mit grauem Kopf und Brust sowie fein gestricheltem Rücken.",
+    "observationTip": "In Hecken, Gärten und Waldrändern oft unauffällig am Boden oder in niedrigen Sträuchern zu entdecken.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Häufige Art, aber oft eher leise und bodennah unterwegs."
   },
   {
     "id": "vogel_schafstelze",
@@ -13328,18 +13493,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wiesen",
+      "Feuchtwiesen",
+      "Äcker",
+      "Weiden"
+    ],
+    "distributionGermany": "Regional verbreiteter Brutvogel offener feuchter Kulturlandschaften.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer in offenen Landschaften.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker Vogel mit langem Schwanz; Männchen je nach Form mit gelber Unterseite und unterschiedlich gefärbtem Kopf, Weibchen matter.",
+    "observationTip": "Auf Wiesen, Weiden und Feldern oft laufend am Boden oder auf Zäunen und Halmen sitzend gut zu beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Formenvielfalt im Feld beachten; Beobachtbarkeit auf offenen Flächen gut."
   },
   {
     "id": "vogel_zitronenstelze",
@@ -13350,18 +13523,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feuchtwiesen",
+      "Flachgewässer",
+      "Schilfränder",
+      "überschwemmte Wiesen"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Gast und lokaler Brutvogel.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Frühsommer bei wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanke Stelze mit leuchtend gelber Unterseite und beim Männchen oft grauem bis dunklerem Kopf.",
+    "observationTip": "Nicht leicht gezielt zu finden; am ehesten an Feuchtwiesen und flachen Gewässern zwischen anderen Stelzen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Art in Deutschland; spätere Prüfung sinnvoll."
   },
   {
     "id": "vogel_gebirgsstelze",
@@ -13372,18 +13553,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Bäche",
+      "Flüsse",
+      "Uferzonen",
+      "Gebirgsorte"
+    ],
+    "distributionGermany": "Weit verbreitet an Fließgewässern und auch in Siedlungen an Gewässern regelmäßig.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut an offenen Gewässern.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanke Stelze mit langem Schwanz, grauer Oberseite und gelber Unterseite, besonders auffällig am Bauch.",
+    "observationTip": "An Bächen, Flüssen und Uferwegen oft laufend oder auf Steinen sitzend leicht zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige Art sauberer Fließgewässer mit guter Sichtbarkeit."
   },
   {
     "id": "vogel_bachstelze",
@@ -13394,18 +13584,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gewässerufer",
+      "Wiesen",
+      "Siedlungen",
+      "Felder"
+    ],
+    "distributionGermany": "Bundesweit sehr weit verbreitet und häufig.",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig bzw. von Frühjahr bis Herbst sehr auffällig.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker schwarz-weißer Vogel mit langem Schwanz, heller Unterseite und grauem Rücken.",
+    "observationTip": "An Gewässern, auf Höfen, Wiesen und in Siedlungen oft laufend am Boden oder auf Dächern und Wegen gut sichtbar.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr häufige und gut erkennbare Art."
   },
   {
     "id": "vogel_spornpieper",
@@ -13416,18 +13615,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "offene Felder",
+      "Feuchtwiesen",
+      "Küstenwiesen",
+      "Rastflächen"
+    ],
+    "distributionGermany": "In Deutschland seltener Gast, vor allem auf dem Zug.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem Herbst bei wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Großer Pieper mit langem Schwanz, starker Bruststrichelung und eher kräftigem Schnabel.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig auf offenen Feldern und Küstenwiesen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Gastart; spätere Bestimmungsprüfung empfohlen."
   },
   {
     "id": "vogel_steppenpieper",
@@ -13438,18 +13645,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "offene trockene Flächen",
+      "Ackerbrachen",
+      "Küstenwiesen",
+      "Rastplätze"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei sehr wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker Pieper mit sandbrauner Oberseite, heller Unterseite und feiner Brustzeichnung.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig auf offenen Rastflächen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; Beobachtungsangaben später sorgfältig prüfen."
   },
   {
     "id": "vogel_brachpieper",
@@ -13460,18 +13675,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Heiden",
+      "Brachflächen",
+      "Sandgebiete",
+      "offene trockene Felder"
+    ],
+    "distributionGermany": "Regional und eher selten in offenen trockenen Landschaften.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer an wenigen geeigneten Standorten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker pieperartiger Vogel mit sandbrauner Oberseite, heller Unterseite und relativ schwacher Brustzeichnung.",
+    "observationTip": "Nicht leicht zu finden; am ehesten auf offenen trockenen Brachen, Heiden und Sandflächen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regionale Art mit speziellen Habitatansprüchen."
   },
   {
     "id": "vogel_wiesenpieper",
@@ -13482,18 +13705,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feuchtwiesen",
+      "Moore",
+      "Heiden",
+      "Küstenwiesen"
+    ],
+    "distributionGermany": "Weit verbreitet, vor allem in offenen feuchteren Landschaften.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst in Offenlandschaften gut sichtbar.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Zierlicher Pieper mit braun gestrichelter Oberseite, heller Unterseite und feiner Brustzeichnung.",
+    "observationTip": "Auf Wiesen, Heiden und Küstenflächen oft singend aufsteigend oder auf Zaunpfählen sitzend zu entdecken.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige Offenlandart, regional aber unterschiedlich häufig."
   },
   {
     "id": "vogel_baumpieper",
@@ -13504,18 +13736,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Waldränder",
+      "Heiden",
+      "lichte Wälder",
+      "Streuobstwiesen"
+    ],
+    "distributionGermany": "Weit verbreiteter Brutvogel in lichten Gehölzlandschaften.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer, besonders während des Singflugs.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Braun gestrichelter Pieper mit heller Unterseite, deutlichem Überaugenstreif und schlankem Körperbau.",
+    "observationTip": "An lichten Waldrändern und Offenflächen oft über den singenden Balzflug oder Ansitz auf Bäumen zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige Art geeigneter lichter Landschaften."
   },
   {
     "id": "vogel_waldpieper",
@@ -13526,18 +13766,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Waldränder",
+      "Lichtungen",
+      "Gebüschreiche Offenflächen"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Gast.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Pieper mit brauner gestrichelter Oberseite, heller Unterseite und relativ markantem Gesichtsmuster.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig in ziehenden Piepern an Waldrändern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Gastart; spätere Prüfung gegen ähnliche Pieper sinnvoll."
   },
   {
     "id": "vogel_petschorapieper",
@@ -13548,18 +13796,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feuchtwiesen",
+      "Schilfränder",
+      "Küstenwiesen",
+      "Rastplätze"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Gast.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei wenigen Beobachtungen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner Pieper mit feiner Strichelung, hellem Überaugenstreif und eher dunkler wirkender Oberseite.",
+    "observationTip": "Am ehesten zufällig an Feuchtwiesen und Küstenrastplätzen zwischen anderen kleinen Piepern zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Art; Bestimmungsangaben später absichern."
   },
   {
     "id": "vogel_rotkehlpieper",
@@ -13570,18 +13826,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feuchtwiesen",
+      "Küstenwiesen",
+      "offene Felder",
+      "Rastflächen"
+    ],
+    "distributionGermany": "Regelmäßiger, aber nicht häufiger Durchzügler.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst und Frühjahr auf dem Zug.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker Pieper mit deutlicher Strichelung und im Prachtkleid rostroter Kehle und Gesichtspartien.",
+    "observationTip": "Auf Küstenwiesen und offenen Rastflächen am ehesten in kleinen Piepertrupps zu beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Zugvogel mit begrenzter Beobachtungsdauer; jahreszeitliche Färbung beachten."
   },
   {
     "id": "vogel_pazifikpieper",
@@ -13592,18 +13856,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küstenwiesen",
+      "offene Felder",
+      "Feuchtflächen",
+      "Rastplätze"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei seltenen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner Pieper mit brauner Oberseite, heller Unterseite und eher unauffälliger Strichelung.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig auf offenen Küsten- und Rastflächen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; spätere Prüfung der Beobachtungen wichtig."
   },
   {
     "id": "vogel_bergpieper",
@@ -13614,18 +13886,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gebirgswiesen",
+      "Felsige Hänge",
+      "Almen",
+      "offene Hochlagen"
+    ],
+    "distributionGermany": "Vor allem in Gebirgslagen regional verbreitet, im Winter teils auch tiefer ziehend.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer in Hochlagen, im Winter auch an tieferen offenen Stellen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Pieper mit graubrauner Oberseite, heller Unterseite und feiner Bruststrichelung, insgesamt gedrungen wirkend.",
+    "observationTip": "In Gebirgslagen auf offenen Wiesen und an Hängen oft am Boden laufend oder auf Steinen sitzend zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Gebirgsgebundene Art; Beobachtbarkeit in Deutschland regional."
   },
   {
     "id": "vogel_strandpieper",
@@ -13636,18 +13916,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Felsküsten",
+      "Steinschüttungen",
+      "Küstenmolen",
+      "Meeresufer"
+    ],
+    "distributionGermany": "In Deutschland vor allem an Küsten regional und eher lokal.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Herbst bis Frühjahr an Küstenstrukturen besonders gut.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Dunkler wirkender Pieper mit feiner Bruststrichelung, graubrauner Oberseite und eher kräftiger Gestalt.",
+    "observationTip": "An Molen, Felsküsten und Steinschüttungen der Küste am ehesten laufend auf den Steinen zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Küstenart mit lokal begrenzten Beobachtungsorten."
   },
   {
     "id": "vogel_buchfink",
@@ -13658,18 +13946,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Parks",
+      "Gärten",
+      "Heckenlandschaften"
+    ],
+    "distributionGermany": "Bundesweit sehr weit verbreitet und häufig.",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders im Frühjahr sehr auffällig.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Männchen mit blau-grauem Kopf, rostroter Unterseite und weißen Flügelbinden, Weibchen graubraun mit ähnlichem Flügelmuster.",
+    "observationTip": "In Wäldern, Gärten und Parks oft leicht über Gesang, Balz oder Nahrungssuche am Boden zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr häufige und gut sichtbare Art."
   },
   {
     "id": "vogel_bergfink",
@@ -13680,18 +13977,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Buchenwälder",
+      "Parks",
+      "Gärten"
+    ],
+    "distributionGermany": "Regelmäßiger Wintergast und regional Brutvogel in höheren Lagen.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Herbst bis Frühjahr, besonders gut im Winter.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Fink mit orangebrauner Brust und Schultern, schwarzem Kopf beim Männchen und weißen Flügelpartien.",
+    "observationTip": "Im Winter oft in Finken-Trupps an Buchenwäldern, Feldern und Futterstellen gut zu beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige Winterart mit teils großen Schwärmen."
   },
   {
     "id": "vogel_kernbeisser",
@@ -13702,18 +14007,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Laubwälder",
+      "Parks",
+      "Gärten",
+      "Obstwiesen"
+    ],
+    "distributionGermany": "Weit verbreitet, aber oft unauffällig in laubbaumreichen Gebieten.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders im Frühjahr und Winter.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftiger Fink mit sehr großem dickem Schnabel, braunem Kopf, rostbrauner Flanke und schwarz-weißem Flügelbild.",
+    "observationTip": "In alten Parks, Laubwäldern und an Futterstellen oft auf Baumkronen oder Samenfutterplätzen zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Gut erkennbar, aber oft eher in Baumkronen verborgen."
   },
   {
     "id": "vogel_hakengimpel",
@@ -13724,18 +14037,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Nadelwälder",
+      "Gebirgswälder",
+      "beerentragende Gehölze",
+      "Parks"
+    ],
+    "distributionGermany": "In Deutschland seltener Wintergast, regional in Einflugjahren auffälliger.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Winter bei Einflügen am besten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftiger Fink; Männchen rosarot getönt an Kopf und Brust, Weibchen graubraun, beide mit dickem gebogenem Schnabel.",
+    "observationTip": "In Einflugjahren am ehesten in Nadelwäldern oder an beerentragenden Gehölzen in kleinen Trupps zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Auftreten stark schwankend; Häufigkeit später gegen Einflugjahre prüfen."
   },
   {
     "id": "vogel_gimpel",
@@ -13746,18 +14067,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Gärten",
+      "Parks",
+      "Hecken"
+    ],
+    "distributionGermany": "Weit verbreitet und in vielen baumreichen Lebensräumen regelmäßig.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders im Winter an Futterstellen und Sträuchern.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftiger Fink; Männchen mit roter Brust und schwarzer Kopfkappe, Weibchen graubraun mit ähnlicher Zeichnung.",
+    "observationTip": "In Gärten, Parks und Waldrändern oft ruhig in Sträuchern oder an Knospen und Samenfutter zu beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige Art, aber oft eher leise und unauffällig."
   },
   {
     "id": "vogel_wuestengimpel",
