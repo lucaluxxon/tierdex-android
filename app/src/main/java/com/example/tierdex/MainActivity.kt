@@ -371,36 +371,174 @@ private fun formatNotificationTimestamp(timestamp: Timestamp?): String {
 private fun FindingMetaRow(
     date: String?,
     location: String?,
+    latitude: Double? = null,
+    longitude: Double? = null,
     modifier: Modifier = Modifier
 ) {
-    val metaItems = buildList {
-        date?.takeIf { it.isNotBlank() }?.let { add(Icons.Filled.Event to it) }
-        location?.takeIf { it.isNotBlank() }?.let { add(Icons.Filled.Place to it) }
-    }
+    var showLocationDialog by remember(latitude, longitude) { mutableStateOf(false) }
+    val hasMapLocation = latitude != null && longitude != null
+    val hasDate = !date.isNullOrBlank()
+    val hasLocation = !location.isNullOrBlank()
 
-    if (metaItems.isEmpty()) return
+    if (!hasDate && !hasLocation) return
 
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        metaItems.forEach { (icon, text) ->
+        date?.takeIf { it.isNotBlank() }?.let { dateText ->
             Row(
                 horizontalArrangement = Arrangement.spacedBy(4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    imageVector = icon,
+                    imageVector = Icons.Filled.Event,
                     contentDescription = null,
                     modifier = Modifier.size(14.dp),
                     tint = TextSecondary
                 )
                 Text(
-                    text = text,
+                    text = dateText,
                     style = MaterialTheme.typography.labelMedium,
                     color = TextSecondary
                 )
+            }
+        }
+
+        location?.takeIf { it.isNotBlank() }?.let { locationText ->
+            Row(
+                modifier = if (hasMapLocation) {
+                    Modifier.clickable { showLocationDialog = true }
+                } else {
+                    Modifier
+                },
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Place,
+                    contentDescription = null,
+                    modifier = Modifier.size(14.dp),
+                    tint = if (hasMapLocation) TextPrimary else TextSecondary
+                )
+                Text(
+                    text = locationText,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = if (hasMapLocation) TextPrimary else TextSecondary
+                )
+            }
+        }
+    }
+
+    if (showLocationDialog && hasMapLocation) {
+        FindingLocationDialog(
+            latitude = latitude!!,
+            longitude = longitude!!,
+            locationLabel = location,
+            onDismiss = { showLocationDialog = false }
+        )
+    }
+}
+
+@Composable
+private fun FindingLocationDialog(
+    latitude: Double,
+    longitude: Double,
+    locationLabel: String?,
+    onDismiss: () -> Unit
+) {
+    BackHandler(onBack = onDismiss)
+    val markerPosition = remember(latitude, longitude) { LatLng(latitude, longitude) }
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(markerPosition, 14f)
+    }
+    val mapUiSettings = remember {
+        MapUiSettings(
+            zoomControlsEnabled = true,
+            myLocationButtonEnabled = false,
+            mapToolbarEnabled = false
+        )
+    }
+
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.36f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth(0.88f)
+                    .fillMaxHeight(0.68f),
+                shape = RoundedCornerShape(24.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                colors = CardDefaults.cardColors(containerColor = CardBackground)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column(
+                            modifier = Modifier.weight(1f),
+                            verticalArrangement = Arrangement.spacedBy(2.dp)
+                        ) {
+                            Text(
+                                text = "Fundort",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = TextPrimary
+                            )
+                            locationLabel?.takeIf { it.isNotBlank() }?.let { label ->
+                                Text(
+                                    text = label,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = TextSecondary
+                                )
+                            }
+                        }
+                        IconButton(onClick = onDismiss) {
+                            Icon(
+                                imageVector = Icons.Filled.Close,
+                                contentDescription = "Karte schließen",
+                                tint = TextPrimary
+                            )
+                        }
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(18.dp))
+                    ) {
+                        GoogleMap(
+                            modifier = Modifier.fillMaxSize(),
+                            cameraPositionState = cameraPositionState,
+                            uiSettings = mapUiSettings
+                        ) {
+                            Marker(
+                                state = MarkerState(position = markerPosition)
+                            )
+                        }
+                    }
+
+                    Text(
+                        text = formatCoordinates(latitude, longitude),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextSecondary
+                    )
+                }
             }
         }
     }
@@ -2444,7 +2582,9 @@ fun HomeScreen(
 
                         FindingMetaRow(
                             date = latestFinding.date,
-                            location = latestFinding.location
+                            location = latestFinding.location,
+                            latitude = latestFinding.latitude,
+                            longitude = latestFinding.longitude
                         )
                         latestFinding.note.takeIf { it.isNotBlank() }?.let {
                             Text(
@@ -4027,7 +4167,9 @@ fun FriendsScreen(
                                     )
                                     FindingMetaRow(
                                         date = feedItem.finding.date,
-                                        location = feedItem.finding.location
+                                        location = feedItem.finding.location,
+                                        latitude = feedItem.finding.latitude,
+                                        longitude = feedItem.finding.longitude
                                     )
                                 }
 
@@ -4815,7 +4957,9 @@ private fun DailyAnimalScreen(
                                         )
                                         FindingMetaRow(
                                             date = feedItem.finding.date,
-                                            location = feedItem.finding.location
+                                            location = feedItem.finding.location,
+                                            latitude = feedItem.finding.latitude,
+                                            longitude = feedItem.finding.longitude
                                         )
                                         feedItem.finding.note.takeIf { it.isNotBlank() }?.let {
                                             Text(
@@ -5514,7 +5658,9 @@ fun ProfileScreen(
 
                         FindingMetaRow(
                             date = finding.date,
-                            location = finding.location
+                            location = finding.location,
+                            latitude = finding.latitude,
+                            longitude = finding.longitude
                         )
 
                         if (finding.note.isNotBlank()) {
@@ -6046,13 +6192,12 @@ fun AnimalDetailScreen(
                                         style = MaterialTheme.typography.titleSmall,
                                         color = TextPrimary
                                     )
-                                    finding.location.takeIf { it.isNotBlank() }?.let {
-                                        Text(
-                                            text = it,
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = TextSecondary
-                                        )
-                                    }
+                                    FindingMetaRow(
+                                        date = null,
+                                        location = finding.location,
+                                        latitude = finding.latitude,
+                                        longitude = finding.longitude
+                                    )
                                     finding.note.takeIf { it.isNotBlank() }?.let {
                                         Text(
                                             text = it,
@@ -6135,7 +6280,9 @@ fun AnimalDetailScreen(
                         if (hasTextualFindingDetails) {
                             FindingMetaRow(
                                 date = currentFinding?.date,
-                                location = currentFinding?.location
+                                location = currentFinding?.location,
+                                latitude = currentFinding?.latitude,
+                                longitude = currentFinding?.longitude
                             )
 
                             val locationDetailText = when {
@@ -6334,7 +6481,9 @@ fun AnimalDetailScreen(
                                             )
                                             FindingMetaRow(
                                                 date = feedItem.finding.date,
-                                                location = feedItem.finding.location
+                                                location = feedItem.finding.location,
+                                                latitude = feedItem.finding.latitude,
+                                                longitude = feedItem.finding.longitude
                                             )
                                             feedItem.finding.note.takeIf { it.isNotBlank() }?.let {
                                                 Text(
