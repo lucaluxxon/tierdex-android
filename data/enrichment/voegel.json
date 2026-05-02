@@ -2668,6 +2668,28 @@
     "reviewNote": "Seltene Gastart; spätere Prüfung sinnvoll."
   },
   {
+    "id": "vogel_graureiher",
+    "habitats": [
+      "Seen",
+      "Flüsse",
+      "Teiche",
+      "Feuchtwiesen"
+    ],
+    "distributionGermany": "Bundesweit weit verbreitet und regelmäßig an vielen Gewässern.",
+    "rarityGame": "häufig",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut an Gewässerufern und Wiesen sichtbar.",
+    "shortDescription": "Großer grauer Reiher mit langem Hals, langem gelblichen Schnabel und schwarzen Kopfstreifen.",
+    "observationTip": "An Ufern, Wiesen und Gräben oft ruhig stehend oder langsam jagend leicht zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr gut sichtbare Standardart vieler Gewässer und Feuchtflächen."
+  },
+  {
     "id": "vogel_grauschnaepper",
     "habitats": [
       "Gärten",
@@ -4117,6 +4139,27 @@
     "reviewNote": "Abgrenzung zur Flussseeschwalbe ist nicht immer leicht; Beobachtungshinweise später ggf. noch verfeinern."
   },
   {
+    "id": "vogel_kuhreiher",
+    "habitats": [
+      "Wiesen",
+      "Weiden",
+      "Flachgewässer",
+      "offene Feuchtlandschaften"
+    ],
+    "distributionGermany": "In Deutschland regional zunehmend und als Gast oder lokaler Brutvogel häufiger als früher, aber nicht flächendeckend.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst, besonders an offenen Wiesen und Gewässern.",
+    "shortDescription": "Kleiner weißer Reiher mit kurzem gelbem Schnabel; im Prachtkleid mit warm orange-beigen Partien an Kopf und Brust.",
+    "observationTip": "Auf Weiden, Wiesen und an flachen Gewässern oft gut in der Nähe von Weidetieren oder auf offenen Flächen zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Verbreitung in Deutschland im Wandel; regionale Häufigkeit später prüfen."
+  },
+  {
     "id": "vogel_kurzschnabelgans",
     "habitats": [
       "Küstenwiesen",
@@ -4285,6 +4328,28 @@
     ],
     "needsReview": true,
     "reviewNote": "Vorkommen regional konzentriert; Beobachtbarkeit an guten Feuchtgebieten dennoch ordentlich."
+  },
+  {
+    "id": "vogel_loeffler",
+    "habitats": [
+      "Lagunen",
+      "Salzwiesen",
+      "Flachgewässer",
+      "Küstenfeuchtgebiete"
+    ],
+    "distributionGermany": "Vor allem an den Küsten und in einigen Feuchtgebieten regelmäßig, regional auch Brutvogel.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst in Feuchtgebieten und Küstenlagunen am besten.",
+    "shortDescription": "Großer weißer Stelzvogel mit langem Hals, langen dunklen Beinen und auffälligem löffelförmig verbreitertem Schnabel.",
+    "observationTip": "An flachen Küstengewässern, Lagunen und Feuchtgebieten oft gut bei der Nahrungssuche im seichten Wasser zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "In geeigneten Küsten- und Feuchtgebieten gut sichtbar, aber regional konzentriert."
   },
   {
     "id": "vogel_maeusebussard",
@@ -4794,6 +4859,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Akustisch sehr auffällig, optisch aber oft verborgen."
+  },
+  {
+    "id": "vogel_nachtreiher",
+    "habitats": [
+      "Auen",
+      "Teiche",
+      "Röhrichte",
+      "Feuchtgebiete mit Gehölzen"
+    ],
+    "distributionGermany": "In Deutschland regional und eher selten, teils als Brut- und Gastvogel.",
+    "rarityGame": "selten",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Frühjahr bis Herbst, vor allem in Feuchtgebieten.",
+    "shortDescription": "Kompakter Reiher mit schwarzem Scheitel und Rücken, grauen Flügeln, heller Unterseite und roten Augen.",
+    "observationTip": "An Feuchtgebieten mit Gehölzen am ehesten in der Dämmerung oder bei kurzen Flügen zwischen Ruheplätzen zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Art mit überwiegend dämmerungsaktiver Lebensweise."
   },
   {
     "id": "vogel_nachtschwalbe",
@@ -5448,6 +5534,27 @@
     "reviewNote": "Seltene Gastart; Herkunft einzelner Beobachtungen später mitbedenken."
   },
   {
+    "id": "vogel_purpurreiher",
+    "habitats": [
+      "Schilfgebiete",
+      "Flachgewässer",
+      "Auen",
+      "größere Feuchtgebiete"
+    ],
+    "distributionGermany": "Regional und eher selten, vor allem in großen Schilf- und Feuchtgebieten.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer an Brut- und Rastgebieten.",
+    "shortDescription": "Schlanker Reiher mit rostbraunem Hals, dunklerem Rücken und insgesamt gestreckterer Gestalt als der Graureiher.",
+    "observationTip": "An großen Schilfgebieten eher durch kurze Flüge oder am Rand von Röhrichten mit etwas Glück sichtbar.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Art, meist in größeren Feuchtgebieten konzentriert."
+  },
+  {
     "id": "vogel_rabenkraehe",
     "habitats": [
       "Siedlungen",
@@ -5468,6 +5575,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Verbreitungsgrenze zur Nebelkrähe regional beachten; Spielhäufigkeit später noch differenzieren."
+  },
+  {
+    "id": "vogel_rallenreiher",
+    "habitats": [
+      "Flachgewässer",
+      "Schilfränder",
+      "Lagunen",
+      "Feuchtwiesen"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Gast und regionaler Brutvogel.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer an warmen Feuchtgebieten.",
+    "shortDescription": "Kleiner Reiher mit sandbeiger bis rostbrauner Oberseite, heller Unterseite und langen gelblichen Beinen.",
+    "observationTip": "Nicht leicht zu finden; am ehesten in flachen Feuchtgebieten oder Schilfrändern mit etwas Glück bei der Nahrungssuche sichtbar.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale und eher unauffällige Art; Beobachtbarkeit gering bis mäßig."
   },
   {
     "id": "vogel_raubseeschwalbe",
@@ -5830,6 +5958,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Regelmäßige Feuchtgebietsart mit guter Sichtbarkeit an passenden Standorten."
+  },
+  {
+    "id": "vogel_rohrdommel",
+    "habitats": [
+      "Schilfgebiete",
+      "Röhrichte",
+      "Verlandungszonen",
+      "große Feuchtgebiete"
+    ],
+    "distributionGermany": "Regional verbreitet, aber insgesamt selten in großen störungsarmen Schilfgebieten.",
+    "rarityGame": "selten",
+    "activity": "dämmerungs- und tagaktiv",
+    "season": "Frühjahr bis Sommer, oft eher über Rufe bemerkbar.",
+    "shortDescription": "Kräftiger Reiher mit beigebraunem, längsgestreiftem Gefieder, dickem Hals und langem dolchartigem Schnabel.",
+    "observationTip": "In großen Schilfgebieten eher auf dumpfe Rufe, kurze Flüge oder Bewegungen am Röhrichtrand achten als auf längere offene Sichtungen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Versteckt lebende und störungsempfindliche Art; Beobachtbarkeit meist gering."
   },
   {
     "id": "vogel_rohrschwirl",
@@ -7227,6 +7376,28 @@
     "reviewNote": "Sehr regionale Art in Deutschland; Beobachtbarkeit eher gering."
   },
   {
+    "id": "vogel_schwarzstorch",
+    "habitats": [
+      "alte Wälder",
+      "Auen",
+      "Bachtäler",
+      "störungsarme Feuchtgebiete"
+    ],
+    "distributionGermany": "Regional verbreitet, aber insgesamt selten und an störungsarme Waldlandschaften gebunden.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer in wenigen geeigneten Gebieten, auf dem Zug auch Spätsommer.",
+    "shortDescription": "Großer dunkler Storch mit langem rotem Schnabel, roten Beinen und weißem Bauchbereich.",
+    "observationTip": "Am ehesten aus großer Distanz in offenen Feuchtflächen oder über Waldgebieten im Flug beobachten, ohne Brutgebiete aufzusuchen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Störungsempfindliche Art; Fundtipp bewusst ohne Hinweise auf Nest- oder Brutplätze formuliert."
+  },
+  {
     "id": "vogel_seeadler",
     "habitats": [
       "Seen",
@@ -7289,6 +7460,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Sehr seltene und schutzrelevante Art; Angaben später besonders sorgfältig prüfen."
+  },
+  {
+    "id": "vogel_seidenreiher",
+    "habitats": [
+      "Lagunen",
+      "Flachgewässer",
+      "Salzwiesen",
+      "Feuchtgebiete"
+    ],
+    "distributionGermany": "In Deutschland regional und eher selten, vor allem an Küsten und in warmen Feuchtgebieten.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst an geeigneten Feuchtgebieten.",
+    "shortDescription": "Kleiner weißer Reiher mit schwarzem Schnabel, dunklen Beinen und gelben Füßen.",
+    "observationTip": "An flachen Küstengewässern, Salzwiesen und Feuchtflächen mit etwas Glück gut bei der Nahrungssuche sichtbar.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Art in Deutschland, vor allem an Küsten und warmen Feuchtgebieten."
   },
   {
     "id": "vogel_seidensaenger",
@@ -7354,6 +7546,27 @@
     "reviewNote": "Regelmäßiger Durchzügler mit Schwerpunkt an Küsten und größeren Rastflächen."
   },
   {
+    "id": "vogel_sichler",
+    "habitats": [
+      "Feuchtwiesen",
+      "Lagunen",
+      "Flachgewässer",
+      "Schlammflächen"
+    ],
+    "distributionGermany": "In Deutschland seltener bis regional regelmäßiger Gast und lokal auch Brutvogel.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst an Feuchtgebieten am besten.",
+    "shortDescription": "Mittelgroßer dunkel wirkender Ibis mit metallisch schimmerndem Gefieder, langem Hals und lang gebogenem Schnabel.",
+    "observationTip": "An flachen Feuchtgebieten und Schlammflächen am ehesten in kleinen Trupps oder mit anderen Wat- und Schreitvögeln zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Vorkommen in Deutschland nehmen regional zu, bleiben aber ungleichmäßig."
+  },
+  {
     "id": "vogel_silbermoewe",
     "habitats": [
       "Küsten",
@@ -7374,6 +7587,28 @@
     ],
     "needsReview": true,
     "reviewNote": "Komplex mit nah verwandten Formen; Bestimmung und Verbreitung später ggf. noch verfeinern."
+  },
+  {
+    "id": "vogel_silberreiher",
+    "habitats": [
+      "Seen",
+      "Feuchtwiesen",
+      "Flachgewässer",
+      "Auen"
+    ],
+    "distributionGermany": "In Deutschland inzwischen vielerorts regelmäßig, regional auch Brutvogel.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut an offenen Gewässern und Wiesen sichtbar.",
+    "shortDescription": "Großer ganz weißer Reiher mit langem Hals, langem gelbem Schnabel und langen dunklen Beinen.",
+    "observationTip": "An Feuchtwiesen, Flachgewässern und Auen oft gut auf offenen Flächen oder am Ufer zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Heute deutlich regelmäßiger als früher; Beobachtbarkeit regional gut."
   },
   {
     "id": "vogel_singdrossel",
@@ -9539,6 +9774,28 @@
     "reviewNote": "Seltene Ausnahmeart; Beobachtungsangaben später sorgfältig prüfen."
   },
   {
+    "id": "vogel_weissstorch",
+    "habitats": [
+      "Feuchtwiesen",
+      "Auen",
+      "offene Agrarlandschaften",
+      "Dörfer"
+    ],
+    "distributionGermany": "Regional weit verbreitet und durch Schutzmaßnahmen in vielen Gebieten regelmäßig.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer in Brutgebieten und offenen Wiesenlandschaften.",
+    "shortDescription": "Großer weißer Storch mit schwarzen Flügeldecken, langem rotem Schnabel und langen roten Beinen.",
+    "observationTip": "Auf Feuchtwiesen, Feldern und in Dörfern oft gut bei der Nahrungssuche oder im Flug zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Gut sichtbare Art in vielen Regionen, aber nicht überall gleich häufig."
+  },
+  {
     "id": "vogel_weisswangengans",
     "habitats": [
       "Küsten",
@@ -10088,6 +10345,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Seltene Gastart; spätere Prüfung der Bestimmung empfohlen."
+  },
+  {
+    "id": "vogel_zwergdommel",
+    "habitats": [
+      "Schilfränder",
+      "Röhrichte",
+      "Teiche",
+      "Verlandungszonen"
+    ],
+    "distributionGermany": "Regional und eher selten in gut ausgeprägten Röhrichtgebieten.",
+    "rarityGame": "selten",
+    "activity": "dämmerungs- und tagaktiv",
+    "season": "Frühjahr bis Sommer an geeigneten Schilfgewässern.",
+    "shortDescription": "Sehr kleiner Reiher mit kurzem Hals, beigebrauner bis schwarz-beiger Oberseite und gelblichen Partien an Kopf und Unterseite.",
+    "observationTip": "In Schilfbeständen eher auf kurze Flüge, Rufe oder flüchtige Bewegungen im Randbereich achten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Kleine, versteckt lebende Art; Beobachtbarkeit oft nur kurzzeitig."
   },
   {
     "id": "vogel_zwerggans",
