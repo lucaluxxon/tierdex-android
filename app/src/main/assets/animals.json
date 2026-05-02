@@ -2,7 +2,7 @@
   {
     "id": "vogel_haselhuhn",
     "group": "Vögel",
-    "subgroup": "Fasanverwandte",
+    "subgroup": "Hühnervögel",
     "germanName": "Haselhuhn",
     "latinName": "Tetrastes bonasia",
     "habitat": "Wald",
@@ -24,7 +24,7 @@
   {
     "id": "vogel_auerhuhn",
     "group": "Vögel",
-    "subgroup": "Fasanverwandte",
+    "subgroup": "Hühnervögel",
     "germanName": "Aürhuhn",
     "latinName": "Tetrao urogallus",
     "habitat": "",
@@ -46,7 +46,7 @@
   {
     "id": "vogel_birkhuhn",
     "group": "Vögel",
-    "subgroup": "Fasanverwandte",
+    "subgroup": "Hühnervögel",
     "germanName": "Birkhuhn",
     "latinName": "Lyrurus tetrix",
     "habitat": "",
@@ -68,7 +68,7 @@
   {
     "id": "vogel_alpenschneehuhn",
     "group": "Vögel",
-    "subgroup": "Fasanverwandte",
+    "subgroup": "Hühnervögel",
     "germanName": "Alpenschneehuhn",
     "latinName": "Lagopus muta",
     "habitat": "",
@@ -90,7 +90,7 @@
   {
     "id": "vogel_steinhuhn",
     "group": "Vögel",
-    "subgroup": "Fasanverwandte",
+    "subgroup": "Hühnervögel",
     "germanName": "Steinhuhn",
     "latinName": "Alectoris graeca",
     "habitat": "",
@@ -112,7 +112,7 @@
   {
     "id": "vogel_rebhuhn",
     "group": "Vögel",
-    "subgroup": "Fasanverwandte",
+    "subgroup": "Hühnervögel",
     "germanName": "Rebhuhn",
     "latinName": "Perdix perdix",
     "habitat": "",
@@ -134,7 +134,7 @@
   {
     "id": "vogel_wachtel",
     "group": "Vögel",
-    "subgroup": "Fasanverwandte",
+    "subgroup": "Hühnervögel",
     "germanName": "Wachtel",
     "latinName": "Coturnix coturnix",
     "habitat": "",
@@ -156,7 +156,7 @@
   {
     "id": "vogel_jagdfasan",
     "group": "Vögel",
-    "subgroup": "Fasanverwandte",
+    "subgroup": "Hühnervögel",
     "germanName": "Jagdfasan",
     "latinName": "Phasianus colchicus",
     "habitat": "",
@@ -178,7 +178,7 @@
   {
     "id": "vogel_ringelgans",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Ringelgans",
     "latinName": "Branta bernicla",
     "habitat": "",
@@ -200,7 +200,7 @@
   {
     "id": "vogel_rothalsgans",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Rothalsgans",
     "latinName": "Branta ruficollis",
     "habitat": "",
@@ -222,7 +222,7 @@
   {
     "id": "vogel_kanadagans",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Kanadagans",
     "latinName": "Branta canadensis",
     "habitat": "",
@@ -244,7 +244,7 @@
   {
     "id": "vogel_weisswangengans",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Weißwangengans",
     "latinName": "Branta leucopsis",
     "habitat": "",
@@ -266,7 +266,7 @@
   {
     "id": "vogel_streifengans",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Streifengans",
     "latinName": "Anser indicus",
     "habitat": "",
@@ -288,7 +288,7 @@
   {
     "id": "vogel_graugans",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Graugans",
     "latinName": "Anser anser",
     "habitat": "",
@@ -310,7 +310,7 @@
   {
     "id": "vogel_waldsaatgans",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Waldsaatgans",
     "latinName": "Anser fabalis",
     "habitat": "",
@@ -332,7 +332,7 @@
   {
     "id": "vogel_kurzschnabelgans",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Kurzschnabelgans",
     "latinName": "Anser brachyrhynchus",
     "habitat": "",
@@ -354,7 +354,7 @@
   {
     "id": "vogel_tundrasaatgans",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Tundrasaatgans",
     "latinName": "Anser serrirostris",
     "habitat": "",
@@ -376,7 +376,7 @@
   {
     "id": "vogel_blaessgans",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Blässgans",
     "latinName": "Anser albifrons",
     "habitat": "",
@@ -398,7 +398,7 @@
   {
     "id": "vogel_zwerggans",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Zwerggans",
     "latinName": "Anser erythropus",
     "habitat": "",
@@ -420,7 +420,7 @@
   {
     "id": "vogel_hoeckerschwan",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Höckerschwan",
     "latinName": "Cygnus olor",
     "habitat": "",
@@ -442,7 +442,7 @@
   {
     "id": "vogel_zwergschwan",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Zwergschwan",
     "latinName": "Cygnus columbianus",
     "habitat": "",
@@ -464,7 +464,7 @@
   {
     "id": "vogel_singschwan",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Singschwan",
     "latinName": "Cygnus cygnus",
     "habitat": "",
@@ -486,7 +486,7 @@
   {
     "id": "vogel_nilgans",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Nilgans",
     "latinName": "Alopochen aegyptiaca",
     "habitat": "",
@@ -508,7 +508,7 @@
   {
     "id": "vogel_brandgans",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Brandgans",
     "latinName": "Tadorna tadorna",
     "habitat": "",
@@ -530,7 +530,7 @@
   {
     "id": "vogel_rostgans",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Rostgans",
     "latinName": "Tadorna ferruginea",
     "habitat": "",
@@ -552,7 +552,7 @@
   {
     "id": "vogel_mandarinente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Mandarinente",
     "latinName": "Aix galericulata",
     "habitat": "",
@@ -574,7 +574,7 @@
   {
     "id": "vogel_knaekente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Knäkente",
     "latinName": "Spatula querquedula",
     "habitat": "",
@@ -596,7 +596,7 @@
   {
     "id": "vogel_blaufluegelente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Blauflügelente",
     "latinName": "Spatula discors",
     "habitat": "",
@@ -618,7 +618,7 @@
   {
     "id": "vogel_loeffelente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Löffelente",
     "latinName": "Spatula clypeata",
     "habitat": "",
@@ -640,7 +640,7 @@
   {
     "id": "vogel_schnatterente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Schnatterente",
     "latinName": "Mareca strepera",
     "habitat": "",
@@ -662,7 +662,7 @@
   {
     "id": "vogel_pfeifente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Pfeifente",
     "latinName": "Mareca penelope",
     "habitat": "",
@@ -684,7 +684,7 @@
   {
     "id": "vogel_kanadapfeifente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Kanadapfeifente",
     "latinName": "Mareca americana",
     "habitat": "",
@@ -706,7 +706,7 @@
   {
     "id": "vogel_stockente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Stockente",
     "latinName": "Anas platyrhynchos",
     "habitat": "",
@@ -728,7 +728,7 @@
   {
     "id": "vogel_spiessente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Spießente",
     "latinName": "Anas acuta",
     "habitat": "",
@@ -750,7 +750,7 @@
   {
     "id": "vogel_krickente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Krickente",
     "latinName": "Anas crecca",
     "habitat": "",
@@ -772,7 +772,7 @@
   {
     "id": "vogel_carolinakrickente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Carolinakrickente",
     "latinName": "Anas carolinensis",
     "habitat": "",
@@ -794,7 +794,7 @@
   {
     "id": "vogel_marmelente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Marmelente",
     "latinName": "Marmaronetta angustirostris",
     "habitat": "",
@@ -816,7 +816,7 @@
   {
     "id": "vogel_kolbenente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Kolbenente",
     "latinName": "Netta rufina",
     "habitat": "",
@@ -838,7 +838,7 @@
   {
     "id": "vogel_tafelente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Tafelente",
     "latinName": "Aythya ferina",
     "habitat": "",
@@ -860,7 +860,7 @@
   {
     "id": "vogel_moorente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Moorente",
     "latinName": "Aythya nyroca",
     "habitat": "",
@@ -882,7 +882,7 @@
   {
     "id": "vogel_ringschnabelente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Ringschnabelente",
     "latinName": "Aythya collaris",
     "habitat": "",
@@ -904,7 +904,7 @@
   {
     "id": "vogel_reiherente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Reiherente",
     "latinName": "Aythya fuligula",
     "habitat": "",
@@ -926,7 +926,7 @@
   {
     "id": "vogel_bergente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Bergente",
     "latinName": "Aythya marila",
     "habitat": "",
@@ -948,7 +948,7 @@
   {
     "id": "vogel_kanadabergente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Kanadabergente",
     "latinName": "Aythya affinis",
     "habitat": "",
@@ -970,7 +970,7 @@
   {
     "id": "vogel_scheckente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Scheckente",
     "latinName": "Polysticta stelleri",
     "habitat": "",
@@ -992,7 +992,7 @@
   {
     "id": "vogel_prachteiderente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Prachteiderente",
     "latinName": "Somateria spectabilis",
     "habitat": "",
@@ -1014,7 +1014,7 @@
   {
     "id": "vogel_eiderente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Eiderente",
     "latinName": "Somateria mollissima",
     "habitat": "",
@@ -1036,7 +1036,7 @@
   {
     "id": "vogel_kragenente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Kragenente",
     "latinName": "Histrionicus histrionicus",
     "habitat": "",
@@ -1058,7 +1058,7 @@
   {
     "id": "vogel_brillenente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Brillenente",
     "latinName": "Melanitta perspicillata",
     "habitat": "",
@@ -1080,7 +1080,7 @@
   {
     "id": "vogel_samtente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Samtente",
     "latinName": "Melanitta fusca",
     "habitat": "",
@@ -1102,7 +1102,7 @@
   {
     "id": "vogel_kamtschatkasamtente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Kamtschatkasamtente",
     "latinName": "Melanitta stejnegeri",
     "habitat": "",
@@ -1124,7 +1124,7 @@
   {
     "id": "vogel_trauerente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Traürente",
     "latinName": "Melanitta nigra",
     "habitat": "",
@@ -1146,7 +1146,7 @@
   {
     "id": "vogel_pazifiktrauerente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Pazifiktraürente",
     "latinName": "Melanitta americana",
     "habitat": "",
@@ -1168,7 +1168,7 @@
   {
     "id": "vogel_eisente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Eisente",
     "latinName": "Clangula hyemalis",
     "habitat": "",
@@ -1190,7 +1190,7 @@
   {
     "id": "vogel_schellente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Schellente",
     "latinName": "Bucephala clangula",
     "habitat": "",
@@ -1212,7 +1212,7 @@
   {
     "id": "vogel_spatelente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Spatelente",
     "latinName": "Bucephala islandica",
     "habitat": "",
@@ -1234,7 +1234,7 @@
   {
     "id": "vogel_zwergsaeger",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Zwergsäger",
     "latinName": "Mergellus albellus",
     "habitat": "",
@@ -1256,7 +1256,7 @@
   {
     "id": "vogel_gaensesaeger",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Gänsesäger",
     "latinName": "Mergus merganser",
     "habitat": "",
@@ -1278,7 +1278,7 @@
   {
     "id": "vogel_mittelsaeger",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Mittelsäger",
     "latinName": "Mergus serrator",
     "habitat": "",
@@ -1300,7 +1300,7 @@
   {
     "id": "vogel_schwarzkopf-ruderente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Schwarzkopf-Ruderente",
     "latinName": "Oxyura jamaicensis",
     "habitat": "",
@@ -1322,7 +1322,7 @@
   {
     "id": "vogel_weisskopf-ruderente",
     "group": "Vögel",
-    "subgroup": "Entenverwandte",
+    "subgroup": "Entenvögel",
     "germanName": "Weißkopf-Ruderente",
     "latinName": "Oxyura leucocephala",
     "habitat": "",
@@ -1344,7 +1344,7 @@
   {
     "id": "vogel_nachtschwalbe",
     "group": "Vögel",
-    "subgroup": "Nachtschwalben",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Nachtschwalbe",
     "latinName": "Caprimulgus europaeus",
     "habitat": "",
@@ -1366,7 +1366,7 @@
   {
     "id": "vogel_pharaonennachtschwalbe",
     "group": "Vögel",
-    "subgroup": "Nachtschwalben",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Pharaonennachtschwalbe",
     "latinName": "Caprimulgus aegyptius",
     "habitat": "",
@@ -1388,7 +1388,7 @@
   {
     "id": "vogel_alpensegler",
     "group": "Vögel",
-    "subgroup": "Segler",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Alpensegler",
     "latinName": "Tachymarptis melba",
     "habitat": "",
@@ -1410,7 +1410,7 @@
   {
     "id": "vogel_mauersegler",
     "group": "Vögel",
-    "subgroup": "Segler",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Maürsegler",
     "latinName": "Apus apus",
     "habitat": "",
@@ -1432,7 +1432,7 @@
   {
     "id": "vogel_fahlsegler",
     "group": "Vögel",
-    "subgroup": "Segler",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Fahlsegler",
     "latinName": "Apus pallidus",
     "habitat": "",
@@ -1454,7 +1454,7 @@
   {
     "id": "vogel_pazifiksegler",
     "group": "Vögel",
-    "subgroup": "Segler",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Pazifiksegler",
     "latinName": "Apus pacificus",
     "habitat": "",
@@ -1476,7 +1476,7 @@
   {
     "id": "vogel_haussegler",
     "group": "Vögel",
-    "subgroup": "Segler",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Haussegler",
     "latinName": "Apus affinis",
     "habitat": "",
@@ -1498,7 +1498,7 @@
   {
     "id": "vogel_grosstrappe",
     "group": "Vögel",
-    "subgroup": "Trappen",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Großtrappe",
     "latinName": "Otis tarda",
     "habitat": "",
@@ -1520,7 +1520,7 @@
   {
     "id": "vogel_steppenkragentrappe",
     "group": "Vögel",
-    "subgroup": "Trappen",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Steppenkragentrappe",
     "latinName": "Chlamydotis macqueenii",
     "habitat": "",
@@ -1542,7 +1542,7 @@
   {
     "id": "vogel_haeherkuckuck",
     "group": "Vögel",
-    "subgroup": "Kuckucke",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Häherkuckuck",
     "latinName": "Clamator glandarius",
     "habitat": "",
@@ -1564,7 +1564,7 @@
   {
     "id": "vogel_schwarzschnabelkuckuck",
     "group": "Vögel",
-    "subgroup": "Kuckucke",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Schwarzschnabelkuckuck",
     "latinName": "Coccyzus erythropthalmus",
     "habitat": "",
@@ -1586,7 +1586,7 @@
   {
     "id": "vogel_kuckuck",
     "group": "Vögel",
-    "subgroup": "Kuckucke",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Kuckuck",
     "latinName": "Cuculus canorus",
     "habitat": "",
@@ -1608,7 +1608,7 @@
   {
     "id": "vogel_steppenflughuhn",
     "group": "Vögel",
-    "subgroup": "Flughühner",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Steppenflughuhn",
     "latinName": "Syrrhaptes paradoxus",
     "habitat": "",
@@ -1630,7 +1630,7 @@
   {
     "id": "vogel_sandflughuhn",
     "group": "Vögel",
-    "subgroup": "Flughühner",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Sandflughuhn",
     "latinName": "Pterocles orientalis",
     "habitat": "",
@@ -1806,7 +1806,7 @@
   {
     "id": "vogel_wasserralle",
     "group": "Vögel",
-    "subgroup": "Rallen",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Wasserralle",
     "latinName": "Rallus aquaticus",
     "habitat": "",
@@ -1828,7 +1828,7 @@
   {
     "id": "vogel_wachtelkoenig",
     "group": "Vögel",
-    "subgroup": "Rallen",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Wachtelkönig",
     "latinName": "Crex crex",
     "habitat": "",
@@ -1850,7 +1850,7 @@
   {
     "id": "vogel_tuepfelsumpfhuhn",
     "group": "Vögel",
-    "subgroup": "Rallen",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Tüpfelsumpfhuhn",
     "latinName": "Porzana porzana",
     "habitat": "",
@@ -1872,7 +1872,7 @@
   {
     "id": "vogel_kleinsumpfhuhn",
     "group": "Vögel",
-    "subgroup": "Rallen",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Kleinsumpfhuhn",
     "latinName": "Zapornia parva",
     "habitat": "",
@@ -1894,7 +1894,7 @@
   {
     "id": "vogel_zwergsumpfhuhn",
     "group": "Vögel",
-    "subgroup": "Rallen",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Zwergsumpfhuhn",
     "latinName": "Zapornia pusilla",
     "habitat": "",
@@ -1916,7 +1916,7 @@
   {
     "id": "vogel_purpurhuhn",
     "group": "Vögel",
-    "subgroup": "Rallen",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Purpurhuhn",
     "latinName": "Porphyrio porphyrio",
     "habitat": "",
@@ -1938,7 +1938,7 @@
   {
     "id": "vogel_graukopf-purpurhuhn",
     "group": "Vögel",
-    "subgroup": "Rallen",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Graukopf-Purpurhuhn",
     "latinName": "Porphyrio poliocephalus",
     "habitat": "",
@@ -1960,7 +1960,7 @@
   {
     "id": "vogel_bronzesultanshuhn",
     "group": "Vögel",
-    "subgroup": "Rallen",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Bronzesultanshuhn",
     "latinName": "Porphyrio alleni",
     "habitat": "",
@@ -1982,7 +1982,7 @@
   {
     "id": "vogel_teichhuhn",
     "group": "Vögel",
-    "subgroup": "Rallen",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Teichhuhn",
     "latinName": "Gallinula chloropus",
     "habitat": "",
@@ -2004,7 +2004,7 @@
   {
     "id": "vogel_blaesshuhn",
     "group": "Vögel",
-    "subgroup": "Rallen",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Blässhuhn",
     "latinName": "Fulica atra",
     "habitat": "",
@@ -2026,7 +2026,7 @@
   {
     "id": "vogel_kanadakranich",
     "group": "Vögel",
-    "subgroup": "Kraniche",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Kanadakranich",
     "latinName": "Antigone canadensis",
     "habitat": "",
@@ -2048,7 +2048,7 @@
   {
     "id": "vogel_jungfernkranich",
     "group": "Vögel",
-    "subgroup": "Kraniche",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Jungfernkranich",
     "latinName": "Grus virgo",
     "habitat": "",
@@ -2070,7 +2070,7 @@
   {
     "id": "vogel_kranich",
     "group": "Vögel",
-    "subgroup": "Kraniche",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Kranich",
     "latinName": "Grus grus",
     "habitat": "",
@@ -2092,7 +2092,7 @@
   {
     "id": "vogel_zwergtaucher",
     "group": "Vögel",
-    "subgroup": "Lappentaucher",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Zwergtaucher",
     "latinName": "Tachybaptus ruficollis",
     "habitat": "",
@@ -2114,7 +2114,7 @@
   {
     "id": "vogel_bindentaucher",
     "group": "Vögel",
-    "subgroup": "Lappentaucher",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Bindentaucher",
     "latinName": "Podilymbus podiceps",
     "habitat": "",
@@ -2136,7 +2136,7 @@
   {
     "id": "vogel_rothalstaucher",
     "group": "Vögel",
-    "subgroup": "Lappentaucher",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Rothalstaucher",
     "latinName": "Podiceps grisegena",
     "habitat": "",
@@ -2158,7 +2158,7 @@
   {
     "id": "vogel_haubentaucher",
     "group": "Vögel",
-    "subgroup": "Lappentaucher",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Haubentaucher",
     "latinName": "Podiceps cristatus",
     "habitat": "",
@@ -2180,7 +2180,7 @@
   {
     "id": "vogel_ohrentaucher",
     "group": "Vögel",
-    "subgroup": "Lappentaucher",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Ohrentaucher",
     "latinName": "Podiceps auritus",
     "habitat": "",
@@ -2202,7 +2202,7 @@
   {
     "id": "vogel_schwarzhalstaucher",
     "group": "Vögel",
-    "subgroup": "Lappentaucher",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Schwarzhalstaucher",
     "latinName": "Podiceps nigricollis",
     "habitat": "",
@@ -2224,7 +2224,7 @@
   {
     "id": "vogel_rosaflamingo",
     "group": "Vögel",
-    "subgroup": "Flamingos",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Rosaflamingo",
     "latinName": "Phoenicopterus roseus",
     "habitat": "",
@@ -2246,7 +2246,7 @@
   {
     "id": "vogel_triel",
     "group": "Vögel",
-    "subgroup": "Triele",
+    "subgroup": "Watvögel",
     "germanName": "Triel",
     "latinName": "Burhinus oedicnemus",
     "habitat": "",
@@ -2268,7 +2268,7 @@
   {
     "id": "vogel_austernfischer",
     "group": "Vögel",
-    "subgroup": "Austernfischer",
+    "subgroup": "Watvögel",
     "germanName": "Austernfischer",
     "latinName": "Haematopus ostralegus",
     "habitat": "",
@@ -2290,7 +2290,7 @@
   {
     "id": "vogel_stelzenlaeufer",
     "group": "Vögel",
-    "subgroup": "Säbelschnäblerverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Stelzenläufer",
     "latinName": "Himantopus himantopus",
     "habitat": "",
@@ -2312,7 +2312,7 @@
   {
     "id": "vogel_saebelschnaebler",
     "group": "Vögel",
-    "subgroup": "Säbelschnäblerverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Säbelschnäbler",
     "latinName": "Recurvirostra avosetta",
     "habitat": "",
@@ -2334,7 +2334,7 @@
   {
     "id": "vogel_kiebitz",
     "group": "Vögel",
-    "subgroup": "Regenpfeiferverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Kiebitz",
     "latinName": "Vanellus vanellus",
     "habitat": "",
@@ -2356,7 +2356,7 @@
   {
     "id": "vogel_steppenkiebitz",
     "group": "Vögel",
-    "subgroup": "Regenpfeiferverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Steppenkiebitz",
     "latinName": "Vanellus gregarius",
     "habitat": "",
@@ -2378,7 +2378,7 @@
   {
     "id": "vogel_weissschwanzkiebitz",
     "group": "Vögel",
-    "subgroup": "Regenpfeiferverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Weißschwanzkiebitz",
     "latinName": "Vanellus leucurus",
     "habitat": "",
@@ -2400,7 +2400,7 @@
   {
     "id": "vogel_goldregenpfeifer",
     "group": "Vögel",
-    "subgroup": "Regenpfeiferverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Goldregenpfeifer",
     "latinName": "Pluvialis apricaria",
     "habitat": "",
@@ -2422,7 +2422,7 @@
   {
     "id": "vogel_tundra-goldregenpfeifer",
     "group": "Vögel",
-    "subgroup": "Regenpfeiferverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Tundra-Goldregenpfeifer",
     "latinName": "Pluvialis fulva",
     "habitat": "",
@@ -2444,7 +2444,7 @@
   {
     "id": "vogel_praerie-goldregenpfeifer",
     "group": "Vögel",
-    "subgroup": "Regenpfeiferverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Prärie-Goldregenpfeifer",
     "latinName": "Pluvialis dominica",
     "habitat": "",
@@ -2466,7 +2466,7 @@
   {
     "id": "vogel_kiebitzregenpfeifer",
     "group": "Vögel",
-    "subgroup": "Regenpfeiferverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Kiebitzregenpfeifer",
     "latinName": "Pluvialis squatarola",
     "habitat": "",
@@ -2488,7 +2488,7 @@
   {
     "id": "vogel_sandregenpfeifer",
     "group": "Vögel",
-    "subgroup": "Regenpfeiferverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Sandregenpfeifer",
     "latinName": "Charadrius hiaticula",
     "habitat": "",
@@ -2510,7 +2510,7 @@
   {
     "id": "vogel_flussregenpfeifer",
     "group": "Vögel",
-    "subgroup": "Regenpfeiferverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Flussregenpfeifer",
     "latinName": "Charadrius dubius",
     "habitat": "",
@@ -2532,7 +2532,7 @@
   {
     "id": "vogel_seeregenpfeifer",
     "group": "Vögel",
-    "subgroup": "Regenpfeiferverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Seeregenpfeifer",
     "latinName": "Charadrius alexandrinus",
     "habitat": "",
@@ -2554,7 +2554,7 @@
   {
     "id": "vogel_wuestenregenpfeifer",
     "group": "Vögel",
-    "subgroup": "Regenpfeiferverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Wüstenregenpfeifer",
     "latinName": "Charadrius leschenaultii",
     "habitat": "",
@@ -2576,7 +2576,7 @@
   {
     "id": "vogel_wermutregenpfeifer",
     "group": "Vögel",
-    "subgroup": "Regenpfeiferverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Wermutregenpfeifer",
     "latinName": "Charadrius asiaticus",
     "habitat": "",
@@ -2598,7 +2598,7 @@
   {
     "id": "vogel_mornellregenpfeifer",
     "group": "Vögel",
-    "subgroup": "Regenpfeiferverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Mornellregenpfeifer",
     "latinName": "Charadrius morinellus",
     "habitat": "",
@@ -2620,7 +2620,7 @@
   {
     "id": "vogel_praerielaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Prärieläufer",
     "latinName": "Bartramia longicauda",
     "habitat": "",
@@ -2642,7 +2642,7 @@
   {
     "id": "vogel_regenbrachvogel",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Regenbrachvogel",
     "latinName": "Numenius phaeopus",
     "habitat": "",
@@ -2664,7 +2664,7 @@
   {
     "id": "vogel_duennschnabel-brachvogel",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Dünnschnabel-Brachvogel",
     "latinName": "Numenius tenuirostris",
     "habitat": "",
@@ -2686,7 +2686,7 @@
   {
     "id": "vogel_brachvogel",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Brachvogel",
     "latinName": "Numenius arquata",
     "habitat": "",
@@ -2708,7 +2708,7 @@
   {
     "id": "vogel_pfuhlschnepfe",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Pfuhlschnepfe",
     "latinName": "Limosa lapponica",
     "habitat": "",
@@ -2730,7 +2730,7 @@
   {
     "id": "vogel_uferschnepfe",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Uferschnepfe",
     "latinName": "Limosa limosa",
     "habitat": "",
@@ -2752,7 +2752,7 @@
   {
     "id": "vogel_steinwaelzer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Steinwälzer",
     "latinName": "Arenaria interpres",
     "habitat": "",
@@ -2774,7 +2774,7 @@
   {
     "id": "vogel_anadyrknutt",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Anadyrknutt",
     "latinName": "Calidris tenuirostris",
     "habitat": "",
@@ -2796,7 +2796,7 @@
   {
     "id": "vogel_knutt",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Knutt",
     "latinName": "Calidris canutus",
     "habitat": "",
@@ -2818,7 +2818,7 @@
   {
     "id": "vogel_kampflaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Kampfläufer",
     "latinName": "Calidris pugnax",
     "habitat": "",
@@ -2840,7 +2840,7 @@
   {
     "id": "vogel_sumpflaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Sumpfläufer",
     "latinName": "Calidris falcinellus",
     "habitat": "",
@@ -2862,7 +2862,7 @@
   {
     "id": "vogel_spitzschwanz-strandlaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Spitzschwanz-Strandläufer",
     "latinName": "Calidris acuminata",
     "habitat": "",
@@ -2884,7 +2884,7 @@
   {
     "id": "vogel_bindenstrandlaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Bindenstrandläufer",
     "latinName": "Calidris himantopus",
     "habitat": "",
@@ -2906,7 +2906,7 @@
   {
     "id": "vogel_sichelstrandlaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Sichelstrandläufer",
     "latinName": "Calidris ferruginea",
     "habitat": "",
@@ -2928,7 +2928,7 @@
   {
     "id": "vogel_temminckstrandlaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Temminckstrandläufer",
     "latinName": "Calidris temminckii",
     "habitat": "",
@@ -2950,7 +2950,7 @@
   {
     "id": "vogel_langzehen-strandlaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Langzehen-Strandläufer",
     "latinName": "Calidris subminuta",
     "habitat": "",
@@ -2972,7 +2972,7 @@
   {
     "id": "vogel_rotkehl-strandlaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Rotkehl-Strandläufer",
     "latinName": "Calidris ruficollis",
     "habitat": "",
@@ -2994,7 +2994,7 @@
   {
     "id": "vogel_sanderling",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Sanderling",
     "latinName": "Calidris alba",
     "habitat": "",
@@ -3016,7 +3016,7 @@
   {
     "id": "vogel_alpenstrandlaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Alpenstrandläufer",
     "latinName": "Calidris alpina",
     "habitat": "",
@@ -3038,7 +3038,7 @@
   {
     "id": "vogel_meerstrandlaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Meerstrandläufer",
     "latinName": "Calidris maritima",
     "habitat": "",
@@ -3060,7 +3060,7 @@
   {
     "id": "vogel_bairdstrandlaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Bairdstrandläufer",
     "latinName": "Calidris bairdii",
     "habitat": "",
@@ -3082,7 +3082,7 @@
   {
     "id": "vogel_zwergstrandlaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Zwergstrandläufer",
     "latinName": "Calidris minuta",
     "habitat": "",
@@ -3104,7 +3104,7 @@
   {
     "id": "vogel_wiesenstrandlaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Wiesenstrandläufer",
     "latinName": "Calidris minutilla",
     "habitat": "",
@@ -3126,7 +3126,7 @@
   {
     "id": "vogel_weissbuerzel-strandlaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Weißbürzel-Strandläufer",
     "latinName": "Calidris fuscicollis",
     "habitat": "",
@@ -3148,7 +3148,7 @@
   {
     "id": "vogel_graslaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Grasläufer",
     "latinName": "Calidris subruficollis",
     "habitat": "",
@@ -3170,7 +3170,7 @@
   {
     "id": "vogel_graubrust-strandlaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Graubrust-Strandläufer",
     "latinName": "Calidris melanotos",
     "habitat": "",
@@ -3192,7 +3192,7 @@
   {
     "id": "vogel_sandstrandlaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Sandstrandläufer",
     "latinName": "Calidris pusilla",
     "habitat": "",
@@ -3214,7 +3214,7 @@
   {
     "id": "vogel_tundraschlammlaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Tundraschlammläufer",
     "latinName": "Limnodromus scolopaceus",
     "habitat": "",
@@ -3236,7 +3236,7 @@
   {
     "id": "vogel_moorschlammlaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Moorschlammläufer",
     "latinName": "Limnodromus griseus",
     "habitat": "",
@@ -3258,7 +3258,7 @@
   {
     "id": "vogel_waldschnepfe",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Waldschnepfe",
     "latinName": "Scolopax rusticola",
     "habitat": "",
@@ -3280,7 +3280,7 @@
   {
     "id": "vogel_zwergschnepfe",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Zwergschnepfe",
     "latinName": "Lymnocryptes minimus",
     "habitat": "",
@@ -3302,7 +3302,7 @@
   {
     "id": "vogel_doppelschnepfe",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Doppelschnepfe",
     "latinName": "Gallinago media",
     "habitat": "",
@@ -3324,7 +3324,7 @@
   {
     "id": "vogel_bekassine",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Bekassine",
     "latinName": "Gallinago gallinago",
     "habitat": "",
@@ -3346,7 +3346,7 @@
   {
     "id": "vogel_terekwasserlaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Terekwasserläufer",
     "latinName": "Xenus cinereus",
     "habitat": "",
@@ -3368,7 +3368,7 @@
   {
     "id": "vogel_wilsonwassertreter",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Wilsonwassertreter",
     "latinName": "Phalaropus tricolor",
     "habitat": "",
@@ -3390,7 +3390,7 @@
   {
     "id": "vogel_odinshuehnchen",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Odinshühnchen",
     "latinName": "Phalaropus lobatus",
     "habitat": "",
@@ -3412,7 +3412,7 @@
   {
     "id": "vogel_thorshuehnchen",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Thorshühnchen",
     "latinName": "Phalaropus fulicarius",
     "habitat": "",
@@ -3434,7 +3434,7 @@
   {
     "id": "vogel_flussuferlaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Flussuferläufer",
     "latinName": "Actitis hypoleucos",
     "habitat": "",
@@ -3456,7 +3456,7 @@
   {
     "id": "vogel_drosseluferlaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Drosseluferläufer",
     "latinName": "Actitis macularius",
     "habitat": "",
@@ -3478,7 +3478,7 @@
   {
     "id": "vogel_waldwasserlaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Waldwasserläufer",
     "latinName": "Tringa ochropus",
     "habitat": "",
@@ -3500,7 +3500,7 @@
   {
     "id": "vogel_gelbschenkel",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Gelbschenkel",
     "latinName": "Tringa flavipes",
     "habitat": "",
@@ -3522,7 +3522,7 @@
   {
     "id": "vogel_rotschenkel",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Rotschenkel",
     "latinName": "Tringa totanus",
     "habitat": "",
@@ -3544,7 +3544,7 @@
   {
     "id": "vogel_teichwasserlaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Teichwasserläufer",
     "latinName": "Tringa stagnatilis",
     "habitat": "",
@@ -3566,7 +3566,7 @@
   {
     "id": "vogel_bruchwasserlaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Bruchwasserläufer",
     "latinName": "Tringa glareola",
     "habitat": "",
@@ -3588,7 +3588,7 @@
   {
     "id": "vogel_dunkelwasserlaeufer",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Dunkelwasserläufer",
     "latinName": "Tringa erythropus",
     "habitat": "",
@@ -3610,7 +3610,7 @@
   {
     "id": "vogel_gruenschenkel",
     "group": "Vögel",
-    "subgroup": "Schnepfenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Grünschenkel",
     "latinName": "Tringa nebularia",
     "habitat": "",
@@ -3632,7 +3632,7 @@
   {
     "id": "vogel_rennvogel",
     "group": "Vögel",
-    "subgroup": "Brachschwalbenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Rennvogel",
     "latinName": "Cursorius cursor",
     "habitat": "",
@@ -3654,7 +3654,7 @@
   {
     "id": "vogel_rotfluegel-brachschwalbe",
     "group": "Vögel",
-    "subgroup": "Brachschwalbenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Rotflügel-Brachschwalbe",
     "latinName": "Glareola pratincola",
     "habitat": "",
@@ -3676,7 +3676,7 @@
   {
     "id": "vogel_schwarzfluegel-brachschwalbe",
     "group": "Vögel",
-    "subgroup": "Brachschwalbenverwandte",
+    "subgroup": "Watvögel",
     "germanName": "Schwarzflügel-Brachschwalbe",
     "latinName": "Glareola nordmanni",
     "habitat": "",
@@ -3698,7 +3698,7 @@
   {
     "id": "vogel_noddi",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Noddi",
     "latinName": "Anous stolidus",
     "habitat": "",
@@ -3720,7 +3720,7 @@
   {
     "id": "vogel_dreizehenmoewe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Dreizehenmöwe",
     "latinName": "Rissa tridactyla",
     "habitat": "",
@@ -3742,7 +3742,7 @@
   {
     "id": "vogel_elfenbeinmoewe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Elfenbeinmöwe",
     "latinName": "Pagophila eburnea",
     "habitat": "",
@@ -3764,7 +3764,7 @@
   {
     "id": "vogel_schwalbenmoewe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Schwalbenmöwe",
     "latinName": "Xema sabini",
     "habitat": "",
@@ -3786,7 +3786,7 @@
   {
     "id": "vogel_duennschnabelmoewe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Dünnschnabelmöwe",
     "latinName": "Chroicocephalus genei",
     "habitat": "",
@@ -3808,7 +3808,7 @@
   {
     "id": "vogel_bonapartemoewe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Bonapartemöwe",
     "latinName": "Chroicocephalus philadelphia",
     "habitat": "",
@@ -3830,7 +3830,7 @@
   {
     "id": "vogel_lachmoewe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Lachmöwe",
     "latinName": "Chroicocephalus ridibundus",
     "habitat": "",
@@ -3852,7 +3852,7 @@
   {
     "id": "vogel_zwergmoewe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Zwergmöwe",
     "latinName": "Hydrocoloeus minutus",
     "habitat": "",
@@ -3874,7 +3874,7 @@
   {
     "id": "vogel_rosenmoewe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Rosenmöwe",
     "latinName": "Rhodostethia rosea",
     "habitat": "",
@@ -3896,7 +3896,7 @@
   {
     "id": "vogel_aztekenmoewe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Aztekenmöwe",
     "latinName": "Leucophaeus atricilla",
     "habitat": "",
@@ -3918,7 +3918,7 @@
   {
     "id": "vogel_praeriemoewe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Präriemöwe",
     "latinName": "Leucophaeus pipixcan",
     "habitat": "",
@@ -3940,7 +3940,7 @@
   {
     "id": "vogel_korallenmoewe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Korallenmöwe",
     "latinName": "Ichthyaetus audouinii",
     "habitat": "",
@@ -3962,7 +3962,7 @@
   {
     "id": "vogel_schwarzkopfmoewe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Schwarzkopfmöwe",
     "latinName": "Ichthyaetus melanocephalus",
     "habitat": "",
@@ -3984,7 +3984,7 @@
   {
     "id": "vogel_fischmoewe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Fischmöwe",
     "latinName": "Ichthyaetus ichthyaetus",
     "habitat": "",
@@ -4006,7 +4006,7 @@
   {
     "id": "vogel_sturmmoewe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Sturmmöwe",
     "latinName": "Larus canus",
     "habitat": "",
@@ -4028,7 +4028,7 @@
   {
     "id": "vogel_ringschnabelmoewe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Ringschnabelmöwe",
     "latinName": "Larus delawarensis",
     "habitat": "",
@@ -4050,7 +4050,7 @@
   {
     "id": "vogel_mantelmoewe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Mantelmöwe",
     "latinName": "Larus marinus",
     "habitat": "",
@@ -4072,7 +4072,7 @@
   {
     "id": "vogel_eismoewe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Eismöwe",
     "latinName": "Larus hyperboreus",
     "habitat": "",
@@ -4094,7 +4094,7 @@
   {
     "id": "vogel_polarmoewe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Polarmöwe",
     "latinName": "Larus glaucoides",
     "habitat": "",
@@ -4116,7 +4116,7 @@
   {
     "id": "vogel_silbermoewe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Silbermöwe",
     "latinName": "Larus argentatus",
     "habitat": "",
@@ -4138,7 +4138,7 @@
   {
     "id": "vogel_kanadamoewe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Kanadamöwe",
     "latinName": "Larus smithsonianus",
     "habitat": "",
@@ -4160,7 +4160,7 @@
   {
     "id": "vogel_steppenmoewe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Steppenmöwe",
     "latinName": "Larus cachinnans",
     "habitat": "",
@@ -4182,7 +4182,7 @@
   {
     "id": "vogel_mittelmeermoewe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Mittelmeermöwe",
     "latinName": "Larus michahellis",
     "habitat": "",
@@ -4204,7 +4204,7 @@
   {
     "id": "vogel_heringsmoewe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Heringsmöwe",
     "latinName": "Larus fuscus",
     "habitat": "",
@@ -4226,7 +4226,7 @@
   {
     "id": "vogel_lachseeschwalbe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Lachseeschwalbe",
     "latinName": "Gelochelidon nilotica",
     "habitat": "",
@@ -4248,7 +4248,7 @@
   {
     "id": "vogel_raubseeschwalbe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Raubseeschwalbe",
     "latinName": "Hydroprogne caspia",
     "habitat": "",
@@ -4270,7 +4270,7 @@
   {
     "id": "vogel_rueppellseeschwalbe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Rüppellseeschwalbe",
     "latinName": "Thalasseus bengalensis",
     "habitat": "",
@@ -4292,7 +4292,7 @@
   {
     "id": "vogel_brandseeschwalbe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Brandseeschwalbe",
     "latinName": "Thalasseus sandvicensis",
     "habitat": "",
@@ -4314,7 +4314,7 @@
   {
     "id": "vogel_schmuckseeschwalbe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Schmuckseeschwalbe",
     "latinName": "Thalasseus elegans",
     "habitat": "",
@@ -4336,7 +4336,7 @@
   {
     "id": "vogel_zwergseeschwalbe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Zwergseeschwalbe",
     "latinName": "Sternula albifrons",
     "habitat": "",
@@ -4358,7 +4358,7 @@
   {
     "id": "vogel_zuegelseeschwalbe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Zügelseeschwalbe",
     "latinName": "Onychoprion anaethetus",
     "habitat": "",
@@ -4380,7 +4380,7 @@
   {
     "id": "vogel_russseeschwalbe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Rußseeschwalbe",
     "latinName": "Onychoprion fuscatus",
     "habitat": "",
@@ -4402,7 +4402,7 @@
   {
     "id": "vogel_rosenseeschwalbe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Rosenseeschwalbe",
     "latinName": "Sterna dougallii",
     "habitat": "",
@@ -4424,7 +4424,7 @@
   {
     "id": "vogel_flussseeschwalbe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Flussseeschwalbe",
     "latinName": "Sterna hirundo",
     "habitat": "",
@@ -4446,7 +4446,7 @@
   {
     "id": "vogel_kuestenseeschwalbe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Küstenseeschwalbe",
     "latinName": "Sterna paradisaea",
     "habitat": "",
@@ -4468,7 +4468,7 @@
   {
     "id": "vogel_weissbart-seeschwalbe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Weißbart-Seeschwalbe",
     "latinName": "Chlidonias hybrida",
     "habitat": "",
@@ -4490,7 +4490,7 @@
   {
     "id": "vogel_weissfluegel-seeschwalbe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Weißflügel-Seeschwalbe",
     "latinName": "Chlidonias leucopterus",
     "habitat": "",
@@ -4512,7 +4512,7 @@
   {
     "id": "vogel_trauerseeschwalbe",
     "group": "Vögel",
-    "subgroup": "Möwenverwandte",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Traürseeschwalbe",
     "latinName": "Chlidonias niger",
     "habitat": "",
@@ -4534,7 +4534,7 @@
   {
     "id": "vogel_skua",
     "group": "Vögel",
-    "subgroup": "Raubmöwen",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Skua",
     "latinName": "Stercorarius skua",
     "habitat": "",
@@ -4556,7 +4556,7 @@
   {
     "id": "vogel_spatelraubmoewe",
     "group": "Vögel",
-    "subgroup": "Raubmöwen",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Spatelraubmöwe",
     "latinName": "Stercorarius pomarinus",
     "habitat": "",
@@ -4578,7 +4578,7 @@
   {
     "id": "vogel_schmarotzerraubmoewe",
     "group": "Vögel",
-    "subgroup": "Raubmöwen",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Schmarotzerraubmöwe",
     "latinName": "Stercorarius parasiticus",
     "habitat": "",
@@ -4600,7 +4600,7 @@
   {
     "id": "vogel_falkenraubmoewe",
     "group": "Vögel",
-    "subgroup": "Raubmöwen",
+    "subgroup": "Möwen und Seeschwalben",
     "germanName": "Falkenraubmöwe",
     "latinName": "Stercorarius longicaudus",
     "habitat": "",
@@ -4622,7 +4622,7 @@
   {
     "id": "vogel_krabbentaucher",
     "group": "Vögel",
-    "subgroup": "Alke",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Krabbentaucher",
     "latinName": "Alle alle",
     "habitat": "",
@@ -4644,7 +4644,7 @@
   {
     "id": "vogel_dickschnabellumme",
     "group": "Vögel",
-    "subgroup": "Alke",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Dickschnabellumme",
     "latinName": "Uria lomvia",
     "habitat": "",
@@ -4666,7 +4666,7 @@
   {
     "id": "vogel_trottellumme",
     "group": "Vögel",
-    "subgroup": "Alke",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Trottellumme",
     "latinName": "Uria aalge",
     "habitat": "",
@@ -4688,7 +4688,7 @@
   {
     "id": "vogel_tordalk",
     "group": "Vögel",
-    "subgroup": "Alke",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Tordalk",
     "latinName": "Alca torda",
     "habitat": "",
@@ -4710,7 +4710,7 @@
   {
     "id": "vogel_gryllteiste",
     "group": "Vögel",
-    "subgroup": "Alke",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Gryllteiste",
     "latinName": "Cepphus grylle",
     "habitat": "",
@@ -4732,7 +4732,7 @@
   {
     "id": "vogel_papageitaucher",
     "group": "Vögel",
-    "subgroup": "Alke",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Papageitaucher",
     "latinName": "Fratercula arctica",
     "habitat": "",
@@ -4754,7 +4754,7 @@
   {
     "id": "vogel_sterntaucher",
     "group": "Vögel",
-    "subgroup": "Seetaucher",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Sterntaucher",
     "latinName": "Gavia stellata",
     "habitat": "",
@@ -4776,7 +4776,7 @@
   {
     "id": "vogel_prachttaucher",
     "group": "Vögel",
-    "subgroup": "Seetaucher",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Prachttaucher",
     "latinName": "Gavia arctica",
     "habitat": "",
@@ -4798,7 +4798,7 @@
   {
     "id": "vogel_eistaucher",
     "group": "Vögel",
-    "subgroup": "Seetaucher",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Eistaucher",
     "latinName": "Gavia immer",
     "habitat": "",
@@ -4820,7 +4820,7 @@
   {
     "id": "vogel_gelbschnabeltaucher",
     "group": "Vögel",
-    "subgroup": "Seetaucher",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Gelbschnabeltaucher",
     "latinName": "Gavia adamsii",
     "habitat": "",
@@ -4842,7 +4842,7 @@
   {
     "id": "vogel_buntfuss-sturmschwalbe",
     "group": "Vögel",
-    "subgroup": "Sturmschwalben",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Buntfuß-Sturmschwalbe",
     "latinName": "Oceanites oceanicus",
     "habitat": "",
@@ -4864,7 +4864,7 @@
   {
     "id": "vogel_schwarzbrauenalbatros",
     "group": "Vögel",
-    "subgroup": "Albatrosse",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Schwarzbraünalbatros",
     "latinName": "Thalassarche melanophris",
     "habitat": "",
@@ -4886,7 +4886,7 @@
   {
     "id": "vogel_sturmwellenlaeufer",
     "group": "Vögel",
-    "subgroup": "Wellenläufer",
+    "subgroup": "Watvögel",
     "germanName": "Sturmwellenläufer",
     "latinName": "Hydrobates pelagicus",
     "habitat": "",
@@ -4908,7 +4908,7 @@
   {
     "id": "vogel_wellenlaeufer",
     "group": "Vögel",
-    "subgroup": "Wellenläufer",
+    "subgroup": "Watvögel",
     "germanName": "Wellenläufer",
     "latinName": "Oceanodroma leucorhoa",
     "habitat": "",
@@ -4930,7 +4930,7 @@
   {
     "id": "vogel_eissturmvogel",
     "group": "Vögel",
-    "subgroup": "Sturmvögel",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Eissturmvogel",
     "latinName": "Fulmarus glacialis",
     "habitat": "",
@@ -4952,7 +4952,7 @@
   {
     "id": "vogel_sepiasturmtaucher",
     "group": "Vögel",
-    "subgroup": "Sturmvögel",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Sepiasturmtaucher",
     "latinName": "Calonectris diomedea",
     "habitat": "",
@@ -4974,7 +4974,7 @@
   {
     "id": "vogel_corysturmtaucher",
     "group": "Vögel",
-    "subgroup": "Sturmvögel",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Corysturmtaucher",
     "latinName": "Calonectris borealis",
     "habitat": "",
@@ -4996,7 +4996,7 @@
   {
     "id": "vogel_dunkelsturmtaucher",
     "group": "Vögel",
-    "subgroup": "Sturmvögel",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Dunkelsturmtaucher",
     "latinName": "Ardenna grisea",
     "habitat": "",
@@ -5018,7 +5018,7 @@
   {
     "id": "vogel_kappensturmtaucher",
     "group": "Vögel",
-    "subgroup": "Sturmvögel",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Kappensturmtaucher",
     "latinName": "Ardenna gravis",
     "habitat": "",
@@ -5040,7 +5040,7 @@
   {
     "id": "vogel_atlantiksturmtaucher",
     "group": "Vögel",
-    "subgroup": "Sturmvögel",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Atlantiksturmtaucher",
     "latinName": "Puffinus puffinus",
     "habitat": "",
@@ -5062,7 +5062,7 @@
   {
     "id": "vogel_balearensturmtaucher",
     "group": "Vögel",
-    "subgroup": "Sturmvögel",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Balearensturmtaucher",
     "latinName": "Puffinus mauretanicus",
     "habitat": "",
@@ -5084,7 +5084,7 @@
   {
     "id": "vogel_barolosturmtaucher",
     "group": "Vögel",
-    "subgroup": "Sturmvögel",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Barolosturmtaucher",
     "latinName": "Puffinus baroli",
     "habitat": "",
@@ -5106,7 +5106,7 @@
   {
     "id": "vogel_bulwersturmvogel",
     "group": "Vögel",
-    "subgroup": "Sturmvögel",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Bulwersturmvogel",
     "latinName": "Bulweria bulwerii",
     "habitat": "",
@@ -5128,7 +5128,7 @@
   {
     "id": "vogel_schwarzstorch",
     "group": "Vögel",
-    "subgroup": "Störche",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Schwarzstorch",
     "latinName": "Ciconia nigra",
     "habitat": "",
@@ -5150,7 +5150,7 @@
   {
     "id": "vogel_weissstorch",
     "group": "Vögel",
-    "subgroup": "Störche",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Weißstorch",
     "latinName": "Ciconia ciconia",
     "habitat": "",
@@ -5172,7 +5172,7 @@
   {
     "id": "vogel_basstoelpel",
     "group": "Vögel",
-    "subgroup": "Tölpel",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Basstölpel",
     "latinName": "Morus bassanus",
     "habitat": "",
@@ -5194,7 +5194,7 @@
   {
     "id": "vogel_weissbauchtoelpel",
     "group": "Vögel",
-    "subgroup": "Tölpel",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Weißbauchtölpel",
     "latinName": "Sula leucogaster",
     "habitat": "",
@@ -5216,7 +5216,7 @@
   {
     "id": "vogel_zwergscharbe",
     "group": "Vögel",
-    "subgroup": "Scharben",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Zwergscharbe",
     "latinName": "Microcarbo pygmaeus",
     "habitat": "",
@@ -5238,7 +5238,7 @@
   {
     "id": "vogel_kraehenscharbe",
     "group": "Vögel",
-    "subgroup": "Scharben",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Krähenscharbe",
     "latinName": "Phalacrocorax aristotelis",
     "habitat": "",
@@ -5260,7 +5260,7 @@
   {
     "id": "vogel_kormoran",
     "group": "Vögel",
-    "subgroup": "Scharben",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Kormoran",
     "latinName": "Phalacrocorax carbo",
     "habitat": "",
@@ -5282,7 +5282,7 @@
   {
     "id": "vogel_sichler",
     "group": "Vögel",
-    "subgroup": "Ibisse",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Sichler",
     "latinName": "Plegadis falcinellus",
     "habitat": "",
@@ -5304,7 +5304,7 @@
   {
     "id": "vogel_loeffler",
     "group": "Vögel",
-    "subgroup": "Ibisse",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Löffler",
     "latinName": "Platalea leucorodia",
     "habitat": "",
@@ -5326,7 +5326,7 @@
   {
     "id": "vogel_rohrdommel",
     "group": "Vögel",
-    "subgroup": "Reiher",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Rohrdommel",
     "latinName": "Botaurus stellaris",
     "habitat": "",
@@ -5348,7 +5348,7 @@
   {
     "id": "vogel_zwergdommel",
     "group": "Vögel",
-    "subgroup": "Reiher",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Zwergdommel",
     "latinName": "Ixobrychus minutus",
     "habitat": "",
@@ -5370,7 +5370,7 @@
   {
     "id": "vogel_nachtreiher",
     "group": "Vögel",
-    "subgroup": "Reiher",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Nachtreiher",
     "latinName": "Nycticorax nycticorax",
     "habitat": "",
@@ -5392,7 +5392,7 @@
   {
     "id": "vogel_rallenreiher",
     "group": "Vögel",
-    "subgroup": "Reiher",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Rallenreiher",
     "latinName": "Ardeola ralloides",
     "habitat": "",
@@ -5414,7 +5414,7 @@
   {
     "id": "vogel_kuhreiher",
     "group": "Vögel",
-    "subgroup": "Reiher",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Kuhreiher",
     "latinName": "Bubulcus ibis",
     "habitat": "",
@@ -5436,7 +5436,7 @@
   {
     "id": "vogel_graureiher",
     "group": "Vögel",
-    "subgroup": "Reiher",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Graureiher",
     "latinName": "Ardea cinerea",
     "habitat": "",
@@ -5458,7 +5458,7 @@
   {
     "id": "vogel_purpurreiher",
     "group": "Vögel",
-    "subgroup": "Reiher",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Purpurreiher",
     "latinName": "Ardea purpurea",
     "habitat": "",
@@ -5480,7 +5480,7 @@
   {
     "id": "vogel_silberreiher",
     "group": "Vögel",
-    "subgroup": "Reiher",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Silberreiher",
     "latinName": "Ardea alba",
     "habitat": "",
@@ -5502,7 +5502,7 @@
   {
     "id": "vogel_seidenreiher",
     "group": "Vögel",
-    "subgroup": "Reiher",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Seidenreiher",
     "latinName": "Egretta garzetta",
     "habitat": "",
@@ -5524,7 +5524,7 @@
   {
     "id": "vogel_rosapelikan",
     "group": "Vögel",
-    "subgroup": "Pelikane",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Rosapelikan",
     "latinName": "Pelecanus onocrotalus",
     "habitat": "",
@@ -5546,7 +5546,7 @@
   {
     "id": "vogel_krauskopfpelikan",
     "group": "Vögel",
-    "subgroup": "Pelikane",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Krauskopfpelikan",
     "latinName": "Pelecanus crispus",
     "habitat": "",
@@ -5568,7 +5568,7 @@
   {
     "id": "vogel_fischadler",
     "group": "Vögel",
-    "subgroup": "Fischadler",
+    "subgroup": "Greifvögel",
     "germanName": "Fischadler",
     "latinName": "Pandion haliaetus",
     "habitat": "",
@@ -5590,7 +5590,7 @@
   {
     "id": "vogel_gleitaar",
     "group": "Vögel",
-    "subgroup": "Habichtverwandte",
+    "subgroup": "Greifvögel",
     "germanName": "Gleitaar",
     "latinName": "Elanus caeruleus",
     "habitat": "",
@@ -5612,7 +5612,7 @@
   {
     "id": "vogel_bartgeier",
     "group": "Vögel",
-    "subgroup": "Habichtverwandte",
+    "subgroup": "Greifvögel",
     "germanName": "Bartgeier",
     "latinName": "Gypaetus barbatus",
     "habitat": "",
@@ -5634,7 +5634,7 @@
   {
     "id": "vogel_schmutzgeier",
     "group": "Vögel",
-    "subgroup": "Habichtverwandte",
+    "subgroup": "Greifvögel",
     "germanName": "Schmutzgeier",
     "latinName": "Neophron percnopterus",
     "habitat": "",
@@ -5656,7 +5656,7 @@
   {
     "id": "vogel_wespenbussard",
     "group": "Vögel",
-    "subgroup": "Habichtverwandte",
+    "subgroup": "Greifvögel",
     "germanName": "Wespenbussard",
     "latinName": "Pernis apivorus",
     "habitat": "",
@@ -5678,7 +5678,7 @@
   {
     "id": "vogel_gaensegeier",
     "group": "Vögel",
-    "subgroup": "Habichtverwandte",
+    "subgroup": "Greifvögel",
     "germanName": "Gänsegeier",
     "latinName": "Gyps fulvus",
     "habitat": "",
@@ -5700,7 +5700,7 @@
   {
     "id": "vogel_moenchsgeier",
     "group": "Vögel",
-    "subgroup": "Habichtverwandte",
+    "subgroup": "Greifvögel",
     "germanName": "Mönchsgeier",
     "latinName": "aegypius monachus",
     "habitat": "",
@@ -5722,7 +5722,7 @@
   {
     "id": "vogel_schlangenadler",
     "group": "Vögel",
-    "subgroup": "Habichtverwandte",
+    "subgroup": "Greifvögel",
     "germanName": "Schlangenadler",
     "latinName": "Circaetus gallicus",
     "habitat": "",
@@ -5744,7 +5744,7 @@
   {
     "id": "vogel_schreiadler",
     "group": "Vögel",
-    "subgroup": "Habichtverwandte",
+    "subgroup": "Greifvögel",
     "germanName": "Schreiadler",
     "latinName": "Clanga pomarina",
     "habitat": "",
@@ -5766,7 +5766,7 @@
   {
     "id": "vogel_schelladler",
     "group": "Vögel",
-    "subgroup": "Habichtverwandte",
+    "subgroup": "Greifvögel",
     "germanName": "Schelladler",
     "latinName": "Clanga clanga",
     "habitat": "",
@@ -5788,7 +5788,7 @@
   {
     "id": "vogel_zwergadler",
     "group": "Vögel",
-    "subgroup": "Habichtverwandte",
+    "subgroup": "Greifvögel",
     "germanName": "Zwergadler",
     "latinName": "Hieraaetus pennatus",
     "habitat": "",
@@ -5810,7 +5810,7 @@
   {
     "id": "vogel_steinadler",
     "group": "Vögel",
-    "subgroup": "Habichtverwandte",
+    "subgroup": "Greifvögel",
     "germanName": "Steinadler",
     "latinName": "Aquila chrysaetos",
     "habitat": "",
@@ -5832,7 +5832,7 @@
   {
     "id": "vogel_habichtsadler",
     "group": "Vögel",
-    "subgroup": "Habichtverwandte",
+    "subgroup": "Greifvögel",
     "germanName": "Habichtsadler",
     "latinName": "Aquila fasciata",
     "habitat": "",
@@ -5854,7 +5854,7 @@
   {
     "id": "vogel_sperber",
     "group": "Vögel",
-    "subgroup": "Habichtverwandte",
+    "subgroup": "Greifvögel",
     "germanName": "Sperber",
     "latinName": "Accipiter nisus",
     "habitat": "",
@@ -5876,7 +5876,7 @@
   {
     "id": "vogel_habicht",
     "group": "Vögel",
-    "subgroup": "Habichtverwandte",
+    "subgroup": "Greifvögel",
     "germanName": "Habicht",
     "latinName": "Accipiter gentilis",
     "habitat": "",
@@ -5898,7 +5898,7 @@
   {
     "id": "vogel_rohrweihe",
     "group": "Vögel",
-    "subgroup": "Habichtverwandte",
+    "subgroup": "Greifvögel",
     "germanName": "Rohrweihe",
     "latinName": "Circus aeruginosus",
     "habitat": "",
@@ -5920,7 +5920,7 @@
   {
     "id": "vogel_kornweihe",
     "group": "Vögel",
-    "subgroup": "Habichtverwandte",
+    "subgroup": "Greifvögel",
     "germanName": "Kornweihe",
     "latinName": "Circus cyaneus",
     "habitat": "",
@@ -5942,7 +5942,7 @@
   {
     "id": "vogel_steppenweihe",
     "group": "Vögel",
-    "subgroup": "Habichtverwandte",
+    "subgroup": "Greifvögel",
     "germanName": "Steppenweihe",
     "latinName": "Circus macrourus",
     "habitat": "",
@@ -5964,7 +5964,7 @@
   {
     "id": "vogel_wiesenweihe",
     "group": "Vögel",
-    "subgroup": "Habichtverwandte",
+    "subgroup": "Greifvögel",
     "germanName": "Wiesenweihe",
     "latinName": "Circus pygargus",
     "habitat": "",
@@ -5986,7 +5986,7 @@
   {
     "id": "vogel_rotmilan",
     "group": "Vögel",
-    "subgroup": "Habichtverwandte",
+    "subgroup": "Greifvögel",
     "germanName": "Rotmilan",
     "latinName": "Milvus milvus",
     "habitat": "",
@@ -6008,7 +6008,7 @@
   {
     "id": "vogel_schwarzmilan",
     "group": "Vögel",
-    "subgroup": "Habichtverwandte",
+    "subgroup": "Greifvögel",
     "germanName": "Schwarzmilan",
     "latinName": "Milvus migrans",
     "habitat": "",
@@ -6030,7 +6030,7 @@
   {
     "id": "vogel_seeadler",
     "group": "Vögel",
-    "subgroup": "Habichtverwandte",
+    "subgroup": "Greifvögel",
     "germanName": "Seeadler",
     "latinName": "Haliaeetus albicilla",
     "habitat": "",
@@ -6052,7 +6052,7 @@
   {
     "id": "vogel_raufussbussard",
     "group": "Vögel",
-    "subgroup": "Habichtverwandte",
+    "subgroup": "Greifvögel",
     "germanName": "Raufußbussard",
     "latinName": "Buteo lagopus",
     "habitat": "",
@@ -6074,7 +6074,7 @@
   {
     "id": "vogel_adlerbussard",
     "group": "Vögel",
-    "subgroup": "Habichtverwandte",
+    "subgroup": "Greifvögel",
     "germanName": "Adlerbussard",
     "latinName": "Buteo rufinus",
     "habitat": "",
@@ -6096,7 +6096,7 @@
   {
     "id": "vogel_maeusebussard",
     "group": "Vögel",
-    "subgroup": "Habichtverwandte",
+    "subgroup": "Greifvögel",
     "germanName": "Mäusebussard",
     "latinName": "Buteo buteo",
     "habitat": "",
@@ -6118,7 +6118,7 @@
   {
     "id": "vogel_schleiereule",
     "group": "Vögel",
-    "subgroup": "Schleiereulen",
+    "subgroup": "Eulen",
     "germanName": "Schleiereule",
     "latinName": "Tyto alba",
     "habitat": "",
@@ -6382,7 +6382,7 @@
   {
     "id": "vogel_wiedehopf",
     "group": "Vögel",
-    "subgroup": "Wiedehopfe",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Wiedehopf",
     "latinName": "Upupa epops",
     "habitat": "",
@@ -6404,7 +6404,7 @@
   {
     "id": "vogel_blauracke",
     "group": "Vögel",
-    "subgroup": "Racken",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Blauracke",
     "latinName": "Coracias garrulus",
     "habitat": "",
@@ -6426,7 +6426,7 @@
   {
     "id": "vogel_eisvogel",
     "group": "Vögel",
-    "subgroup": "Eisvögel",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Eisvogel",
     "latinName": "Alcedo atthis",
     "habitat": "",
@@ -6448,7 +6448,7 @@
   {
     "id": "vogel_blauwangenspint",
     "group": "Vögel",
-    "subgroup": "Spinte",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Blauwangenspint",
     "latinName": "Merops persicus",
     "habitat": "",
@@ -6470,7 +6470,7 @@
   {
     "id": "vogel_bienenfresser",
     "group": "Vögel",
-    "subgroup": "Spinte",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Bienenfresser",
     "latinName": "Merops apiaster",
     "habitat": "",
@@ -6712,7 +6712,7 @@
   {
     "id": "vogel_roetelfalke",
     "group": "Vögel",
-    "subgroup": "Falken",
+    "subgroup": "Greifvögel",
     "germanName": "Rötelfalke",
     "latinName": "Falco naumanni",
     "habitat": "",
@@ -6734,7 +6734,7 @@
   {
     "id": "vogel_turmfalke",
     "group": "Vögel",
-    "subgroup": "Falken",
+    "subgroup": "Greifvögel",
     "germanName": "Turmfalke",
     "latinName": "Falco tinnunculus",
     "habitat": "",
@@ -6756,7 +6756,7 @@
   {
     "id": "vogel_rotfussfalke",
     "group": "Vögel",
-    "subgroup": "Falken",
+    "subgroup": "Greifvögel",
     "germanName": "Rotfußfalke",
     "latinName": "Falco vespertinus",
     "habitat": "",
@@ -6778,7 +6778,7 @@
   {
     "id": "vogel_eleonorenfalke",
     "group": "Vögel",
-    "subgroup": "Falken",
+    "subgroup": "Greifvögel",
     "germanName": "Eleonorenfalke",
     "latinName": "Falco eleonorae",
     "habitat": "",
@@ -6800,7 +6800,7 @@
   {
     "id": "vogel_merlin",
     "group": "Vögel",
-    "subgroup": "Falken",
+    "subgroup": "Greifvögel",
     "germanName": "Merlin",
     "latinName": "Falco columbarius",
     "habitat": "",
@@ -6822,7 +6822,7 @@
   {
     "id": "vogel_baumfalke",
     "group": "Vögel",
-    "subgroup": "Falken",
+    "subgroup": "Greifvögel",
     "germanName": "Baumfalke",
     "latinName": "Falco subbuteo",
     "habitat": "",
@@ -6844,7 +6844,7 @@
   {
     "id": "vogel_wuergfalke",
     "group": "Vögel",
-    "subgroup": "Falken",
+    "subgroup": "Greifvögel",
     "germanName": "Würgfalke",
     "latinName": "Falco cherrug",
     "habitat": "",
@@ -6866,7 +6866,7 @@
   {
     "id": "vogel_gerfalke",
     "group": "Vögel",
-    "subgroup": "Falken",
+    "subgroup": "Greifvögel",
     "germanName": "Gerfalke",
     "latinName": "Falco rusticolus",
     "habitat": "",
@@ -6888,7 +6888,7 @@
   {
     "id": "vogel_wanderfalke",
     "group": "Vögel",
-    "subgroup": "Falken",
+    "subgroup": "Greifvögel",
     "germanName": "Wanderfalke",
     "latinName": "Falco peregrinus",
     "habitat": "",
@@ -6910,7 +6910,7 @@
   {
     "id": "vogel_halsbandsittich",
     "group": "Vögel",
-    "subgroup": "Altweltpapageien",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Halsbandsittich",
     "latinName": "Psittacula krameri",
     "habitat": "",
@@ -6932,7 +6932,7 @@
   {
     "id": "vogel_braunwuerger",
     "group": "Vögel",
-    "subgroup": "Würger",
+    "subgroup": "Singvögel",
     "germanName": "Braunwürger",
     "latinName": "Lanius cristatus",
     "habitat": "",
@@ -6954,7 +6954,7 @@
   {
     "id": "vogel_neuntoeter",
     "group": "Vögel",
-    "subgroup": "Würger",
+    "subgroup": "Singvögel",
     "germanName": "Neuntöter",
     "latinName": "Lanius collurio",
     "habitat": "",
@@ -6976,7 +6976,7 @@
   {
     "id": "vogel_isabellwuerger",
     "group": "Vögel",
-    "subgroup": "Würger",
+    "subgroup": "Singvögel",
     "germanName": "Isabellwürger",
     "latinName": "Lanius isabellinus",
     "habitat": "",
@@ -6998,7 +6998,7 @@
   {
     "id": "vogel_rotschwanzwuerger",
     "group": "Vögel",
-    "subgroup": "Würger",
+    "subgroup": "Singvögel",
     "germanName": "Rotschwanzwürger",
     "latinName": "Lanius phoenicuroides",
     "habitat": "",
@@ -7020,7 +7020,7 @@
   {
     "id": "vogel_schwarzstirnwuerger",
     "group": "Vögel",
-    "subgroup": "Würger",
+    "subgroup": "Singvögel",
     "germanName": "Schwarzstirnwürger",
     "latinName": "Lanius minor",
     "habitat": "",
@@ -7042,7 +7042,7 @@
   {
     "id": "vogel_raubwuerger",
     "group": "Vögel",
-    "subgroup": "Würger",
+    "subgroup": "Singvögel",
     "germanName": "Raubwürger",
     "latinName": "Lanius excubitor",
     "habitat": "",
@@ -7064,7 +7064,7 @@
   {
     "id": "vogel_rotkopfwuerger",
     "group": "Vögel",
-    "subgroup": "Würger",
+    "subgroup": "Singvögel",
     "germanName": "Rotkopfwürger",
     "latinName": "Lanius senator",
     "habitat": "",
@@ -7086,7 +7086,7 @@
   {
     "id": "vogel_maskenwuerger",
     "group": "Vögel",
-    "subgroup": "Würger",
+    "subgroup": "Singvögel",
     "germanName": "Maskenwürger",
     "latinName": "Lanius nubicus",
     "habitat": "",
@@ -7108,7 +7108,7 @@
   {
     "id": "vogel_gelbkehlvireo",
     "group": "Vögel",
-    "subgroup": "Vireos",
+    "subgroup": "Singvögel",
     "germanName": "Gelbkehlvireo",
     "latinName": "Vireo flavifrons",
     "habitat": "",
@@ -7130,7 +7130,7 @@
   {
     "id": "vogel_rotaugenvireo",
     "group": "Vögel",
-    "subgroup": "Vireos",
+    "subgroup": "Singvögel",
     "germanName": "Rotaugenvireo",
     "latinName": "Vireo olivaceus",
     "habitat": "",
@@ -7152,7 +7152,7 @@
   {
     "id": "vogel_pirol",
     "group": "Vögel",
-    "subgroup": "Pirole",
+    "subgroup": "Singvögel",
     "germanName": "Pirol",
     "latinName": "Oriolus oriolus",
     "habitat": "",
@@ -7174,7 +7174,7 @@
   {
     "id": "vogel_eichelhaeher",
     "group": "Vögel",
-    "subgroup": "Krähenverwandte",
+    "subgroup": "Rabenvögel",
     "germanName": "Eichelhäher",
     "latinName": "Garrulus glandarius",
     "habitat": "",
@@ -7196,7 +7196,7 @@
   {
     "id": "vogel_elster",
     "group": "Vögel",
-    "subgroup": "Krähenverwandte",
+    "subgroup": "Rabenvögel",
     "germanName": "Elster",
     "latinName": "Pica pica",
     "habitat": "",
@@ -7218,7 +7218,7 @@
   {
     "id": "vogel_tannenhaeher",
     "group": "Vögel",
-    "subgroup": "Krähenverwandte",
+    "subgroup": "Rabenvögel",
     "germanName": "Tannenhäher",
     "latinName": "Nucifraga caryocatactes",
     "habitat": "",
@@ -7240,7 +7240,7 @@
   {
     "id": "vogel_alpenkraehe",
     "group": "Vögel",
-    "subgroup": "Krähenverwandte",
+    "subgroup": "Rabenvögel",
     "germanName": "Alpenkrähe",
     "latinName": "Pyrrhocorax pyrrhocorax",
     "habitat": "",
@@ -7262,7 +7262,7 @@
   {
     "id": "vogel_alpendohle",
     "group": "Vögel",
-    "subgroup": "Krähenverwandte",
+    "subgroup": "Rabenvögel",
     "germanName": "Alpendohle",
     "latinName": "Pyrrhocorax graculus",
     "habitat": "",
@@ -7284,7 +7284,7 @@
   {
     "id": "vogel_dohle",
     "group": "Vögel",
-    "subgroup": "Krähenverwandte",
+    "subgroup": "Rabenvögel",
     "germanName": "Dohle",
     "latinName": "Coloeus monedula",
     "habitat": "",
@@ -7306,7 +7306,7 @@
   {
     "id": "vogel_saatkraehe",
     "group": "Vögel",
-    "subgroup": "Krähenverwandte",
+    "subgroup": "Rabenvögel",
     "germanName": "Saatkrähe",
     "latinName": "Corvus frugilegus",
     "habitat": "",
@@ -7328,7 +7328,7 @@
   {
     "id": "vogel_rabenkraehe",
     "group": "Vögel",
-    "subgroup": "Krähenverwandte",
+    "subgroup": "Rabenvögel",
     "germanName": "Rabenkrähe",
     "latinName": "Corvus corone",
     "habitat": "",
@@ -7350,7 +7350,7 @@
   {
     "id": "vogel_nebelkraehe",
     "group": "Vögel",
-    "subgroup": "Krähenverwandte",
+    "subgroup": "Rabenvögel",
     "germanName": "Nebelkrähe",
     "latinName": "Corvus cornix",
     "habitat": "",
@@ -7372,7 +7372,7 @@
   {
     "id": "vogel_kolkrabe",
     "group": "Vögel",
-    "subgroup": "Krähenverwandte",
+    "subgroup": "Rabenvögel",
     "germanName": "Kolkrabe",
     "latinName": "Corvus corax",
     "habitat": "",
@@ -7394,7 +7394,7 @@
   {
     "id": "vogel_seidenschwanz",
     "group": "Vögel",
-    "subgroup": "Seidenschwänze",
+    "subgroup": "Singvögel",
     "germanName": "Seidenschwanz",
     "latinName": "Bombycilla garrulus",
     "habitat": "",
@@ -7416,7 +7416,7 @@
   {
     "id": "vogel_tannenmeise",
     "group": "Vögel",
-    "subgroup": "Meisen",
+    "subgroup": "Singvögel",
     "germanName": "Tannenmeise",
     "latinName": "Periparus ater",
     "habitat": "",
@@ -7438,7 +7438,7 @@
   {
     "id": "vogel_haubenmeise",
     "group": "Vögel",
-    "subgroup": "Meisen",
+    "subgroup": "Singvögel",
     "germanName": "Haubenmeise",
     "latinName": "Lophophanes cristatus",
     "habitat": "",
@@ -7460,7 +7460,7 @@
   {
     "id": "vogel_sumpfmeise",
     "group": "Vögel",
-    "subgroup": "Meisen",
+    "subgroup": "Singvögel",
     "germanName": "Sumpfmeise",
     "latinName": "Poecile palustris",
     "habitat": "",
@@ -7482,7 +7482,7 @@
   {
     "id": "vogel_weidenmeise",
     "group": "Vögel",
-    "subgroup": "Meisen",
+    "subgroup": "Singvögel",
     "germanName": "Weidenmeise",
     "latinName": "Poecile montanus",
     "habitat": "",
@@ -7504,7 +7504,7 @@
   {
     "id": "vogel_blaumeise",
     "group": "Vögel",
-    "subgroup": "Meisen",
+    "subgroup": "Singvögel",
     "germanName": "Blaumeise",
     "latinName": "Cyanistes caeruleus",
     "habitat": "",
@@ -7526,7 +7526,7 @@
   {
     "id": "vogel_lasurmeise",
     "group": "Vögel",
-    "subgroup": "Meisen",
+    "subgroup": "Singvögel",
     "germanName": "Lasurmeise",
     "latinName": "Cyanistes cyanus",
     "habitat": "",
@@ -7548,7 +7548,7 @@
   {
     "id": "vogel_kohlmeise",
     "group": "Vögel",
-    "subgroup": "Meisen",
+    "subgroup": "Singvögel",
     "germanName": "Kohlmeise",
     "latinName": "Parus major",
     "habitat": "",
@@ -7570,7 +7570,7 @@
   {
     "id": "vogel_beutelmeise",
     "group": "Vögel",
-    "subgroup": "Meisen",
+    "subgroup": "Singvögel",
     "germanName": "Beutelmeise",
     "latinName": "Remiz pendulinus",
     "habitat": "",
@@ -7592,7 +7592,7 @@
   {
     "id": "vogel_bartmeise",
     "group": "Vögel",
-    "subgroup": "Meisen",
+    "subgroup": "Singvögel",
     "germanName": "Bartmeise",
     "latinName": "Panurus biarmicus",
     "habitat": "",
@@ -7614,7 +7614,7 @@
   {
     "id": "vogel_heidelerche",
     "group": "Vögel",
-    "subgroup": "Lerchen",
+    "subgroup": "Singvögel",
     "germanName": "Heidelerche",
     "latinName": "Lullula arborea",
     "habitat": "",
@@ -7636,7 +7636,7 @@
   {
     "id": "vogel_weissfluegellerche",
     "group": "Vögel",
-    "subgroup": "Lerchen",
+    "subgroup": "Singvögel",
     "germanName": "Weißflügellerche",
     "latinName": "Alauda leucoptera",
     "habitat": "",
@@ -7658,7 +7658,7 @@
   {
     "id": "vogel_feldlerche",
     "group": "Vögel",
-    "subgroup": "Lerchen",
+    "subgroup": "Singvögel",
     "germanName": "Feldlerche",
     "latinName": "Alauda arvensis",
     "habitat": "",
@@ -7680,7 +7680,7 @@
   {
     "id": "vogel_haubenlerche",
     "group": "Vögel",
-    "subgroup": "Lerchen",
+    "subgroup": "Singvögel",
     "germanName": "Haubenlerche",
     "latinName": "Galerida cristata",
     "habitat": "",
@@ -7702,7 +7702,7 @@
   {
     "id": "vogel_ohrenlerche",
     "group": "Vögel",
-    "subgroup": "Lerchen",
+    "subgroup": "Singvögel",
     "germanName": "Ohrenlerche",
     "latinName": "Eremophila alpestris",
     "habitat": "",
@@ -7724,7 +7724,7 @@
   {
     "id": "vogel_kurzzehenlerche",
     "group": "Vögel",
-    "subgroup": "Lerchen",
+    "subgroup": "Singvögel",
     "germanName": "Kurzzehenlerche",
     "latinName": "Calandrella brachydactyla",
     "habitat": "",
@@ -7746,7 +7746,7 @@
   {
     "id": "vogel_kalanderlerche",
     "group": "Vögel",
-    "subgroup": "Lerchen",
+    "subgroup": "Singvögel",
     "germanName": "Kalanderlerche",
     "latinName": "Melanocorypha calandra",
     "habitat": "",
@@ -7768,7 +7768,7 @@
   {
     "id": "vogel_schwarzsteppenlerche",
     "group": "Vögel",
-    "subgroup": "Lerchen",
+    "subgroup": "Singvögel",
     "germanName": "Schwarzsteppenlerche",
     "latinName": "Melanocorypha yeltoniensis",
     "habitat": "",
@@ -7790,7 +7790,7 @@
   {
     "id": "vogel_stummellerche",
     "group": "Vögel",
-    "subgroup": "Lerchen",
+    "subgroup": "Singvögel",
     "germanName": "Stummellerche",
     "latinName": "Alaudala rufescens",
     "habitat": "",
@@ -7812,7 +7812,7 @@
   {
     "id": "vogel_uferschwalbe",
     "group": "Vögel",
-    "subgroup": "Schwalben",
+    "subgroup": "Singvögel",
     "germanName": "Uferschwalbe",
     "latinName": "Riparia riparia",
     "habitat": "",
@@ -7834,7 +7834,7 @@
   {
     "id": "vogel_rauchschwalbe",
     "group": "Vögel",
-    "subgroup": "Schwalben",
+    "subgroup": "Singvögel",
     "germanName": "Rauchschwalbe",
     "latinName": "Hirundo rustica",
     "habitat": "",
@@ -7856,7 +7856,7 @@
   {
     "id": "vogel_felsenschwalbe",
     "group": "Vögel",
-    "subgroup": "Schwalben",
+    "subgroup": "Singvögel",
     "germanName": "Felsenschwalbe",
     "latinName": "Ptyonoprogne rupestris",
     "habitat": "",
@@ -7878,7 +7878,7 @@
   {
     "id": "vogel_mehlschwalbe",
     "group": "Vögel",
-    "subgroup": "Schwalben",
+    "subgroup": "Singvögel",
     "germanName": "Mehlschwalbe",
     "latinName": "Delichon urbicum",
     "habitat": "",
@@ -7900,7 +7900,7 @@
   {
     "id": "vogel_roetelschwalbe",
     "group": "Vögel",
-    "subgroup": "Schwalben",
+    "subgroup": "Singvögel",
     "germanName": "Rötelschwalbe",
     "latinName": "Cecropis daurica",
     "habitat": "",
@@ -7922,7 +7922,7 @@
   {
     "id": "vogel_seidensaenger",
     "group": "Vögel",
-    "subgroup": "Seidensängerverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Seidensänger",
     "latinName": "Cettia cetti",
     "habitat": "",
@@ -7944,7 +7944,7 @@
   {
     "id": "vogel_schwanzmeise",
     "group": "Vögel",
-    "subgroup": "Meisen",
+    "subgroup": "Singvögel",
     "germanName": "Schwanzmeise",
     "latinName": "aegithalos caudatus",
     "habitat": "",
@@ -7966,7 +7966,7 @@
   {
     "id": "vogel_waldlaubsaenger",
     "group": "Vögel",
-    "subgroup": "Laubsänger",
+    "subgroup": "Singvögel",
     "germanName": "Waldlaubsänger",
     "latinName": "Phylloscopus sibilatrix",
     "habitat": "",
@@ -7988,7 +7988,7 @@
   {
     "id": "vogel_berglaubsaenger",
     "group": "Vögel",
-    "subgroup": "Laubsänger",
+    "subgroup": "Singvögel",
     "germanName": "Berglaubsänger",
     "latinName": "Phylloscopus bonelli",
     "habitat": "",
@@ -8010,7 +8010,7 @@
   {
     "id": "vogel_tienschan-laubsaenger",
     "group": "Vögel",
-    "subgroup": "Laubsänger",
+    "subgroup": "Singvögel",
     "germanName": "Tienschan-Laubsänger",
     "latinName": "Phylloscopus humei",
     "habitat": "",
@@ -8032,7 +8032,7 @@
   {
     "id": "vogel_gelbbrauen-laubsaenger",
     "group": "Vögel",
-    "subgroup": "Laubsänger",
+    "subgroup": "Singvögel",
     "germanName": "Gelbbraün-Laubsänger",
     "latinName": "Phylloscopus inornatus",
     "habitat": "",
@@ -8054,7 +8054,7 @@
   {
     "id": "vogel_goldhaehnchen-laubsaenger",
     "group": "Vögel",
-    "subgroup": "Laubsänger",
+    "subgroup": "Singvögel",
     "germanName": "Goldhähnchen-Laubsänger",
     "latinName": "Phylloscopus proregulus",
     "habitat": "",
@@ -8076,7 +8076,7 @@
   {
     "id": "vogel_bartlaubsaenger",
     "group": "Vögel",
-    "subgroup": "Laubsänger",
+    "subgroup": "Singvögel",
     "germanName": "Bartlaubsänger",
     "latinName": "Phylloscopus schwarzi",
     "habitat": "",
@@ -8098,7 +8098,7 @@
   {
     "id": "vogel_dunkellaubsaenger",
     "group": "Vögel",
-    "subgroup": "Laubsänger",
+    "subgroup": "Singvögel",
     "germanName": "Dunkellaubsänger",
     "latinName": "Phylloscopus fuscatus",
     "habitat": "",
@@ -8120,7 +8120,7 @@
   {
     "id": "vogel_fitis",
     "group": "Vögel",
-    "subgroup": "Laubsänger",
+    "subgroup": "Singvögel",
     "germanName": "Fitis",
     "latinName": "Phylloscopus trochilus",
     "habitat": "",
@@ -8142,7 +8142,7 @@
   {
     "id": "vogel_zilpzalp",
     "group": "Vögel",
-    "subgroup": "Laubsänger",
+    "subgroup": "Singvögel",
     "germanName": "Zilpzalp",
     "latinName": "Phylloscopus collybita",
     "habitat": "",
@@ -8164,7 +8164,7 @@
   {
     "id": "vogel_iberienzilpzalp",
     "group": "Vögel",
-    "subgroup": "Laubsänger",
+    "subgroup": "Singvögel",
     "germanName": "Iberienzilpzalp",
     "latinName": "Phylloscopus ibericus",
     "habitat": "",
@@ -8186,7 +8186,7 @@
   {
     "id": "vogel_kronenlaubsaenger",
     "group": "Vögel",
-    "subgroup": "Laubsänger",
+    "subgroup": "Singvögel",
     "germanName": "Kronenlaubsänger",
     "latinName": "Phylloscopus coronatus",
     "habitat": "",
@@ -8208,7 +8208,7 @@
   {
     "id": "vogel_wacholderlaubsaenger",
     "group": "Vögel",
-    "subgroup": "Laubsänger",
+    "subgroup": "Singvögel",
     "germanName": "Wacholderlaubsänger",
     "latinName": "Phylloscopus nitidus",
     "habitat": "",
@@ -8230,7 +8230,7 @@
   {
     "id": "vogel_middendorff-laubsaenger",
     "group": "Vögel",
-    "subgroup": "Laubsänger",
+    "subgroup": "Singvögel",
     "germanName": "Middendorff-Laubsänger",
     "latinName": "Phylloscopus plumbeitarsus",
     "habitat": "",
@@ -8252,7 +8252,7 @@
   {
     "id": "vogel_gruenlaubsaenger",
     "group": "Vögel",
-    "subgroup": "Laubsänger",
+    "subgroup": "Singvögel",
     "germanName": "Grünlaubsänger",
     "latinName": "Phylloscopus trochiloides",
     "habitat": "",
@@ -8274,7 +8274,7 @@
   {
     "id": "vogel_wanderlaubsaenger",
     "group": "Vögel",
-    "subgroup": "Laubsänger",
+    "subgroup": "Singvögel",
     "germanName": "Wanderlaubsänger",
     "latinName": "Phylloscopus borealis",
     "habitat": "",
@@ -8296,7 +8296,7 @@
   {
     "id": "vogel_drosselrohrsaenger",
     "group": "Vögel",
-    "subgroup": "Rohrsängerverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Drosselrohrsänger",
     "latinName": "Acrocephalus arundinaceus",
     "habitat": "",
@@ -8318,7 +8318,7 @@
   {
     "id": "vogel_mariskenrohrsaenger",
     "group": "Vögel",
-    "subgroup": "Rohrsängerverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Mariskenrohrsänger",
     "latinName": "Acrocephalus melanopogon",
     "habitat": "",
@@ -8340,7 +8340,7 @@
   {
     "id": "vogel_seggenrohrsaenger",
     "group": "Vögel",
-    "subgroup": "Rohrsängerverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Seggenrohrsänger",
     "latinName": "Acrocephalus paludicola",
     "habitat": "",
@@ -8362,7 +8362,7 @@
   {
     "id": "vogel_schilfrohrsaenger",
     "group": "Vögel",
-    "subgroup": "Rohrsängerverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Schilfrohrsänger",
     "latinName": "Acrocephalus schoenobaenus",
     "habitat": "",
@@ -8384,7 +8384,7 @@
   {
     "id": "vogel_feldrohrsaenger",
     "group": "Vögel",
-    "subgroup": "Rohrsängerverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Feldrohrsänger",
     "latinName": "Acrocephalus agricola",
     "habitat": "",
@@ -8406,7 +8406,7 @@
   {
     "id": "vogel_buschrohrsaenger",
     "group": "Vögel",
-    "subgroup": "Rohrsängerverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Buschrohrsänger",
     "latinName": "Acrocephalus dumetorum",
     "habitat": "",
@@ -8428,7 +8428,7 @@
   {
     "id": "vogel_teichrohrsaenger",
     "group": "Vögel",
-    "subgroup": "Rohrsängerverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Teichrohrsänger",
     "latinName": "Acrocephalus scirpaceus",
     "habitat": "",
@@ -8450,7 +8450,7 @@
   {
     "id": "vogel_sumpfrohrsaenger",
     "group": "Vögel",
-    "subgroup": "Rohrsängerverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Sumpfrohrsänger",
     "latinName": "Acrocephalus palustris",
     "habitat": "",
@@ -8472,7 +8472,7 @@
   {
     "id": "vogel_buschspoetter",
     "group": "Vögel",
-    "subgroup": "Rohrsängerverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Buschspötter",
     "latinName": "Iduna caligata",
     "habitat": "",
@@ -8494,7 +8494,7 @@
   {
     "id": "vogel_steppenspoetter",
     "group": "Vögel",
-    "subgroup": "Rohrsängerverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Steppenspötter",
     "latinName": "Iduna rama",
     "habitat": "",
@@ -8516,7 +8516,7 @@
   {
     "id": "vogel_blassspoetter",
     "group": "Vögel",
-    "subgroup": "Rohrsängerverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Blassspötter",
     "latinName": "Iduna pallida",
     "habitat": "",
@@ -8538,7 +8538,7 @@
   {
     "id": "vogel_orpheusspoetter",
     "group": "Vögel",
-    "subgroup": "Rohrsängerverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Orpheusspötter",
     "latinName": "Hippolais polyglotta",
     "habitat": "",
@@ -8560,7 +8560,7 @@
   {
     "id": "vogel_gelbspoetter",
     "group": "Vögel",
-    "subgroup": "Rohrsängerverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Gelbspötter",
     "latinName": "Hippolais icterina",
     "habitat": "",
@@ -8582,7 +8582,7 @@
   {
     "id": "vogel_streifenschwirl",
     "group": "Vögel",
-    "subgroup": "Schwirlverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Streifenschwirl",
     "latinName": "Helopsaltes certhiola",
     "habitat": "",
@@ -8604,7 +8604,7 @@
   {
     "id": "vogel_strichelschwirl",
     "group": "Vögel",
-    "subgroup": "Schwirlverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Strichelschwirl",
     "latinName": "Locustella lanceolata",
     "habitat": "",
@@ -8626,7 +8626,7 @@
   {
     "id": "vogel_feldschwirl",
     "group": "Vögel",
-    "subgroup": "Schwirlverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Feldschwirl",
     "latinName": "Locustella naevia",
     "habitat": "",
@@ -8648,7 +8648,7 @@
   {
     "id": "vogel_schlagschwirl",
     "group": "Vögel",
-    "subgroup": "Schwirlverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Schlagschwirl",
     "latinName": "Locustella fluviatilis",
     "habitat": "",
@@ -8670,7 +8670,7 @@
   {
     "id": "vogel_rohrschwirl",
     "group": "Vögel",
-    "subgroup": "Schwirlverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Rohrschwirl",
     "latinName": "Locustella luscinioides",
     "habitat": "",
@@ -8692,7 +8692,7 @@
   {
     "id": "vogel_zistensaenger",
     "group": "Vögel",
-    "subgroup": "Halmsänger",
+    "subgroup": "Singvögel",
     "germanName": "Zistensänger",
     "latinName": "Cisticola juncidis",
     "habitat": "",
@@ -8714,7 +8714,7 @@
   {
     "id": "vogel_moenchsgrasmuecke",
     "group": "Vögel",
-    "subgroup": "Grasmückenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Mönchsgrasmücke",
     "latinName": "Sylvia atricapilla",
     "habitat": "",
@@ -8736,7 +8736,7 @@
   {
     "id": "vogel_gartengrasmuecke",
     "group": "Vögel",
-    "subgroup": "Grasmückenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Gartengrasmücke",
     "latinName": "Sylvia borin",
     "habitat": "",
@@ -8758,7 +8758,7 @@
   {
     "id": "vogel_sperbergrasmuecke",
     "group": "Vögel",
-    "subgroup": "Grasmückenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Sperbergrasmücke",
     "latinName": "Sylvia nisoria",
     "habitat": "",
@@ -8780,7 +8780,7 @@
   {
     "id": "vogel_klappergrasmuecke",
     "group": "Vögel",
-    "subgroup": "Grasmückenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Klappergrasmücke",
     "latinName": "Sylvia curruca",
     "habitat": "",
@@ -8802,7 +8802,7 @@
   {
     "id": "vogel_orpheusgrasmuecke",
     "group": "Vögel",
-    "subgroup": "Grasmückenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Orpheusgrasmücke",
     "latinName": "Sylvia hortensis",
     "habitat": "",
@@ -8824,7 +8824,7 @@
   {
     "id": "vogel_wuestengrasmuecke",
     "group": "Vögel",
-    "subgroup": "Grasmückenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Wüstengrasmücke",
     "latinName": "Sylvia nana",
     "habitat": "",
@@ -8846,7 +8846,7 @@
   {
     "id": "vogel_dorngrasmuecke",
     "group": "Vögel",
-    "subgroup": "Grasmückenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Dorngrasmücke",
     "latinName": "Sylvia communis",
     "habitat": "",
@@ -8868,7 +8868,7 @@
   {
     "id": "vogel_provencegrasmuecke",
     "group": "Vögel",
-    "subgroup": "Grasmückenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Provencegrasmücke",
     "latinName": "Sylvia undata",
     "habitat": "",
@@ -8890,7 +8890,7 @@
   {
     "id": "vogel_brillengrasmuecke",
     "group": "Vögel",
-    "subgroup": "Grasmückenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Brillengrasmücke",
     "latinName": "Sylvia conspicillata",
     "habitat": "",
@@ -8912,7 +8912,7 @@
   {
     "id": "vogel_weissbart-grasmuecke",
     "group": "Vögel",
-    "subgroup": "Grasmückenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Weißbart-Grasmücke",
     "latinName": "Sylvia cantillans",
     "habitat": "",
@@ -8934,7 +8934,7 @@
   {
     "id": "vogel_ligurien-bartgrasmuecke",
     "group": "Vögel",
-    "subgroup": "Grasmückenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Ligurien-Bartgrasmücke",
     "latinName": "Sylvia subalpina",
     "habitat": "",
@@ -8956,7 +8956,7 @@
   {
     "id": "vogel_samtkopf-grasmuecke",
     "group": "Vögel",
-    "subgroup": "Grasmückenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Samtkopf-Grasmücke",
     "latinName": "Sylvia melanocephala",
     "habitat": "",
@@ -8978,7 +8978,7 @@
   {
     "id": "vogel_sommergoldhaehnchen",
     "group": "Vögel",
-    "subgroup": "Goldhähnchen",
+    "subgroup": "Singvögel",
     "germanName": "Sommergoldhähnchen",
     "latinName": "Regulus ignicapilla",
     "habitat": "",
@@ -9000,7 +9000,7 @@
   {
     "id": "vogel_wintergoldhaehnchen",
     "group": "Vögel",
-    "subgroup": "Goldhähnchen",
+    "subgroup": "Singvögel",
     "germanName": "Wintergoldhähnchen",
     "latinName": "Regulus regulus",
     "habitat": "",
@@ -9022,7 +9022,7 @@
   {
     "id": "vogel_zaunkoenig",
     "group": "Vögel",
-    "subgroup": "Zaunkönig",
+    "subgroup": "Singvögel",
     "germanName": "Zaunkönig",
     "latinName": "Troglodytes troglodytes",
     "habitat": "",
@@ -9044,7 +9044,7 @@
   {
     "id": "vogel_kleiber",
     "group": "Vögel",
-    "subgroup": "Kleiber",
+    "subgroup": "Klettervögel",
     "germanName": "Kleiber",
     "latinName": "Sitta europaea",
     "habitat": "",
@@ -9066,7 +9066,7 @@
   {
     "id": "vogel_mauerlaeufer",
     "group": "Vögel",
-    "subgroup": "Maürläufer",
+    "subgroup": "Sonstige Vögel",
     "germanName": "Maürläufer",
     "latinName": "Tichodroma muraria",
     "habitat": "",
@@ -9088,7 +9088,7 @@
   {
     "id": "vogel_waldbaumlaeufer",
     "group": "Vögel",
-    "subgroup": "Baumläufer",
+    "subgroup": "Klettervögel",
     "germanName": "Waldbaumläufer",
     "latinName": "Certhia familiaris",
     "habitat": "",
@@ -9110,7 +9110,7 @@
   {
     "id": "vogel_gartenbaumlaeufer",
     "group": "Vögel",
-    "subgroup": "Baumläufer",
+    "subgroup": "Klettervögel",
     "germanName": "Gartenbaumläufer",
     "latinName": "Certhia brachydactyla",
     "habitat": "",
@@ -9132,7 +9132,7 @@
   {
     "id": "vogel_katzenspottdrossel",
     "group": "Vögel",
-    "subgroup": "Spottdrosseln",
+    "subgroup": "Singvögel",
     "germanName": "Katzenspottdrossel",
     "latinName": "Dumetella carolinensis",
     "habitat": "",
@@ -9154,7 +9154,7 @@
   {
     "id": "vogel_rosenstar",
     "group": "Vögel",
-    "subgroup": "Starenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Rosenstar",
     "latinName": "Pastor roseus",
     "habitat": "",
@@ -9176,7 +9176,7 @@
   {
     "id": "vogel_star",
     "group": "Vögel",
-    "subgroup": "Starenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Star",
     "latinName": "Sturnus vulgaris",
     "habitat": "",
@@ -9198,7 +9198,7 @@
   {
     "id": "vogel_schieferdrossel",
     "group": "Vögel",
-    "subgroup": "Drosseln",
+    "subgroup": "Singvögel",
     "germanName": "Schieferdrossel",
     "latinName": "Geokichla sibirica",
     "habitat": "",
@@ -9220,7 +9220,7 @@
   {
     "id": "vogel_erddrossel",
     "group": "Vögel",
-    "subgroup": "Drosseln",
+    "subgroup": "Singvögel",
     "germanName": "Erddrossel",
     "latinName": "Zoothera aurea",
     "habitat": "",
@@ -9242,7 +9242,7 @@
   {
     "id": "vogel_grauwangen-musendrossel",
     "group": "Vögel",
-    "subgroup": "Drosseln",
+    "subgroup": "Singvögel",
     "germanName": "Grauwangen-Musendrossel",
     "latinName": "Catharus minimus",
     "habitat": "",
@@ -9264,7 +9264,7 @@
   {
     "id": "vogel_zwergmusendrossel",
     "group": "Vögel",
-    "subgroup": "Drosseln",
+    "subgroup": "Singvögel",
     "germanName": "Zwergmusendrossel",
     "latinName": "Catharus ustulatus",
     "habitat": "",
@@ -9286,7 +9286,7 @@
   {
     "id": "vogel_einsiedler-musendrossel",
     "group": "Vögel",
-    "subgroup": "Drosseln",
+    "subgroup": "Singvögel",
     "germanName": "Einsiedler-Musendrossel",
     "latinName": "Catharus guttatus",
     "habitat": "",
@@ -9308,7 +9308,7 @@
   {
     "id": "vogel_einfarbdrossel",
     "group": "Vögel",
-    "subgroup": "Drosseln",
+    "subgroup": "Singvögel",
     "germanName": "Einfarbdrossel",
     "latinName": "Turdus unicolor",
     "habitat": "",
@@ -9330,7 +9330,7 @@
   {
     "id": "vogel_ringdrossel",
     "group": "Vögel",
-    "subgroup": "Drosseln",
+    "subgroup": "Singvögel",
     "germanName": "Ringdrossel",
     "latinName": "Turdus torquatus",
     "habitat": "",
@@ -9352,7 +9352,7 @@
   {
     "id": "vogel_amsel",
     "group": "Vögel",
-    "subgroup": "Drosseln",
+    "subgroup": "Singvögel",
     "germanName": "Amsel",
     "latinName": "Turdus merula",
     "habitat": "",
@@ -9374,7 +9374,7 @@
   {
     "id": "vogel_weissbrauendrossel",
     "group": "Vögel",
-    "subgroup": "Drosseln",
+    "subgroup": "Singvögel",
     "germanName": "Weißbraündrossel",
     "latinName": "Turdus obscurus",
     "habitat": "",
@@ -9396,7 +9396,7 @@
   {
     "id": "vogel_schwarzkehldrossel",
     "group": "Vögel",
-    "subgroup": "Drosseln",
+    "subgroup": "Singvögel",
     "germanName": "Schwarzkehldrossel",
     "latinName": "Turdus atrogularis",
     "habitat": "",
@@ -9418,7 +9418,7 @@
   {
     "id": "vogel_rotkehldrossel",
     "group": "Vögel",
-    "subgroup": "Drosseln",
+    "subgroup": "Singvögel",
     "germanName": "Rotkehldrossel",
     "latinName": "Turdus ruficollis",
     "habitat": "",
@@ -9440,7 +9440,7 @@
   {
     "id": "vogel_rostschwanzdrossel",
     "group": "Vögel",
-    "subgroup": "Drosseln",
+    "subgroup": "Singvögel",
     "germanName": "Rostschwanzdrossel",
     "latinName": "Turdus naumanni",
     "habitat": "",
@@ -9462,7 +9462,7 @@
   {
     "id": "vogel_rostfluegeldrossel",
     "group": "Vögel",
-    "subgroup": "Drosseln",
+    "subgroup": "Singvögel",
     "germanName": "Rostflügeldrossel",
     "latinName": "Turdus eunomus",
     "habitat": "",
@@ -9484,7 +9484,7 @@
   {
     "id": "vogel_wacholderdrossel",
     "group": "Vögel",
-    "subgroup": "Drosseln",
+    "subgroup": "Singvögel",
     "germanName": "Wacholderdrossel",
     "latinName": "Turdus pilaris",
     "habitat": "",
@@ -9506,7 +9506,7 @@
   {
     "id": "vogel_rotdrossel",
     "group": "Vögel",
-    "subgroup": "Drosseln",
+    "subgroup": "Singvögel",
     "germanName": "Rotdrossel",
     "latinName": "Turdus iliacus",
     "habitat": "",
@@ -9528,7 +9528,7 @@
   {
     "id": "vogel_singdrossel",
     "group": "Vögel",
-    "subgroup": "Drosseln",
+    "subgroup": "Singvögel",
     "germanName": "Singdrossel",
     "latinName": "Turdus philomelos",
     "habitat": "",
@@ -9550,7 +9550,7 @@
   {
     "id": "vogel_misteldrossel",
     "group": "Vögel",
-    "subgroup": "Drosseln",
+    "subgroup": "Singvögel",
     "germanName": "Misteldrossel",
     "latinName": "Turdus viscivorus",
     "habitat": "",
@@ -9572,7 +9572,7 @@
   {
     "id": "vogel_wanderdrossel",
     "group": "Vögel",
-    "subgroup": "Drosseln",
+    "subgroup": "Singvögel",
     "germanName": "Wanderdrossel",
     "latinName": "Turdus migratorius",
     "habitat": "",
@@ -9594,7 +9594,7 @@
   {
     "id": "vogel_heckensaenger",
     "group": "Vögel",
-    "subgroup": "Schnäpperverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Heckensänger",
     "latinName": "Cercotrichas galactotes",
     "habitat": "",
@@ -9616,7 +9616,7 @@
   {
     "id": "vogel_grauschnaepper",
     "group": "Vögel",
-    "subgroup": "Schnäpperverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Grauschnäpper",
     "latinName": "Muscicapa striata",
     "habitat": "",
@@ -9638,7 +9638,7 @@
   {
     "id": "vogel_rotkehlchen",
     "group": "Vögel",
-    "subgroup": "Schnäpperverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Rotkehlchen",
     "latinName": "Erithacus rubecula",
     "habitat": "",
@@ -9660,7 +9660,7 @@
   {
     "id": "vogel_blaukehlchen",
     "group": "Vögel",
-    "subgroup": "Schnäpperverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Blaukehlchen",
     "latinName": "Luscinia svecica",
     "habitat": "",
@@ -9682,7 +9682,7 @@
   {
     "id": "vogel_sprosser",
     "group": "Vögel",
-    "subgroup": "Schnäpperverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Sprosser",
     "latinName": "Luscinia luscinia",
     "habitat": "",
@@ -9704,7 +9704,7 @@
   {
     "id": "vogel_nachtigall",
     "group": "Vögel",
-    "subgroup": "Schnäpperverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Nachtigall",
     "latinName": "Luscinia megarhynchos",
     "habitat": "",
@@ -9726,7 +9726,7 @@
   {
     "id": "vogel_rubinkehlchen",
     "group": "Vögel",
-    "subgroup": "Schnäpperverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Rubinkehlchen",
     "latinName": "Calliope calliope",
     "habitat": "",
@@ -9748,7 +9748,7 @@
   {
     "id": "vogel_blauschwanz",
     "group": "Vögel",
-    "subgroup": "Schnäpperverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Blauschwanz",
     "latinName": "Tarsiger cyanurus",
     "habitat": "",
@@ -9770,7 +9770,7 @@
   {
     "id": "vogel_trauerschnaepper",
     "group": "Vögel",
-    "subgroup": "Schnäpperverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Traürschnäpper",
     "latinName": "Ficedula hypoleuca",
     "habitat": "",
@@ -9792,7 +9792,7 @@
   {
     "id": "vogel_halsbandschnaepper",
     "group": "Vögel",
-    "subgroup": "Schnäpperverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Halsbandschnäpper",
     "latinName": "Ficedula albicollis",
     "habitat": "",
@@ -9814,7 +9814,7 @@
   {
     "id": "vogel_zwergschnaepper",
     "group": "Vögel",
-    "subgroup": "Schnäpperverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Zwergschnäpper",
     "latinName": "Ficedula parva",
     "habitat": "",
@@ -9836,7 +9836,7 @@
   {
     "id": "vogel_hausrotschwanz",
     "group": "Vögel",
-    "subgroup": "Schnäpperverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Hausrotschwanz",
     "latinName": "Phoenicurus ochruros",
     "habitat": "",
@@ -9858,7 +9858,7 @@
   {
     "id": "vogel_gartenrotschwanz",
     "group": "Vögel",
-    "subgroup": "Schnäpperverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Gartenrotschwanz",
     "latinName": "Phoenicurus phoenicurus",
     "habitat": "",
@@ -9880,7 +9880,7 @@
   {
     "id": "vogel_steinroetel",
     "group": "Vögel",
-    "subgroup": "Schnäpperverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Steinrötel",
     "latinName": "Monticola saxatilis",
     "habitat": "",
@@ -9902,7 +9902,7 @@
   {
     "id": "vogel_blaumerle",
     "group": "Vögel",
-    "subgroup": "Schnäpperverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Blaumerle",
     "latinName": "Monticola solitarius",
     "habitat": "",
@@ -9924,7 +9924,7 @@
   {
     "id": "vogel_braunkehlchen",
     "group": "Vögel",
-    "subgroup": "Schnäpperverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Braunkehlchen",
     "latinName": "Saxicola rubetra",
     "habitat": "",
@@ -9946,7 +9946,7 @@
   {
     "id": "vogel_schwarzkehlchen",
     "group": "Vögel",
-    "subgroup": "Schnäpperverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Schwarzkehlchen",
     "latinName": "Saxicola rubicola",
     "habitat": "",
@@ -9968,7 +9968,7 @@
   {
     "id": "vogel_pallasschwarzkehlchen",
     "group": "Vögel",
-    "subgroup": "Schnäpperverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Pallasschwarzkehlchen",
     "latinName": "Saxicola maurus",
     "habitat": "",
@@ -9990,7 +9990,7 @@
   {
     "id": "vogel_steinschmaetzer",
     "group": "Vögel",
-    "subgroup": "Schnäpperverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Steinschmätzer",
     "latinName": "Oenanthe oenanthe",
     "habitat": "",
@@ -10012,7 +10012,7 @@
   {
     "id": "vogel_isabellsteinschmaetzer",
     "group": "Vögel",
-    "subgroup": "Schnäpperverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Isabellsteinschmätzer",
     "latinName": "Oenanthe isabellina",
     "habitat": "",
@@ -10034,7 +10034,7 @@
   {
     "id": "vogel_wuestensteinschmaetzer",
     "group": "Vögel",
-    "subgroup": "Schnäpperverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Wüstensteinschmätzer",
     "latinName": "Oenanthe deserti",
     "habitat": "",
@@ -10056,7 +10056,7 @@
   {
     "id": "vogel_mittelmeer-steinschmaetzer",
     "group": "Vögel",
-    "subgroup": "Schnäpperverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Mittelmeer-Steinschmätzer",
     "latinName": "Oenanthe hispanica",
     "habitat": "",
@@ -10078,7 +10078,7 @@
   {
     "id": "vogel_zypernsteinschmaetzer",
     "group": "Vögel",
-    "subgroup": "Schnäpperverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Zypernsteinschmätzer",
     "latinName": "Oenanthe cypriaca",
     "habitat": "",
@@ -10100,7 +10100,7 @@
   {
     "id": "vogel_nonnensteinschmaetzer",
     "group": "Vögel",
-    "subgroup": "Schnäpperverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Nonnensteinschmätzer",
     "latinName": "Oenanthe pleschanka",
     "habitat": "",
@@ -10122,7 +10122,7 @@
   {
     "id": "vogel_wasseramsel",
     "group": "Vögel",
-    "subgroup": "Wasseramseln",
+    "subgroup": "Singvögel",
     "germanName": "Wasseramsel",
     "latinName": "Cinclus cinclus",
     "habitat": "",
@@ -10144,7 +10144,7 @@
   {
     "id": "vogel_haussperling",
     "group": "Vögel",
-    "subgroup": "Sperlinge",
+    "subgroup": "Singvögel",
     "germanName": "Haussperling",
     "latinName": "Passer domesticus",
     "habitat": "",
@@ -10166,7 +10166,7 @@
   {
     "id": "vogel_feldsperling",
     "group": "Vögel",
-    "subgroup": "Sperlinge",
+    "subgroup": "Singvögel",
     "germanName": "Feldsperling",
     "latinName": "Passer montanus",
     "habitat": "",
@@ -10188,7 +10188,7 @@
   {
     "id": "vogel_steinsperling",
     "group": "Vögel",
-    "subgroup": "Sperlinge",
+    "subgroup": "Singvögel",
     "germanName": "Steinsperling",
     "latinName": "Petronia petronia",
     "habitat": "",
@@ -10210,7 +10210,7 @@
   {
     "id": "vogel_schneesperling",
     "group": "Vögel",
-    "subgroup": "Sperlinge",
+    "subgroup": "Singvögel",
     "germanName": "Schneesperling",
     "latinName": "Montifringilla nivalis",
     "habitat": "",
@@ -10232,7 +10232,7 @@
   {
     "id": "vogel_alpenbraunelle",
     "group": "Vögel",
-    "subgroup": "Braunellen",
+    "subgroup": "Singvögel",
     "germanName": "Alpenbraunelle",
     "latinName": "Prunella collaris",
     "habitat": "",
@@ -10254,7 +10254,7 @@
   {
     "id": "vogel_bergbraunelle",
     "group": "Vögel",
-    "subgroup": "Braunellen",
+    "subgroup": "Singvögel",
     "germanName": "Bergbraunelle",
     "latinName": "Prunella montanella",
     "habitat": "",
@@ -10276,7 +10276,7 @@
   {
     "id": "vogel_schwarzkehlbraunelle",
     "group": "Vögel",
-    "subgroup": "Braunellen",
+    "subgroup": "Singvögel",
     "germanName": "Schwarzkehlbraunelle",
     "latinName": "Prunella atrogularis",
     "habitat": "",
@@ -10298,7 +10298,7 @@
   {
     "id": "vogel_heckenbraunelle",
     "group": "Vögel",
-    "subgroup": "Braunellen",
+    "subgroup": "Singvögel",
     "germanName": "Heckenbraunelle",
     "latinName": "Prunella modularis",
     "habitat": "",
@@ -10320,7 +10320,7 @@
   {
     "id": "vogel_schafstelze",
     "group": "Vögel",
-    "subgroup": "Stelzenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Schafstelze",
     "latinName": "Motacilla flava",
     "habitat": "",
@@ -10342,7 +10342,7 @@
   {
     "id": "vogel_zitronenstelze",
     "group": "Vögel",
-    "subgroup": "Stelzenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Zitronenstelze",
     "latinName": "Motacilla citreola",
     "habitat": "",
@@ -10364,7 +10364,7 @@
   {
     "id": "vogel_gebirgsstelze",
     "group": "Vögel",
-    "subgroup": "Stelzenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Gebirgsstelze",
     "latinName": "Motacilla cinerea",
     "habitat": "",
@@ -10386,7 +10386,7 @@
   {
     "id": "vogel_bachstelze",
     "group": "Vögel",
-    "subgroup": "Stelzenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Bachstelze",
     "latinName": "Motacilla alba",
     "habitat": "",
@@ -10408,7 +10408,7 @@
   {
     "id": "vogel_spornpieper",
     "group": "Vögel",
-    "subgroup": "Stelzenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Spornpieper",
     "latinName": "Anthus richardi",
     "habitat": "",
@@ -10430,7 +10430,7 @@
   {
     "id": "vogel_steppenpieper",
     "group": "Vögel",
-    "subgroup": "Stelzenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Steppenpieper",
     "latinName": "Anthus godlewskii",
     "habitat": "",
@@ -10452,7 +10452,7 @@
   {
     "id": "vogel_brachpieper",
     "group": "Vögel",
-    "subgroup": "Stelzenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Brachpieper",
     "latinName": "Anthus campestris",
     "habitat": "",
@@ -10474,7 +10474,7 @@
   {
     "id": "vogel_wiesenpieper",
     "group": "Vögel",
-    "subgroup": "Stelzenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Wiesenpieper",
     "latinName": "Anthus pratensis",
     "habitat": "",
@@ -10496,7 +10496,7 @@
   {
     "id": "vogel_baumpieper",
     "group": "Vögel",
-    "subgroup": "Stelzenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Baumpieper",
     "latinName": "Anthus trivialis",
     "habitat": "",
@@ -10518,7 +10518,7 @@
   {
     "id": "vogel_waldpieper",
     "group": "Vögel",
-    "subgroup": "Stelzenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Waldpieper",
     "latinName": "Anthus hodgsoni",
     "habitat": "",
@@ -10540,7 +10540,7 @@
   {
     "id": "vogel_petschorapieper",
     "group": "Vögel",
-    "subgroup": "Stelzenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Petschorapieper",
     "latinName": "Anthus gustavi",
     "habitat": "",
@@ -10562,7 +10562,7 @@
   {
     "id": "vogel_rotkehlpieper",
     "group": "Vögel",
-    "subgroup": "Stelzenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Rotkehlpieper",
     "latinName": "Anthus cervinus",
     "habitat": "",
@@ -10584,7 +10584,7 @@
   {
     "id": "vogel_pazifikpieper",
     "group": "Vögel",
-    "subgroup": "Stelzenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Pazifikpieper",
     "latinName": "Anthus rubescens",
     "habitat": "",
@@ -10606,7 +10606,7 @@
   {
     "id": "vogel_bergpieper",
     "group": "Vögel",
-    "subgroup": "Stelzenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Bergpieper",
     "latinName": "Anthus spinoletta",
     "habitat": "",
@@ -10628,7 +10628,7 @@
   {
     "id": "vogel_strandpieper",
     "group": "Vögel",
-    "subgroup": "Stelzenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Strandpieper",
     "latinName": "Anthus petrosus",
     "habitat": "",
@@ -10650,7 +10650,7 @@
   {
     "id": "vogel_buchfink",
     "group": "Vögel",
-    "subgroup": "Finkenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Buchfink",
     "latinName": "Fringilla coelebs",
     "habitat": "",
@@ -10672,7 +10672,7 @@
   {
     "id": "vogel_bergfink",
     "group": "Vögel",
-    "subgroup": "Finkenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Bergfink",
     "latinName": "Fringilla montifringilla",
     "habitat": "",
@@ -10694,7 +10694,7 @@
   {
     "id": "vogel_kernbeisser",
     "group": "Vögel",
-    "subgroup": "Finkenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Kernbeißer",
     "latinName": "Coccothraustes coccothraustes",
     "habitat": "",
@@ -10716,7 +10716,7 @@
   {
     "id": "vogel_hakengimpel",
     "group": "Vögel",
-    "subgroup": "Finkenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Hakengimpel",
     "latinName": "Pinicola enucleator",
     "habitat": "",
@@ -10738,7 +10738,7 @@
   {
     "id": "vogel_gimpel",
     "group": "Vögel",
-    "subgroup": "Finkenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Gimpel",
     "latinName": "Pyrrhula pyrrhula",
     "habitat": "",
@@ -10760,7 +10760,7 @@
   {
     "id": "vogel_wuestengimpel",
     "group": "Vögel",
-    "subgroup": "Finkenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Wüstengimpel",
     "latinName": "Bucanetes githagineus",
     "habitat": "",
@@ -10782,7 +10782,7 @@
   {
     "id": "vogel_karmingimpel",
     "group": "Vögel",
-    "subgroup": "Finkenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Karmingimpel",
     "latinName": "Carpodacus erythrinus",
     "habitat": "",
@@ -10804,7 +10804,7 @@
   {
     "id": "vogel_gruenfink",
     "group": "Vögel",
-    "subgroup": "Finkenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Grünfink",
     "latinName": "Chloris chloris",
     "habitat": "",
@@ -10826,7 +10826,7 @@
   {
     "id": "vogel_berghaenfling",
     "group": "Vögel",
-    "subgroup": "Finkenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Berghänfling",
     "latinName": "Linaria flavirostris",
     "habitat": "",
@@ -10848,7 +10848,7 @@
   {
     "id": "vogel_bluthaenfling",
     "group": "Vögel",
-    "subgroup": "Finkenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Bluthänfling",
     "latinName": "Linaria cannabina",
     "habitat": "",
@@ -10870,7 +10870,7 @@
   {
     "id": "vogel_taigabirkenzeisig",
     "group": "Vögel",
-    "subgroup": "Finkenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Taigabirkenzeisig",
     "latinName": "Acanthis flammea",
     "habitat": "",
@@ -10892,7 +10892,7 @@
   {
     "id": "vogel_alpenbirkenzeisig",
     "group": "Vögel",
-    "subgroup": "Finkenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Alpenbirkenzeisig",
     "latinName": "Acanthis cabaret",
     "habitat": "",
@@ -10914,7 +10914,7 @@
   {
     "id": "vogel_polarbirkenzeisig",
     "group": "Vögel",
-    "subgroup": "Finkenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Polarbirkenzeisig",
     "latinName": "Acanthis hornemanni",
     "habitat": "",
@@ -10936,7 +10936,7 @@
   {
     "id": "vogel_kiefernkreuzschnabel",
     "group": "Vögel",
-    "subgroup": "Finkenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Kiefernkreuzschnabel",
     "latinName": "Loxia pytyopsittacus",
     "habitat": "",
@@ -10958,7 +10958,7 @@
   {
     "id": "vogel_fichtenkreuzschnabel",
     "group": "Vögel",
-    "subgroup": "Finkenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Fichtenkreuzschnabel",
     "latinName": "Loxia curvirostra",
     "habitat": "",
@@ -10980,7 +10980,7 @@
   {
     "id": "vogel_bindenkreuzschnabel",
     "group": "Vögel",
-    "subgroup": "Finkenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Bindenkreuzschnabel",
     "latinName": "Loxia leucoptera",
     "habitat": "",
@@ -11002,7 +11002,7 @@
   {
     "id": "vogel_stieglitz",
     "group": "Vögel",
-    "subgroup": "Finkenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Stieglitz",
     "latinName": "Carduelis carduelis",
     "habitat": "",
@@ -11024,7 +11024,7 @@
   {
     "id": "vogel_zitronenzeisig",
     "group": "Vögel",
-    "subgroup": "Finkenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Zitronenzeisig",
     "latinName": "Carduelis citrinella",
     "habitat": "",
@@ -11046,7 +11046,7 @@
   {
     "id": "vogel_girlitz",
     "group": "Vögel",
-    "subgroup": "Finkenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Girlitz",
     "latinName": "Serinus serinus",
     "habitat": "",
@@ -11068,7 +11068,7 @@
   {
     "id": "vogel_erlenzeisig",
     "group": "Vögel",
-    "subgroup": "Finkenverwandte",
+    "subgroup": "Singvögel",
     "germanName": "Erlenzeisig",
     "latinName": "Spinus spinus",
     "habitat": "",
@@ -11090,7 +11090,7 @@
   {
     "id": "vogel_spornammer",
     "group": "Vögel",
-    "subgroup": "Ammern",
+    "subgroup": "Singvögel",
     "germanName": "Spornammer",
     "latinName": "Calcarius lapponicus",
     "habitat": "",
@@ -11112,7 +11112,7 @@
   {
     "id": "vogel_schneeammer",
     "group": "Vögel",
-    "subgroup": "Ammern",
+    "subgroup": "Singvögel",
     "germanName": "Schneeammer",
     "latinName": "Plectrophenax nivalis",
     "habitat": "",
@@ -11134,7 +11134,7 @@
   {
     "id": "vogel_grauammer",
     "group": "Vögel",
-    "subgroup": "Ammern",
+    "subgroup": "Singvögel",
     "germanName": "Grauammer",
     "latinName": "Emberiza calandra",
     "habitat": "",
@@ -11156,7 +11156,7 @@
   {
     "id": "vogel_goldammer",
     "group": "Vögel",
-    "subgroup": "Ammern",
+    "subgroup": "Singvögel",
     "germanName": "Goldammer",
     "latinName": "Emberiza citrinella",
     "habitat": "",
@@ -11178,7 +11178,7 @@
   {
     "id": "vogel_fichtenammer",
     "group": "Vögel",
-    "subgroup": "Ammern",
+    "subgroup": "Singvögel",
     "germanName": "Fichtenammer",
     "latinName": "Emberiza leucocephalos",
     "habitat": "",
@@ -11200,7 +11200,7 @@
   {
     "id": "vogel_zippammer",
     "group": "Vögel",
-    "subgroup": "Ammern",
+    "subgroup": "Singvögel",
     "germanName": "Zippammer",
     "latinName": "Emberiza cia",
     "habitat": "",
@@ -11222,7 +11222,7 @@
   {
     "id": "vogel_steinortolan",
     "group": "Vögel",
-    "subgroup": "Ammern",
+    "subgroup": "Singvögel",
     "germanName": "Steinortolan",
     "latinName": "Emberiza buchanani",
     "habitat": "",
@@ -11244,7 +11244,7 @@
   {
     "id": "vogel_tuerkenammer",
     "group": "Vögel",
-    "subgroup": "Ammern",
+    "subgroup": "Singvögel",
     "germanName": "Türkenammer",
     "latinName": "Emberiza cineracea",
     "habitat": "",
@@ -11266,7 +11266,7 @@
   {
     "id": "vogel_ortolan",
     "group": "Vögel",
-    "subgroup": "Ammern",
+    "subgroup": "Singvögel",
     "germanName": "Ortolan",
     "latinName": "Emberiza hortulana",
     "habitat": "",
@@ -11288,7 +11288,7 @@
   {
     "id": "vogel_grauortolan",
     "group": "Vögel",
-    "subgroup": "Ammern",
+    "subgroup": "Singvögel",
     "germanName": "Grauortolan",
     "latinName": "Emberiza caesia",
     "habitat": "",
@@ -11310,7 +11310,7 @@
   {
     "id": "vogel_zaunammer",
     "group": "Vögel",
-    "subgroup": "Ammern",
+    "subgroup": "Singvögel",
     "germanName": "Zaunammer",
     "latinName": "Emberiza cirlus",
     "habitat": "",
@@ -11332,7 +11332,7 @@
   {
     "id": "vogel_zwergammer",
     "group": "Vögel",
-    "subgroup": "Ammern",
+    "subgroup": "Singvögel",
     "germanName": "Zwergammer",
     "latinName": "Emberiza pusilla",
     "habitat": "",
@@ -11354,7 +11354,7 @@
   {
     "id": "vogel_waldammer",
     "group": "Vögel",
-    "subgroup": "Ammern",
+    "subgroup": "Singvögel",
     "germanName": "Waldammer",
     "latinName": "Emberiza rustica",
     "habitat": "",
@@ -11376,7 +11376,7 @@
   {
     "id": "vogel_weidenammer",
     "group": "Vögel",
-    "subgroup": "Ammern",
+    "subgroup": "Singvögel",
     "germanName": "Weidenammer",
     "latinName": "Emberiza aureola",
     "habitat": "",
@@ -11398,7 +11398,7 @@
   {
     "id": "vogel_kappenammer",
     "group": "Vögel",
-    "subgroup": "Ammern",
+    "subgroup": "Singvögel",
     "germanName": "Kappenammer",
     "latinName": "Emberiza melanocephala",
     "habitat": "",
@@ -11420,7 +11420,7 @@
   {
     "id": "vogel_braunkopfammer",
     "group": "Vögel",
-    "subgroup": "Ammern",
+    "subgroup": "Singvögel",
     "germanName": "Braunkopfammer",
     "latinName": "Emberiza bruniceps",
     "habitat": "",
@@ -11442,7 +11442,7 @@
   {
     "id": "vogel_maskenammer",
     "group": "Vögel",
-    "subgroup": "Ammern",
+    "subgroup": "Singvögel",
     "germanName": "Maskenammer",
     "latinName": "Emberiza spodocephala",
     "habitat": "",
@@ -11464,7 +11464,7 @@
   {
     "id": "vogel_rohrammer",
     "group": "Vögel",
-    "subgroup": "Ammern",
+    "subgroup": "Singvögel",
     "germanName": "Rohrammer",
     "latinName": "Emberiza schoeniclus",
     "habitat": "",
@@ -11486,7 +11486,7 @@
   {
     "id": "vogel_meisenwaldsaenger",
     "group": "Vögel",
-    "subgroup": "Waldsänger",
+    "subgroup": "Singvögel",
     "germanName": "Meisenwaldsänger",
     "latinName": "Setophaga americana",
     "habitat": "",
@@ -11508,7 +11508,7 @@
   {
     "id": "vogel_gruenmantel-waldsaenger",
     "group": "Vögel",
-    "subgroup": "Waldsänger",
+    "subgroup": "Singvögel",
     "germanName": "Grünmantel-Waldsänger",
     "latinName": "Setophaga virens",
     "habitat": "",
