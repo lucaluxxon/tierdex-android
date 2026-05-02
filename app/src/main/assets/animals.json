@@ -2812,18 +2812,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "trockene Offenlandschaften",
+      "Heiden",
+      "steinige Brachen",
+      "Sandflächen"
+    ],
+    "distributionGermany": "In Deutschland sehr selten und nur lokal brütend oder als Ausnahmegast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Spätfrühling bis Sommer bei wenigen Vorkommen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Großer sandbrauner Watvogel mit langen gelben Beinen, großen gelben Augen und kräftigem Schnabel mit dunkler Spitze.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in offenen trockenen Landschaften bei Dämmerung.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltene Art in Deutschland; Angaben später besonders sorgfältig prüfen."
   },
   {
     "id": "vogel_austernfischer",
@@ -2834,18 +2842,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Wattflächen",
+      "Salzwiesen",
+      "Binnengewässer"
+    ],
+    "distributionGermany": "An den Küsten häufig, im Binnenland lokal an Flüssen, Seen und Kiesflächen.",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst besonders gut, an den Küsten teils ganzjährig.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schwarzweißer Watvogel mit langem geradem orange-rotem Schnabel und rosa Beinen.",
+    "observationTip": "An Küsten, Wattflächen und offenen Uferbereichen oft leicht zu beobachten, besonders bei Ebbe.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Küstenart mit guten Beobachtungsmöglichkeiten; Binnenlandvorkommen regional begrenzt."
   },
   {
     "id": "vogel_stelzenlaeufer",
@@ -2856,18 +2873,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Flachgewässer",
+      "Salinen",
+      "Lagunen",
+      "überschwemmte Wiesen"
+    ],
+    "distributionGermany": "In Deutschland seltener Brut- und Gastvogel mit regionalen Schwerpunkten.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätfrühling bis Sommer an flachen Gewässern.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker schwarzweißer Watvogel mit extrem langen roten Beinen und langem feinem schwarzem Schnabel.",
+    "observationTip": "Am ehesten an flachen Gewässern, Salinen oder überstauten Wiesen mit wenig Vegetation zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Vorkommen in Deutschland unregelmäßig und regional begrenzt; Beobachtbarkeit später prüfen."
   },
   {
     "id": "vogel_saebelschnaebler",
@@ -2878,18 +2903,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wattflächen",
+      "Lagunen",
+      "Salzwiesen",
+      "Flachgewässer"
+    ],
+    "distributionGermany": "Vor allem an der Nordseeküste und in einzelnen Feuchtgebieten regelmäßig.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer an flachen Küstengewässern besonders gut.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schwarzweißer Watvogel mit langen blaugrauen Beinen und auffällig nach oben gebogenem schwarzem Schnabel.",
+    "observationTip": "An flachen Küstenlagunen, Salinen und Wattkanten oft gut beim Nahrungssuchen im seichten Wasser zu sehen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "An guten Küstenstandorten regelmäßig, sonst deutlich seltener."
   },
   {
     "id": "vogel_kiebitz",
@@ -2900,18 +2934,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feuchtwiesen",
+      "Äcker",
+      "Wiesen",
+      "Flachgewässer"
+    ],
+    "distributionGermany": "Weit verbreitet, aber regional rückläufig; noch in vielen Offenlandschaften zu finden.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Frühsommer besonders auffällig, im Zug auch Herbst.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroßer Watvogel mit schwarzweißem Unterseitenkontrast, grünlich schillerndem Rücken und auffälliger Federhaube.",
+    "observationTip": "Auf offenen Wiesen, Äckern und Feuchtflächen vor allem im Frühjahr oft gut sichtbar und akustisch auffällig.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Noch vielerorts bekannt, aber Bestandsentwicklung regional beachten."
   },
   {
     "id": "vogel_steppenkiebitz",
@@ -2922,18 +2965,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Steppenflächen",
+      "offene Wiesen",
+      "kurzrasige Feuchtflächen",
+      "Ackerland"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Irrgast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Herbst bei seltenen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Auffälliger Kiebitz mit sandbraunem Rücken, schwarzer Brust, heller Unterseite und dunklem Gesichtsmuster.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig auf offenen Rastflächen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; Angaben später mit besonderer Vorsicht behandeln."
   },
   {
     "id": "vogel_weissschwanzkiebitz",
@@ -2944,18 +2995,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Flachgewässer",
+      "Feuchtwiesen",
+      "Schlammflächen",
+      "Lagunen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Sommer bei vereinzelten Beobachtungen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker Kiebitz mit langen gelben Beinen, hellbraunem Rücken und auffallend weißem Schwanz.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; am ehesten zufällig an flachen Gewässern und überschwemmten Wiesen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Ausnahmeart; Beobachtungsangaben später sorgfältig prüfen."
   },
   {
     "id": "vogel_goldregenpfeifer",
@@ -2966,18 +3025,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Heiden",
+      "Moore",
+      "Wattflächen",
+      "Kurzrasenflächen"
+    ],
+    "distributionGermany": "Vor allem auf dem Zug und im Winter regelmäßig, als Brutvogel sehr selten.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Herbst und Frühjahr auf Rastflächen besonders gut.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroßer Regenpfeifer mit goldgesprenkeltem Rücken, dunklem Gesicht und in Pracht hell-dunklem Kontrast.",
+    "observationTip": "Auf kurzrasigen Küstenwiesen, Wattkanten und offenen Moorflächen oft in kleinen Trupps zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßiger Durchzügler; Brutvorkommen in Deutschland kaum relevant."
   },
   {
     "id": "vogel_tundra-goldregenpfeifer",
@@ -2988,18 +3055,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küstenwiesen",
+      "Wattflächen",
+      "Ackerflächen",
+      "offene Rastplätze"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Durchzügler.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei einzelnen Rastbeobachtungen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Regenpfeifer ähnlich dem Goldregenpfeifer, mit goldgeflecktem Rücken und schlankerem Gesamteindruck.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig in Regenpfeifertrupps an Küsten und Rastflächen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Abgrenzung zu ähnlichen Goldregenpfeifern später nochmals prüfen."
   },
   {
     "id": "vogel_praerie-goldregenpfeifer",
@@ -3010,18 +3085,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küstenwiesen",
+      "Wattflächen",
+      "kurzrasige Offenflächen",
+      "Rastplätze"
+    ],
+    "distributionGermany": "In Deutschland seltener Gast und Durchzügler.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker Regenpfeifer mit goldbraun geflecktem Rücken, dunkler Gesichtszeichnung und feinem Körperbau.",
+    "observationTip": "Nicht gezielt gut findbar; am ehesten zufällig an Küsten oder auf offenen Rastflächen unter anderen Regenpfeifern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Art in Deutschland; Bestimmungsangaben später sorgfältig prüfen."
   },
   {
     "id": "vogel_kiebitzregenpfeifer",
@@ -3032,18 +3115,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wattflächen",
+      "Strände",
+      "Küstenwiesen",
+      "Schlammflächen"
+    ],
+    "distributionGermany": "An den Küsten regelmäßiger Durchzügler und Wintergast.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Herbst bis Frühjahr an Küsten und Wattflächen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftiger Regenpfeifer mit schwarz-weißem Kontrast im Prachtkleid, gesprenkeltem Rücken und relativ kurzem Schnabel.",
+    "observationTip": "An Wattflächen, Sandbänken und Küstenwiesen besonders bei Ebbe oft gut zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige Küstenart, im Binnenland deutlich seltener."
   },
   {
     "id": "vogel_sandregenpfeifer",
@@ -3054,18 +3146,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Strände",
+      "Kiesufer",
+      "Wattkanten",
+      "Flachgewässer"
+    ],
+    "distributionGermany": "Regelmäßiger Brut- und Zugvogel, vor allem an Küsten und größeren Kiesufern.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst an offenen sandigen oder kiesigen Ufern.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner Regenpfeifer mit braunem Rücken, weißer Stirn, schwarzem Brustband und orangefarbenen Beinen.",
+    "observationTip": "An offenen Stränden, Kiesufern und Wattkanten oft auf vegetationsarmen Flächen zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "An geeigneten Habitaten regelmäßig, aber lokal empfindlich gegenüber Störung."
   },
   {
     "id": "vogel_flussregenpfeifer",
@@ -3076,18 +3176,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Kiesbänke",
+      "Flussufer",
+      "Baggerseen",
+      "Schlammflächen"
+    ],
+    "distributionGermany": "Weit verbreiteter Brutvogel an offenen Ufern und Ersatzlebensräumen.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer an offenen Uferflächen besonders gut.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner zierlicher Regenpfeifer mit gelbem Augenring, braunem Rücken und schwarzem Brustband.",
+    "observationTip": "An vegetationsarmen Kiesufern, Schotterflächen und flachen Baggerseen oft gut sichtbar.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige Art an geeigneten offenen Ufern; Beobachtbarkeit regional gut."
   },
   {
     "id": "vogel_seeregenpfeifer",
@@ -3098,18 +3207,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Sandstrände",
+      "Dünenränder",
+      "Salzwiesen",
+      "offene Küstenflächen"
+    ],
+    "distributionGermany": "Vor allem an den Küsten lokal als Brut- und Zugvogel.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer an Küstenhabitaten am besten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner heller Regenpfeifer mit sandfarbenem Rücken, dunklen Seitenflecken an der Brust und dunklen Beinen.",
+    "observationTip": "An offenen Sandstränden und Salzwiesen mit wenig Vegetation ruhig nach bodennah laufenden Vögeln suchen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Küstenart mit empfindlichen Brutplätzen; Beobachtbarkeit in Deutschland eher lokal."
   },
   {
     "id": "vogel_wuestenregenpfeifer",
@@ -3120,18 +3237,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "offene Schlammflächen",
+      "kurzrasige Küstenflächen",
+      "trockene Offenstellen",
+      "Rastplätze"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Bei seltenen Nachweisen vor allem im Frühjahr und Herbst.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Heller Regenpfeifer mit sandfarbener Oberseite, dunkler Gesichtszeichnung und schlankem Körperbau.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; am ehesten zufällig auf offenen Rastflächen oder Küstenwiesen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; spätere Überprüfung der Angaben nötig."
   },
   {
     "id": "vogel_wermutregenpfeifer",
@@ -3142,18 +3267,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "offene Steppenflächen",
+      "kurzrasige Wiesen",
+      "Küstenwiesen",
+      "Rastplätze"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Irrgast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Herbst bei sehr seltenen Beobachtungen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker Regenpfeifer mit sandbrauner Oberseite, heller Unterseite und markanter Kopfzeichnung.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig auf offenen Rastflächen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Ausnahmeart; Beobachtungsdaten später besonders vorsichtig einordnen."
   },
   {
     "id": "vogel_mornellregenpfeifer",
@@ -3164,18 +3297,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Bergheiden",
+      "Tundraflächen",
+      "kurzrasige Hochebenen",
+      "Rastflächen"
+    ],
+    "distributionGermany": "In Deutschland seltener Durchzügler, lokal auch in Mittelgebirgen und Alpen zu sehen.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Spätsommer auf dem Zug.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftiger Regenpfeifer mit braun gesprenkeltem Rücken, auffälligem hellem Überaugenstreif und warmer Brustfärbung.",
+    "observationTip": "Am ehesten auf offenen kurzrasigen Höhenlagen oder Rastflächen während des Zugs zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Zugvogel mit regionalen Beobachtungsschwerpunkten; Häufigkeit später prüfen."
   },
   {
     "id": "vogel_praerielaeufer",
@@ -3186,18 +3327,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feuchtwiesen",
+      "Schlammflächen",
+      "offene Rastplätze",
+      "Ackerbrachen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Irrgast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei sehr wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker braun gemusterter Watvogel mit langem Hals, kleinen Kopf und feiner Zeichnung.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig auf offenen Feuchtflächen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Irrgast; Angaben später gesondert prüfen."
   },
   {
     "id": "vogel_regenbrachvogel",
@@ -3208,18 +3357,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Küsten",
+      "Wattflächen",
+      "Feuchtwiesen",
+      "offene Moore"
+    ],
+    "distributionGermany": "Regelmäßiger Durchzügler und Küstengast, im Binnenland seltener.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr und Herbst an Küsten und Rastflächen besonders gut.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroßer Brachvogel mit deutlich gebogenem Schnabel, braun gestrichelter Oberseite und markantem Kopfstreif.",
+    "observationTip": "An Wattflächen, Salzwiesen und offenen Feuchtwiesen besonders zur Zugzeit gut zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige Zugart, aber regional klar auf Küsten und Rastgebiete konzentriert."
   },
   {
     "id": "vogel_duennschnabel-brachvogel",
@@ -3230,18 +3387,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feuchtwiesen",
+      "Schlammflächen",
+      "Küstenwiesen",
+      "Rastplätze"
+    ],
+    "distributionGermany": "In Deutschland extrem seltener Gast; aktuelle Beobachtungen sind außergewöhnlich.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Historisch vor allem zur Zugzeit nachgewiesen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker Brachvogel mit relativ feinem gebogenem Schnabel und heller wirkender Unterseite mit Fleckung.",
+    "observationTip": "In Deutschland praktisch nicht gezielt findbar; Sichtungen wären allenfalls außergewöhnliche Zufallsbeobachtungen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Extrem seltene Art; Status und Formulierungen später besonders kritisch prüfen."
   },
   {
     "id": "vogel_brachvogel",
@@ -3252,18 +3417,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feuchtwiesen",
+      "Moore",
+      "Wattflächen",
+      "offene Niederungen"
+    ],
+    "distributionGermany": "Regional verbreitet, besonders in offenen Feuchtgebieten und an Küsten.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer in Brutgebieten sowie auf dem Zug.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Großer brauner Watvogel mit sehr langem nach unten gebogenem Schnabel und langen Beinen.",
+    "observationTip": "In Feuchtwiesen, Mooren und an Wattflächen oft durch Gestalt und Rufe gut wahrnehmbar.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regional gute Beobachtungsmöglichkeiten, aber nicht flächendeckend häufig."
   },
   {
     "id": "vogel_pfuhlschnepfe",
@@ -3274,18 +3448,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wattflächen",
+      "Küsten",
+      "Salzwiesen",
+      "Schlammflächen"
+    ],
+    "distributionGermany": "Regelmäßiger Durchzügler und Rastvogel an den Küsten.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr und Herbst an Küstenrastplätzen besonders gut.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige Schnepfe mit relativ langem leicht aufwärts gebogenem Schnabel und jahreszeitlich wechselnder Färbung.",
+    "observationTip": "An großen Wattflächen und Küstenrastplätzen oft in Trupps gut zu sehen, besonders bei ablaufendem Wasser.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige Zugart mit Schwerpunkt an Nordsee und Wattenmeer."
   },
   {
     "id": "vogel_uferschnepfe",
@@ -3296,18 +3478,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feuchtwiesen",
+      "Überschwemmungsflächen",
+      "Flachgewässer",
+      "Küstenwiesen"
+    ],
+    "distributionGermany": "Regional als Brutvogel und Durchzügler vorhanden, mit Schwerpunkten in offenen Feuchtgebieten.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Frühsommer in Feuchtwiesen, im Zug auch Spätsommer.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Große Schnepfe mit sehr langem geradem Schnabel, langen dunklen Beinen und warmbrauner Brust.",
+    "observationTip": "An offenen Feuchtwiesen und flachen Überschwemmungsflächen besonders im Frühjahr gut zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Brutvorkommen regional begrenzt; Beobachtbarkeit stark vom Habitat abhängig."
   },
   {
     "id": "vogel_steinwaelzer",
@@ -3318,18 +3509,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "felsige Küsten",
+      "Wattflächen",
+      "Steinschüttungen",
+      "Hafenmolen"
+    ],
+    "distributionGermany": "An den Küsten regelmäßiger Durchzügler und Wintergast.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätsommer bis Frühjahr an Küstenstrukturen besonders gut.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kompakter Watvogel mit kontrastreicher schwarzweiß-brauner Zeichnung und kräftigem kurzen Schnabel.",
+    "observationTip": "An Steinpackungen, Molen und Wattkanten oft auf Nahrungssuche zwischen Steinen zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Küstenschwerpunkt klar; im Binnenland nur ausnahmsweise."
   },
   {
     "id": "vogel_anadyrknutt",
@@ -3340,18 +3539,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wattflächen",
+      "Küsten",
+      "Schlammflächen",
+      "Rastgewässer"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem auf dem Zug bei wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftiger Strandläufer mit eher großem Körper, relativ kurzem Schnabel und je nach Jahreszeit graubrauner bis rötlicher Färbung.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; am ehesten zufällig unter Knutts an Küstenrastplätzen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; Bestimmung später gegen ähnliche Arten absichern."
   },
   {
     "id": "vogel_knutt",
@@ -3362,18 +3569,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wattflächen",
+      "Sandbänke",
+      "Küsten",
+      "Schlammflächen"
+    ],
+    "distributionGermany": "Regelmäßiger und teils häufiger Durchzügler an Nord- und Ostseeküste.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr und Herbst an Küstenrastplätzen besonders gut.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kompakter Strandläufer mit relativ kurzem Schnabel und je nach Jahreszeit grauer bis rostrot gefärbter Oberseite.",
+    "observationTip": "An großen Wattflächen und Sandbänken oft in dichten Trupps besonders bei Ebbe gut zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige Küstenart mit guten Beobachtungsmöglichkeiten auf dem Zug."
   },
   {
     "id": "vogel_kampflaeufer",
@@ -3384,18 +3600,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Feuchtwiesen",
+      "Schlammflächen",
+      "Flachgewässer",
+      "Überschwemmungsflächen"
+    ],
+    "distributionGermany": "Vor allem auf dem Zug regelmäßig, als Brutvogel nur noch lokal.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr und Herbst auf offenen Feuchtflächen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroßer Watvogel mit mittellangem Schnabel; Männchen im Prachtkleid oft mit auffälliger Halskrause, Weibchen schlichter braun.",
+    "observationTip": "An überschwemmten Wiesen, Schlammflächen und flachen Gewässern besonders während des Zugs gut zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Zugvogel mit regional guten Rastplätzen; Brutvorkommen deutlich seltener."
   },
   {
     "id": "vogel_sumpflaeufer",
@@ -3406,18 +3630,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Schlammflächen",
+      "Flachgewässer",
+      "Feuchtwiesen",
+      "Brackwasserflächen"
+    ],
+    "distributionGermany": "In Deutschland seltener Durchzügler.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst an geeigneten Rastplätzen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner bis mittelgroßer Strandläufer mit leicht gebogenem Schnabel und fein gezeichnetem Gefieder.",
+    "observationTip": "Nicht überall gezielt zu finden; am ehesten an flachen Schlammufern und Feuchtflächen während des Zugs.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Zugart; Bestimmung später gegen ähnliche Strandläufer prüfen."
   },
   {
     "id": "vogel_spitzschwanz-strandlaeufer",
@@ -3428,18 +3660,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Schlammflächen",
+      "Flachgewässer",
+      "Küstenwiesen",
+      "Rastplätze"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Gast.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei einzelnen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroßer Strandläufer mit warmbrauner Oberseite, feiner Brustzeichnung und etwas verlängerten mittleren Schwanzfedern.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig an Küstenrastplätzen oder Schlammflächen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Art in Deutschland; spätere Prüfung der Angaben sinnvoll."
   },
   {
     "id": "vogel_bindenstrandlaeufer",
@@ -3450,18 +3690,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Schlammflächen",
+      "Flachgewässer",
+      "Feuchtwiesen",
+      "Küstenränder"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei sehr wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Relativ großer Strandläufer mit langen Beinen, kräftigem Schnabel und deutlicher Brustzeichnung.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; am ehesten zufällig an größeren Schlammflächen oder Küstenrastplätzen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; Bestimmung später besonders sorgfältig prüfen."
   },
   {
     "id": "vogel_sichelstrandlaeufer",
@@ -3472,18 +3720,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wattflächen",
+      "Schlammflächen",
+      "Salzwiesen",
+      "Flachgewässer"
+    ],
+    "distributionGermany": "Regelmäßiger Durchzügler, besonders an den Küsten.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr und Herbst an Küstenrastplätzen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroßer Strandläufer mit deutlich gebogenem Schnabel und je nach Jahreszeit grauer bis rostbrauner Färbung.",
+    "observationTip": "An Wattflächen und Schlammufern während des Zugs oft in gemischten Trupps gut zu beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßiger Durchzügler mit Schwerpunkt an Küsten und größeren Rastflächen."
   },
   {
     "id": "vogel_temminckstrandlaeufer",
@@ -3494,18 +3750,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Schlammufer",
+      "Flachgewässer",
+      "Feuchtwiesen",
+      "Kiesufer"
+    ],
+    "distributionGermany": "Seltener Durchzügler an geeigneten Rastplätzen im Binnenland und an der Küste.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr und Herbst auf flachen Uferbereichen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner unscheinbarer Strandläufer mit braungrauer Oberseite, hellem Bauch und feinem relativ kurzem Schnabel.",
+    "observationTip": "An flachen Schlammufern und nassen Kiesflächen ruhig nach kleinen, unauffälligen Strandläufern suchen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Unauffällige Zugart; Beobachtbarkeit eher von guten Rastplätzen abhängig."
   },
   {
     "id": "vogel_langzehen-strandlaeufer",
@@ -3516,18 +3780,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Schlammflächen",
+      "Feuchtwiesen",
+      "Flachgewässer",
+      "Rastplätze"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei seltenen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner Strandläufer mit relativ langen Zehen, feiner Brustzeichnung und zierlichem Körperbau.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an geeigneten Feuchtflächen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; Angaben später genau gegenprüfen."
   },
   {
     "id": "vogel_rotkehl-strandlaeufer",
@@ -3538,18 +3810,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Schlammflächen",
+      "Küstenwiesen",
+      "Flachgewässer",
+      "Rastplätze"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener bis seltener Gast.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei einzelnen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner Strandläufer mit feinem Schnabel und im Prachtkleid markanter rostroter Kehle.",
+    "observationTip": "Nicht gezielt gut findbar; am ehesten zufällig an Küstenrastplätzen oder flachen Schlammufern.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Seltene Art in Deutschland; Abgrenzung zu ähnlichen Arten später prüfen."
   },
   {
     "id": "vogel_sanderling",
@@ -3560,18 +3840,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Sandstrände",
+      "Wattkanten",
+      "Küsten",
+      "Spülsäume"
+    ],
+    "distributionGermany": "Regelmäßiger und teils häufiger Durchzügler und Wintergast an den Küsten.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätsommer bis Frühjahr an Stränden und Küsten besonders gut.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner heller Strandläufer mit schwarzem Schnabel, dunklen Beinen und im Winter fast weiß-grauer Oberseite.",
+    "observationTip": "An Sandstränden und Spülsäumen oft sehr gut zu beobachten, wenn er dicht an der Brandung entlangläuft.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Typische Küstenart mit guter Sichtbarkeit an geeigneten Stränden."
   },
   {
     "id": "vogel_alpenstrandlaeufer",
