@@ -2478,6 +2478,28 @@
     "reviewNote": "Sehr seltener Gast; spätere Absicherung der Beobachtungen sinnvoll."
   },
   {
+    "id": "vogel_grosstrappe",
+    "habitats": [
+      "weite Ackerlandschaften",
+      "offene Steppenflächen",
+      "großräumige Feldfluren",
+      "extensive Offenlandschaften"
+    ],
+    "distributionGermany": "In Deutschland extrem selten und nur noch in wenigen großräumigen Offenlandschaften mit Schutzmaßnahmen vertreten.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Spätwinter bis Frühjahr besonders auffällig, sonst ganzjährig in sehr wenigen Gebieten.",
+    "shortDescription": "Sehr großer bodenlebender Vogel mit langem Hals, hellgrauem bis sandbraunem Rücken und heller Unterseite; Männchen deutlich massiger.",
+    "observationTip": "Nur aus großer Distanz und ohne Störung in wenigen weiten Offenlandschaften zu beobachten; Schutzgebiete und Abstand unbedingt respektieren.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr seltene und störungsempfindliche Art in Deutschland; Angaben später besonders sorgfältig prüfen."
+  },
+  {
     "id": "vogel_gruenfink",
     "habitats": [
       "Gärten",
@@ -5890,6 +5912,27 @@
     "reviewNote": "Typische Küstenart mit guter Sichtbarkeit an geeigneten Stränden."
   },
   {
+    "id": "vogel_sandflughuhn",
+    "habitats": [
+      "trockene Steppen",
+      "offene Brachflächen",
+      "karge Felder",
+      "sandige Hänge"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Irrgast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr bei sehr wenigen Nachweisen.",
+    "shortDescription": "Mittelgroßer sandfarbener Vogel mit feiner Zeichnung, schlankem Körper und langen spitzen Flügeln.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in offenen trockenen Landschaften.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr seltener Gast; spätere Prüfung der Beobachtungsdaten sinnvoll."
+  },
+  {
     "id": "vogel_sandregenpfeifer",
     "habitats": [
       "Strände",
@@ -7243,6 +7286,27 @@
     "reviewNote": "Vorkommen in Deutschland unregelmäßig und regional begrenzt; Beobachtbarkeit später prüfen."
   },
   {
+    "id": "vogel_steppenflughuhn",
+    "habitats": [
+      "trockene Steppenflächen",
+      "offene Felder",
+      "karge Brachflächen",
+      "sandige Offenlandschaften"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Irrgast, historisch teils in Einflugjahren auffälliger.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem bei seltenen Einflügen im Frühjahr oder Sommer.",
+    "shortDescription": "Taubengroßer Vogel mit sandbrauner Oberseite, heller Unterseite, lang zugespitzten Flügeln und dunkler Brustzeichnung.",
+    "observationTip": "In Deutschland nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig auf offenen trockenen Rastflächen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr seltener Gast mit historisch unregelmäßigen Einflügen; Angaben später prüfen."
+  },
+  {
     "id": "vogel_steppenkiebitz",
     "habitats": [
       "Steppenflächen",
@@ -7262,6 +7326,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Sehr seltener Gast; Angaben später mit besonderer Vorsicht behandeln."
+  },
+  {
+    "id": "vogel_steppenkragentrappe",
+    "habitats": [
+      "trockene Offenlandschaften",
+      "Steppenflächen",
+      "Brachland",
+      "weite Felder"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Irrgast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Herbst bei sehr wenigen Nachweisen.",
+    "shortDescription": "Großer sandfarbener Vogel mit langem Hals, langen Beinen und kontrastreichen dunklen Flügelpartien im Flug.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in weitläufigen offenen Landschaften.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Ausnahmegast; Beobachtungsangaben später besonders vorsichtig einordnen."
   },
   {
     "id": "vogel_steppenmoewe",
