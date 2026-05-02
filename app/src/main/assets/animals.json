@@ -8213,18 +8213,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Streuobstwiesen",
+      "Weinberge",
+      "warme Offenlandschaften",
+      "lichte Gehölze"
+    ],
+    "distributionGermany": "Regional und eher selten, vor allem in warmen offenen Landschaften im Süden und Osten.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer in Brutgebieten am besten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Auffälliger Vogel mit orangebraunem Körper, schwarzweiß gebänderten Flügeln und großer aufstellbarer Federhaube.",
+    "observationTip": "Am ehesten in warmen offenen Landschaften mit alten Bäumen und kurzen Rasenflächen aus etwas Abstand zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regionale Art mit Schwerpunkten in wärmebegünstigten Gebieten; Beobachtbarkeit lokal begrenzt."
   },
   {
     "id": "vogel_blauracke",
@@ -8235,18 +8244,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "warme Offenlandschaften",
+      "Weinberge",
+      "lichte Gehölze",
+      "Ackerlandschaften mit Bäumen"
+    ],
+    "distributionGermany": "In Deutschland sehr selten und nur regional als Brut- oder Gastvogel.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer an wenigen geeigneten Standorten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftiger Vogel mit leuchtend blau-türkisen Flügel- und Unterseitenpartien sowie warmbraunem Rückenbereich.",
+    "observationTip": "Nicht leicht zu finden; Sichtungen gelingen am ehesten zufällig in warmen offenen Landschaften mit einzelnen Ansitzwarten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltene und regionale Art in Deutschland; Angaben später sorgfältig prüfen."
   },
   {
     "id": "vogel_eisvogel",
@@ -8257,18 +8274,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Bäche",
+      "Flüsse",
+      "Teiche",
+      "Seen mit klaren Ufern"
+    ],
+    "distributionGermany": "Regional weit verbreitet an geeigneten sauberen Gewässern.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut an ruhigen Gewässern sichtbar.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner gedrungener Vogel mit leuchtend blau-türkiser Oberseite, orangefarbener Unterseite und langem spitzem Schnabel.",
+    "observationTip": "Am ehesten ruhig an klaren Gewässern von Wegen oder Brücken aus beobachten, ohne Uferabbrüche und Brutplätze zu stören.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "An geeigneten Gewässern regelmäßig, aber störungsempfindlich; Fundtipp bewusst distanziert formuliert."
   },
   {
     "id": "vogel_blauwangenspint",
@@ -8279,18 +8305,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "offene warme Landschaften",
+      "Flussniederungen",
+      "Sandflächen",
+      "lichte Gehölzräume"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Sommer bei sehr wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker farbiger Vogel mit grün-blauer Oberseite, blauem Gesicht, gelblicher Kehle und langem leicht gebogenem Schnabel.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in offenen warmen Landschaften.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; Beobachtungsangaben später besonders vorsichtig prüfen."
   },
   {
     "id": "vogel_bienenfresser",
@@ -8301,18 +8335,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "warme Offenlandschaften",
+      "Sandgruben",
+      "Flussniederungen",
+      "Weinberge"
+    ],
+    "distributionGermany": "Regional verbreitet und in den letzten Jahren in geeigneten warmen Gebieten zunehmend regelmäßig.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätfrühling bis Sommer in Brutgebieten am besten.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker farbenfroher Vogel mit kastanienbraunem Rücken, gelber Kehle, türkisgrüner Unterseite und langem leicht gebogenem Schnabel.",
+    "observationTip": "Am ehesten in warmen offenen Landschaften mit Sandwänden oder Flussniederungen aus angemessenem Abstand bei Jagdflügen und Ansitzen beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regional zunehmende Art, aber weiterhin lokal konzentriert; Störung an Brutplätzen vermeiden."
   },
   {
     "id": "vogel_wendehals",
