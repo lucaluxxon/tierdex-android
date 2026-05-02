@@ -104,6 +104,28 @@
     "reviewNote": "Regelmäßiger Zugvogel; Küsten und große Rastplätze sind die wichtigsten Beobachtungsorte."
   },
   {
+    "id": "vogel_amsel",
+    "habitats": [
+      "Gärten",
+      "Parks",
+      "Wälder",
+      "Siedlungen"
+    ],
+    "distributionGermany": "Bundesweit sehr weit verbreitet und häufig.",
+    "rarityGame": "häufig",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut im Frühjahr und Sommer.",
+    "shortDescription": "Männchen tiefschwarz mit gelbem Schnabel und Augenring, Weibchen dunkelbraun mit meist hellerer Kehle.",
+    "observationTip": "In Gärten, Parks und Siedlungen fast immer leicht zu beobachten, oft am Boden nach Nahrung suchend.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr häufige und gut bekannte Art."
+  },
+  {
     "id": "vogel_anadyrknutt",
     "habitats": [
       "Wattflächen",
@@ -483,6 +505,27 @@
     "reviewNote": "Sehr seltener Irrgast; Nachweise und Häufigkeit später gesondert prüfen."
   },
   {
+    "id": "vogel_blaukehlchen",
+    "habitats": [
+      "Schilfränder",
+      "Feuchtwiesen",
+      "Weidengebüsche",
+      "Verlandungszonen"
+    ],
+    "distributionGermany": "Regional verbreiteter Brut- und Durchzügler in Feuchtgebieten.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer, besonders während des Gesangs.",
+    "shortDescription": "Kleiner Sänger mit blauem Kehlfeld beim Männchen, rostfarbenem Schwanzansatz und brauner Oberseite.",
+    "observationTip": "In Schilfrändern und feuchten Gebüschzonen oft eher über Gesang oder kurze exponierte Ansitze zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Feuchtgebietsart mit regionalen Schwerpunkten."
+  },
+  {
     "id": "vogel_blaumeise",
     "habitats": [
       "Gärten",
@@ -503,6 +546,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Sehr häufige und leicht erkennbare Art."
+  },
+  {
+    "id": "vogel_blauschwanz",
+    "habitats": [
+      "Nadelwälder",
+      "Gebüsche",
+      "Parks",
+      "Gärten"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Gast, vor allem im Herbst und Winter.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Winter bei wenigen Nachweisen.",
+    "shortDescription": "Kleiner Sänger mit blauem Schwanz, olivbrauner Oberseite und heller Unterseite; Männchen mit kräftigerer Färbung.",
+    "observationTip": "Am ehesten zufällig in Nadelgehölzen, Parks oder Gärten mit dichtem Unterwuchs zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Seltene Gastart; Beobachtungsangaben später prüfen."
   },
   {
     "id": "vogel_blutspecht",
@@ -1077,6 +1141,48 @@
     "reviewNote": "Küstenart mit recht guten Beobachtungsmöglichkeiten an Nord- und Ostsee."
   },
   {
+    "id": "vogel_einfarbdrossel",
+    "habitats": [
+      "Bergwälder",
+      "Gebüsche",
+      "Parks",
+      "Waldsäume"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst und Winter bei einzelnen Nachweisen.",
+    "shortDescription": "Mittelgroße Drossel mit auffallend einfarbig dunklerem Körper und hellerem Augenring.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig in drosselreichen Gehölzen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr seltener Gast; Beobachtungsangaben später prüfen."
+  },
+  {
+    "id": "vogel_einsiedler-musendrossel",
+    "habitats": [
+      "Wälder",
+      "Gebüsche",
+      "Parks",
+      "Waldränder"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst und Winter bei seltenen Nachweisen.",
+    "shortDescription": "Kleine Drossel mit olivbrauner Oberseite, rötlicherem Schwanz und heller Unterseite mit dezenter Brustzeichnung.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in dichten Gehölzen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Ausnahmegast; spätere Prüfung der Angaben erforderlich."
+  },
+  {
     "id": "vogel_eisente",
     "habitats": [
       "Küstengewässer",
@@ -1178,6 +1284,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Als Kulturfolger oft sehr präsent; Spielhäufigkeit kann später eventuell noch mit anderen Siedlungsvögeln abgeglichen werden."
+  },
+  {
+    "id": "vogel_erddrossel",
+    "habitats": [
+      "Wälder",
+      "Gebüsche",
+      "Parks",
+      "schattige Waldränder"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Irrgast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei seltenen Beobachtungen.",
+    "shortDescription": "Kräftige Drossel mit goldbraun gefleckter Oberseite, heller Unterseite und markant geschuppt wirkendem Brustbereich.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in deckungsreichen Gehölzen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Ausnahmegast; Beobachtungsangaben später besonders vorsichtig einordnen."
   },
   {
     "id": "vogel_falkenraubmoewe",
@@ -1501,6 +1628,27 @@
     "reviewNote": "Regelmäßige Art, aber oft versteckt im Blattwerk."
   },
   {
+    "id": "vogel_gartenrotschwanz",
+    "habitats": [
+      "Obstwiesen",
+      "Parks",
+      "lichte Wälder",
+      "alte Gärten"
+    ],
+    "distributionGermany": "Regional verbreiteter Brutvogel in höhlenreichen baumreichen Landschaften.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer in Brutgebieten.",
+    "shortDescription": "Schlanker Sänger mit rostorangem Schwanz; Männchen mit grauem Kopf, schwarzer Kehle und orangefarbener Brust, Weibchen matter.",
+    "observationTip": "In Obstwiesen, alten Gärten und lichten Wäldern oft auf Ansitzen oder an Nistplätzen gut zu sehen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regelmäßige Art geeigneter Lebensräume, aber regional rückläufig."
+  },
+  {
     "id": "vogel_gelbbrauen-laubsaenger",
     "habitats": [
       "Parks",
@@ -1733,6 +1881,28 @@
     "reviewNote": "Sehr bekannte und vielerorts häufige Art; Beobachtbarkeit im Spiel wohl hoch."
   },
   {
+    "id": "vogel_grauschnaepper",
+    "habitats": [
+      "Gärten",
+      "Parks",
+      "Waldränder",
+      "Streuobstwiesen"
+    ],
+    "distributionGermany": "Weit verbreiteter Brutvogel in baumreichen halboffenen Landschaften.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Spätfrühling bis Sommer, besonders in Brutgebieten.",
+    "shortDescription": "Schlanker graubrauner Fliegenschnäpper mit heller Unterseite, feiner Bruststrichelung und relativ großem Kopf.",
+    "observationTip": "Oft auf Zäunen, Ästen oder Leitungen sitzend und von dort kurze Jagdflüge unternehmend gut zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regelmäßige Art, aber im Bestand regional rückläufig."
+  },
+  {
     "id": "vogel_grauspecht",
     "habitats": [
       "Laubwälder",
@@ -1753,6 +1923,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Abgrenzung zum Grünspecht und regionale Verbreitung sollten später noch einmal sorgfältig abgeglichen werden."
+  },
+  {
+    "id": "vogel_grauwangen-musendrossel",
+    "habitats": [
+      "Gebüsche",
+      "Wälder",
+      "Parks",
+      "Waldränder"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei sehr wenigen Nachweisen.",
+    "shortDescription": "Kleine bis mittelgroße Drossel mit olivbrauner Oberseite, heller Unterseite und grauem Gesicht mit hellem Augenring.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in Gehölzen während des Zugs.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr seltener Gast; spätere Absicherung der Beobachtungen sinnvoll."
   },
   {
     "id": "vogel_gruenlaubsaenger",
@@ -1881,6 +2072,27 @@
     "reviewNote": "Status in Deutschland ist sehr kleinräumig und dynamisch; Verbreitung später noch einmal gegen aktuelle Projekte abgleichen."
   },
   {
+    "id": "vogel_halsbandschnaepper",
+    "habitats": [
+      "alte Laubwälder",
+      "Parks",
+      "Auwälder",
+      "höhlenreiche Gehölze"
+    ],
+    "distributionGermany": "In Deutschland regional und eher selten, vor allem im Südosten.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer in wenigen Brutgebieten.",
+    "shortDescription": "Kleiner schwarzweißer Schnäpper; Männchen mit markantem weißem Halsband und heller Stirn, Weibchen graubrauner.",
+    "observationTip": "Nicht überall zu finden; am ehesten in alten Laubwäldern und höhlenreichen Parks mit Nistmöglichkeiten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Art in Deutschland; Abgrenzung zum Trauerschnäpper später beachten."
+  },
+  {
     "id": "vogel_haselhuhn",
     "habitats": [
       "Nadelwälder",
@@ -1942,6 +2154,49 @@
     ],
     "needsReview": true,
     "reviewNote": "Regional häufig, aber an Nadelwald gebunden."
+  },
+  {
+    "id": "vogel_hausrotschwanz",
+    "habitats": [
+      "Siedlungen",
+      "Gebäude",
+      "Steinbrüche",
+      "felsige Bereiche"
+    ],
+    "distributionGermany": "Bundesweit weit verbreitet und häufig.",
+    "rarityGame": "häufig",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst, in milden Regionen teils auch im Winter.",
+    "shortDescription": "Kleiner Sänger mit rostorangefarbenem Schwanz; Männchen dunkel grauschwarz, Weibchen graubraun.",
+    "observationTip": "An Gebäuden, Mauern und Siedlungsrändern oft auf Dächern, Zäunen oder Steinen sitzend leicht zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr häufige und gut erkennbare Art im Siedlungsraum."
+  },
+  {
+    "id": "vogel_heckensaenger",
+    "habitats": [
+      "warme Gebüschlandschaften",
+      "Brachflächen",
+      "Waldränder",
+      "Hecken"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr bei seltenen Beobachtungen.",
+    "shortDescription": "Schlanker Sänger mit warm sandbrauner Oberseite, heller Unterseite und relativ langem rostbraunem Schwanz.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; am ehesten zufällig in warmen buschreichen Landschaften.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr seltener Gast; Beobachtungsangaben später sorgfältig prüfen."
   },
   {
     "id": "vogel_heidelerche",
@@ -2238,6 +2493,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Sehr seltener Gast; Verwechslungsgefahr mit Pfeifente später prüfen."
+  },
+  {
+    "id": "vogel_katzenspottdrossel",
+    "habitats": [
+      "Gebüsche",
+      "Waldränder",
+      "Gärten",
+      "buschreiche Offenflächen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Irrgast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei seltenen Nachweisen.",
+    "shortDescription": "Mittelgroßer grauer Sänger mit dunkler Kopfkappe, dunklem Schwanz und rostbraunen Unterschwanzdecken.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in dichten Gebüschen und Gärten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Ausnahmegast; spätere Prüfung der Beobachtungsdaten nötig."
   },
   {
     "id": "vogel_kiebitz",
@@ -2711,6 +2987,27 @@
     "reviewNote": "Seltene Gastart; spätere Prüfung der Häufigkeit sinnvoll."
   },
   {
+    "id": "vogel_ligurien-bartgrasmuecke",
+    "habitats": [
+      "warme Buschlandschaften",
+      "Hecken",
+      "Trockenhänge",
+      "Gebüsche"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr bei sehr wenigen Beobachtungen.",
+    "shortDescription": "Kleine Grasmücke mit grauem Kopf, heller Kehle, rosagrauer Unterseite und deutlichem hellen Bartstreif.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in warmen Gebüschlandschaften.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr seltener Gast; Bestimmung und Status später besonders vorsichtig prüfen."
+  },
+  {
     "id": "vogel_loeffelente",
     "habitats": [
       "Flachgewässer",
@@ -2945,6 +3242,27 @@
     "reviewNote": "Sehr seltener Gast; spätere Überprüfung der Angaben sinnvoll."
   },
   {
+    "id": "vogel_misteldrossel",
+    "habitats": [
+      "lichte Wälder",
+      "Parks",
+      "Obstwiesen",
+      "Waldränder"
+    ],
+    "distributionGermany": "Weit verbreiteter Brutvogel, regional aber weniger häufig als andere Drosseln.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut im Frühjahr und Herbst.",
+    "shortDescription": "Größte heimische Drossel mit graubrauner Oberseite und groben runden dunklen Flecken auf heller Unterseite.",
+    "observationTip": "In lichten Wäldern, Parks und Obstwiesen oft auf Baumspitzen singend oder auf offenen Flächen Nahrung suchend zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Gut erkennbar, aber nicht überall häufig."
+  },
+  {
     "id": "vogel_mittelmeermoewe",
     "habitats": [
       "Küsten",
@@ -3112,6 +3430,28 @@
     ],
     "needsReview": true,
     "reviewNote": "Zugvogel mit regionalen Beobachtungsschwerpunkten; Häufigkeit später prüfen."
+  },
+  {
+    "id": "vogel_nachtigall",
+    "habitats": [
+      "Auwälder",
+      "Gebüsche",
+      "Parks",
+      "dichte Hecken"
+    ],
+    "distributionGermany": "Regional weit verbreiteter Brutvogel in buschreichen warmen Landschaften.",
+    "rarityGame": "gelegentlich",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Spätfrühling bis Frühsommer, besonders zur Gesangszeit.",
+    "shortDescription": "Schlichter brauner Sänger mit warmer Oberseite, heller Unterseite und rostrotem Schwanz.",
+    "observationTip": "Oft eher über den markanten Gesang aus dichtem Gebüsch und Hecken zu entdecken als direkt zu sehen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Akustisch sehr auffällig, optisch aber oft verborgen."
   },
   {
     "id": "vogel_nebelkraehe",
@@ -3728,6 +4068,27 @@
     "reviewNote": "Ausnahmegast; spätere Prüfung der Beobachtungsangaben nötig."
   },
   {
+    "id": "vogel_ringdrossel",
+    "habitats": [
+      "Bergwälder",
+      "Almweiden",
+      "Gebirgsheiden",
+      "felsige Waldränder"
+    ],
+    "distributionGermany": "Vor allem in höheren Mittelgebirgen und Alpen regional als Brutvogel, sonst auf dem Zug.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer in Gebirgen, auf dem Zug auch Herbst.",
+    "shortDescription": "Drossel mit dunklem Gefieder und auffälligem hellem Brustband, dazu schuppig wirkenden Flügelrändern.",
+    "observationTip": "In Gebirgslagen an lichten Waldrändern und offenen Weideflächen am ehesten zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Gebirgsgebundene Art; Beobachtbarkeit stark regional."
+  },
+  {
     "id": "vogel_ringelgans",
     "habitats": [
       "Küsten",
@@ -3938,6 +4299,48 @@
     "reviewNote": "Deutsche Brut- und Gastvorkommen sind sehr lokal; Status später noch einmal absichern."
   },
   {
+    "id": "vogel_rosenstar",
+    "habitats": [
+      "offene Landschaften",
+      "Städte",
+      "Parks",
+      "Obstbestände"
+    ],
+    "distributionGermany": "In Deutschland seltener Gast, in Einflugjahren lokal auffälliger.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühsommer und Sommer bei Einflügen.",
+    "shortDescription": "Auffälliger Star mit rosafarbenem Körper, schwarzem Kopf und schwarzer Flügelpartie sowie kleiner Federhaube.",
+    "observationTip": "In Einflugjahren am ehesten in Staren-Trupps, Obstbeständen oder Siedlungsnähe zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Auftreten stark schwankend; Einflugjahre gesondert beachten."
+  },
+  {
+    "id": "vogel_rostfluegeldrossel",
+    "habitats": [
+      "Gebüsche",
+      "Parks",
+      "Waldränder",
+      "baumreiche Offenflächen"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Winterhalbjahr bei seltenen Beobachtungen.",
+    "shortDescription": "Mittelgroße Drossel mit brauner Oberseite, heller Unterseite und auffällig rostfarbenen Flügelpartien.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; am ehesten zufällig in winterlichen Drosseltrupps.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr seltener Gast; Beobachtungsdaten später vorsichtig prüfen."
+  },
+  {
     "id": "vogel_rostgans",
     "habitats": [
       "Seen",
@@ -3959,6 +4362,27 @@
     "reviewNote": "Gebietsfremde bzw. regionale Vorkommen; Beobachtbarkeit später regional einordnen."
   },
   {
+    "id": "vogel_rostschwanzdrossel",
+    "habitats": [
+      "Gebüsche",
+      "Parks",
+      "Waldränder",
+      "offene Gehölzlandschaften"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Gast.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst und Winter bei wenigen Nachweisen.",
+    "shortDescription": "Kräftige Drossel mit warmbraunem Rücken, hellerer Unterseite und auffällig rostrotem Schwanzbereich.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig in drosselreichen Winterhabitaten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Seltene Art in Deutschland; spätere Abgrenzung zu ähnlichen Drosseln nötig."
+  },
+  {
     "id": "vogel_rotaugenvireo",
     "habitats": [
       "Laubwälder",
@@ -3978,6 +4402,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Seltene Art in Deutschland; spätere Prüfung sinnvoll."
+  },
+  {
+    "id": "vogel_rotdrossel",
+    "habitats": [
+      "Parks",
+      "Gebüsche",
+      "Waldränder",
+      "beerenreiche Gehölze"
+    ],
+    "distributionGermany": "Regelmäßiger Durchzügler und Wintergast.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Herbst bis Frühjahr an Gehölzrändern und Wiesen.",
+    "shortDescription": "Kleinere Drossel mit deutlichem hellen Überaugenstreif und rostfarbenen Flanken- und Unterflügelpartien.",
+    "observationTip": "Im Winter oft in gemischten Drosseltrupps an Beerensträuchern oder auf Wiesen zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regelmäßige Gastart mit guten Beobachtungsmöglichkeiten im Winterhalbjahr."
   },
   {
     "id": "vogel_rotfluegel-brachschwalbe",
@@ -4064,6 +4509,49 @@
     "reviewNote": "Seltene Art in Deutschland; Abgrenzung zu ähnlichen Arten später prüfen."
   },
   {
+    "id": "vogel_rotkehlchen",
+    "habitats": [
+      "Gärten",
+      "Wälder",
+      "Hecken",
+      "Parks"
+    ],
+    "distributionGermany": "Bundesweit sehr häufig und weit verbreitet.",
+    "rarityGame": "häufig",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders im Frühjahr und Winter.",
+    "shortDescription": "Kleiner rundlicher Vogel mit olivbrauner Oberseite, heller Unterseite und auffälliger orange-roter Kehle und Brust.",
+    "observationTip": "In Gärten, Parks und Wäldern oft sehr zutraulich und leicht auf niedrigen Ansitzen oder am Boden zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr häufige und gut sichtbare Art."
+  },
+  {
+    "id": "vogel_rotkehldrossel",
+    "habitats": [
+      "Gebüsche",
+      "Parks",
+      "Waldränder",
+      "offene Gehölzflächen"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Wintergast.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Winter.",
+    "shortDescription": "Drossel mit graubrauner Oberseite, heller Unterseite und rostroter Kehle bzw. Brust beim Männchen.",
+    "observationTip": "Am ehesten zufällig in winterlichen Drosseltrupps an Beerensträuchern und Gehölzrändern zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Seltene Gastart; spätere Prüfung der Angaben empfohlen."
+  },
+  {
     "id": "vogel_rotkopfwuerger",
     "habitats": [
       "Obstwiesen",
@@ -4148,6 +4636,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Sehr seltener Gast; Angaben später besonders vorsichtig behandeln."
+  },
+  {
+    "id": "vogel_rubinkehlchen",
+    "habitats": [
+      "Gebüsche",
+      "Waldränder",
+      "Parks",
+      "dichte Gärten"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei wenigen Nachweisen.",
+    "shortDescription": "Kleiner Sänger mit brauner Oberseite, auffälliger roter Kehle beim Männchen und hellem Überaugenstreif.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in deckungsreichen Gehölzen während des Zugs.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr seltener Gast; spätere Prüfung der Beobachtungen nötig."
   },
   {
     "id": "vogel_rueppellseeschwalbe",
@@ -4253,6 +4762,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Regelmäßiger Wintergast, Schwerpunkt an Küsten und großen Binnengewässern."
+  },
+  {
+    "id": "vogel_samtkopf-grasmuecke",
+    "habitats": [
+      "immergrüne Gebüsche",
+      "Gärten",
+      "warme Buschlandschaften",
+      "Küstengebiete"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Gast.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Herbst.",
+    "shortDescription": "Kleine dunklere Grasmücke mit schwarzem Kopf beim Männchen, rotem Augenring und grauer Unterseite.",
+    "observationTip": "Nicht gezielt gut findbar; am ehesten zufällig in dichten warmen Gebüschen oder Gärten zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Seltene Art in Deutschland; spätere Absicherung der Angaben sinnvoll."
   },
   {
     "id": "vogel_sanderling",
@@ -4381,6 +4911,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Gut beobachtbare Art im Winterhalbjahr; Brutvorkommen regional begrenzt."
+  },
+  {
+    "id": "vogel_schieferdrossel",
+    "habitats": [
+      "Wälder",
+      "Gebüsche",
+      "Parks",
+      "Waldränder"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst und Winter bei sehr wenigen Nachweisen.",
+    "shortDescription": "Mittelgroße Drossel mit schiefergrauer bis dunkler Oberseite, heller Unterseite und markantem Gesichtsbild.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in drosselreichen Gehölzen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr seltener Gast; spätere Prüfung der Angaben nötig."
   },
   {
     "id": "vogel_schilfrohrsaenger",
@@ -4655,6 +5206,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Sehr seltener Gast; Angaben später besonders kritisch prüfen."
+  },
+  {
+    "id": "vogel_schwarzkehldrossel",
+    "habitats": [
+      "Gebüsche",
+      "Waldränder",
+      "Parks",
+      "offene Gehölzlandschaften"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Gast, vor allem im Winterhalbjahr.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Spätherbst bis Winter bei wenigen Nachweisen.",
+    "shortDescription": "Kräftige Drossel mit graubrauner Oberseite, heller Unterseite und beim Männchen markanter dunkler Kehle.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig in Trupps überwinternder Drosseln.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Seltene Gastart; Verwechslungen mit ähnlichen Drosseln später prüfen."
   },
   {
     "id": "vogel_schwarzkopf-ruderente",
@@ -4934,6 +5506,28 @@
     "reviewNote": "Komplex mit nah verwandten Formen; Bestimmung und Verbreitung später ggf. noch verfeinern."
   },
   {
+    "id": "vogel_singdrossel",
+    "habitats": [
+      "Wälder",
+      "Gärten",
+      "Parks",
+      "Heckenlandschaften"
+    ],
+    "distributionGermany": "Bundesweit weit verbreiteter Brutvogel.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer, vor allem zur Gesangszeit.",
+    "shortDescription": "Braune Drossel mit heller Unterseite und markanten dunklen pfeilförmigen Flecken auf Brust und Bauch.",
+    "observationTip": "In Gärten, Parks und Wäldern oft über den wiederholenden Gesang oder auf Rasenflächen nach Nahrung suchend zu sehen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regelmäßige und gut bekannte Art."
+  },
+  {
     "id": "vogel_singschwan",
     "habitats": [
       "Seen",
@@ -4973,6 +5567,28 @@
     ],
     "needsReview": true,
     "reviewNote": "Vor allem Küstenzugvogel; Binnenlandbeobachtungen sind deutlich seltener."
+  },
+  {
+    "id": "vogel_sommergoldhaehnchen",
+    "habitats": [
+      "Nadelwälder",
+      "Mischwälder",
+      "Parks",
+      "Gärten mit Koniferen"
+    ],
+    "distributionGermany": "Weit verbreitet und regional häufig in Nadel- und Mischgehölzen.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut im Frühjahr und Winter.",
+    "shortDescription": "Winziger Vogel mit auffälligem orangegelbem Scheitelstreif, schwarzem Augenstreif und heller Überaugenlinie.",
+    "observationTip": "In Nadelbäumen und Koniferenbeständen oft über feine Rufe und rastlose Bewegungen gut zu entdecken.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regelmäßige Art, im Feld aber klein und beweglich."
   },
   {
     "id": "vogel_spatelente",
@@ -5141,6 +5757,49 @@
     ],
     "needsReview": true,
     "reviewNote": "Seltene Art in Deutschland; spätere Prüfung der Angaben sinnvoll."
+  },
+  {
+    "id": "vogel_sprosser",
+    "habitats": [
+      "dichte Gebüsche",
+      "Auen",
+      "feuchte Waldränder",
+      "Buschsäume"
+    ],
+    "distributionGermany": "In Deutschland regional verbreitet, vor allem im Osten und Nordosten.",
+    "rarityGame": "selten",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Spätfrühling bis Frühsommer, wenn der Gesang auffällt.",
+    "shortDescription": "Brauner unscheinbarer Sänger mit warmer Oberseite, heller Unterseite und kräftigem Körperbau.",
+    "observationTip": "Meist eher über den lauten Gesang in dichten Gebüschen und feuchten Säumen als direkt sichtbar.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale Art; Beobachtbarkeit vor allem akustisch."
+  },
+  {
+    "id": "vogel_star",
+    "habitats": [
+      "Siedlungen",
+      "Wiesen",
+      "Parks",
+      "Agrarlandschaften"
+    ],
+    "distributionGermany": "Bundesweit weit verbreitet und häufig.",
+    "rarityGame": "häufig",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut in Frühjahr, Sommer und an Schlafplätzen im Herbst.",
+    "shortDescription": "Mittelgroßer dunkler Vogel mit metallischem Glanz und im Winter hellen Tupfen; im Brutkleid oft glänzend schwarzgrün-violett.",
+    "observationTip": "In Siedlungen, auf Wiesen und an Staren-Schwärmen oft sehr leicht zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr häufige und gut sichtbare Art."
   },
   {
     "id": "vogel_steinadler",
@@ -5798,6 +6457,27 @@
     "reviewNote": "Regelmäßiger Wintergast; deutscher Name im Tierbestand später auf Schreibfehler prüfen."
   },
   {
+    "id": "vogel_trauerschnaepper",
+    "habitats": [
+      "Laubwälder",
+      "Parks",
+      "alte Gärten",
+      "Obstwiesen"
+    ],
+    "distributionGermany": "Regional verbreiteter Brutvogel, vor allem in höhlenreichen Wäldern und Parks.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer in Brutgebieten.",
+    "shortDescription": "Kleiner Schnäpper; Männchen schwarzweiß mit heller Stirn und Flügelzeichnung, Weibchen graubraun mit heller Unterseite.",
+    "observationTip": "In höhlenreichen Wäldern, Parks und Nistkastengebieten oft auf Ansitzen oder bei kurzen Jagdflügen gut sichtbar.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regelmäßige Art mit regionalen Schwerpunkten."
+  },
+  {
     "id": "vogel_trauerseeschwalbe",
     "habitats": [
       "Feuchtgebiete",
@@ -6036,6 +6716,28 @@
     "reviewNote": "Vorkommen sind regional unterschiedlich; Beobachtbarkeit außerhalb der Rufzeit später noch einmal feiner bewerten."
   },
   {
+    "id": "vogel_wacholderdrossel",
+    "habitats": [
+      "Wiesen",
+      "Parks",
+      "Waldränder",
+      "Obstwiesen"
+    ],
+    "distributionGermany": "Weit verbreitet, regional häufig als Brut- und Wintervogel.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut im Winter in Trupps.",
+    "shortDescription": "Große Drossel mit grauem Kopf und Bürzel, braunem Rücken und stark gefleckter Brust.",
+    "observationTip": "Auf Wiesen, in Obstbeständen und an Beerensträuchern oft in Gruppen gut zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regelmäßige und gut sichtbare Art, besonders außerhalb der Brutzeit."
+  },
+  {
     "id": "vogel_wacholderlaubsaenger",
     "habitats": [
       "Gebirgswälder",
@@ -6228,6 +6930,27 @@
     "reviewNote": "Art nutzt auch verborgenere Binnengewässer; Beobachtbarkeit regional unterschiedlich."
   },
   {
+    "id": "vogel_wanderdrossel",
+    "habitats": [
+      "Parks",
+      "Gärten",
+      "Offenwälder",
+      "Siedlungsränder"
+    ],
+    "distributionGermany": "In Deutschland seltener bis sehr seltener Gast.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Winterhalbjahr bei wenigen Nachweisen.",
+    "shortDescription": "Mittelgroße Drossel mit grauem Kopf, rostroter Brust und dunklerer Oberseite.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig in Parks oder Gärten mit Drosseltrupps.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Seltene Gastart; spätere Prüfung der Beobachtungen sinnvoll."
+  },
+  {
     "id": "vogel_wanderfalke",
     "habitats": [
       "Felsen",
@@ -6292,6 +7015,27 @@
     "reviewNote": "Bestimmung gegenüber Sumpfmeise später bei Bedarf absichern."
   },
   {
+    "id": "vogel_weissbart-grasmuecke",
+    "habitats": [
+      "warme Gebüschlandschaften",
+      "Buschhänge",
+      "Macchieartige Strukturen",
+      "Hecken"
+    ],
+    "distributionGermany": "In Deutschland seltener Gast.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr bei wenigen Nachweisen.",
+    "shortDescription": "Kleine Grasmücke mit grauem Kopf, heller Kehle, warm getönten Flanken und auffälligem weißlichem Bartstreif.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig in warmen buschreichen Landschaften.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Seltene Gastart in Deutschland; spätere Prüfung der Angaben sinnvoll."
+  },
+  {
     "id": "vogel_weissbart-seeschwalbe",
     "habitats": [
       "Feuchtgebiete",
@@ -6311,6 +7055,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Vorkommen sind lokal und teils unregelmäßig; Verbreitung später noch prüfen."
+  },
+  {
+    "id": "vogel_weissbrauendrossel",
+    "habitats": [
+      "Wälder",
+      "Parks",
+      "Gebüsche",
+      "Waldränder"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei wenigen Beobachtungen.",
+    "shortDescription": "Mittelgroße Drossel mit markantem hellen Überaugenstreif, brauner Oberseite und heller Unterseite.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in drosselreichen Gehölzen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr seltener Gast; spätere Prüfung der Bestimmung wichtig."
   },
   {
     "id": "vogel_weissbuerzel-strandlaeufer",
@@ -6609,6 +7374,28 @@
     "reviewNote": "Sehr seltener Gast; Beobachtungsangaben später besonders vorsichtig prüfen."
   },
   {
+    "id": "vogel_wintergoldhaehnchen",
+    "habitats": [
+      "Nadelwälder",
+      "Mischwälder",
+      "Parks",
+      "Gärten mit Koniferen"
+    ],
+    "distributionGermany": "Bundesweit verbreitet und in Nadelgehölzen häufig.",
+    "rarityGame": "gelegentlich",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut im Herbst und Winter.",
+    "shortDescription": "Sehr kleiner Vogel mit leuchtendem Scheitelstreif, hellem Gesicht und olivgrüner Oberseite.",
+    "observationTip": "In Nadelgehölzen und an Waldrändern oft in kleinen Trupps mit anderen Meisen und Goldhähnchen unterwegs.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Häufige Art, aber durch geringe Größe leicht zu übersehen."
+  },
+  {
     "id": "vogel_wuergfalke",
     "habitats": [
       "offene Ebenen",
@@ -6669,6 +7456,28 @@
     ],
     "needsReview": true,
     "reviewNote": "Sehr seltener Gast; spätere Überprüfung der Angaben nötig."
+  },
+  {
+    "id": "vogel_zaunkoenig",
+    "habitats": [
+      "Gärten",
+      "Hecken",
+      "Wälder",
+      "Ufergebüsche"
+    ],
+    "distributionGermany": "Bundesweit sehr weit verbreitet und häufig.",
+    "rarityGame": "häufig",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut in Frühjahr und Winter.",
+    "shortDescription": "Sehr kleiner rundlicher brauner Vogel mit kurzem aufgerichtetem Schwanz und feiner dunkler Bänderung.",
+    "observationTip": "In Gärten, Hecken und dichtem Unterwuchs oft über den lauten Gesang oder das hektische Huschen nahe am Boden zu entdecken.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr häufige und gut bekannte Art."
   },
   {
     "id": "vogel_zilpzalp",
@@ -6796,6 +7605,27 @@
     "reviewNote": "Zug- und Brutvorkommen unterscheiden sich; Saison später ggf. noch regionalisieren."
   },
   {
+    "id": "vogel_zwergmusendrossel",
+    "habitats": [
+      "Gebüsche",
+      "Wälder",
+      "Parks",
+      "Waldränder"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast.",
+    "rarityGame": "sehr selten",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei wenigen Nachweisen.",
+    "shortDescription": "Kleine Drossel mit warmbrauner Oberseite, heller Unterseite und relativ schlichtem Gesichtsbild.",
+    "observationTip": "Nicht gezielt gut findbar; Sichtungen gelingen am ehesten zufällig in herbstlichen Gehölzen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Sehr seltener Gast; Beobachtungsdaten später genau prüfen."
+  },
+  {
     "id": "vogel_zwergohreule",
     "habitats": [
       "warme Waldränder",
@@ -6836,6 +7666,27 @@
     ],
     "needsReview": true,
     "reviewNote": "Regelmäßiger Wintergast, regional unterschiedlich häufig."
+  },
+  {
+    "id": "vogel_zwergschnaepper",
+    "habitats": [
+      "alte Laubwälder",
+      "Waldränder",
+      "Parks",
+      "Auwälder"
+    ],
+    "distributionGermany": "In Deutschland seltener Brut- und Gastvogel, vor allem im Osten und Südosten.",
+    "rarityGame": "selten",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer in Brutgebieten und auf dem Zug.",
+    "shortDescription": "Sehr kleiner Schnäpper; Männchen mit orangefarbener Kehle und Brust, heller Unterseite und brauner Oberseite.",
+    "observationTip": "In alten Laubwäldern am ehesten über den Gesang oder kurze Ansitze in mittlerer Höhe zu entdecken.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Regionale und eher unauffällige Art; Beobachtbarkeit begrenzt."
   },
   {
     "id": "vogel_zwergschnepfe",
