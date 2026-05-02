@@ -1277,21 +1277,6 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                     )
                 }
 
-                showDailyAnimalScreen && dailyAnimal != null -> {
-                    DailyAnimalScreen(
-                        animal = dailyAnimal,
-                        currentUserId = currentOwnerId,
-                        extraTopPadding = innerPadding.calculateTopPadding(),
-                        extraBottomPadding = innerPadding.calculateBottomPadding(),
-                        onClose = {
-                            prefs.edit()
-                                .putBoolean(dailyAnimalDismissedKey(preferenceOwnerId), true)
-                                .apply()
-                            showDailyAnimalScreen = false
-                        }
-                    )
-                }
-
                 selectedAnimal != null -> {
                     AnimalDetailScreen(
                         modifier = Modifier.padding(innerPadding),
@@ -1656,6 +1641,34 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         end = 16.dp
                     )
             )
+
+            if (showDailyAnimalScreen && dailyAnimal != null) {
+                Dialog(
+                    onDismissRequest = {
+                        prefs.edit()
+                            .putBoolean(dailyAnimalDismissedKey(preferenceOwnerId), true)
+                            .apply()
+                        showDailyAnimalScreen = false
+                    },
+                    properties = DialogProperties(usePlatformDefaultWidth = false)
+                ) {
+                    Surface(
+                        modifier = Modifier.fillMaxSize(),
+                        color = Color.White
+                    ) {
+                        DailyAnimalScreen(
+                            animal = dailyAnimal,
+                            currentUserId = currentOwnerId,
+                            onClose = {
+                                prefs.edit()
+                                    .putBoolean(dailyAnimalDismissedKey(preferenceOwnerId), true)
+                                    .apply()
+                                showDailyAnimalScreen = false
+                            }
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -2245,6 +2258,47 @@ fun HomeScreen(
             }
         }
 
+        dailyAnimal?.let { todayAnimal ->
+            item {
+                Card(
+                    onClick = onOpenDailyAnimal,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = CardBackground,
+                        contentColor = TextPrimary
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Text(
+                            text = "Tier des Tages",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = TextSecondary
+                        )
+                        Text(
+                            text = todayAnimal.germanName,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = TextPrimary
+                        )
+                        Text(
+                            text = todayAnimal.group,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextSecondary
+                        )
+                        Text(
+                            text = "Heute im Fokus",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = TextSecondary
+                        )
+                    }
+                }
+            }
+        }
+
         item {
             Card(
                 modifier = Modifier.fillMaxWidth(),
@@ -2396,47 +2450,6 @@ fun HomeScreen(
                         supportingText = "mit gespeicherten Koordinaten",
                         modifier = Modifier.weight(1f)
                     )
-                }
-            }
-        }
-
-        dailyAnimal?.let { todayAnimal ->
-            item {
-                Card(
-                    onClick = onOpenDailyAnimal,
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(20.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFFE7F0E2),
-                        contentColor = TextPrimary
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
-                        verticalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Text(
-                            text = "Tier des Tages",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = PrimaryGreen
-                        )
-                        Text(
-                            text = todayAnimal.germanName,
-                            style = MaterialTheme.typography.titleMedium,
-                            color = TextPrimary
-                        )
-                        Text(
-                            text = todayAnimal.group,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = TextSecondary
-                        )
-                        Text(
-                            text = "Heute im Fokus",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = TextSecondary
-                        )
-                    }
                 }
             }
         }
@@ -4615,8 +4628,6 @@ private fun AboutTierdexRuleItem(text: String) {
 private fun DailyAnimalScreen(
     animal: AnimalEntry,
     currentUserId: String?,
-    extraTopPadding: Dp = 0.dp,
-    extraBottomPadding: Dp = 0.dp,
     onClose: () -> Unit
 ) {
     BackHandler(onBack = onClose)
@@ -4665,15 +4676,9 @@ private fun DailyAnimalScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .padding(
-                start = 16.dp,
-                top = 16.dp + extraTopPadding,
-                end = 16.dp
-            ),
-        contentPadding = PaddingValues(
-            top = 0.dp,
-            bottom = extraBottomPadding + 24.dp
-        ),
+            .safeDrawingPadding()
+            .padding(horizontal = 16.dp),
+        contentPadding = PaddingValues(top = 16.dp, bottom = 24.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
