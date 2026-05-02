@@ -2048,18 +2048,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "offene Buschlandschaften",
+      "Waldränder",
+      "lichte Kiefernwälder",
+      "Heckenlandschaften"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Gast, vor allem im Süden und Westen bei wenigen Nachweisen.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr bei sehr seltenen Beobachtungen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker großer Kuckuck mit graubrauner Oberseite, heller Unterseite, langem Schwanz und auffälliger Schopfhaube.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig an offenen Waldrändern und Buschlandschaften.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr seltener Gast; Beobachtungsangaben später besonders sorgfältig prüfen."
   },
   {
     "id": "vogel_schwarzschnabelkuckuck",
@@ -2070,18 +2078,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Gebüsche",
+      "Waldränder",
+      "Auwälder",
+      "baumreiche Parks"
+    ],
+    "distributionGermany": "In Deutschland sehr seltener Irrgast.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Herbst bei sehr wenigen Nachweisen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker Kuckuck mit braungrauer Oberseite, heller Unterseite, langem Schwanz und dunklem Schnabel.",
+    "observationTip": "In Deutschland nur sehr selten zu beobachten; Sichtungen gelingen am ehesten zufällig in deckungsreichen Gehölzen während des Zugs.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Ausnahmegast; spätere Prüfung der Beobachtungen und Bestimmung sinnvoll."
   },
   {
     "id": "vogel_kuckuck",
@@ -2092,18 +2108,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Waldränder",
+      "Moore",
+      "Heiden",
+      "offene Landschaften mit Gehölzen"
+    ],
+    "distributionGermany": "Bundesweit verbreitet, aber regional unterschiedlich häufig.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer, besonders gut während der Rufzeit.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker grau gefärbter Vogel mit langem gebändertem Schwanz, heller quergebänderter Unterseite und spitzem Flügelbild.",
+    "observationTip": "Am ehesten im Frühjahr und Frühsommer über den markanten Ruf an Waldrändern, Mooren und offenen Gehölzlandschaften zu entdecken.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Regelmäßige Art, aber oft eher akustisch als optisch wahrnehmbar."
   },
   {
     "id": "vogel_steppenflughuhn",
