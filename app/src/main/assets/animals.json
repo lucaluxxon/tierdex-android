@@ -8,40 +8,56 @@
     "habitat": "Wald",
     "distribution": "Alpen, Bayrischer Wald, Sueddeutschland",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Nadelwälder",
+      "Mischwälder",
+      "Bergwälder"
+    ],
+    "distributionGermany": "Vor allem in den Alpen und im Bayerischen Wald, sonst sehr lokal.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr und Herbst, besonders in den Morgenstunden.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleines Waldhuhn mit rundlichem Körper, kurzem Schwanz, graubraun gesprenkeltem Gefieder und dunkler Kehle.",
+    "observationTip": "Suche es früh morgens in ruhigen Berg- und Nadelwäldern entlang lichter Waldwege und Beerstrauchbestände.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Verbreitung in Deutschland kleinräumig; regionale Vorkommen später noch einmal gegen aktuelle Kartierungen prüfen."
   },
   {
     "id": "vogel_auerhuhn",
     "group": "Vögel",
     "subgroup": "Hühnervögel",
-    "germanName": "Aürhuhn",
+    "germanName": "Auerhuhn",
     "latinName": "Tetrao urogallus",
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Nadelwälder",
+      "Bergwälder",
+      "lichte Moorwälder"
+    ],
+    "distributionGermany": "Vor allem in den Alpen und wenigen Mittelgebirgsregionen wie dem Bayerischen Wald und Schwarzwald.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr, besonders zur Balz in den frühen Morgenstunden.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr großes Waldhuhn mit massigem Körper, fächerförmigem Schwanz und dunkel schimmerndem Gefieder.",
+    "observationTip": "Am ehesten im Frühjahr in störungsarmen Bergwäldern bei Tagesanbruch aus großer Distanz beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Stark störungsempfindlich und regional selten; Beobachtungshinweise bewusst zurückhaltend formuliert."
   },
   {
     "id": "vogel_birkhuhn",
@@ -52,18 +68,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Moore",
+      "Heiden",
+      "lichte Bergwälder"
+    ],
+    "distributionGermany": "Vor allem in den Alpen, im Alpenvorland und wenigen Moor- und Mittelgebirgslagen.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr, besonders in der Balzzeit bei Sonnenaufgang.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroßes Raufußhuhn mit kompaktem Körper; Männchen dunkel mit lyraförmigem Schwanz, Weibchen braun gebändert.",
+    "observationTip": "Suche es im Frühjahr in Mooren, auf Bergheiden und an offenen Waldgrenzen bei ruhiger Morgenwitterung.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Aktuelle Restvorkommen in Deutschland sind stark fragmentiert und sollten später genauer abgeglichen werden."
   },
   {
     "id": "vogel_alpenschneehuhn",
@@ -74,18 +98,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Alpine Matten",
+      "Blockfelder",
+      "Hochgebirge"
+    ],
+    "distributionGermany": "In Deutschland auf hochalpine Bereiche der Alpen beschränkt.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Sommer bis Frühherbst bei schneefreien Hochlagen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Gedrungenes Huhn mit rundem Körper, kurzem Schnabel und jahreszeitlich wechselndem weißem bis graubraunem Gefieder.",
+    "observationTip": "Nur in hochalpinen, ruhigen Lagen oberhalb der Baumgrenze mit Geduld und Abstand suchen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Deutsche Vorkommen sind auf wenige Hochlagen beschränkt; saisonale Sichtbarkeit später noch feiner prüfen."
   },
   {
     "id": "vogel_steinhuhn",
@@ -96,18 +127,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "felsige Berghänge",
+      "Trockenhänge",
+      "offene Gebirgslagen"
+    ],
+    "distributionGermany": "In Deutschland nur sehr lokal in alpinen Grenzregionen beziehungsweise als Ausnahmeerscheinung.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer, besonders an sonnigen Vormittagen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftiges Huhn mit hellem Gesicht, schwarzem Kehlband, graubraunem Rücken und quergebänderten Flanken.",
+    "observationTip": "Halte in steinigen, sonnigen Gebirgshängen mit niedriger Vegetation nach kleinen Trupps Ausschau.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Status in Deutschland ist sehr randständig; Einordnung für die Spielhäufigkeit später noch einmal absichern."
   },
   {
     "id": "vogel_rebhuhn",
@@ -118,18 +156,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Äcker",
+      "Feldraine",
+      "Wiesen",
+      "Heckenlandschaften"
+    ],
+    "distributionGermany": "Regional verbreitet, vor allem in offenen Agrarlandschaften des Tieflands und Hügellands.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst, besonders morgens und abends.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Rundes Feldhuhn mit graubraunem Gefieder, orangebraunem Gesicht und fein gebänderten Flanken.",
+    "observationTip": "Am besten in strukturreichen Feldern, Brachen und an Heckenrändern in den ruhigen Tagesrandzeiten suchen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Bestände regional rückläufig; Häufigkeit im Spiel später eventuell noch vorsichtiger abstufen."
   },
   {
     "id": "vogel_wachtel",
@@ -140,18 +187,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Felder",
+      "Wiesen",
+      "Brachen",
+      "Getreideflächen"
+    ],
+    "distributionGermany": "Weit verstreut in offenen Landschaften, regional deutlich schwankend.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "dämmerungs- und nachtaktiv",
+    "season": "Spätfrühling bis Sommer, besonders in warmen Abend- und Nachtstunden.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleines, gedrungenes Huhn mit kurzer Schwanzpartie und unauffällig braun-beigem Streifenmuster.",
+    "observationTip": "Am ehesten in warmen Sommernächten an Wiesen, Brachen und Getreidefeldern hören oder kurz auffliegen sehen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Nachweise laufen oft über Rufe; Beobachtbarkeit sollte später eventuell von der Sichtbarkeit getrennt bewertet werden."
   },
   {
     "id": "vogel_jagdfasan",
@@ -162,18 +218,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Felder",
+      "Wiesen",
+      "Heckenlandschaften",
+      "Waldränder"
+    ],
+    "distributionGermany": "In vielen offenen Kulturlandschaften verbreitet, regional häufig ausgesetzt oder eingebürgert.",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut im Frühjahr und Herbst sichtbar.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Großes Huhn mit langem Schwanz; Männchen bunt mit rotem Gesichtsfeld, Weibchen sandbraun gemustert.",
+    "observationTip": "Suche es tagsüber an Feldrändern, Hecken und Waldrändern, besonders in ruhigen Morgen- und Abendstunden.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Herkunft vieler Bestände ist jagdlich geprägt; Status und Häufigkeit später noch einmal fein abstimmen."
   },
   {
     "id": "vogel_ringelgans",
