@@ -16,6 +16,20 @@ private const val LEGACY_BACKUP_JSON_FILE_NAME = "tierdex_backup.json"
 private const val BACKUP_IMAGES_DIR = "images/"
 private const val BACKUP_FINDING_IMAGES_DIR = "finding_images"
 
+private data class BackupAnimalFindingDto(
+    val roomId: Int? = null,
+    val animalId: String = "",
+    val date: String = "",
+    val location: String = "",
+    val note: String = "",
+    val photoUri: String = "",
+    val latitude: Double? = null,
+    val longitude: Double? = null,
+    val locationSource: String? = null,
+    val ownerId: String? = null,
+    val taggedFriendIds: List<String>? = null
+)
+
 data class BackupImportResult(
     val findings: List<AnimalFinding>,
     val success: Boolean,
@@ -222,9 +236,27 @@ private fun importLegacyJsonBackup(context: Context): BackupImportResult {
 }
 
 private fun parseFindingsJsonOrNull(json: String): List<AnimalFinding>? {
-    val type = object : TypeToken<List<AnimalFinding>>() {}.type
+    val type = object : TypeToken<List<BackupAnimalFindingDto>>() {}.type
     return runCatching {
-        Gson().fromJson<List<AnimalFinding>>(json, type)
+        Gson().fromJson<List<BackupAnimalFindingDto>>(json, type)?.map { dto ->
+            AnimalFinding(
+                roomId = dto.roomId,
+                animalId = dto.animalId,
+                date = dto.date,
+                location = dto.location,
+                note = dto.note,
+                photoUri = dto.photoUri,
+                latitude = dto.latitude,
+                longitude = dto.longitude,
+                locationSource = dto.locationSource,
+                ownerId = dto.ownerId,
+                taggedFriendIds = dto.taggedFriendIds
+                    ?.map { it.trim() }
+                    ?.filter { it.isNotBlank() }
+                    ?.distinct()
+                    .orEmpty()
+            )
+        }
     }.getOrNull()
 }
 

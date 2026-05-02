@@ -9,7 +9,7 @@ import com.example.tierdex.AnimalFindingEntity
 
 @Database(
     entities = [AnimalFindingEntity::class],
-    version = 3,
+    version = 4,
     exportSchema = false
 )
 abstract class AnimalFindingDatabase : RoomDatabase() {
@@ -27,6 +27,14 @@ abstract class AnimalFindingDatabase : RoomDatabase() {
                 database.execSQL("ALTER TABLE animal_findings ADD COLUMN latitude REAL")
                 database.execSQL("ALTER TABLE animal_findings ADD COLUMN longitude REAL")
                 database.execSQL("ALTER TABLE animal_findings ADD COLUMN locationSource TEXT")
+            }
+        }
+
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    "ALTER TABLE animal_findings ADD COLUMN taggedFriendIdsJson TEXT NOT NULL DEFAULT '[]'"
+                )
             }
         }
     }

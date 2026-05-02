@@ -56,7 +56,8 @@ object FirestoreFindingRepository {
             "photoUri" to finding.photoUri,
             "latitude" to finding.latitude,
             "longitude" to finding.longitude,
-            "locationSource" to finding.locationSource
+            "locationSource" to finding.locationSource,
+            "taggedFriendIds" to finding.taggedFriendIds
         )
 
         val documentId = documentIdForFinding(finding)
@@ -224,7 +225,8 @@ object FirestoreFindingRepository {
                         latitude = document.getDouble("latitude"),
                         longitude = document.getDouble("longitude"),
                         locationSource = document.getString("locationSource"),
-                        ownerId = uid
+                        ownerId = uid,
+                        taggedFriendIds = document.getTaggedFriendIdsOrEmpty()
                     )
                 }
 

@@ -938,7 +938,8 @@ object FriendRepository {
                                             latitude = findingDocument.getDouble("latitude"),
                                             longitude = findingDocument.getDouble("longitude"),
                                             locationSource = findingDocument.getString("locationSource"),
-                                            ownerId = friendUserId
+                                            ownerId = friendUserId,
+                                            taggedFriendIds = findingDocument.getTaggedFriendIdsOrEmpty()
                                         )
                                         loadLikeInfoForFinding(
                                             ownerUserId = friendUserId,
@@ -1084,7 +1085,8 @@ object FriendRepository {
                                             latitude = findingDocument.getDouble("latitude"),
                                             longitude = findingDocument.getDouble("longitude"),
                                             locationSource = findingDocument.getString("locationSource"),
-                                            ownerId = friendUserId
+                                            ownerId = friendUserId,
+                                            taggedFriendIds = findingDocument.getTaggedFriendIdsOrEmpty()
                                         )
                                         loadLikeInfoForFinding(
                                             ownerUserId = friendUserId,

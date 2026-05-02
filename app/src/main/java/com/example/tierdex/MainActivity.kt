@@ -48,6 +48,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -264,6 +265,7 @@ class MainActivity : ComponentActivity() {
         )
             .addMigrations(AnimalFindingDatabase.MIGRATION_1_2)
             .addMigrations(AnimalFindingDatabase.MIGRATION_2_3)
+            .addMigrations(AnimalFindingDatabase.MIGRATION_3_4)
             .build()
     }
 
@@ -336,7 +338,8 @@ data class AnimalFinding(
     val latitude: Double? = null,
     val longitude: Double? = null,
     val locationSource: String? = null,
-    val ownerId: String? = null
+    val ownerId: String? = null,
+    val taggedFriendIds: List<String> = emptyList()
 )
 
 data class CsvLoadResult(
@@ -457,20 +460,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         dao.getAllFindingsVisibleForOwner(ownerId)
     }
     val allFindings by findingsFlow.collectAsState(initial = emptyList())
-    val findingsFromRoom = allFindings.map {
-        AnimalFinding(
-            roomId = it.id,
-            animalId = it.animalId,
-            date = it.date,
-            location = it.location,
-            note = it.note,
-            photoUri = it.photoUri,
-            latitude = it.latitude,
-            longitude = it.longitude,
-            locationSource = it.locationSource,
-            ownerId = it.ownerId
-        )
-    }
+    val findingsFromRoom = allFindings.map { it.toDomainFinding() }
     val context = LocalContext.current
     val prefs =
         context.getSharedPreferences("tierdex_prefs", android.content.Context.MODE_PRIVATE)
@@ -490,6 +480,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     var showIntroScreen by rememberSaveable { mutableStateOf(false) }
     var showDailyAnimalScreen by rememberSaveable { mutableStateOf(false) }
     var dailyAnimalId by rememberSaveable { mutableStateOf<String?>(null) }
+    var isDailyAnimalOpenedFromHomeTile by rememberSaveable { mutableStateOf(false) }
     var introLaunchSource by rememberSaveable { mutableStateOf(IntroLaunchSource.AUTOMATIC.name) }
     var selectedGroupFilter by rememberSaveable { mutableStateOf("Alle") }
     var selectedSubgroupFilter by rememberSaveable { mutableStateOf("Alle") }
@@ -545,20 +536,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                 onResult = { cloudFindings ->
                     scope.launch {
                         val localRoomFindings = dao.getAllFindingsByOwnerOnce(ownerId)
-                        val localFindings = localRoomFindings.map { entity ->
-                            AnimalFinding(
-                                roomId = entity.id,
-                                animalId = entity.animalId,
-                                date = entity.date,
-                                location = entity.location,
-                                note = entity.note,
-                                photoUri = entity.photoUri,
-                                latitude = entity.latitude,
-                                longitude = entity.longitude,
-                                locationSource = entity.locationSource,
-                                ownerId = entity.ownerId
-                            )
-                        }
+                        val localFindings = localRoomFindings.map { entity -> entity.toDomainFinding() }
 
                         val localFingerprints = localFindings
                             .map { FirestoreFindingRepository.findingFingerprint(it) }
@@ -595,19 +573,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             val fingerprint =
                                 FirestoreFindingRepository.findingFingerprint(cloudFinding)
                             if (fingerprint !in localFingerprints) {
-                                dao.insertFinding(
-                                    AnimalFindingEntity(
-                                        animalId = cloudFinding.animalId,
-                                        date = cloudFinding.date,
-                                        location = cloudFinding.location,
-                                        note = cloudFinding.note,
-                                        photoUri = cloudFinding.photoUri,
-                                        latitude = cloudFinding.latitude,
-                                        longitude = cloudFinding.longitude,
-                                        locationSource = cloudFinding.locationSource,
-                                        ownerId = ownerId
-                                    )
-                                )
+                                dao.insertFinding(cloudFinding.toEntity(ownerIdOverride = ownerId))
                                 insertedCount += 1
                                 localFingerprints.add(fingerprint)
                             } else {
@@ -704,6 +670,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         }
 
         dailyAnimalId = activeAnimal.id
+        isDailyAnimalOpenedFromHomeTile = false
         val isDismissedToday = prefs.getBoolean(dailyAnimalDismissedKey(preferenceOwnerId), false)
         showDailyAnimalScreen = !isDismissedToday
     }
@@ -1226,19 +1193,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                     val importedFindingForCurrentOwner = finding.copy(
                                         ownerId = currentOwnerId ?: finding.ownerId
                                     )
-                                    dao.insertFinding(
-                                        AnimalFindingEntity(
-                                            animalId = importedFindingForCurrentOwner.animalId,
-                                            date = importedFindingForCurrentOwner.date,
-                                            location = importedFindingForCurrentOwner.location,
-                                            note = importedFindingForCurrentOwner.note,
-                                            photoUri = importedFindingForCurrentOwner.photoUri,
-                                            latitude = importedFindingForCurrentOwner.latitude,
-                                            longitude = importedFindingForCurrentOwner.longitude,
-                                            locationSource = importedFindingForCurrentOwner.locationSource,
-                                            ownerId = importedFindingForCurrentOwner.ownerId
-                                        )
-                                    )
+                                    dao.insertFinding(importedFindingForCurrentOwner.toEntity())
 
                                     if (currentOwnerId != null) {
                                         FirestoreFindingRepository.saveCurrentUserFinding(
@@ -1302,19 +1257,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                     animals = animals
                                 )
 
-                                dao.insertFinding(
-                                    AnimalFindingEntity(
-                                        animalId = finding.animalId,
-                                        date = finding.date,
-                                        location = finding.location,
-                                        note = finding.note,
-                                        photoUri = finding.photoUri,
-                                        latitude = finding.latitude,
-                                        longitude = finding.longitude,
-                                        locationSource = finding.locationSource,
-                                        ownerId = currentOwnerId
-                                    )
-                                )
+                                dao.insertFinding(finding.toEntity(ownerIdOverride = currentOwnerId))
 
                                 if (wishlistAnimalId == finding.animalId) {
                                     wishlistAnimalId = null
@@ -1406,17 +1349,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
 
                                 if (roomMatch != null) {
                                     dao.updateFinding(
-                                        AnimalFindingEntity(
-                                            id = roomMatch.id,
-                                            animalId = newFinding.animalId,
-                                            date = newFinding.date,
-                                            location = newFinding.location,
-                                            note = newFinding.note,
-                                            photoUri = newFinding.photoUri,
-                                            latitude = newFinding.latitude,
-                                            longitude = newFinding.longitude,
-                                            locationSource = newFinding.locationSource,
-                                            ownerId = currentOwnerId
+                                        newFinding.toEntity(
+                                            ownerIdOverride = currentOwnerId,
+                                            roomIdOverride = roomMatch.id
                                         )
                                     )
 
@@ -1518,6 +1453,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         roomFindingsCount = allFindings.size,
                         onOpenDailyAnimal = {
                             if (dailyAnimal != null) {
+                                isDailyAnimalOpenedFromHomeTile = true
                                 showDailyAnimalScreen = true
                             }
                         },
@@ -1648,6 +1584,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         prefs.edit()
                             .putBoolean(dailyAnimalDismissedKey(preferenceOwnerId), true)
                             .apply()
+                        isDailyAnimalOpenedFromHomeTile = false
                         showDailyAnimalScreen = false
                     },
                     properties = DialogProperties(usePlatformDefaultWidth = false)
@@ -1659,10 +1596,12 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         DailyAnimalScreen(
                             animal = dailyAnimal,
                             currentUserId = currentOwnerId,
+                            showCloseButton = !isDailyAnimalOpenedFromHomeTile,
                             onClose = {
                                 prefs.edit()
                                     .putBoolean(dailyAnimalDismissedKey(preferenceOwnerId), true)
                                     .apply()
+                                isDailyAnimalOpenedFromHomeTile = false
                                 showDailyAnimalScreen = false
                             }
                         )
@@ -4628,6 +4567,7 @@ private fun AboutTierdexRuleItem(text: String) {
 private fun DailyAnimalScreen(
     animal: AnimalEntry,
     currentUserId: String?,
+    showCloseButton: Boolean = true,
     onClose: () -> Unit
 ) {
     BackHandler(onBack = onClose)
@@ -4887,13 +4827,15 @@ private fun DailyAnimalScreen(
             }
         }
 
-        item {
-            Button(
-                onClick = onClose,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
-            ) {
-                Text("Schließen")
+        if (showCloseButton) {
+            item {
+                Button(
+                    onClick = onClose,
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
+                ) {
+                    Text("Schließen")
+                }
             }
         }
     }
@@ -5806,10 +5748,15 @@ fun AnimalDetailScreen(
     var locationStatusMessage by rememberSaveable(initial?.roomId) {
         mutableStateOf("")
     }
+    var selectedTaggedFriendIds by rememberSaveable(initial?.roomId) {
+        mutableStateOf(initial?.taggedFriendIds ?: emptyList())
+    }
     var showLocationPicker by rememberSaveable(initial?.roomId) { mutableStateOf(false) }
     var pendingLatitude by remember { mutableStateOf<Double?>(null) }
     var pendingLongitude by remember { mutableStateOf<Double?>(null) }
     var cropPhotoUri by remember { mutableStateOf<String?>(null) }
+    var availableFriends by remember(currentUserId) { mutableStateOf<List<FriendUser>>(emptyList()) }
+    var availableFriendsError by remember(currentUserId) { mutableStateOf<String?>(null) }
     var friendFindings by remember(animal.id, currentUserId) {
         mutableStateOf<List<FriendFeedItem>>(emptyList())
     }
@@ -5889,6 +5836,7 @@ fun AnimalDetailScreen(
         latitude = finding.latitude
         longitude = finding.longitude
         locationSource = finding.locationSource
+        selectedTaggedFriendIds = finding.taggedFriendIds
         locationStatusMessage = ""
         selectedPhotoUri = finding.photoUri
         cropPhotoUri = null
@@ -5921,6 +5869,25 @@ fun AnimalDetailScreen(
             onError = {
                 friendFindingsError = "Freundesfunde konnten nicht geladen werden."
                 isLoadingFriendFindings = false
+            }
+        )
+    }
+
+    LaunchedEffect(currentUserId) {
+        availableFriends = emptyList()
+        availableFriendsError = null
+
+        if (currentUserId.isNullOrBlank()) {
+            return@LaunchedEffect
+        }
+
+        FriendRepository.loadFriends(
+            currentUserId = currentUserId,
+            onResult = { friends ->
+                availableFriends = friends
+            },
+            onError = { error ->
+                availableFriendsError = error ?: "Freunde konnten nicht geladen werden."
             }
         )
     }
@@ -6454,6 +6421,7 @@ fun AnimalDetailScreen(
                         date = currentFinding?.date.orEmpty()
                         location = currentFinding?.location.orEmpty()
                         note = currentFinding?.note.orEmpty()
+                        selectedTaggedFriendIds = currentFinding?.taggedFriendIds.orEmpty()
                         latitude = currentFinding?.latitude
                         longitude = currentFinding?.longitude
                         locationSource = currentFinding?.locationSource
@@ -6630,6 +6598,87 @@ fun AnimalDetailScreen(
                             )
                         )
 
+                        val hiddenTaggedFriendIds = selectedTaggedFriendIds.filterNot { selectedId ->
+                            availableFriends.any { it.userId == selectedId }
+                        }
+
+                        if (!currentUserId.isNullOrBlank()) {
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Text(
+                                    text = "Mit Freunden gefunden",
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = TextSecondary
+                                )
+
+                                when {
+                                    availableFriendsError != null -> {
+                                        Text(
+                                            text = "Freunde konnten gerade nicht geladen werden.",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = TextSecondary
+                                        )
+                                    }
+
+                                    availableFriends.isEmpty() -> {
+                                        Text(
+                                            text = "Keine bestätigten Freunde verfügbar.",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = TextSecondary
+                                        )
+                                    }
+
+                                    else -> {
+                                        availableFriends.forEach { friend ->
+                                            val isSelected = friend.userId in selectedTaggedFriendIds
+                                            Row(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .clickable {
+                                                        selectedTaggedFriendIds =
+                                                            if (isSelected) {
+                                                                (selectedTaggedFriendIds - friend.userId).distinct()
+                                                            } else {
+                                                                (selectedTaggedFriendIds + friend.userId).distinct()
+                                                            }
+                                                    }
+                                                    .padding(vertical = 2.dp),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                            ) {
+                                                Checkbox(
+                                                    checked = isSelected,
+                                                    onCheckedChange = { checked ->
+                                                        selectedTaggedFriendIds =
+                                                            if (checked) {
+                                                                (selectedTaggedFriendIds + friend.userId).distinct()
+                                                            } else {
+                                                                (selectedTaggedFriendIds - friend.userId).distinct()
+                                                            }
+                                                    }
+                                                )
+                                                Text(
+                                                    text = friend.displayName.ifBlank { "Unbenannter Freund" },
+                                                    style = MaterialTheme.typography.bodyMedium,
+                                                    color = TextPrimary
+                                                )
+                                            }
+                                        }
+
+                                        if (hiddenTaggedFriendIds.isNotEmpty()) {
+                                            Text(
+                                                text = "Bestehende Tags von aktuell nicht verfügbaren Freunden bleiben erhalten.",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = TextSecondary
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
                         if (currentFinding?.photoUri.isNullOrBlank()) {
                             OutlinedButton(
                                 onClick = {
@@ -6687,7 +6736,13 @@ fun AnimalDetailScreen(
                                             latitude = latitude,
                                             longitude = longitude,
                                             locationSource = locationSource,
-                                            ownerId = editingFinding?.ownerId
+                                            ownerId = editingFinding?.ownerId,
+                                            taggedFriendIds = (
+                                                hiddenTaggedFriendIds +
+                                                    availableFriends
+                                                        .map { it.userId }
+                                                        .filter { it in selectedTaggedFriendIds }
+                                            ).distinct()
                                         )
 
                                         if (editingFinding == null) {
@@ -6698,6 +6753,7 @@ fun AnimalDetailScreen(
                                             location = ""
                                             note = ""
                                             selectedPhotoUri = ""
+                                            selectedTaggedFriendIds = emptyList()
                                             latitude = null
                                             longitude = null
                                             locationSource = null
@@ -6728,6 +6784,7 @@ fun AnimalDetailScreen(
                                         date = currentFinding?.date.orEmpty()
                                         location = currentFinding?.location.orEmpty()
                                         note = currentFinding?.note.orEmpty()
+                                        selectedTaggedFriendIds = currentFinding?.taggedFriendIds.orEmpty()
                                         latitude = currentFinding?.latitude
                                         longitude = currentFinding?.longitude
                                         locationSource = currentFinding?.locationSource
