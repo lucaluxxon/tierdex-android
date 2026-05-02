@@ -1722,18 +1722,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Städte",
+      "Dörfer",
+      "Gebäude",
+      "Brücken"
+    ],
+    "distributionGermany": "Bundesweit in Siedlungen, Innenstädten und Ortschaften verbreitet.",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut tagsüber in Siedlungen sichtbar.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kräftige Taube mit variablem grauem Gefieder, zwei dunklen Flügelbinden und oft schillerndem Hals.",
+    "observationTip": "In Innenstädten, auf Plätzen und an Gebäuden lässt sie sich tagsüber leicht beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Abgrenzung zu verwilderten Haustaubenformen ist fließend; Spielhäufigkeit später eventuell noch feiner abstimmen."
   },
   {
     "id": "vogel_hohltaube",
@@ -1744,18 +1752,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Laubwälder",
+      "Mischwälder",
+      "Waldränder",
+      "Parkanlagen"
+    ],
+    "distributionGermany": "Weit verbreitet, besonders in waldreichen Regionen mit alten Baumhöhlen.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer, besonders morgens und vormittags.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlichte graublaue Taube mit dunklen Flügeln, zart schimmerndem Hals und unauffälligem Gesamteindruck.",
+    "observationTip": "Achte im Frühjahr in alten Laub- und Mischwäldern auf ruhige Tauben an Baumhöhlen und Waldrändern.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Vorkommen hängen stark von alten Höhlenbäumen ab; regionale Häufigkeit später noch einmal prüfen."
   },
   {
     "id": "vogel_ringeltaube",
@@ -1766,18 +1783,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Parks",
+      "Gärten",
+      "Feldgehölze"
+    ],
+    "distributionGermany": "Bundesweit weit verbreitet in Wäldern, Siedlungsgrün und strukturreichen Landschaften.",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Herbst, in vielen Regionen aber fast ganzjährig sichtbar.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Große Taube mit grauem Körper, rosiger Brust und markanten weißen Hals- und Flügelflecken.",
+    "observationTip": "Sehr gut in Parks, Gärten, Feldgehölzen und an Waldrändern tagsüber zu beobachten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In vielen Regionen häufiger Kulturfolger; Saisonangabe später ggf. noch regional differenzieren."
   },
   {
     "id": "vogel_turteltaube",
@@ -1788,18 +1814,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Heckenlandschaften",
+      "Waldränder",
+      "Feldgehölze",
+      "lichte Auen"
+    ],
+    "distributionGermany": "Vor allem in warmen, offenen und halboffenen Landschaften, regional lückig verbreitet.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Spätfrühling bis Sommer, besonders in den Morgenstunden.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Zierliche Taube mit warm braunem Gefieder, schwarz-weiß gestreiften Halsseiten und langerem Schwanz.",
+    "observationTip": "Suche sie im späten Frühjahr an warmen Waldrändern, Hecken und lichten Feldgehölzen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Bestände sind stark rückläufig; Verbreitung und Spielhäufigkeit später noch einmal besonders sorgfältig prüfen."
   },
   {
     "id": "vogel_orientturteltaube",
@@ -1810,18 +1845,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "lichte Wälder",
+      "Waldränder",
+      "Parks",
+      "Gehölze"
+    ],
+    "distributionGermany": "In Deutschland nur als seltener Ausnahmegast nachgewiesen.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Vor allem im Frühjahr und Herbst bei seltenen Durchzügen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroße Taube mit schuppig wirkendem braunem Gefieder, gebändertem Halsmuster und langem Schwanz.",
+    "observationTip": "Am ehesten als seltener Irrgast in Parks, Gehölzen und an Waldrändern während der Zugzeiten erwarten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Deutscher Status als Ausnahmeerscheinung sollte später mit aktuellen Nachweislisten noch einmal abgeglichen werden."
   },
   {
     "id": "vogel_tuerkentaube",
@@ -1832,18 +1875,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Siedlungen",
+      "Dörfer",
+      "Stadtränder",
+      "Parks"
+    ],
+    "distributionGermany": "Bundesweit in Siedlungen und Ortschaften weit verbreitet.",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut tagsüber in Siedlungen sichtbar.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Helle beigegraue Taube mit schlankem Körper, langem Schwanz und schwarzem Nackenhalbring.",
+    "observationTip": "In Dörfern, Wohngebieten und Parks lässt sie sich fast das ganze Jahr tagsüber leicht finden.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In Siedlungen sehr präsent; Häufigkeit für das Spiel später eventuell noch gegen Ringeltaube abgleichen."
   },
   {
     "id": "vogel_carolinataube",
@@ -1854,18 +1906,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Parks",
+      "Gärten",
+      "lichte Gehölze",
+      "Siedlungsränder"
+    ],
+    "distributionGermany": "In Deutschland nur als seltener Ausnahmegast oder aus Gefangenschaft entkommener Vogel nachgewiesen.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Am ehesten im Frühjahr bis Herbst bei seltenen Einzelbeobachtungen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanke, warm braune Taube mit langem spitzem Schwanz, dunklen Flecken an den Flügeln und zarter Zeichnung.",
+    "observationTip": "Wenn überhaupt, dann eher einzeln in Parks, Gärten oder an Siedlungsrändern aufmerksam beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Status in Deutschland ist sehr unsicher und meist ausnahmsweise; Einordnung später unbedingt noch einmal prüfen."
   },
   {
     "id": "vogel_wasserralle",
@@ -6562,18 +6622,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Obstwiesen",
+      "lichte Wälder",
+      "Waldränder",
+      "Heiden"
+    ],
+    "distributionGermany": "Regional verbreitet, vor allem in offenen Landschaften mit alten Bäumen.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Frühjahr bis Sommer, besonders in warmen Morgenstunden.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Schlanker Spechtvogel mit graubraunem Tarngefieder, feiner Wellenzeichnung und unauffälligem Kopfprofil.",
+    "observationTip": "Suche ihn im Frühjahr in Streuobstwiesen, lichten Wäldern und an Waldrändern mit alten Höhlenbäumen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Bestände sind regional rückläufig; Spielhäufigkeit und Verbreitung später noch einmal sorgfältig prüfen."
   },
   {
     "id": "vogel_dreizehenspecht",
@@ -6584,18 +6653,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Nadelwälder",
+      "Bergwälder",
+      "alte Fichtenwälder"
+    ],
+    "distributionGermany": "In Deutschland auf wenige montane und alpine Waldgebiete beschränkt.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut im Winter und Frühjahr an ruhigen Waldstücken.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroßer schwarz-weißer Specht mit heller Gesichtszeichnung und beim Männchen gelber Kopfplatte.",
+    "observationTip": "Am ehesten in alten, ruhigen Bergnadelwäldern an abgestorbenen Fichtenstämmen suchen.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Sehr lokal und an naturnahe Bergwälder gebunden; Status in Deutschland später noch einmal gegen aktuelle Daten prüfen."
   },
   {
     "id": "vogel_mittelspecht",
@@ -6606,18 +6682,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Laubwälder",
+      "Auwälder",
+      "alte Eichenwälder",
+      "Parks"
+    ],
+    "distributionGermany": "Regional verbreitet, besonders in alten Laubwäldern mit hohem Eichenanteil.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders im Frühjahr gut zu entdecken.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroßer schwarz-weißer Specht mit roter Kopfplatte und warm beige getönter Unterseite.",
+    "observationTip": "Suche ihn in alten Eichen- und Auwäldern, wo er im Frühjahr oft auffällig ruft.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Verbreitung ist stark an alte Laubwälder gebunden; regionale Häufigkeit später noch einmal verfeinern."
   },
   {
     "id": "vogel_kleinspecht",
@@ -6628,18 +6713,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Auwälder",
+      "Laubwälder",
+      "Parks",
+      "Obstgärten"
+    ],
+    "distributionGermany": "Weit verbreitet, aber meist in geringer Dichte und leicht zu übersehen.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders im Spätwinter und Frühjahr auffälliger.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr kleiner schwarz-weißer Specht mit feiner Zeichnung und roter Kopfplatte beim Männchen.",
+    "observationTip": "Achte in Parks, Obstgärten und lichten Laubwäldern auf feines Trommeln und kleine Spechte an dünnen Ästen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Wegen seiner Unauffälligkeit oft untererfasst; Häufigkeit für das Spiel später noch einmal abgleichen."
   },
   {
     "id": "vogel_blutspecht",
@@ -6650,18 +6744,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Parks",
+      "Gärten",
+      "Auen",
+      "lichte Laubwälder"
+    ],
+    "distributionGermany": "Vor allem in Ostdeutschland regional verbreitet, sonst lokal und lückig.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders im Frühjahr gut zu entdecken.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Dem Buntspecht ähnlicher schwarz-weißer Specht mit roter Unterschwanzdecke und kontrastreichem Gefieder.",
+    "observationTip": "Suche ihn im Frühjahr in alten Pappeln, Parks und lichten Auwäldern mit Totholzanteil.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Abgrenzung zum Buntspecht und die deutsche Verbreitung sollten später noch einmal besonders sorgfältig geprüft werden."
   },
   {
     "id": "vogel_buntspecht",
@@ -6672,18 +6774,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Parks",
+      "Gärten",
+      "Feldgehölze"
+    ],
+    "distributionGermany": "Bundesweit weit verbreitet in Wäldern, Parks und größeren Gärten.",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders im Spätwinter und Frühjahr auffällig.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Mittelgroßer schwarz-weißer Specht mit roter Unterschwanzdecke und roter Kopfzeichnung beim Männchen.",
+    "observationTip": "Sehr gut in Wäldern, Parks und Gärten an Baumstämmen oder über Trommeln und Rufe zu finden.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In vielen Lebensräumen häufig; Beobachtbarkeit ist hoch und kann später eventuell noch gesondert bewertet werden."
   },
   {
     "id": "vogel_weissrueckenspecht",
@@ -6694,18 +6805,25 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Berglaubwälder",
+      "Auwälder",
+      "alte Mischwälder"
+    ],
+    "distributionGermany": "In Deutschland nur sehr lokal und selten in naturnahen Waldgebieten.",
+    "rarityGame": "sehr selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders im Frühjahr in ruhigen Wäldern besser wahrnehmbar.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Großer schwarz-weißer Specht mit ausgedehnt hellem Rücken und roter Kopfzeichnung beim Männchen.",
+    "observationTip": "Am ehesten in alten, totholzreichen Berg- und Auwäldern mit viel Ruhe und Geduld beobachten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Deutsche Vorkommen sind sehr kleinräumig; Verbreitung und Häufigkeit später noch einmal mit aktuellen Quellen absichern."
   },
   {
     "id": "vogel_schwarzspecht",
@@ -6716,18 +6834,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Wälder",
+      "Buchenwälder",
+      "Mischwälder",
+      "Nadelwälder"
+    ],
+    "distributionGermany": "Bundesweit in größeren Waldgebieten verbreitet.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders im Frühjahr durch Rufe und Trommeln auffällig.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr großer tiefschwarzer Specht mit hellem Schnabel und roter Kopfkappe oder rotem Scheitel.",
+    "observationTip": "In größeren Wäldern im Frühjahr auf laute Rufe, Trommeln und lange Flüge zwischen Baumstämmen achten.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In geeigneten Wäldern regelmäßig, aber großräumig unterwegs; Spielhäufigkeit später ggf. noch feinjustieren."
   },
   {
     "id": "vogel_gruenspecht",
@@ -6738,18 +6865,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Streuobstwiesen",
+      "Parks",
+      "Waldränder",
+      "lichte Gehölze"
+    ],
+    "distributionGermany": "Weit verbreitet, besonders in offenen Landschaften mit alten Bäumen und Wiesen.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut im Frühjahr zu hören und zu sehen.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Großer grünlicher Specht mit gelblicher Unterseite, roter Kopfplatte und dunkler Gesichtszeichnung.",
+    "observationTip": "Achte in Parks, Streuobstwiesen und an Waldrändern auf bodensuchende Spechte und lautes Lachen im Frühjahr.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In vielen Regionen präsent, aber stark an Ameisenreichtum gebunden; Häufigkeit später noch einmal prüfen."
   },
   {
     "id": "vogel_grauspecht",
@@ -6760,18 +6896,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Laubwälder",
+      "Mischwälder",
+      "Parks",
+      "Waldränder"
+    ],
+    "distributionGermany": "Regional verbreitet, besonders in waldreichen Mittelgebirgen und im Süden.",
+    "rarityGame": "selten",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders im Frühjahr durch Rufe besser wahrnehmbar.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Grünlich-grauer Specht mit grauem Kopf, feiner Gesichtszeichnung und rotem Stirnfleck beim Männchen.",
+    "observationTip": "Suche ihn in ruhigen Laub- und Mischwäldern sowie an Waldrändern, besonders im Frühjahr.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Abgrenzung zum Grünspecht und regionale Verbreitung sollten später noch einmal sorgfältig abgeglichen werden."
   },
   {
     "id": "vogel_roetelfalke",
@@ -9114,18 +9259,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Laubwälder",
+      "Mischwälder",
+      "Parks",
+      "alte Gärten"
+    ],
+    "distributionGermany": "Bundesweit in geeigneten Wäldern, Parks und größeren Gärten verbreitet.",
+    "rarityGame": "häufig",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut im Herbst und Winter an Baumstämmen sichtbar.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kompakter Vogel mit blaugrauem Rücken, rostroter Unterseite, kräftigem Schnabel und dunklem Augenstreif.",
+    "observationTip": "Achte an Baumstämmen in alten Wäldern, Parks und Gärten auf ihn, oft auch kopfüber kletternd.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "In vielen Regionen häufig; Beobachtbarkeit an Futterstellen könnte für das Spiel später noch gesondert bewertet werden."
   },
   {
     "id": "vogel_mauerlaeufer",
@@ -9158,18 +9312,26 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Nadelwälder",
+      "Mischwälder",
+      "Bergwälder"
+    ],
+    "distributionGermany": "Weit verbreitet, besonders in waldreichen und kühleren Regionen.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut im Herbst und Winter an Baumstämmen zu entdecken.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Kleiner braun gesprenkelter Klettervogel mit heller Unterseite, gebogenem Schnabel und steifem Schwanz.",
+    "observationTip": "Suche ihn an rauen Baumstämmen in Wäldern, wo er spiralig nach oben klettert.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Abgrenzung zum Gartenbaumläufer ist im Feld nicht immer einfach; Verbreitungsangaben später noch einmal prüfen."
   },
   {
     "id": "vogel_gartenbaumlaeufer",
@@ -9180,18 +9342,27 @@
     "habitat": "",
     "distribution": "",
     "rarity": "",
-    "habitats": [],
-    "distributionGermany": "",
-    "rarityGame": "",
+    "habitats": [
+      "Laubwälder",
+      "Parks",
+      "Gärten",
+      "Streuobstbestände"
+    ],
+    "distributionGermany": "Weit verbreitet, besonders in milderen Tieflagen, Siedlungsgrün und lichten Laubwäldern.",
+    "rarityGame": "gelegentlich",
     "redListGermany": "",
-    "activity": "",
-    "season": "",
+    "activity": "tagaktiv",
+    "season": "Ganzjährig, besonders gut im Herbst und Winter an Baumstämmen sichtbar.",
     "protectionStatus": "",
-    "shortDescription": "",
-    "observationTip": "",
-    "sources": [],
+    "shortDescription": "Sehr kleiner braun gemusterter Klettervogel mit heller Unterseite, feinem gebogenem Schnabel und steifem Schwanz.",
+    "observationTip": "In Parks, alten Gärten und lichten Laubwäldern an Baumstämmen gezielt nach aufwärts kletternden Vögeln suchen.",
+    "sources": [
+      "BfN",
+      "NABU",
+      "Wikipedia"
+    ],
     "needsReview": true,
-    "reviewNote": ""
+    "reviewNote": "Unterscheidung zum Waldbaumläufer ist schwierig; Beobachtungshinweise und Häufigkeit später ggf. noch verfeinern."
   },
   {
     "id": "vogel_katzenspottdrossel",
