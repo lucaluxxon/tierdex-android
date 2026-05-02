@@ -72,6 +72,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
@@ -101,6 +102,8 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Event
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Search
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -194,6 +197,9 @@ private const val FAVORITE_ANIMAL_KEY_PREFIX = "favoriteAnimalId_"
 private const val PROFILE_BIO_KEY_PREFIX = "profileBio_"
 private const val PROFILE_IMAGE_KEY_PREFIX = "profileImage_"
 private const val NOTIFICATION_READ_IDS_KEY_PREFIX = "notification_read_ids_"
+private const val DAILY_ANIMAL_DATE_KEY_PREFIX = "daily_animal_date_"
+private const val DAILY_ANIMAL_ID_KEY_PREFIX = "daily_animal_id_"
+private const val DAILY_ANIMAL_DISMISSED_KEY_PREFIX = "daily_animal_dismissed_"
 private const val LOCAL_PREFERENCES_OWNER_ID = "local"
 private val AppGreenBackground = Color(0xFF51734A)
 
@@ -203,6 +209,9 @@ private fun wishlistAnimalKey(ownerId: String): String = "$WISHLIST_ANIMAL_KEY_P
 private fun profileBioKey(ownerId: String): String = "$PROFILE_BIO_KEY_PREFIX$ownerId"
 private fun profileImageKey(ownerId: String): String = "$PROFILE_IMAGE_KEY_PREFIX$ownerId"
 private fun notificationReadIdsKey(ownerId: String): String = "$NOTIFICATION_READ_IDS_KEY_PREFIX$ownerId"
+private fun dailyAnimalDateKey(ownerId: String): String = "$DAILY_ANIMAL_DATE_KEY_PREFIX$ownerId"
+private fun dailyAnimalIdKey(ownerId: String): String = "$DAILY_ANIMAL_ID_KEY_PREFIX$ownerId"
+private fun dailyAnimalDismissedKey(ownerId: String): String = "$DAILY_ANIMAL_DISMISSED_KEY_PREFIX$ownerId"
 
 private fun introPendingKey(ownerId: String): String = "$INTRO_PENDING_KEY_PREFIX$ownerId"
 
@@ -210,6 +219,9 @@ private fun introSeenKey(ownerId: String): String = "$INTRO_SEEN_KEY_PREFIX$owne
 
 private fun currentAppDateText(): String =
     SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
+
+private fun currentDailyDateKey(): String =
+    SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
 
 private fun formatCoordinates(
     latitude: Double,
@@ -352,6 +364,45 @@ private fun formatNotificationTimestamp(timestamp: Timestamp?): String {
     }.orEmpty()
 }
 
+@Composable
+private fun FindingMetaRow(
+    date: String?,
+    location: String?,
+    modifier: Modifier = Modifier
+) {
+    val metaItems = buildList {
+        date?.takeIf { it.isNotBlank() }?.let { add(Icons.Filled.Event to it) }
+        location?.takeIf { it.isNotBlank() }?.let { add(Icons.Filled.Place to it) }
+    }
+
+    if (metaItems.isEmpty()) return
+
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        metaItems.forEach { (icon, text) ->
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(14.dp),
+                    tint = TextSecondary
+                )
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.labelMedium,
+                    color = TextSecondary
+                )
+            }
+        }
+    }
+}
+
 
 enum class AppTab {
     HOME,
@@ -436,8 +487,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     var showAnimalPicker by rememberSaveable { mutableStateOf(false) }
     var selectedFindingToEdit by remember { mutableStateOf<AnimalFinding?>(null) }
     var showSettingsScreen by rememberSaveable { mutableStateOf(false) }
-    var showStartupHintDialog by rememberSaveable { mutableStateOf(false) }
     var showIntroScreen by rememberSaveable { mutableStateOf(false) }
+    var showDailyAnimalScreen by rememberSaveable { mutableStateOf(false) }
+    var dailyAnimalId by rememberSaveable { mutableStateOf<String?>(null) }
     var introLaunchSource by rememberSaveable { mutableStateOf(IntroLaunchSource.AUTOMATIC.name) }
     var selectedGroupFilter by rememberSaveable { mutableStateOf("Alle") }
     var selectedSubgroupFilter by rememberSaveable { mutableStateOf("Alle") }
@@ -466,19 +518,18 @@ fun TierdexApp(database: AnimalFindingDatabase) {
             if (hasPendingIntro) {
                 showIntroScreen = true
                 introLaunchSource = IntroLaunchSource.AUTOMATIC.name
-                showStartupHintDialog = false
             } else {
                 val startupHintKey = "$STARTUP_HINT_SHOWN_KEY_PREFIX$ownerId"
                 val alreadyShown = prefs.getBoolean(startupHintKey, false)
                 if (!alreadyShown) {
-                    showStartupHintDialog = true
+                    showIntroScreen = true
+                    introLaunchSource = IntroLaunchSource.AUTOMATIC.name
                     prefs.edit().putBoolean(startupHintKey, true).apply()
                 }
             }
         } else if (ownerId != null && hasPendingIntro) {
             showIntroScreen = true
             introLaunchSource = IntroLaunchSource.AUTOMATIC.name
-            showStartupHintDialog = false
         }
         previousOwnerId = ownerId
 
@@ -623,6 +674,39 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     }
 
     val animals: List<AnimalEntry> = animalLoadResult.animals
+    val dailyAnimal = animals.find { it.id == dailyAnimalId }
+
+    LaunchedEffect(preferenceOwnerId, animals) {
+        if (animals.isEmpty()) {
+            dailyAnimalId = null
+            showDailyAnimalScreen = false
+            return@LaunchedEffect
+        }
+
+        val todayKey = currentDailyDateKey()
+        val savedDateKey = prefs.getString(dailyAnimalDateKey(preferenceOwnerId), null)
+        val savedAnimalId = prefs.getString(dailyAnimalIdKey(preferenceOwnerId), null)
+        val savedAnimal = savedAnimalId?.let { id -> animals.find { it.id == id } }
+
+        val activeAnimal = if (savedDateKey == todayKey && savedAnimal != null) {
+            savedAnimal
+        } else {
+            animals.random()
+        }
+
+        val shouldResetForToday = savedDateKey != todayKey || savedAnimal == null
+        if (shouldResetForToday) {
+            prefs.edit()
+                .putString(dailyAnimalDateKey(preferenceOwnerId), todayKey)
+                .putString(dailyAnimalIdKey(preferenceOwnerId), activeAnimal.id)
+                .putBoolean(dailyAnimalDismissedKey(preferenceOwnerId), false)
+                .apply()
+        }
+
+        dailyAnimalId = activeAnimal.id
+        val isDismissedToday = prefs.getBoolean(dailyAnimalDismissedKey(preferenceOwnerId), false)
+        showDailyAnimalScreen = !isDismissedToday
+    }
 
     val findingCountByAnimalId = allFindings
         .groupingBy { it.animalId }
@@ -1091,14 +1175,15 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                     .apply()
                                 introLaunchSource = IntroLaunchSource.AUTOMATIC.name
                                 showIntroScreen = true
-                                showStartupHintDialog = false
                             }
                         }
                     )
                 }
 
                 showIntroScreen -> {
-                    IntroScreen(
+                    AboutTierdexScreen(
+                        extraTopPadding = innerPadding.calculateTopPadding(),
+                        extraBottomPadding = innerPadding.calculateBottomPadding(),
                         onClose = {
                             if (isIntroFromSettings) {
                                 showIntroScreen = false
@@ -1133,7 +1218,6 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         onShowIntro = {
                             introLaunchSource = IntroLaunchSource.SETTINGS.name
                             showIntroScreen = true
-                            showStartupHintDialog = false
                         },
                         allFindings = findingsFromRoom,
                         onImportFindings = { importedFindings ->
@@ -1190,6 +1274,21 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         onMarkAllAsRead = { markAllNotificationsAsRead() },
                         extraTopPadding = innerPadding.calculateTopPadding(),
                         extraBottomPadding = innerPadding.calculateBottomPadding()
+                    )
+                }
+
+                showDailyAnimalScreen && dailyAnimal != null -> {
+                    DailyAnimalScreen(
+                        animal = dailyAnimal,
+                        currentUserId = currentOwnerId,
+                        extraTopPadding = innerPadding.calculateTopPadding(),
+                        extraBottomPadding = innerPadding.calculateBottomPadding(),
+                        onClose = {
+                            prefs.edit()
+                                .putBoolean(dailyAnimalDismissedKey(preferenceOwnerId), true)
+                                .apply()
+                            showDailyAnimalScreen = false
+                        }
                     )
                 }
 
@@ -1428,9 +1527,15 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         totalFindings = findingsFromRoom.size,
                         findings = findingsFromRoom,
                         animals = animals,
+                        dailyAnimal = dailyAnimal,
                         favoriteAnimalId = favoriteAnimalId,
                         wishlistAnimalId = wishlistAnimalId,
                         roomFindingsCount = allFindings.size,
+                        onOpenDailyAnimal = {
+                            if (dailyAnimal != null) {
+                                showDailyAnimalScreen = true
+                            }
+                        },
                         onEditFinding = { finding ->
                             selectedFindingToEdit = finding
                             selectedAnimalId = finding.animalId
@@ -1551,11 +1656,6 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         end = 16.dp
                     )
             )
-            if (showStartupHintDialog && !showIntroScreen) {
-                StartupHintDialog(
-                    onDismiss = { showStartupHintDialog = false }
-                )
-            }
         }
     }
 }
@@ -2063,8 +2163,10 @@ fun HomeScreen(
     totalFindings: Int,
     findings: List<AnimalFinding>,
     animals: List<AnimalEntry>,
+    dailyAnimal: AnimalEntry?,
     favoriteAnimalId: String?,
     wishlistAnimalId: String?,
+    onOpenDailyAnimal: () -> Unit,
     onEditFinding: (AnimalFinding) -> Unit,
     roomFindingsCount: Int,
     extraTopPadding: Dp = 0.dp,
@@ -2083,10 +2185,11 @@ fun HomeScreen(
         0f
     }
     val quests =
-        remember(findings, animals, collectedAnimalCount, totalFindings, photoFindingCount) {
+        remember(findings, animals, dailyAnimal, collectedAnimalCount, totalFindings, photoFindingCount) {
             buildHomeQuests(
                 findings = findings,
                 animals = animals,
+                dailyAnimal = dailyAnimal,
                 collectedAnimalCount = collectedAnimalCount,
                 totalFindings = totalFindings,
                 photoFindingCount = photoFindingCount
@@ -2297,6 +2400,47 @@ fun HomeScreen(
             }
         }
 
+        dailyAnimal?.let { todayAnimal ->
+            item {
+                Card(
+                    onClick = onOpenDailyAnimal,
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = Color(0xFFE7F0E2),
+                        contentColor = TextPrimary
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Text(
+                            text = "Tier des Tages",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = PrimaryGreen
+                        )
+                        Text(
+                            text = todayAnimal.germanName,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = TextPrimary
+                        )
+                        Text(
+                            text = todayAnimal.group,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextSecondary
+                        )
+                        Text(
+                            text = "Heute im Fokus",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = TextSecondary
+                        )
+                    }
+                }
+            }
+        }
+
         latestFinding?.let { finding ->
             item {
                 Card(
@@ -2323,35 +2467,25 @@ fun HomeScreen(
                             color = TextPrimary
                         )
 
-                        latestFinding.date.takeIf { it.isNotBlank() }?.let {
-                            Text(
-                                text = "Datum: $it",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = TextSecondary
-                            )
-                        }
-                        latestFinding.location.takeIf { it.isNotBlank() }?.let {
-                            Text(
-                                text = "Fundort: $it",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = TextSecondary
-                            )
-                        }
-                        latestFinding.note.takeIf { it.isNotBlank() }?.let {
-                            Text(
-                                text = "Notiz: $it",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = TextSecondary
-                            )
-                        }
                         if (latestFinding.photoUri.isNotBlank()) {
-                            Spacer(modifier = Modifier.height(8.dp))
                             UriImage(
                                 uriString = latestFinding.photoUri,
                                 maxImageSizePx = 1024,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(180.dp)
+                            )
+                        }
+
+                        FindingMetaRow(
+                            date = latestFinding.date,
+                            location = latestFinding.location
+                        )
+                        latestFinding.note.takeIf { it.isNotBlank() }?.let {
+                            Text(
+                                text = "Notiz: $it",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
                             )
                         }
                     }
@@ -2623,10 +2757,14 @@ fun SettingsScreen(
     extraBottomPadding: Dp = 0.dp
 ) {
     val context = LocalContext.current
+    val appVersion = remember(context) {
+        runCatching {
+            context.packageManager.getPackageInfo(context.packageName, 0).versionName
+        }.getOrNull().orEmpty()
+    }
     var selectedSettingsPage by rememberSaveable { mutableStateOf("menu") }
     val pageTitle = when (selectedSettingsPage) {
         "menu" -> "Einstellungen"
-        "rules" -> "Regeln"
         "display" -> "Darstellung"
         "features" -> "App-Funktionen"
         "info" -> "Info"
@@ -2634,7 +2772,6 @@ fun SettingsScreen(
     }
     val pageSubtitle = when (selectedSettingsPage) {
         "menu" -> "Einführung, Hinweise und wichtige App-Bereiche an einem Ort."
-        "rules" -> "Kurz und klar zusammengefasst, was im Tierdex als Fund zählt."
         "display" -> "Gestaltung und visuelle Optionen werden hier später ergänzt."
         "features" -> "Quests, Challenges und weitere Bereiche werden hier gebündelt."
         "info" -> "Backup, Hinweise zur Datensicherheit und Informationen zur App."
@@ -2686,17 +2823,9 @@ fun SettingsScreen(
             "menu" -> {
                 item {
                     SettingsMenuCard(
-                        title = "Einführung",
-                        description = "Die kurze Einführung zur App erneut ansehen",
+                        title = "Über den Tierdex",
+                        description = "Einführung, Nutzung und Regeln der App ansehen",
                         onClick = onShowIntro
-                    )
-                }
-
-                item {
-                    SettingsMenuCard(
-                        title = "Regelliste",
-                        description = "Regeln für den Tierdex ansehen",
-                        onClick = { selectedSettingsPage = "rules" }
                     )
                 }
 
@@ -2722,48 +2851,6 @@ fun SettingsScreen(
                         description = "Infos zur App und Backup",
                         onClick = { selectedSettingsPage = "info" }
                     )
-                }
-            }
-
-            "rules" -> {
-                item {
-                    SettingsContentCard {
-                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                            Text(
-                                text = "Was im Tierdex gilt",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = TextPrimary
-                            )
-                            Text(
-                                text = "Damit Funde fair und nachvollziehbar bleiben, gelten diese einfachen Regeln:",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = TextSecondary
-                            )
-
-                            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                                Text(
-                                    text = "• Keine Haustiere oder Nutztiere",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = TextPrimary
-                                )
-                                Text(
-                                    text = "• Keine Tiere, die in Gefangenschaft leben",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = TextPrimary
-                                )
-                                Text(
-                                    text = "• Es dürfen nur eigene Fotos eingereicht werden",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = TextPrimary
-                                )
-                                Text(
-                                    text = "• Bitte keine Fotos von toten oder verletzten Tieren",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = TextPrimary
-                                )
-                            }
-                        }
-                    }
                 }
             }
 
@@ -2808,11 +2895,16 @@ fun SettingsScreen(
             "info" -> {
                 item {
                     SettingsContentCard {
-                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                             Text(
                                 text = "Tierdex Testversion",
                                 style = MaterialTheme.typography.titleMedium,
                                 color = TextPrimary
+                            )
+                            Text(
+                                text = "Version: ${appVersion.ifBlank { "Unbekannt" }}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
                             )
                             Text(
                                 text = "Backups und Sync sichern aktuell nur Funddaten. Fotos bleiben lokal auf diesem Gerät.",
@@ -2963,6 +3055,7 @@ private fun SettingsContentCard(
 enum class QuestType {
     TOTAL_FINDINGS,
     PHOTO_FINDINGS,
+    DAILY_ANIMAL,
     BIRDS,
     FISH,
     MAMMALS,
@@ -3011,6 +3104,7 @@ data class QuestUiModel(
         get() = when (type) {
             QuestType.TOTAL_FINDINGS -> Icons.Filled.Collections
             QuestType.PHOTO_FINDINGS -> Icons.Filled.PhotoCamera
+            QuestType.DAILY_ANIMAL -> Icons.Filled.Star
             QuestType.BIRDS -> Icons.Filled.Air
             QuestType.FISH -> Icons.Filled.SetMeal
             QuestType.MAMMALS -> Icons.Filled.Pets
@@ -3084,6 +3178,7 @@ fun QuestCard(quest: QuestUiModel) {
                 text = when (quest.type) {
                     QuestType.TOTAL_FINDINGS -> "Gesamtfunde"
                     QuestType.PHOTO_FINDINGS -> "Fotoquest"
+                    QuestType.DAILY_ANIMAL -> "Tagesquest"
                     QuestType.BIRDS -> "Vögel"
                     QuestType.FISH -> "Fische"
                     QuestType.MAMMALS -> "Säugetiere"
@@ -3154,6 +3249,7 @@ fun getNextQuestGoal(
 fun buildHomeQuests(
     findings: List<AnimalFinding>,
     animals: List<AnimalEntry>,
+    dailyAnimal: AnimalEntry?,
     collectedAnimalCount: Int,
     totalFindings: Int,
     photoFindingCount: Int
@@ -3184,6 +3280,24 @@ fun buildHomeQuests(
         isCompleted = photoFindingCount >= 20
     )
 
+    val todayDateText = currentAppDateText()
+    val dailyAnimalFoundToday = dailyAnimal?.let { todayAnimal ->
+        findings.any { finding ->
+            finding.animalId == todayAnimal.id && finding.date == todayDateText
+        }
+    } ?: false
+    val dailyAnimalQuest = dailyAnimal?.let { todayAnimal ->
+        QuestUiModel(
+            id = "daily_animal_${todayAnimal.id}_${currentDailyDateKey()}",
+            type = QuestType.DAILY_ANIMAL,
+            title = "Tier des Tages finden",
+            description = "Finde heute das Tier des Tages und trage deinen Fund ein.",
+            progress = if (dailyAnimalFoundToday) 1 else 0,
+            goal = 1,
+            isCompleted = dailyAnimalFoundToday
+        )
+    }
+
     val groupQuestConfigs = listOf(
         Triple("Vögel", QuestType.BIRDS, listOf("Vogel", "Vögel")),
         Triple("Fische", QuestType.FISH, listOf("Fisch", "Fische")),
@@ -3211,6 +3325,7 @@ fun buildHomeQuests(
     return buildList {
         add(totalQuest)
         add(photoQuest)
+        dailyAnimalQuest?.let { add(it) }
         addAll(
             groupQuests
                 .sortedWith(
@@ -3882,10 +3997,6 @@ fun FriendsScreen(
                         val comments = commentsByFeedKey[feedItemKey].orEmpty()
                         val isLoadingComments = feedItemKey in loadingCommentKeys
                         val commentInput = commentInputs[feedItemKey].orEmpty()
-                        val metaParts = buildList {
-                            feedItem.finding.date.takeIf { it.isNotBlank() }?.let { add(it) }
-                            feedItem.finding.location.takeIf { it.isNotBlank() }?.let { add(it) }
-                        }
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(16.dp),
@@ -3949,13 +4060,10 @@ fun FriendsScreen(
                                         style = MaterialTheme.typography.labelMedium,
                                         color = TextSecondary
                                     )
-                                    if (metaParts.isNotEmpty()) {
-                                        Text(
-                                            text = metaParts.joinToString(" • "),
-                                            style = MaterialTheme.typography.labelMedium,
-                                            color = TextSecondary
-                                        )
-                                    }
+                                    FindingMetaRow(
+                                        date = feedItem.finding.date,
+                                        location = feedItem.finding.location
+                                    )
                                 }
 
                                 feedItem.finding.note.takeIf { it.isNotBlank() }?.let {
@@ -4334,76 +4442,443 @@ fun FriendsScreen(
 }
 
 @Composable
-private fun IntroScreen(
+private fun AboutTierdexScreen(
+    extraTopPadding: Dp = 0.dp,
+    extraBottomPadding: Dp = 0.dp,
     onClose: () -> Unit
 ) {
+    BackHandler(onBack = onClose)
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .statusBarsPadding()
-            .padding(horizontal = 16.dp),
-        contentPadding = PaddingValues(top = 16.dp, bottom = 24.dp),
+            .padding(
+                start = 16.dp,
+                top = 16.dp + extraTopPadding,
+                end = 16.dp
+            ),
+        contentPadding = PaddingValues(
+            top = 0.dp,
+            bottom = extraBottomPadding + 24.dp
+        ),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
-            Text(
-                text = "Willkommen bei Tierdex",
-                style = MaterialTheme.typography.headlineMedium,
-                color = TextPrimary
+            SettingsContentCard {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = "Über den Tierdex",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = TextPrimary
+                    )
+                    Text(
+                        text = "Alles Wichtige zur App, ihrer Nutzung und den wichtigsten Regeln auf einen Blick.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
+                }
+            }
+        }
+
+        item {
+            AboutTierdexSectionCard(
+                icon = Icons.Filled.Pets,
+                title = "Wofür ist die App gedacht?",
+                body = "Der Tierdex bringt Naturfreunde zusammen. Du kannst Tierfunde eintragen, sammeln und dich mit anderen austauschen. Aktuell lassen sich in Deutschland heimische Wirbeltiere erfassen. Die App ist für Menschen gedacht, die aufmerksam durch ihre Umgebung gehen oder mehr über Natur lernen möchten."
             )
         }
 
         item {
+            AboutTierdexSectionCard(
+                icon = Icons.Filled.Collections,
+                title = "Wie wird der Tierdex genutzt?",
+                body = "Auf der Startseite bekommst du einen Überblick. Unter Freunde kannst du Nutzer hinzufügen und ihre Funde sehen, liken und kommentieren. Mein Tierdex zeigt dir deine Sammlung, Wunschtiere und Tierinfos. Im Profil gestaltest du deinen persönlichen Bereich. Über den grünen Button trägst du neue Funde mit Standort, Datum und Notiz ein."
+            )
+        }
+
+        item {
+            SettingsContentCard {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = "Hilfreich bei Unsicherheit",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = TextPrimary
+                    )
+                    Text(
+                        text = "Wenn du eine Tierart nicht sicher bestimmen kannst, helfen dir Werkzeuge wie Google Lens, ChatGPT oder Gemini oft schon gut beim ersten Einordnen.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
+                }
+            }
+        }
+
+        item {
+            Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = PrimaryGreen.copy(alpha = 0.08f)
+                ),
+                shape = RoundedCornerShape(16.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.CheckCircle,
+                            contentDescription = null,
+                            tint = PrimaryGreen
+                        )
+                        Text(
+                            text = "Regeln",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = TextPrimary
+                        )
+                    }
+
+                    Text(
+                        text = "Damit Funde fair, respektvoll und nachvollziehbar bleiben, beachte bitte diese Punkte:",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
+
+                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                        AboutTierdexRuleItem("Als gefunden gilt ein Tier nur, wenn es nicht in Gefangenschaft lebt.")
+                        AboutTierdexRuleItem("Bitte lade keine toten oder stark verletzten Tiere hoch.")
+                        AboutTierdexRuleItem("Halte immer ausreichend Abstand zu Wildtieren.")
+                        AboutTierdexRuleItem("Beachte Regeln zu Privatgrundstücken, Straßenverkehr, Naturschutzgebieten und ähnlichen Bereichen.")
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun AboutTierdexSectionCard(
+    icon: ImageVector,
+    title: String,
+    body: String
+) {
+    SettingsContentCard {
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = PrimaryGreen
+                )
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = TextPrimary
+                )
+            }
             Text(
-                text = "Hier bekommst du einen kurzen Überblick, damit du direkt gut starten kannst.",
+                text = body,
                 style = MaterialTheme.typography.bodyMedium,
                 color = TextSecondary
             )
         }
+    }
+}
 
+@Composable
+private fun AboutTierdexRuleItem(text: String) {
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.Top
+    ) {
+        Text(
+            text = "•",
+            style = MaterialTheme.typography.bodyMedium,
+            color = PrimaryGreen
+        )
+        Text(
+            text = text,
+            style = MaterialTheme.typography.bodyMedium,
+            color = TextPrimary
+        )
+    }
+}
+
+@Composable
+private fun DailyAnimalScreen(
+    animal: AnimalEntry,
+    currentUserId: String?,
+    extraTopPadding: Dp = 0.dp,
+    extraBottomPadding: Dp = 0.dp,
+    onClose: () -> Unit
+) {
+    BackHandler(onBack = onClose)
+
+    var friendFindings by remember(animal.id, currentUserId) {
+        mutableStateOf<List<FriendFeedItem>>(emptyList())
+    }
+    var friendFindingsError by remember(animal.id, currentUserId) { mutableStateOf<String?>(null) }
+    var isLoadingFriendFindings by remember(animal.id, currentUserId) { mutableStateOf(false) }
+
+    val additionalAnimalInfo = listOf(
+        "Lebensraum" to animal.habitats.joinToString(", "),
+        "Lebensraum" to animal.habitat,
+        "Verbreitung in Deutschland" to animal.distributionGermany,
+        "Verbreitung" to animal.distribution,
+        "Seltenheit" to animal.rarity,
+        "Aktivität" to animal.activity,
+        "Beste Beobachtungszeit" to animal.season
+    ).filter { (_, value) -> value.isNotBlank() }
+
+    LaunchedEffect(currentUserId, animal.id) {
+        friendFindings = emptyList()
+        friendFindingsError = null
+
+        if (currentUserId.isNullOrBlank()) {
+            isLoadingFriendFindings = false
+            return@LaunchedEffect
+        }
+
+        isLoadingFriendFindings = true
+        FriendRepository.loadFriendFindingsForAnimal(
+            currentUserId = currentUserId,
+            animalId = animal.id,
+            onResult = {
+                friendFindings = it
+                isLoadingFriendFindings = false
+            },
+            onError = {
+                friendFindingsError = "Freundesfunde konnten nicht geladen werden."
+                isLoadingFriendFindings = false
+            }
+        )
+    }
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .padding(
+                start = 16.dp,
+                top = 16.dp + extraTopPadding,
+                end = 16.dp
+            ),
+        contentPadding = PaddingValues(
+            top = 0.dp,
+            bottom = extraBottomPadding + 24.dp
+        ),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
         item {
             SettingsContentCard {
-                Text(
-                    text = "Was die App kann",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = TextPrimary
-                )
-                Text(
-                    text = "Tierdex hilft dir dabei, Tierfunde festzuhalten, deine Sammlung aufzubauen und deinen Fortschritt in deiner persönlichen Übersicht zu sehen.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary
-                )
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = "Tier des Tages",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = TextPrimary
+                    )
+                    Text(
+                        text = "Heute lohnt sich ein genauer Blick auf dieses Tier.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
+                }
             }
         }
 
         item {
             SettingsContentCard {
-                Text(
-                    text = "So benutzt du sie",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = TextPrimary
-                )
-                Text(
-                    text = "Lege über \"Neuer Fund\" einen Eintrag an, wähle ein Tier aus und ergänze Datum, Ort, Notiz oder Foto. Deine Funde findest du später in deinem Profil und in deinem Tierdex wieder.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary
-                )
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = animal.germanName,
+                        style = MaterialTheme.typography.headlineSmall,
+                        color = TextPrimary
+                    )
+                    animal.latinName.takeIf { it.isNotBlank() }?.let {
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextSecondary,
+                            fontStyle = FontStyle.Italic
+                        )
+                    }
+                    Text(
+                        text = animal.group,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
+                    animal.subgroup.takeIf { it.isNotBlank() }?.let {
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = TextSecondary
+                        )
+                    }
+                    animal.shortDescription.takeIf { it.isNotBlank() }?.let {
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextPrimary
+                        )
+                    }
+                }
+            }
+        }
+
+        if (additionalAnimalInfo.isNotEmpty() || animal.observationTip.isNotBlank()) {
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    colors = CardDefaults.cardColors(containerColor = CardBackground)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(20.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Text(
+                            text = "Mehr zu diesem Tier",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = TextPrimary
+                        )
+
+                        additionalAnimalInfo.forEach { (label, value) ->
+                            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                Text(
+                                    text = label,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = TextPrimary,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Text(
+                                    text = value,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = TextSecondary
+                                )
+                            }
+                        }
+
+                        animal.observationTip.takeIf { it.isNotBlank() }?.let {
+                            Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                Text(
+                                    text = "Fundtipp",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    color = TextPrimary,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Text(
+                                    text = it,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = TextSecondary
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
 
         item {
-            SettingsContentCard {
-                Text(
-                    text = "Wofür sie gedacht ist",
-                    style = MaterialTheme.typography.titleMedium,
-                    color = TextPrimary
-                )
-                Text(
-                    text = "Die App ist für eigene Naturbeobachtungen gedacht und soll dir helfen, besondere Begegnungen mit wild lebenden Tieren übersichtlich zu sammeln.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextSecondary
-                )
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(containerColor = CardBackground)
+            ) {
+                Column(
+                    modifier = Modifier.padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = "Von Freunden gefunden",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = TextPrimary
+                    )
+
+                    when {
+                        currentUserId.isNullOrBlank() -> {
+                            Text(
+                                text = "Melde dich an, um Funde von Freunden zu sehen.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
+                            )
+                        }
+
+                        isLoadingFriendFindings -> {
+                            Text(
+                                text = "Freundesfunde werden geladen…",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
+                            )
+                        }
+
+                        friendFindingsError != null -> {
+                            Text(
+                                text = friendFindingsError ?: "Freundesfunde konnten nicht geladen werden.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
+                            )
+                        }
+
+                        friendFindings.isEmpty() -> {
+                            Text(
+                                text = "Noch keiner deiner Freunde hat dieses Tier gefunden.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
+                            )
+                        }
+
+                        else -> {
+                            friendFindings.forEach { feedItem ->
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(16.dp),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = Color.White.copy(alpha = 0.82f)
+                                    ),
+                                    elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(16.dp),
+                                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                                    ) {
+                                        Text(
+                                            text = feedItem.friendDisplayName.ifBlank { "Unbenannter Nutzer" },
+                                            style = MaterialTheme.typography.titleSmall,
+                                            color = TextPrimary
+                                        )
+                                        FindingMetaRow(
+                                            date = feedItem.finding.date,
+                                            location = feedItem.finding.location
+                                        )
+                                        feedItem.finding.note.takeIf { it.isNotBlank() }?.let {
+                                            Text(
+                                                text = it,
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = TextSecondary
+                                            )
+                                        }
+                                        if (feedItem.finding.photoUri.isNotBlank()) {
+                                            Text(
+                                                text = "Foto vorhanden",
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = TextSecondary
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
 
@@ -4411,76 +4886,11 @@ private fun IntroScreen(
             Button(
                 onClick = onClose,
                 modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = PrimaryGreen
-                )
+                colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
             ) {
-                Text("Verstanden")
+                Text("Schließen")
             }
         }
-    }
-}
-
-@Composable
-private fun StartupHintDialog(
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text("Verstanden", color = PrimaryGreen)
-            }
-        },
-        title = {
-            Text(
-                text = "Kurz vor dem Start",
-                style = MaterialTheme.typography.titleLarge,
-                color = TextPrimary
-            )
-        },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                Text(
-                    text = "Bitte beachte kurz diese Regeln:",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = TextPrimary
-                )
-                StartupHintRulesContent()
-            }
-        },
-        containerColor = Color.White
-    )
-}
-
-@Composable
-private fun StartupHintRulesContent() {
-    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-        Text(
-            "- Keine Haustiere",
-            style = MaterialTheme.typography.bodyMedium,
-            color = TextSecondary
-        )
-        Text(
-            "- Keine Nutztiere",
-            style = MaterialTheme.typography.bodyMedium,
-            color = TextSecondary
-        )
-        Text(
-            "- Keine in Gefangenschaft lebenden Tiere",
-            style = MaterialTheme.typography.bodyMedium,
-            color = TextSecondary
-        )
-        Text(
-            "- Nur eigene Fotos duerfen eingereicht werden",
-            style = MaterialTheme.typography.bodyMedium,
-            color = TextSecondary
-        )
-        Text(
-            "- Bitte keine Fotos von toten oder verletzten Tieren",
-            style = MaterialTheme.typography.bodyMedium,
-            color = TextSecondary
-        )
     }
 }
 
@@ -5124,43 +5534,14 @@ fun ProfileScreen(
                 ) {
                     Column(
                         modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         Text(
                             text = animal?.germanName ?: "Unbekanntes Tier",
                             style = MaterialTheme.typography.titleMedium
                         )
 
-                        Spacer(modifier = Modifier.height(4.dp))
-
-                        if (finding.date.isNotBlank()) {
-                            Text(
-                                text = "Datum: ${finding.date}",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = TextSecondary
-                            )
-                        }
-
-                        if (finding.location.isNotBlank()) {
-                            Text(
-                                text = "Fundort: ${finding.location}",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = TextSecondary
-                            )
-                        }
-
-                        if (finding.note.isNotBlank()) {
-                            Text(
-                                text = "Notiz: ${finding.note}",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = TextSecondary
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.height(8.dp))
-
                         if (finding.photoUri.isNotBlank()) {
-                            Spacer(modifier = Modifier.height(12.dp))
                             UriImage(
                                 uriString = finding.photoUri,
                                 maxImageSizePx = 1024,
@@ -5168,6 +5549,19 @@ fun ProfileScreen(
                                     .fillMaxWidth()
                                     .heightIn(max = 220.dp)
                                     .clip(RoundedCornerShape(12.dp))
+                            )
+                        }
+
+                        FindingMetaRow(
+                            date = finding.date,
+                            location = finding.location
+                        )
+
+                        if (finding.note.isNotBlank()) {
+                            Text(
+                                text = "Notiz: ${finding.note}",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
                             )
                         }
                     }
@@ -5699,7 +6093,7 @@ fun AnimalDetailScreen(
                 ) {
                     Column(
                         modifier = Modifier.padding(20.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Text(
                             text = "Fundinfos",
@@ -5707,86 +6101,8 @@ fun AnimalDetailScreen(
                             color = TextPrimary
                         )
 
-                        if (hasTextualFindingDetails) {
-                            currentFinding?.date?.takeIf { it.isNotBlank() }?.let {
-                                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                                    Text(
-                                        text = "Datum",
-                                        style = MaterialTheme.typography.labelLarge,
-                                        color = TextSecondary
-                                    )
-                                    Text(
-                                        text = it,
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        color = TextPrimary
-                                    )
-                                }
-                            }
-
-                            currentFinding?.location?.takeIf { it.isNotBlank() }?.let {
-                                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                                    Text(
-                                        text = "Fundort",
-                                        style = MaterialTheme.typography.labelLarge,
-                                        color = TextSecondary
-                                    )
-                                    Text(
-                                        text = it,
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        color = TextPrimary
-                                    )
-                                }
-                            }
-
-                            val locationDetailText = when {
-                                currentFinding?.locationSource == "map" -> "Standort auf Karte gewählt"
-                                currentFinding?.locationSource == "gps" ||
-                                        (currentFinding?.latitude != null && currentFinding.longitude != null) ->
-                                    "GPS-Standort gespeichert"
-                                else -> null
-                            }
-                            locationDetailText?.let {
-                                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                                    Text(
-                                        text = "Standortdetails",
-                                        style = MaterialTheme.typography.labelLarge,
-                                        color = TextSecondary
-                                    )
-                                    Text(
-                                        text = it,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = TextSecondary
-                                    )
-                                }
-                            }
-
-                            currentFinding?.note?.takeIf { it.isNotBlank() }?.let {
-                                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    Text(
-                                        text = "Notiz",
-                                        style = MaterialTheme.typography.labelLarge,
-                                        color = TextSecondary
-                                    )
-                                    Text(
-                                        text = it,
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        color = TextPrimary
-                                    )
-                                }
-                            }
-                        }
-
                         if (hasFindingPhoto) {
-                            if (hasTextualFindingDetails) {
-                                Spacer(modifier = Modifier.height(4.dp))
-                            }
-
                             editablePhotoUri?.takeIf { it.isNotBlank() }?.let {
-                                Text(
-                                    text = "Foto",
-                                    style = MaterialTheme.typography.titleMedium,
-                                    color = TextPrimary
-                                )
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -5828,21 +6144,65 @@ fun AnimalDetailScreen(
                                         }
                                     }
                                 }
+                            }
+                        }
 
-                                if (isEditMode) {
-                                    OutlinedButton(
-                                        onClick = {
-                                            pickMedia.launch(
-                                                PickVisualMediaRequest(
-                                                    ActivityResultContracts.PickVisualMedia.ImageOnly
-                                                )
-                                            )
-                                        },
-                                        modifier = Modifier.fillMaxWidth()
-                                    ) {
-                                        Text("Anderes Foto auswählen")
-                                    }
+                        if (hasTextualFindingDetails) {
+                            FindingMetaRow(
+                                date = currentFinding?.date,
+                                location = currentFinding?.location
+                            )
+
+                            val locationDetailText = when {
+                                currentFinding?.locationSource == "map" -> "Standort auf Karte gewählt"
+                                currentFinding?.locationSource == "gps" ||
+                                        (currentFinding?.latitude != null && currentFinding.longitude != null) ->
+                                    "GPS-Standort gespeichert"
+                                else -> null
+                            }
+                            locationDetailText?.let {
+                                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                    Text(
+                                        text = "Standortdetails",
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = TextSecondary
+                                    )
+                                    Text(
+                                        text = it,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = TextSecondary
+                                    )
                                 }
+                            }
+
+                            currentFinding?.note?.takeIf { it.isNotBlank() }?.let {
+                                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Text(
+                                        text = "Notiz",
+                                        style = MaterialTheme.typography.labelLarge,
+                                        color = TextSecondary
+                                    )
+                                    Text(
+                                        text = it,
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        color = TextPrimary
+                                    )
+                                }
+                            }
+                        }
+
+                        if (hasFindingPhoto && isEditMode) {
+                            OutlinedButton(
+                                onClick = {
+                                    pickMedia.launch(
+                                        PickVisualMediaRequest(
+                                            ActivityResultContracts.PickVisualMedia.ImageOnly
+                                        )
+                                    )
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text("Anderes Foto auswählen")
                             }
                         }
                     }
@@ -5987,20 +6347,10 @@ fun AnimalDetailScreen(
                                                 style = MaterialTheme.typography.titleSmall,
                                                 color = TextPrimary
                                             )
-                                            feedItem.finding.date.takeIf { it.isNotBlank() }?.let {
-                                                Text(
-                                                    text = "Datum: $it",
-                                                    style = MaterialTheme.typography.bodyMedium,
-                                                    color = TextSecondary
-                                                )
-                                            }
-                                            feedItem.finding.location.takeIf { it.isNotBlank() }?.let {
-                                                Text(
-                                                    text = "Fundort: $it",
-                                                    style = MaterialTheme.typography.bodyMedium,
-                                                    color = TextSecondary
-                                                )
-                                            }
+                                            FindingMetaRow(
+                                                date = feedItem.finding.date,
+                                                location = feedItem.finding.location
+                                            )
                                             feedItem.finding.note.takeIf { it.isNotBlank() }?.let {
                                                 Text(
                                                     text = "Notiz: $it",
