@@ -2503,6 +2503,8 @@ fun HomeScreen(
     } else {
         0f
     }
+    val collectionProgress = (collectionPercent / 100f).coerceIn(0f, 1f)
+    val collectionPercentLabel = String.format(Locale.GERMANY, "%.2f %%", collectionPercent.toDouble())
     val quests =
         remember(findings, animals, dailyAnimal, collectedAnimalCount, totalFindings, photoFindingCount) {
             buildHomeQuests(
@@ -2536,7 +2538,7 @@ fun HomeScreen(
                 shape = RoundedCornerShape(24.dp),
                 elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = PrimaryGreenSoft.copy(alpha = 0.95f),
+                    containerColor = CardBackground,
                     contentColor = TextPrimary
                 )
             ) {
@@ -2560,24 +2562,37 @@ fun HomeScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "$collectedAnimalCount von $totalAnimalCount Arten entdeckt",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = TextSecondary
-                        )
-                        Text(
-                            text = "${collectionPercent.roundToInt()}%",
+                            text = collectionPercentLabel,
                             style = MaterialTheme.typography.labelLarge,
                             color = PrimaryGreen
                         )
                     }
-                    LinearProgressIndicator(
-                        progress = { (collectionPercent / 100f).coerceIn(0f, 1f) },
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(10.dp)
-                            .clip(RoundedCornerShape(999.dp)),
-                        color = PrimaryGreen,
-                        trackColor = Color.White.copy(alpha = 0.55f)
+                            .height(14.dp)
+                            .border(
+                                border = BorderStroke(1.dp, BorderColor),
+                                shape = RoundedCornerShape(999.dp)
+                            )
+                            .clip(RoundedCornerShape(999.dp))
+                            .background(Color(0xFFF6F7F8))
+                            .padding(2.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(collectionProgress)
+                                .fillMaxHeight()
+                                .clip(RoundedCornerShape(4.dp))
+                                .background(PrimaryGreen)
+                        )
+                    }
+                    Text(
+                        text = "$collectedAnimalCount von $totalAnimalCount Arten entdeckt",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
