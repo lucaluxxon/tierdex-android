@@ -28,8 +28,8 @@ android {
         applicationId = "com.example.tierdex"
         minSdk = 24
         targetSdk = 36
-        versionCode = 2
-        versionName = "1.1"
+        versionCode = 3
+        versionName = "1.1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders["MAPS_API_KEY"] = mapsApiKey
@@ -87,6 +87,7 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.12.0"))
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-storage")
     implementation("com.google.android.gms:play-services-location:21.3.0")
     implementation("com.google.maps.android:maps-compose:6.1.0")
     implementation("com.google.maps.android:maps-compose-utils:6.1.0")

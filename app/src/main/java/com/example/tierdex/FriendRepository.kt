@@ -36,7 +36,8 @@ data class FriendFeedItem(
     val findingId: String,
     val finding: AnimalFinding,
     val likeCount: Int = 0,
-    val likedByCurrentUser: Boolean = false
+    val likedByCurrentUser: Boolean = false,
+    val commentCount: Int = 0
 )
 
 data class FriendFindingComment(
@@ -234,6 +235,38 @@ object FriendRepository {
                 Log.e(
                     TAG,
                     wrappedException.message ?: "Failed to load comments",
+                    wrappedException
+                )
+                onError(wrappedException)
+            }
+    }
+
+    fun loadCommentCountForFinding(
+        ownerUserId: String,
+        findingId: String,
+        onResult: (Int) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        if (ownerUserId.isBlank() || findingId.isBlank()) {
+            onResult(0)
+            return
+        }
+
+        findingCommentsCollection(ownerUserId, findingId)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                onResult(snapshot.documents.count { !it.getString("text").isNullOrBlank() })
+            }
+            .addOnFailureListener { exception ->
+                val wrappedException = toFirestoreException(
+                    functionName = "loadCommentCountForFinding",
+                    operation = "READ",
+                    path = "users/$ownerUserId/findings/$findingId/comments",
+                    exception = exception
+                )
+                Log.e(
+                    TAG,
+                    wrappedException.message ?: "Failed to load comment count",
                     wrappedException
                 )
                 onError(wrappedException)
@@ -935,6 +968,7 @@ object FriendRepository {
                                             location = findingDocument.getString("location").orEmpty(),
                                             note = findingDocument.getString("note").orEmpty(),
                                             photoUri = findingDocument.getString("photoUri").orEmpty(),
+                                            remotePhotoPath = findingDocument.getString("remotePhotoPath").orEmpty(),
                                             latitude = findingDocument.getDouble("latitude"),
                                             longitude = findingDocument.getDouble("longitude"),
                                             locationSource = findingDocument.getString("locationSource"),
@@ -946,27 +980,64 @@ object FriendRepository {
                                             findingId = findingDocument.id,
                                             currentUserId = currentUserId,
                                             onResult = { likeCount, likedByCurrentUser ->
-                                                feedItems += FriendFeedItem(
-                                                    friendUserId = friendUserId,
-                                                    friendDisplayName = friendDisplayName,
+                                                loadCommentCountForFinding(
+                                                    ownerUserId = friendUserId,
                                                     findingId = findingDocument.id,
-                                                    finding = finding,
-                                                    likeCount = likeCount,
-                                                    likedByCurrentUser = likedByCurrentUser
+                                                    onResult = { commentCount ->
+                                                        feedItems += FriendFeedItem(
+                                                            friendUserId = friendUserId,
+                                                            friendDisplayName = friendDisplayName,
+                                                            findingId = findingDocument.id,
+                                                            finding = finding,
+                                                            likeCount = likeCount,
+                                                            likedByCurrentUser = likedByCurrentUser,
+                                                            commentCount = commentCount
+                                                        )
+                                                        finishFriendLoad()
+                                                    },
+                                                    onError = { exception ->
+                                                        if (firstError == null) {
+                                                            firstError = exception
+                                                        }
+                                                        feedItems += FriendFeedItem(
+                                                            friendUserId = friendUserId,
+                                                            friendDisplayName = friendDisplayName,
+                                                            findingId = findingDocument.id,
+                                                            finding = finding,
+                                                            likeCount = likeCount,
+                                                            likedByCurrentUser = likedByCurrentUser
+                                                        )
+                                                        finishFriendLoad()
+                                                    }
                                                 )
-                                                finishFriendLoad()
                                             },
                                             onError = { exception ->
                                                 if (firstError == null) {
                                                     firstError = exception
                                                 }
-                                                feedItems += FriendFeedItem(
-                                                    friendUserId = friendUserId,
-                                                    friendDisplayName = friendDisplayName,
+                                                loadCommentCountForFinding(
+                                                    ownerUserId = friendUserId,
                                                     findingId = findingDocument.id,
-                                                    finding = finding
+                                                    onResult = { commentCount ->
+                                                        feedItems += FriendFeedItem(
+                                                            friendUserId = friendUserId,
+                                                            friendDisplayName = friendDisplayName,
+                                                            findingId = findingDocument.id,
+                                                            finding = finding,
+                                                            commentCount = commentCount
+                                                        )
+                                                        finishFriendLoad()
+                                                    },
+                                                    onError = {
+                                                        feedItems += FriendFeedItem(
+                                                            friendUserId = friendUserId,
+                                                            friendDisplayName = friendDisplayName,
+                                                            findingId = findingDocument.id,
+                                                            finding = finding
+                                                        )
+                                                        finishFriendLoad()
+                                                    }
                                                 )
-                                                finishFriendLoad()
                                             }
                                         )
                                     }
@@ -1082,6 +1153,7 @@ object FriendRepository {
                                             location = findingDocument.getString("location").orEmpty(),
                                             note = findingDocument.getString("note").orEmpty(),
                                             photoUri = findingDocument.getString("photoUri").orEmpty(),
+                                            remotePhotoPath = findingDocument.getString("remotePhotoPath").orEmpty(),
                                             latitude = findingDocument.getDouble("latitude"),
                                             longitude = findingDocument.getDouble("longitude"),
                                             locationSource = findingDocument.getString("locationSource"),

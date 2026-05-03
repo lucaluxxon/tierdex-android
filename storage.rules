@@ -1,0 +1,29 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function friendDocPath(ownerUserId, viewerUserId) {
+      return /databases/(default)/documents/users/$(ownerUserId)/friends/$(viewerUserId);
+    }
+
+    function isAcceptedFriend(ownerUserId, viewerUserId) {
+      return isSignedIn()
+        && firestore.exists(friendDocPath(ownerUserId, viewerUserId))
+        && firestore.get(friendDocPath(ownerUserId, viewerUserId)).data.status == 'accepted';
+    }
+
+    match /users/{ownerUserId}/findings/{findingId}/{fileName} {
+      allow read: if isOwner(ownerUserId) || isAcceptedFriend(ownerUserId, request.auth.uid);
+      allow write: if isOwner(ownerUserId);
+      allow delete: if isOwner(ownerUserId);
+    }
+  }
+}

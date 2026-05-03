@@ -34,8 +34,12 @@ object FirestoreFindingRepository {
         return digest.joinToString("") { byte -> "%02x".format(byte) }
     }
 
-    private fun documentIdForFinding(finding: AnimalFinding): String {
+    private fun hashedDocumentIdForFinding(finding: AnimalFinding): String {
         return hashedDocumentId(findingFingerprint(finding))
+    }
+
+    fun documentIdForFinding(finding: AnimalFinding): String {
+        return hashedDocumentIdForFinding(finding)
     }
 
     fun saveCurrentUserFinding(
@@ -54,13 +58,14 @@ object FirestoreFindingRepository {
             "location" to finding.location,
             "note" to finding.note,
             "photoUri" to finding.photoUri,
+            "remotePhotoPath" to finding.remotePhotoPath,
             "latitude" to finding.latitude,
             "longitude" to finding.longitude,
             "locationSource" to finding.locationSource,
             "taggedFriendIds" to finding.taggedFriendIds
         )
 
-        val documentId = documentIdForFinding(finding)
+        val documentId = hashedDocumentIdForFinding(finding)
         Log.d(TAG, "Generated hashed Firestore documentId for finding: $documentId")
 
         firestore.collection("users")
@@ -92,7 +97,7 @@ object FirestoreFindingRepository {
             return
         }
 
-        val documentId = documentIdForFinding(finding)
+        val documentId = hashedDocumentIdForFinding(finding)
         val findingsCollection = firestore.collection("users")
             .document(uid)
             .collection("findings")
@@ -180,8 +185,8 @@ object FirestoreFindingRepository {
         newFinding: AnimalFinding,
         onResult: (Boolean, String?) -> Unit
     ) {
-        val oldDocumentId = documentIdForFinding(oldFinding)
-        val newDocumentId = documentIdForFinding(newFinding)
+        val oldDocumentId = hashedDocumentIdForFinding(oldFinding)
+        val newDocumentId = hashedDocumentIdForFinding(newFinding)
 
         if (oldDocumentId == newDocumentId) {
             saveCurrentUserFinding(newFinding, onResult)
@@ -222,6 +227,7 @@ object FirestoreFindingRepository {
                         location = document.getString("location").orEmpty(),
                         note = document.getString("note").orEmpty(),
                         photoUri = document.getString("photoUri").orEmpty(),
+                        remotePhotoPath = document.getString("remotePhotoPath").orEmpty(),
                         latitude = document.getDouble("latitude"),
                         longitude = document.getDouble("longitude"),
                         locationSource = document.getString("locationSource"),

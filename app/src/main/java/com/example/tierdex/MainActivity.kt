@@ -82,6 +82,7 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import java.io.BufferedReader
+import java.io.ByteArrayInputStream
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -161,6 +162,7 @@ import androidx.compose.material.icons.filled.SetMeal
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Collections
+import androidx.compose.material.icons.filled.Comment
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Map
@@ -266,6 +268,7 @@ class MainActivity : ComponentActivity() {
             .addMigrations(AnimalFindingDatabase.MIGRATION_1_2)
             .addMigrations(AnimalFindingDatabase.MIGRATION_2_3)
             .addMigrations(AnimalFindingDatabase.MIGRATION_3_4)
+            .addMigrations(AnimalFindingDatabase.MIGRATION_4_5)
             .build()
     }
 
@@ -276,7 +279,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         wishAnimalId = null
         favoriteAnimalId = null
-
         setContent {
             var showSplashScreen by remember { mutableStateOf(true) }
 
@@ -335,6 +337,7 @@ data class AnimalFinding(
     val location: String,
     val note: String,
     val photoUri: String = "",
+    val remotePhotoPath: String = "",
     val latitude: Double? = null,
     val longitude: Double? = null,
     val locationSource: String? = null,
@@ -438,6 +441,170 @@ private fun FindingMetaRow(
             locationLabel = location,
             onDismiss = { showLocationDialog = false }
         )
+    }
+}
+
+private fun isCrossDeviceDisplayableLocalPhoto(
+    photoUri: String,
+    ownerUserId: String?,
+    currentUserId: String?
+): Boolean {
+    val trimmedUri = photoUri.trim()
+    if (trimmedUri.isBlank()) return false
+
+    return ownerUserId == currentUserId ||
+        trimmedUri.startsWith("http://", ignoreCase = true) ||
+        trimmedUri.startsWith("https://", ignoreCase = true) ||
+        trimmedUri.startsWith("android.resource://")
+}
+
+private fun hasAnyFindingPhoto(finding: AnimalFinding): Boolean {
+    return finding.photoUri.isNotBlank() || finding.remotePhotoPath.isNotBlank()
+}
+
+private fun preferredOwnedFindingPhotoUri(finding: AnimalFinding): String? {
+    return finding.photoUri.takeIf { it.isNotBlank() }
+        ?: finding.remotePhotoPath.takeIf { it.isNotBlank() }?.let(::storageUriFromPath)
+}
+
+private fun preferredFriendFindingPhotoUri(
+    finding: AnimalFinding,
+    ownerUserId: String?,
+    currentUserId: String?
+): String? {
+    return finding.remotePhotoPath.takeIf { it.isNotBlank() }?.let(::storageUriFromPath)
+        ?: finding.photoUri.takeIf {
+            isCrossDeviceDisplayableLocalPhoto(
+                photoUri = it,
+                ownerUserId = ownerUserId,
+                currentUserId = currentUserId
+            )
+        }
+}
+
+private fun taggedFriendsSummaryText(
+    taggedFriendIds: List<String>,
+    currentUserId: String?,
+    ownerUserId: String,
+    ownerDisplayName: String,
+    friendNamesById: Map<String, String>
+): String? {
+    val normalizedIds = taggedFriendIds
+        .map { it.trim() }
+        .filter { it.isNotBlank() }
+        .distinct()
+    if (normalizedIds.isEmpty()) return null
+
+    val resolvedNames = normalizedIds.mapNotNull { taggedId ->
+        when {
+            !currentUserId.isNullOrBlank() && taggedId == currentUserId -> "Du"
+            taggedId == ownerUserId -> ownerDisplayName.ifBlank { null }
+            else -> friendNamesById[taggedId]?.takeIf { it.isNotBlank() }
+        }
+    }.distinct()
+    val unknownCount = (normalizedIds.size - resolvedNames.size).coerceAtLeast(0)
+
+    return when {
+        resolvedNames.isEmpty() -> "Mit Freunden gefunden (${normalizedIds.size})"
+        unknownCount > 0 -> "Mit Freunden gefunden: ${resolvedNames.joinToString(", ")} + $unknownCount weitere"
+        else -> "Mit Freunden gefunden: ${resolvedNames.joinToString(", ")}"
+    }
+}
+
+@Composable
+private fun FriendFindingPhotoBlock(
+    photoDisplayUri: String?,
+    hasPhoto: Boolean,
+    modifier: Modifier = Modifier
+) {
+    if (!hasPhoto) return
+
+    if (!photoDisplayUri.isNullOrBlank()) {
+        UriImage(
+            uriString = photoDisplayUri,
+            maxImageSizePx = 1024,
+            modifier = modifier
+                .fillMaxWidth()
+                .height(190.dp)
+                .clip(RoundedCornerShape(14.dp))
+        )
+    } else {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .height(160.dp)
+                .clip(RoundedCornerShape(14.dp))
+                .background(PrimaryGreenSoft.copy(alpha = 0.22f)),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Collections,
+                    contentDescription = null,
+                    tint = PrimaryGreen,
+                    modifier = Modifier.size(30.dp)
+                )
+                Text(
+                    text = "Foto vorhanden",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = TextPrimary
+                )
+                Text(
+                    text = "Auf diesem Ger\u00e4t nicht direkt verf\u00fcgbar",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextSecondary
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun FriendFindingEngagementSummary(
+    likeCount: Int,
+    commentCount: Int,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Favorite,
+                contentDescription = null,
+                modifier = Modifier.size(15.dp),
+                tint = TextSecondary
+            )
+            Text(
+                text = likeCount.toString(),
+                style = MaterialTheme.typography.labelMedium,
+                color = TextSecondary
+            )
+        }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Filled.Comment,
+                contentDescription = null,
+                modifier = Modifier.size(15.dp),
+                tint = TextSecondary
+            )
+            Text(
+                text = commentCount.toString(),
+                style = MaterialTheme.typography.labelMedium,
+                color = TextSecondary
+            )
+        }
     }
 }
 
@@ -871,6 +1038,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         else -> filteredAnimals.sortedBy { it.germanName.lowercase() }
     }
 
+    val appContext = LocalContext.current.applicationContext
     val selectedAnimal = animals.find { it.id == selectedAnimalId }
     val showAuthStartScreen = ownerId == null && authEntryMode == null
     val showAuthEntryScreen = ownerId == null && authEntryMode != null
@@ -1388,16 +1556,35 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         },
                         onSaveFinding = { finding ->
                             scope.launch {
+                                val ownerIdForUpload = currentOwnerId
+                                val findingWithRemotePhoto = if (
+                                    !ownerIdForUpload.isNullOrBlank() &&
+                                    finding.photoUri.isNotBlank()
+                                ) {
+                                    val remotePhotoPath = FindingPhotoStorageRepository.uploadFindingPhoto(
+                                        context = appContext,
+                                        userId = ownerIdForUpload,
+                                        finding = finding
+                                    )
+                                    finding.copy(
+                                        ownerId = ownerIdForUpload,
+                                        remotePhotoPath = remotePhotoPath
+                                    )
+                                } else {
+                                    finding.copy(ownerId = ownerIdForUpload)
+                                }
                                 val previousFindings = findingsFromRoom
                                 val questCelebration = detectQuestLevelUpMessage(
                                     previousFindings = previousFindings,
-                                    newFinding = finding,
+                                    newFinding = findingWithRemotePhoto,
                                     animals = animals
                                 )
 
-                                dao.insertFinding(finding.toEntity(ownerIdOverride = currentOwnerId))
+                                dao.insertFinding(
+                                    findingWithRemotePhoto.toEntity(ownerIdOverride = currentOwnerId)
+                                )
 
-                                if (wishlistAnimalId == finding.animalId) {
+                                if (wishlistAnimalId == findingWithRemotePhoto.animalId) {
                                     wishlistAnimalId = null
                                     prefs.edit().remove(wishlistAnimalKey(preferenceOwnerId)).apply()
                                     wishlistCelebrationMessage = CelebrationMessage(
@@ -1409,7 +1596,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                 questLevelUpMessage = questCelebration
 
                                 if (currentOwnerId != null) {
-                                    FirestoreFindingRepository.saveCurrentUserFinding(finding) { success, result ->
+                                    FirestoreFindingRepository.saveCurrentUserFinding(findingWithRemotePhoto) { success, result ->
                                         if (!success) {
                                             Log.e(
                                                 "CloudWrite",
@@ -1470,9 +1657,37 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             }
                         },
                         onUpdateFinding = { oldFinding, newFinding ->
-                            selectedFindingToEdit = newFinding
-
                             scope.launch {
+                                val ownerIdForUpload = currentOwnerId
+                                val preparedNewFinding = if (
+                                    !ownerIdForUpload.isNullOrBlank() &&
+                                    newFinding.photoUri.isNotBlank()
+                                ) {
+                                    val shouldUploadPhoto =
+                                        newFinding.photoUri != oldFinding.photoUri ||
+                                            newFinding.remotePhotoPath.isBlank()
+                                    val remotePhotoPath = if (shouldUploadPhoto) {
+                                        FindingPhotoStorageRepository.uploadFindingPhoto(
+                                            context = appContext,
+                                            userId = ownerIdForUpload,
+                                            finding = newFinding
+                                        )
+                                    } else {
+                                        newFinding.remotePhotoPath.ifBlank { oldFinding.remotePhotoPath }
+                                    }
+                                    newFinding.copy(
+                                        ownerId = ownerIdForUpload,
+                                        remotePhotoPath = remotePhotoPath
+                                    )
+                                } else {
+                                    newFinding.copy(
+                                        ownerId = ownerIdForUpload,
+                                        remotePhotoPath = newFinding.remotePhotoPath.ifBlank {
+                                            oldFinding.remotePhotoPath
+                                        }
+                                    )
+                                }
+                                selectedFindingToEdit = preparedNewFinding
                                 val roomMatch = if (oldFinding.roomId != null) {
                                     allFindings.lastOrNull { it.id == oldFinding.roomId }
                                 } else {
@@ -1487,7 +1702,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
 
                                 if (roomMatch != null) {
                                     dao.updateFinding(
-                                        newFinding.toEntity(
+                                        preparedNewFinding.toEntity(
                                             ownerIdOverride = currentOwnerId,
                                             roomIdOverride = roomMatch.id
                                         )
@@ -1496,7 +1711,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                     if (currentOwnerId != null) {
                                         FirestoreFindingRepository.updateCurrentUserFinding(
                                             oldFinding,
-                                            newFinding
+                                            preparedNewFinding
                                         ) { success, result ->
                                             if (!success) {
                                                 Log.e(
@@ -2570,9 +2785,9 @@ fun HomeScreen(
                             color = TextPrimary
                         )
 
-                        if (latestFinding.photoUri.isNotBlank()) {
+                        preferredOwnedFindingPhotoUri(latestFinding)?.let { photoDisplayUri ->
                             UriImage(
-                                uriString = latestFinding.photoUri,
+                                uriString = photoDisplayUri,
                                 maxImageSizePx = 1024,
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -3560,6 +3775,13 @@ fun FriendsScreen(
             findingId = feedItem.findingId,
             onResult = { comments ->
                 commentsByFeedKey = commentsByFeedKey + (key to comments)
+                friendFeed = friendFeed.map { existingItem ->
+                    if (feedKey(existingItem) == key) {
+                        existingItem.copy(commentCount = comments.size)
+                    } else {
+                        existingItem
+                    }
+                }
                 loadingCommentKeys = loadingCommentKeys - key
             },
             onError = {
@@ -4069,6 +4291,10 @@ fun FriendsScreen(
                 }
             }
 
+            val friendNamesById = friends.associate { friend ->
+                friend.userId to friend.displayName.ifBlank { "Unbenannter Nutzer" }
+            }
+
             when {
                 friends.isEmpty() -> {
                     item {
@@ -4102,6 +4328,20 @@ fun FriendsScreen(
                         val comments = commentsByFeedKey[feedItemKey].orEmpty()
                         val isLoadingComments = feedItemKey in loadingCommentKeys
                         val commentInput = commentInputs[feedItemKey].orEmpty()
+                        val friendPhotoDisplayUri = preferredFriendFindingPhotoUri(
+                            finding = feedItem.finding,
+                            ownerUserId = feedItem.friendUserId,
+                            currentUserId = currentUserId
+                        )
+                        val taggedFriendsSummary = taggedFriendsSummaryText(
+                            taggedFriendIds = feedItem.finding.taggedFriendIds,
+                            currentUserId = currentUserId,
+                            ownerUserId = feedItem.friendUserId,
+                            ownerDisplayName = feedItem.friendDisplayName,
+                            friendNamesById = friendNamesById
+                        )
+                        val hasFindingMeta = feedItem.finding.date.isNotBlank() ||
+                            feedItem.finding.location.isNotBlank()
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(16.dp),
@@ -4153,6 +4393,11 @@ fun FriendsScreen(
                                     }
                                 }
 
+                                FriendFindingPhotoBlock(
+                                    photoDisplayUri = friendPhotoDisplayUri,
+                                    hasPhoto = hasAnyFindingPhoto(feedItem.finding)
+                                )
+
                                 Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                                     Text(
                                         text = animal?.germanName ?: "Unbekanntes Tier",
@@ -4160,16 +4405,35 @@ fun FriendsScreen(
                                         color = TextPrimary,
                                         fontWeight = FontWeight.SemiBold
                                     )
-                                    Text(
-                                        text = animal?.group ?: "Unbekannte Gruppe",
-                                        style = MaterialTheme.typography.labelMedium,
-                                        color = TextSecondary
-                                    )
-                                    FindingMetaRow(
-                                        date = feedItem.finding.date,
-                                        location = feedItem.finding.location,
-                                        latitude = feedItem.finding.latitude,
-                                        longitude = feedItem.finding.longitude
+                                    animal?.group?.takeIf { it.isNotBlank() }?.let { groupName ->
+                                        Text(
+                                            text = groupName,
+                                            style = MaterialTheme.typography.labelMedium,
+                                            color = TextSecondary
+                                        )
+                                    }
+                                }
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    if (hasFindingMeta) {
+                                        FindingMetaRow(
+                                            date = feedItem.finding.date,
+                                            location = feedItem.finding.location,
+                                            latitude = feedItem.finding.latitude,
+                                            longitude = feedItem.finding.longitude,
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                    } else {
+                                        Spacer(modifier = Modifier.weight(1f))
+                                    }
+                                    Spacer(modifier = Modifier.width(12.dp))
+                                    FriendFindingEngagementSummary(
+                                        likeCount = feedItem.likeCount,
+                                        commentCount = feedItem.commentCount
                                     )
                                 }
 
@@ -4187,10 +4451,10 @@ fun FriendsScreen(
                                         )
                                     }
                                 }
-                                if (feedItem.finding.photoUri.isNotBlank()) {
+                                taggedFriendsSummary?.let {
                                     Text(
-                                        text = "Foto vorhanden",
-                                        style = MaterialTheme.typography.labelMedium,
+                                        text = it,
+                                        style = MaterialTheme.typography.bodySmall,
                                         color = TextSecondary
                                     )
                                 }
@@ -4938,6 +5202,11 @@ private fun DailyAnimalScreen(
 
                         else -> {
                             friendFindings.forEach { feedItem ->
+                                val friendPhotoDisplayUri = preferredFriendFindingPhotoUri(
+                                    finding = feedItem.finding,
+                                    ownerUserId = feedItem.friendUserId,
+                                    currentUserId = currentUserId
+                                )
                                 Card(
                                     modifier = Modifier.fillMaxWidth(),
                                     shape = RoundedCornerShape(16.dp),
@@ -4950,6 +5219,10 @@ private fun DailyAnimalScreen(
                                         modifier = Modifier.padding(16.dp),
                                         verticalArrangement = Arrangement.spacedBy(6.dp)
                                     ) {
+                                        FriendFindingPhotoBlock(
+                                            photoDisplayUri = friendPhotoDisplayUri,
+                                            hasPhoto = hasAnyFindingPhoto(feedItem.finding)
+                                        )
                                         Text(
                                             text = feedItem.friendDisplayName.ifBlank { "Unbenannter Nutzer" },
                                             style = MaterialTheme.typography.titleSmall,
@@ -4964,13 +5237,6 @@ private fun DailyAnimalScreen(
                                         feedItem.finding.note.takeIf { it.isNotBlank() }?.let {
                                             Text(
                                                 text = it,
-                                                style = MaterialTheme.typography.bodySmall,
-                                                color = TextSecondary
-                                            )
-                                        }
-                                        if (feedItem.finding.photoUri.isNotBlank()) {
-                                            Text(
-                                                text = "Foto vorhanden",
                                                 style = MaterialTheme.typography.bodySmall,
                                                 color = TextSecondary
                                             )
@@ -5645,9 +5911,9 @@ fun ProfileScreen(
                             style = MaterialTheme.typography.titleMedium
                         )
 
-                        if (finding.photoUri.isNotBlank()) {
+                        preferredOwnedFindingPhotoUri(finding)?.let { photoDisplayUri ->
                             UriImage(
-                                uriString = finding.photoUri,
+                                uriString = photoDisplayUri,
                                 maxImageSizePx = 1024,
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -6001,7 +6267,12 @@ fun AnimalDetailScreen(
         cropPhotoUri = null
         isEditMode = false
     }
-    val editablePhotoUri = selectedPhotoUri.takeIf { it.isNotBlank() } ?: currentFinding?.photoUri
+    val editablePhotoUri = when {
+        selectedPhotoUri.isNotBlank() &&
+            selectedPhotoUri != currentFinding?.photoUri -> selectedPhotoUri
+        else -> currentFinding?.let(::preferredOwnedFindingPhotoUri)
+            ?: selectedPhotoUri.takeIf { it.isNotBlank() }
+    }
     val hasTextualFindingDetails =
         !currentFinding?.date.isNullOrBlank() ||
             !currentFinding?.location.isNullOrBlank() ||
@@ -6462,6 +6733,11 @@ fun AnimalDetailScreen(
                                     color = TextSecondary
                                 )
                                 friendFindings.forEach { feedItem ->
+                                    val friendPhotoDisplayUri = preferredFriendFindingPhotoUri(
+                                        finding = feedItem.finding,
+                                        ownerUserId = feedItem.friendUserId,
+                                        currentUserId = currentUserId
+                                    )
                                     Card(
                                         shape = RoundedCornerShape(16.dp),
                                         colors = CardDefaults.cardColors(
@@ -6474,6 +6750,10 @@ fun AnimalDetailScreen(
                                             modifier = Modifier.padding(16.dp),
                                             verticalArrangement = Arrangement.spacedBy(4.dp)
                                         ) {
+                                            FriendFindingPhotoBlock(
+                                                photoDisplayUri = friendPhotoDisplayUri,
+                                                hasPhoto = hasAnyFindingPhoto(feedItem.finding)
+                                            )
                                             Text(
                                                 text = feedItem.friendDisplayName.ifBlank { "Unbenannter Nutzer" },
                                                 style = MaterialTheme.typography.titleSmall,
@@ -6488,13 +6768,6 @@ fun AnimalDetailScreen(
                                             feedItem.finding.note.takeIf { it.isNotBlank() }?.let {
                                                 Text(
                                                     text = "Notiz: $it",
-                                                    style = MaterialTheme.typography.bodySmall,
-                                                    color = TextSecondary
-                                                )
-                                            }
-                                            if (feedItem.finding.photoUri.isNotBlank()) {
-                                                Text(
-                                                    text = "Foto vorhanden",
                                                     style = MaterialTheme.typography.bodySmall,
                                                     color = TextSecondary
                                                 )
@@ -6841,7 +7114,7 @@ fun AnimalDetailScreen(
                             }
                         }
 
-                        if (currentFinding?.photoUri.isNullOrBlank()) {
+                        if (currentFinding?.photoUri.isNullOrBlank() && currentFinding?.remotePhotoPath.isNullOrBlank()) {
                             OutlinedButton(
                                 onClick = {
                                     pickMedia.launch(
@@ -6895,6 +7168,7 @@ fun AnimalDetailScreen(
                                             location = location.trim(),
                                             note = note.trim(),
                                             photoUri = storedPhotoUri,
+                                            remotePhotoPath = editingFinding?.remotePhotoPath.orEmpty(),
                                             latitude = latitude,
                                             longitude = longitude,
                                             locationSource = locationSource,
@@ -7760,13 +8034,21 @@ fun AnimalDetailScreen(
                     )
                 }
 
-                if (bitmap == null && loadFinished && uriString.startsWith("internal://")) {
+                if (
+                    bitmap == null &&
+                    loadFinished &&
+                    (uriString.startsWith("internal://") || uriString.startsWith(STORAGE_URI_PREFIX))
+                ) {
                     Box(
                         modifier = modifier.background(Color(0xFFF3F4F6)),
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "Foto auf diesem Gerät nicht verfügbar",
+                            text = if (uriString.startsWith(STORAGE_URI_PREFIX)) {
+                                "Foto konnte gerade nicht aus der Cloud geladen werden"
+                            } else {
+                                "Foto auf diesem Gerät nicht verfügbar"
+                            },
                             style = MaterialTheme.typography.bodySmall,
                             color = TextSecondary,
                             textAlign = TextAlign.Center,
@@ -8159,6 +8441,11 @@ fun AnimalDetailScreen(
                     val fileName = uriString.removePrefix("internal://")
                     val file = File(File(context.filesDir, FINDING_IMAGES_DIR), fileName)
                     loadCorrectlyOrientedBitmapFromFile(file, maxImageSizePx)
+                } else if (uriString.startsWith(STORAGE_URI_PREFIX)) {
+                    loadCorrectlyOrientedBitmapFromStoragePath(
+                        storagePathFromUri(uriString).orEmpty(),
+                        maxImageSizePx
+                    )
                 } else {
                     loadCorrectlyOrientedBitmapFromUri(
                         context,
@@ -8183,6 +8470,23 @@ fun AnimalDetailScreen(
                         ExifInterface.ORIENTATION_NORMAL
                     )
                 } ?: ExifInterface.ORIENTATION_NORMAL
+
+                return applyExifOrientation(bitmap, orientation)
+            }
+
+            fun loadCorrectlyOrientedBitmapFromStoragePath(
+                remotePhotoPath: String,
+                maxImageSizePx: Int? = null
+            ): Bitmap? {
+                val imageBytes =
+                    FindingPhotoStorageRepository.loadFindingPhotoBytes(remotePhotoPath) ?: return null
+                val bitmap = decodeSampledBitmapFromBytes(imageBytes, maxImageSizePx) ?: return null
+                val orientation = ByteArrayInputStream(imageBytes).use { input ->
+                    ExifInterface(input).getAttributeInt(
+                        ExifInterface.TAG_ORIENTATION,
+                        ExifInterface.ORIENTATION_NORMAL
+                    )
+                }
 
                 return applyExifOrientation(bitmap, orientation)
             }
@@ -8292,6 +8596,28 @@ fun AnimalDetailScreen(
                 }
 
                 return BitmapFactory.decodeFile(filePath, decodeOptions)
+            }
+
+            fun decodeSampledBitmapFromBytes(imageBytes: ByteArray, maxImageSizePx: Int?): Bitmap? {
+                if (imageBytes.isEmpty()) return null
+                if (maxImageSizePx == null) {
+                    return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                }
+
+                val boundsOptions = BitmapFactory.Options().apply {
+                    inJustDecodeBounds = true
+                }
+                BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size, boundsOptions)
+
+                val decodeOptions = BitmapFactory.Options().apply {
+                    inSampleSize = calculateInSampleSize(
+                        boundsOptions.outWidth,
+                        boundsOptions.outHeight,
+                        maxImageSizePx
+                    )
+                }
+
+                return BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size, decodeOptions)
             }
 
             fun calculateInSampleSize(width: Int, height: Int, maxImageSizePx: Int): Int {
