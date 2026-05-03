@@ -617,6 +617,7 @@ private fun FindingLocationDialog(
 ) {
     BackHandler(onBack = onDismiss)
     val markerPosition = remember(latitude, longitude) { LatLng(latitude, longitude) }
+    val markerState = remember(markerPosition) { MarkerState(position = markerPosition) }
     val cameraPositionState = rememberCameraPositionState {
         position = CameraPosition.fromLatLngZoom(markerPosition, 14f)
     }
@@ -695,7 +696,7 @@ private fun FindingLocationDialog(
                             uiSettings = mapUiSettings
                         ) {
                             Marker(
-                                state = MarkerState(position = markerPosition)
+                                state = markerState
                             )
                         }
                     }
@@ -2513,7 +2514,6 @@ fun HomeScreen(
                 photoFindingCount = photoFindingCount
             )
         }
-    val nextQuest = quests.firstOrNull { !it.isCompleted } ?: quests.firstOrNull()
 
     LazyColumn(
         modifier = Modifier
@@ -2554,10 +2554,30 @@ fun HomeScreen(
                         style = MaterialTheme.typography.titleLarge,
                         color = TextPrimary
                     )
-                    Text(
-                        text = "Dein Fortschritt wächst weiter. Hier siehst du deine Sammlung, dein nächstes Ziel und die wichtigsten Zahlen auf einen Blick.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextSecondary
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "$collectedAnimalCount von $totalAnimalCount Arten entdeckt",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextSecondary
+                        )
+                        Text(
+                            text = "${collectionPercent.roundToInt()}%",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = PrimaryGreen
+                        )
+                    }
+                    LinearProgressIndicator(
+                        progress = { (collectionPercent / 100f).coerceIn(0f, 1f) },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(10.dp)
+                            .clip(RoundedCornerShape(999.dp)),
+                        color = PrimaryGreen,
+                        trackColor = Color.White.copy(alpha = 0.55f)
                     )
                 }
             }
@@ -2596,76 +2616,6 @@ fun HomeScreen(
                         )
                         Text(
                             text = "Heute im Fokus",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = TextSecondary
-                        )
-                    }
-                }
-            }
-        }
-
-        item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(22.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = CardBackground,
-                    contentColor = TextPrimary
-                )
-            ) {
-                Column(
-                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    HomeSectionTitle(
-                        title = "Nächstes Ziel"
-                    )
-
-                    if (nextQuest == null) {
-                        Text(
-                            text = "Noch keine Questdaten verfügbar.",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = TextSecondary
-                        )
-                    } else {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = nextQuest.title,
-                                style = MaterialTheme.typography.titleMedium,
-                                color = TextPrimary
-                            )
-                            Text(
-                                text = nextQuest.percentLabel,
-                                style = MaterialTheme.typography.labelLarge,
-                                color = PrimaryGreen
-                            )
-                        }
-                        Text(
-                            text = nextQuest.description,
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = TextSecondary
-                        )
-                        Text(
-                            text = "${nextQuest.shownProgress} von ${nextQuest.goal} Funden",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = TextPrimary
-                        )
-                        LinearProgressIndicator(
-                            progress = { nextQuest.progressFraction },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(10.dp)
-                                .clip(RoundedCornerShape(999.dp)),
-                            color = PrimaryGreen,
-                            trackColor = PrimaryGreenSoft.copy(alpha = 0.45f)
-                        )
-                        Text(
-                            text = nextQuest.encouragementLabel,
                             style = MaterialTheme.typography.bodySmall,
                             color = TextSecondary
                         )
@@ -2988,8 +2938,9 @@ fun LocationPickerMap(
         }
     ) {
         selectedPosition?.let { latLng ->
+            val markerState = remember(latLng) { MarkerState(position = latLng) }
             Marker(
-                state = MarkerState(position = latLng),
+                state = markerState,
                 title = "Ausgewählter Standort"
             )
         }
@@ -4345,6 +4296,7 @@ fun FriendsScreen(
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(16.dp),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                             colors = CardDefaults.cardColors(
                                 containerColor = CardBackground,
                                 contentColor = TextPrimary
@@ -4352,58 +4304,24 @@ fun FriendsScreen(
                         ) {
                             Column(
                                 modifier = Modifier.padding(16.dp),
-                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                                verticalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(38.dp)
-                                            .background(
-                                                color = PrimaryGreen.copy(alpha = 0.12f),
-                                                shape = CircleShape
-                                            ),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Text(
-                                            text = feedItem.friendDisplayName
-                                                .trim()
-                                                .firstOrNull()
-                                                ?.uppercase()
-                                                ?: "?",
-                                            style = MaterialTheme.typography.labelLarge,
-                                            color = PrimaryGreen,
-                                            fontWeight = FontWeight.SemiBold
-                                        )
-                                    }
-                                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                                        Text(
-                                            text = feedItem.friendDisplayName.ifBlank { "Unbenannter Nutzer" },
-                                            style = MaterialTheme.typography.titleSmall,
-                                            color = TextPrimary,
-                                            fontWeight = FontWeight.SemiBold
-                                        )
-                                        Text(
-                                            text = "hat einen Fund eingetragen",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = TextSecondary
-                                        )
-                                    }
-                                }
-
                                 FriendFindingPhotoBlock(
                                     photoDisplayUri = friendPhotoDisplayUri,
-                                    hasPhoto = hasAnyFindingPhoto(feedItem.finding)
+                                    hasPhoto = hasAnyFindingPhoto(feedItem.finding),
+                                    modifier = Modifier.clip(RoundedCornerShape(12.dp))
                                 )
 
-                                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Text(
+                                        text = feedItem.friendDisplayName.ifBlank { "Unbenannter Nutzer" },
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = TextSecondary
+                                    )
                                     Text(
                                         text = animal?.germanName ?: "Unbekanntes Tier",
-                                        style = MaterialTheme.typography.titleLarge,
-                                        color = TextPrimary,
-                                        fontWeight = FontWeight.SemiBold
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = TextPrimary
                                     )
                                     animal?.group?.takeIf { it.isNotBlank() }?.let { groupName ->
                                         Text(
@@ -5037,23 +4955,23 @@ private fun DailyAnimalScreen(
             .background(Color.White)
             .safeDrawingPadding()
             .padding(horizontal = 16.dp),
-        contentPadding = PaddingValues(top = 16.dp, bottom = 24.dp),
+        contentPadding = PaddingValues(
+            top = 12.dp,
+            bottom = if (showCloseButton) 40.dp else 48.dp
+        ),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         item {
-            SettingsContentCard {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(
-                        text = "Tier des Tages",
-                        style = MaterialTheme.typography.headlineMedium,
-                        color = TextPrimary
-                    )
-                    Text(
-                        text = "Heute lohnt sich ein genauer Blick auf dieses Tier.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextSecondary
-                    )
-                }
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "Tier des Tages",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = TextPrimary,
+                    textAlign = TextAlign.Center
+                )
             }
         }
 
