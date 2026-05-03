@@ -3890,6 +3890,10 @@ fun FriendProfileScreen(
         ?.takeIf { it.isNotBlank() }
         ?: initialDisplayName?.takeIf { it.isNotBlank() }
         ?: "Unbenannter Nutzer"
+    val friendProfileImageUri = profile?.profilePhotoPath
+        ?.takeIf { it.isNotBlank() }
+        ?.let(::storageUriFromPath)
+    val publicBio = profile?.bio.orEmpty().trim()
     val friendNamesById = remember(friends, effectiveDisplayName, friendUserId) {
         friends.associate { friend ->
             friend.userId to friend.displayName.ifBlank { "Unbenannter Nutzer" }
@@ -3943,6 +3947,7 @@ fun FriendProfileScreen(
                 ) {
                     FriendAvatar(
                         displayName = effectiveDisplayName,
+                        profileImageUri = friendProfileImageUri,
                         modifier = Modifier.size(72.dp)
                     )
                     Column(
@@ -3983,6 +3988,36 @@ fun FriendProfileScreen(
                             value = mappedLocationCount.toString(),
                             supportingText = "mit Karte",
                             modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+            }
+        }
+
+        if (publicBio.isNotBlank()) {
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = CardBackground,
+                        contentColor = TextPrimary
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Text(
+                            text = "Bio",
+                            style = MaterialTheme.typography.titleSmall,
+                            color = TextPrimary
+                        )
+                        Text(
+                            text = publicBio,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextPrimary
                         )
                     }
                 }
@@ -4695,6 +4730,9 @@ fun FriendsScreen(
             val friendNamesById = friends.associate { friend ->
                 friend.userId to friend.displayName.ifBlank { "Unbenannter Nutzer" }
             }
+            val friendProfileImageUrisById = friends.associate { friend ->
+                friend.userId to friend.profilePhotoPath.takeIf { it.isNotBlank() }?.let(::storageUriFromPath)
+            }
 
             when {
                 friends.isEmpty() -> {
@@ -4765,6 +4803,7 @@ fun FriendsScreen(
                                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                     FriendIdentityRow(
                                         displayName = feedItem.friendDisplayName,
+                                        profileImageUri = friendProfileImageUrisById[feedItem.friendUserId],
                                         onClick = {
                                             onOpenFriendProfile(
                                                 feedItem.friendUserId,
@@ -5827,6 +5866,7 @@ fun ProfileScreen(
     extraBottomPadding: Dp = 0.dp
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val prefs = remember(context) {
         context.getSharedPreferences("tierdex_prefs", android.content.Context.MODE_PRIVATE)
     }
@@ -5855,8 +5895,12 @@ fun ProfileScreen(
     var profileImageUri by rememberSaveable(preferenceOwnerId) {
         mutableStateOf(prefs.getString(profileImageKey(preferenceOwnerId), "").orEmpty())
     }
+    var remoteProfilePhotoPath by rememberSaveable(preferenceOwnerId) { mutableStateOf("") }
     var showBioEditor by rememberSaveable(preferenceOwnerId) { mutableStateOf(false) }
     var bioDraft by rememberSaveable(preferenceOwnerId) { mutableStateOf(profileBio) }
+    val displayedProfileImageUri = profileImageUri.ifBlank {
+        remoteProfilePhotoPath.takeIf { it.isNotBlank() }?.let(::storageUriFromPath).orEmpty()
+    }
     val profileImagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri ->
@@ -5864,11 +5908,55 @@ fun ProfileScreen(
             val storedPhotoUri = persistPhotoForFinding(context, it.toString())
             profileImageUri = storedPhotoUri
             prefs.edit().putString(profileImageKey(preferenceOwnerId), storedPhotoUri).apply()
+            currentUserId?.takeIf { userId -> userId.isNotBlank() }?.let { userId ->
+                scope.launch {
+                    val uploadedPath = FindingPhotoStorageRepository.uploadProfilePhoto(
+                        context = context,
+                        userId = userId,
+                        localPhotoUri = storedPhotoUri,
+                        currentProfilePhotoPath = remoteProfilePhotoPath
+                    )
+                    remoteProfilePhotoPath = uploadedPath
+                    FriendRepository.updatePublicUserProfile(
+                        userId = userId,
+                        profilePhotoPath = uploadedPath
+                    )
+                }
+            }
         }
     }
 
     LaunchedEffect(currentUserId) {
         if (currentUserId != null) {
+            FriendRepository.loadUserProfile(
+                userId = currentUserId,
+                onResult = { publicProfile ->
+                    remoteProfilePhotoPath = publicProfile?.profilePhotoPath.orEmpty()
+                    val remoteBio = publicProfile?.bio.orEmpty()
+                    val localBio = profileBio.trim().take(300)
+                    if (localBio.isNotBlank() && localBio != remoteBio) {
+                        FriendRepository.updatePublicUserProfile(
+                            userId = currentUserId,
+                            bio = localBio
+                        )
+                    }
+                    if (profileImageUri.isNotBlank() && publicProfile?.profilePhotoPath.isNullOrBlank()) {
+                        scope.launch {
+                            val uploadedPath = FindingPhotoStorageRepository.uploadProfilePhoto(
+                                context = context,
+                                userId = currentUserId,
+                                localPhotoUri = profileImageUri,
+                                currentProfilePhotoPath = remoteProfilePhotoPath
+                            )
+                            remoteProfilePhotoPath = uploadedPath
+                            FriendRepository.updatePublicUserProfile(
+                                userId = currentUserId,
+                                profilePhotoPath = uploadedPath
+                            )
+                        }
+                    }
+                }
+            )
             Log.d("ProfileScreen", "Firestore test call started")
             Log.d(
                 "ProfileScreen",
@@ -5926,9 +6014,9 @@ fun ProfileScreen(
                             shape = CircleShape,
                             color = PrimaryGreenSoft.copy(alpha = 0.65f)
                         ) {
-                            if (profileImageUri.isNotBlank()) {
+                            if (displayedProfileImageUri.isNotBlank()) {
                                 UriImage(
-                                    uriString = profileImageUri,
+                                    uriString = displayedProfileImageUri,
                                     maxImageSizePx = 900,
                                     modifier = Modifier
                                         .fillMaxSize()
@@ -6322,9 +6410,15 @@ fun ProfileScreen(
             confirmButton = {
                 TextButton(
                     onClick = {
-                        val savedBio = bioDraft.trim()
+                        val savedBio = bioDraft.trim().take(300)
                         profileBio = savedBio
                         prefs.edit().putString(profileBioKey(preferenceOwnerId), savedBio).apply()
+                        currentUserId?.takeIf { it.isNotBlank() }?.let { userId ->
+                            FriendRepository.updatePublicUserProfile(
+                                userId = userId,
+                                bio = savedBio
+                            )
+                        }
                         showBioEditor = false
                     }
                 ) {

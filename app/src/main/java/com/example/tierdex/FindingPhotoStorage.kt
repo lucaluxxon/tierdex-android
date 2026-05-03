@@ -32,6 +32,10 @@ object FindingPhotoStorageRepository {
         return "users/$userId/findings/$documentId/photo.jpg"
     }
 
+    fun buildProfilePhotoPath(userId: String): String {
+        return "users/$userId/profile/photo.jpg"
+    }
+
     suspend fun uploadFindingPhoto(
         context: Context,
         userId: String,
@@ -44,7 +48,7 @@ object FindingPhotoStorageRepository {
 
         val remotePhotoPath = buildRemotePhotoPath(userId, finding)
         val photoBytes = withContext(Dispatchers.IO) {
-            readFindingPhotoBytes(context, localPhotoUri)
+            readLocalPhotoBytes(context, localPhotoUri)
         } ?: return finding.remotePhotoPath.trim()
 
         return withContext(Dispatchers.IO) {
@@ -58,6 +62,37 @@ object FindingPhotoStorageRepository {
                     exception
                 )
                 finding.remotePhotoPath.trim()
+            }
+        }
+    }
+
+    suspend fun uploadProfilePhoto(
+        context: Context,
+        userId: String,
+        localPhotoUri: String,
+        currentProfilePhotoPath: String = ""
+    ): String {
+        val trimmedPhotoUri = localPhotoUri.trim()
+        if (userId.isBlank() || trimmedPhotoUri.isBlank()) {
+            return currentProfilePhotoPath.trim()
+        }
+
+        val remotePhotoPath = buildProfilePhotoPath(userId)
+        val photoBytes = withContext(Dispatchers.IO) {
+            readLocalPhotoBytes(context, trimmedPhotoUri)
+        } ?: return currentProfilePhotoPath.trim()
+
+        return withContext(Dispatchers.IO) {
+            runCatching {
+                Tasks.await(storage.reference.child(remotePhotoPath).putBytes(photoBytes))
+                remotePhotoPath
+            }.getOrElse { exception ->
+                Log.e(
+                    FINDING_PHOTO_STORAGE_TAG,
+                    "Failed to upload profile photo to Storage: ${exception.message ?: "Unbekannter Fehler"}",
+                    exception
+                )
+                currentProfilePhotoPath.trim()
             }
         }
     }
@@ -82,7 +117,7 @@ object FindingPhotoStorageRepository {
         }
     }
 
-    private fun readFindingPhotoBytes(context: Context, photoUri: String): ByteArray? {
+    private fun readLocalPhotoBytes(context: Context, photoUri: String): ByteArray? {
         return try {
             when {
                 photoUri.startsWith("internal://") -> {

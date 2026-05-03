@@ -12,6 +12,8 @@ data class PublicUserProfile(
     val userId: String,
     val displayName: String,
     val searchDisplayName: String,
+    val bio: String = "",
+    val profilePhotoPath: String = "",
     val updatedAt: Timestamp? = null
 )
 
@@ -19,6 +21,7 @@ data class FriendUser(
     val userId: String,
     val displayName: String,
     val searchDisplayName: String,
+    val profilePhotoPath: String = "",
     val connectedAt: Timestamp? = null
 )
 
@@ -359,6 +362,54 @@ object FriendRepository {
             }
     }
 
+    fun updatePublicUserProfile(
+        userId: String,
+        displayName: String? = null,
+        bio: String? = null,
+        profilePhotoPath: String? = null,
+        onResult: (Boolean, String?) -> Unit = { _, _ -> }
+    ) {
+        if (userId.isBlank()) {
+            onResult(false, "Leere userId")
+            return
+        }
+
+        val profileData = hashMapOf<String, Any>(
+            "updatedAt" to FieldValue.serverTimestamp()
+        )
+
+        displayName?.let { rawDisplayName ->
+            val safeDisplayName = rawDisplayName.trim()
+            profileData["displayName"] = safeDisplayName
+            profileData["searchDisplayName"] = normalizeDisplayName(safeDisplayName)
+        }
+
+        bio?.let { rawBio ->
+            profileData["bio"] = rawBio.trim().take(300)
+        }
+
+        profilePhotoPath?.let { rawProfilePhotoPath ->
+            profileData["profilePhotoPath"] = rawProfilePhotoPath.trim()
+        }
+
+        firestore.collection("users")
+            .document(userId)
+            .set(profileData, com.google.firebase.firestore.SetOptions.merge())
+            .addOnSuccessListener {
+                onResult(true, null)
+            }
+            .addOnFailureListener { exception ->
+                val errorMessage = toFirestoreErrorMessage(
+                    functionName = "updatePublicUserProfile",
+                    operation = "WRITE",
+                    path = "users/$userId",
+                    exception = exception
+                )
+                Log.e(TAG, errorMessage, exception)
+                onResult(false, errorMessage)
+            }
+    }
+
     fun loadUserProfile(
         userId: String,
         onResult: (PublicUserProfile?) -> Unit,
@@ -383,6 +434,8 @@ object FriendRepository {
                         userId = document.id,
                         displayName = document.getString("displayName").orEmpty(),
                         searchDisplayName = document.getString("searchDisplayName").orEmpty(),
+                        bio = document.getString("bio").orEmpty(),
+                        profilePhotoPath = document.getString("profilePhotoPath").orEmpty(),
                         updatedAt = document.getTimestamp("updatedAt")
                     )
                 )
@@ -430,6 +483,8 @@ object FriendRepository {
                             userId = document.id,
                             displayName = document.getString("displayName").orEmpty(),
                             searchDisplayName = document.getString("searchDisplayName").orEmpty(),
+                            bio = document.getString("bio").orEmpty(),
+                            profilePhotoPath = document.getString("profilePhotoPath").orEmpty(),
                             updatedAt = document.getTimestamp("updatedAt")
                         )
                     }
@@ -628,6 +683,7 @@ object FriendRepository {
                                     userId = it.userId,
                                     displayName = it.displayName,
                                     searchDisplayName = it.searchDisplayName,
+                                    profilePhotoPath = it.profilePhotoPath,
                                     connectedAt = connectedAt
                                 )
                             }
