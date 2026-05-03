@@ -609,6 +609,75 @@ private fun FriendFindingEngagementSummary(
 }
 
 @Composable
+private fun FriendAvatar(
+    displayName: String,
+    modifier: Modifier = Modifier,
+    profileImageUri: String? = null
+) {
+    val safeDisplayName = displayName.ifBlank { "Unbenannter Nutzer" }
+    val initial = safeDisplayName.trim().firstOrNull()?.uppercaseChar()?.toString() ?: "?"
+
+    if (!profileImageUri.isNullOrBlank()) {
+        UriImage(
+            uriString = profileImageUri,
+            maxImageSizePx = 256,
+            modifier = modifier.clip(CircleShape)
+        )
+        return
+    }
+
+    Surface(
+        modifier = modifier,
+        shape = CircleShape,
+        color = PrimaryGreenSoft.copy(alpha = 0.34f),
+        border = BorderStroke(1.dp, BorderColor)
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Text(
+                text = initial,
+                style = MaterialTheme.typography.titleMedium,
+                color = TextPrimary,
+                fontWeight = FontWeight.SemiBold
+            )
+        }
+    }
+}
+
+@Composable
+private fun FriendIdentityRow(
+    displayName: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    profileImageUri: String? = null
+) {
+    val safeDisplayName = displayName.ifBlank { "Unbenannter Nutzer" }
+
+    Row(
+        modifier = modifier.clickable(onClick = onClick),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        FriendAvatar(
+            displayName = safeDisplayName,
+            profileImageUri = profileImageUri,
+            modifier = Modifier.size(40.dp)
+        )
+        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+            Text(
+                text = safeDisplayName,
+                style = MaterialTheme.typography.titleSmall,
+                color = TextPrimary
+            )
+            Text(
+                text = "Öffentliches Profil ansehen",
+                style = MaterialTheme.typography.labelMedium,
+                color = TextSecondary
+            )
+        }
+    }
+}
+
+@Composable
 private fun FindingLocationDialog(
     latitude: Double,
     longitude: Double,
@@ -777,6 +846,8 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     var showFoundOnly by rememberSaveable { mutableStateOf(false) }
     var currentTab by rememberSaveable { mutableStateOf(AppTab.HOME) }
     var isFriendSearchOpen by rememberSaveable { mutableStateOf(false) }
+    var selectedFriendProfileUserId by rememberSaveable { mutableStateOf<String?>(null) }
+    var selectedFriendProfileDisplayName by rememberSaveable { mutableStateOf<String?>(null) }
     var incomingRequestCount by rememberSaveable { mutableStateOf(0) }
     var showNotificationsScreen by rememberSaveable { mutableStateOf(false) }
     var authEntryMode by rememberSaveable { mutableStateOf<String?>(null) }
@@ -1303,6 +1374,14 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     BackHandler(enabled = showNotificationsScreen) {
         showNotificationsScreen = false
     }
+    BackHandler(
+        enabled = currentTab == AppTab.FRIENDS &&
+            !selectedFriendProfileUserId.isNullOrBlank() &&
+            !showNotificationsScreen
+    ) {
+        selectedFriendProfileUserId = null
+        selectedFriendProfileDisplayName = null
+    }
     BackHandler(enabled = showAuthEntryScreen && !showSettingsScreen) {
         resetSearchState()
         authEntryMode = null
@@ -1325,6 +1404,8 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     LaunchedEffect(currentTab) {
         if (currentTab != AppTab.FRIENDS) {
             isFriendSearchOpen = false
+            selectedFriendProfileUserId = null
+            selectedFriendProfileDisplayName = null
         }
     }
 
@@ -1334,6 +1415,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
             TierdexTopBar(
                 currentTab = currentTab,
                 showFriendSearchAction = currentTab == AppTab.FRIENDS &&
+                    selectedFriendProfileUserId == null &&
                     selectedAnimal == null &&
                     !showAnimalPicker &&
                     !showAuthStartScreen &&
@@ -1373,6 +1455,10 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         resetSearchState()
                         if (it != AppTab.FRIENDS) {
                             isFriendSearchOpen = false
+                        }
+                        if (it != AppTab.FRIENDS) {
+                            selectedFriendProfileUserId = null
+                            selectedFriendProfileDisplayName = null
                         }
                         showNotificationsScreen = false
                         currentTab = it
@@ -1822,16 +1908,37 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                 }
 
                 currentTab == AppTab.FRIENDS -> {
-                    FriendsScreen(
-                        currentUserId = currentOwnerId,
-                        currentDisplayName = currentDisplayName,
-                        allAnimals = animals,
-                        isFriendSearchOpen = isFriendSearchOpen,
-                        onCloseFriendSearch = { isFriendSearchOpen = false },
-                        onIncomingRequestsChanged = { refreshNotifications() },
-                        extraTopPadding = innerPadding.calculateTopPadding(),
-                        extraBottomPadding = innerPadding.calculateBottomPadding()
-                    )
+                    val selectedFriendUserId = selectedFriendProfileUserId
+                    if (selectedFriendUserId != null) {
+                        FriendProfileScreen(
+                            currentUserId = currentOwnerId,
+                            friendUserId = selectedFriendUserId,
+                            initialDisplayName = selectedFriendProfileDisplayName,
+                            allAnimals = animals,
+                            onBack = {
+                                selectedFriendProfileUserId = null
+                                selectedFriendProfileDisplayName = null
+                            },
+                            extraTopPadding = innerPadding.calculateTopPadding(),
+                            extraBottomPadding = innerPadding.calculateBottomPadding()
+                        )
+                    } else {
+                        FriendsScreen(
+                            currentUserId = currentOwnerId,
+                            currentDisplayName = currentDisplayName,
+                            allAnimals = animals,
+                            isFriendSearchOpen = isFriendSearchOpen,
+                            onCloseFriendSearch = { isFriendSearchOpen = false },
+                            onIncomingRequestsChanged = { refreshNotifications() },
+                            onOpenFriendProfile = { friendUserId, friendDisplayName ->
+                                selectedFriendProfileUserId = friendUserId
+                                selectedFriendProfileDisplayName = friendDisplayName
+                                isFriendSearchOpen = false
+                            },
+                            extraTopPadding = innerPadding.calculateTopPadding(),
+                            extraBottomPadding = innerPadding.calculateBottomPadding()
+                        )
+                    }
                 }
 
                 currentTab == AppTab.STATS -> {
@@ -3699,6 +3806,333 @@ fun detectQuestLevelUpMessage(
 }
 
 @Composable
+fun FriendProfileScreen(
+    currentUserId: String?,
+    friendUserId: String,
+    initialDisplayName: String?,
+    allAnimals: List<AnimalEntry>,
+    onBack: () -> Unit,
+    extraTopPadding: Dp = 0.dp,
+    extraBottomPadding: Dp = 0.dp
+) {
+    BackHandler(onBack = onBack)
+
+    var profile by remember(friendUserId) { mutableStateOf<PublicUserProfile?>(null) }
+    var friendFeed by remember(friendUserId) { mutableStateOf<List<FriendFeedItem>>(emptyList()) }
+    var friends by remember(currentUserId) { mutableStateOf<List<FriendUser>>(emptyList()) }
+    var isLoading by remember(friendUserId) { mutableStateOf(true) }
+    var errorMessage by rememberSaveable(friendUserId) { mutableStateOf<String?>(null) }
+    val animalById = remember(allAnimals) { allAnimals.associateBy { it.id } }
+
+    LaunchedEffect(currentUserId, friendUserId) {
+        profile = null
+        friendFeed = emptyList()
+        friends = emptyList()
+        errorMessage = null
+
+        val safeUserId = currentUserId
+        if (safeUserId.isNullOrBlank()) {
+            isLoading = false
+            errorMessage = "Melde dich an, um dieses Profil zu sehen."
+            return@LaunchedEffect
+        }
+
+        isLoading = true
+        var pendingLoads = 3
+        var firstError: String? = null
+
+        fun finishLoad() {
+            pendingLoads -= 1
+            if (pendingLoads <= 0) {
+                errorMessage = firstError
+                isLoading = false
+            }
+        }
+
+        FriendRepository.loadUserProfile(
+            userId = friendUserId,
+            onResult = {
+                profile = it
+                finishLoad()
+            },
+            onError = { error ->
+                firstError = firstError ?: error ?: "Profil konnte nicht geladen werden."
+                finishLoad()
+            }
+        )
+
+        FriendRepository.loadFriends(
+            currentUserId = safeUserId,
+            onResult = {
+                friends = it
+                finishLoad()
+            },
+            onError = { error ->
+                firstError = firstError ?: error ?: "Freundesliste konnte nicht geladen werden."
+                finishLoad()
+            }
+        )
+
+        FriendRepository.loadFriendsFeed(
+            currentUserId = safeUserId,
+            onResult = {
+                friendFeed = it.filter { feedItem -> feedItem.friendUserId == friendUserId }
+                finishLoad()
+            },
+            onError = { error ->
+                firstError = firstError ?: error.message ?: "Funde konnten nicht geladen werden."
+                finishLoad()
+            }
+        )
+    }
+
+    val effectiveDisplayName = profile?.displayName
+        ?.takeIf { it.isNotBlank() }
+        ?: initialDisplayName?.takeIf { it.isNotBlank() }
+        ?: "Unbenannter Nutzer"
+    val friendNamesById = remember(friends, effectiveDisplayName, friendUserId) {
+        friends.associate { friend ->
+            friend.userId to friend.displayName.ifBlank { "Unbenannter Nutzer" }
+        } + mapOf(friendUserId to effectiveDisplayName)
+    }
+    val totalFindings = friendFeed.size
+    val distinctAnimalCount = friendFeed.map { it.finding.animalId }.toSet().size
+    val mappedLocationCount = friendFeed.count {
+        it.finding.latitude != null && it.finding.longitude != null
+    }
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .padding(
+                start = 16.dp,
+                top = 16.dp + extraTopPadding,
+                end = 16.dp
+            ),
+        contentPadding = PaddingValues(bottom = extraBottomPadding + 24.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        item {
+            TextButton(
+                onClick = onBack,
+                contentPadding = PaddingValues(horizontal = 0.dp, vertical = 0.dp)
+            ) {
+                Text(
+                    text = "Zurück zum Feed",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextSecondary
+                )
+            }
+        }
+
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = CardBackground,
+                    contentColor = TextPrimary
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    FriendAvatar(
+                        displayName = effectiveDisplayName,
+                        modifier = Modifier.size(72.dp)
+                    )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = effectiveDisplayName,
+                            style = MaterialTheme.typography.headlineSmall,
+                            color = TextPrimary,
+                            textAlign = TextAlign.Center
+                        )
+                        Text(
+                            text = "Öffentliches Freundesprofil",
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextSecondary,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        HomeStatTile(
+                            title = "Funde",
+                            value = totalFindings.toString(),
+                            supportingText = "gespeichert",
+                            modifier = Modifier.weight(1f)
+                        )
+                        HomeStatTile(
+                            title = "Arten",
+                            value = distinctAnimalCount.toString(),
+                            supportingText = "entdeckt",
+                            modifier = Modifier.weight(1f)
+                        )
+                        HomeStatTile(
+                            title = "Fundorte",
+                            value = mappedLocationCount.toString(),
+                            supportingText = "mit Karte",
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+            }
+        }
+
+        item {
+            Text(
+                text = "Sichtbare Funde",
+                style = MaterialTheme.typography.titleMedium,
+                color = TextPrimary
+            )
+        }
+
+        errorMessage?.let { message ->
+            item {
+                CompactSectionError(
+                    summary = "Freundesprofil konnte nicht vollständig geladen werden.",
+                    technicalDetails = message
+                )
+            }
+        }
+
+        when {
+            isLoading -> {
+                item {
+                    Text(
+                        text = "Profil wird geladen...",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
+                }
+            }
+
+            friendFeed.isEmpty() -> {
+                item {
+                    Text(
+                        text = "Noch keine sichtbaren Funde dieses Freundes.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
+                }
+            }
+
+            else -> {
+                items(friendFeed, key = { it.friendUserId + "_" + it.findingId }) { feedItem ->
+                    val animal = animalById[feedItem.finding.animalId]
+                    val friendPhotoDisplayUri = preferredFriendFindingPhotoUri(
+                        finding = feedItem.finding,
+                        ownerUserId = feedItem.friendUserId,
+                        currentUserId = currentUserId
+                    )
+                    val taggedFriendsSummary = taggedFriendsSummaryText(
+                        taggedFriendIds = feedItem.finding.taggedFriendIds,
+                        currentUserId = currentUserId,
+                        ownerUserId = feedItem.friendUserId,
+                        ownerDisplayName = effectiveDisplayName,
+                        friendNamesById = friendNamesById
+                    )
+                    val hasFindingMeta = feedItem.finding.date.isNotBlank() ||
+                        feedItem.finding.location.isNotBlank()
+
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = CardBackground,
+                            contentColor = TextPrimary
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            FriendFindingPhotoBlock(
+                                photoDisplayUri = friendPhotoDisplayUri,
+                                hasPhoto = hasAnyFindingPhoto(feedItem.finding),
+                                modifier = Modifier.clip(RoundedCornerShape(12.dp))
+                            )
+
+                            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                Text(
+                                    text = animal?.germanName ?: "Unbekanntes Tier",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = TextPrimary
+                                )
+                                animal?.group?.takeIf { it.isNotBlank() }?.let { groupName ->
+                                    Text(
+                                        text = groupName,
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = TextSecondary
+                                    )
+                                }
+                            }
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                if (hasFindingMeta) {
+                                    FindingMetaRow(
+                                        date = feedItem.finding.date,
+                                        location = feedItem.finding.location,
+                                        latitude = feedItem.finding.latitude,
+                                        longitude = feedItem.finding.longitude,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                } else {
+                                    Spacer(modifier = Modifier.weight(1f))
+                                }
+                                Spacer(modifier = Modifier.width(12.dp))
+                                FriendFindingEngagementSummary(
+                                    likeCount = feedItem.likeCount,
+                                    commentCount = feedItem.commentCount
+                                )
+                            }
+
+                            feedItem.finding.note.takeIf { it.isNotBlank() }?.let {
+                                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                    Text(
+                                        text = "Notiz",
+                                        style = MaterialTheme.typography.labelMedium,
+                                        color = TextSecondary
+                                    )
+                                    Text(
+                                        text = it,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = TextPrimary
+                                    )
+                                }
+                            }
+
+                            taggedFriendsSummary?.let {
+                                Text(
+                                    text = it,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = TextSecondary
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun FriendsScreen(
     currentUserId: String?,
     currentDisplayName: String?,
@@ -3706,6 +4140,7 @@ fun FriendsScreen(
     isFriendSearchOpen: Boolean,
     onCloseFriendSearch: () -> Unit,
     onIncomingRequestsChanged: () -> Unit,
+    onOpenFriendProfile: (String, String) -> Unit,
     extraTopPadding: Dp = 0.dp,
     extraBottomPadding: Dp = 0.dp
 ) {
@@ -4327,23 +4762,29 @@ fun FriendsScreen(
                                     modifier = Modifier.clip(RoundedCornerShape(12.dp))
                                 )
 
-                                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    Text(
-                                        text = feedItem.friendDisplayName.ifBlank { "Unbenannter Nutzer" },
-                                        style = MaterialTheme.typography.labelMedium,
-                                        color = TextSecondary
+                                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    FriendIdentityRow(
+                                        displayName = feedItem.friendDisplayName,
+                                        onClick = {
+                                            onOpenFriendProfile(
+                                                feedItem.friendUserId,
+                                                feedItem.friendDisplayName
+                                            )
+                                        }
                                     )
-                                    Text(
-                                        text = animal?.germanName ?: "Unbekanntes Tier",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        color = TextPrimary
-                                    )
-                                    animal?.group?.takeIf { it.isNotBlank() }?.let { groupName ->
+                                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                                         Text(
-                                            text = groupName,
-                                            style = MaterialTheme.typography.labelMedium,
-                                            color = TextSecondary
+                                            text = animal?.germanName ?: "Unbekanntes Tier",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            color = TextPrimary
                                         )
+                                        animal?.group?.takeIf { it.isNotBlank() }?.let { groupName ->
+                                            Text(
+                                                text = groupName,
+                                                style = MaterialTheme.typography.labelMedium,
+                                                color = TextSecondary
+                                            )
+                                        }
                                     }
                                 }
 
