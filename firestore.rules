@@ -16,7 +16,9 @@ service cloud.firestore {
         'searchDisplayName',
         'updatedAt',
         'bio',
-        'profilePhotoPath'
+        'profilePhotoPath',
+        'wishAnimalId',
+        'favoriteAnimalId'
       ])
         && request.resource.data.displayName is string
         && request.resource.data.searchDisplayName is string
@@ -24,13 +26,55 @@ service cloud.firestore {
           (request.resource.data.bio is string &&
             request.resource.data.bio.size() <= 300))
         && (!('profilePhotoPath' in request.resource.data) ||
-          request.resource.data.profilePhotoPath is string);
+          request.resource.data.profilePhotoPath is string)
+        && (!('wishAnimalId' in request.resource.data) ||
+          request.resource.data.wishAnimalId is string)
+        && (!('favoriteAnimalId' in request.resource.data) ||
+          request.resource.data.favoriteAnimalId is string);
+    }
+
+    function isValidAnimalStatsWrite(animalId) {
+      return request.resource.data.keys().hasOnly([
+        'animalId',
+        'globalFindingCount',
+        'updatedAt'
+      ])
+        && request.resource.data.animalId is string
+        && request.resource.data.animalId == animalId
+        && (
+          request.resource.data.globalFindingCount is int ||
+          request.resource.data.globalFindingCount is float
+        )
+        && request.resource.data.globalFindingCount >= 0;
+    }
+
+    function isValidGlobalFindingContributionWrite() {
+      return request.resource.data.keys().hasOnly([
+        'ownerUid',
+        'findingId',
+        'animalId',
+        'updatedAt'
+      ])
+        && request.resource.data.ownerUid is string
+        && request.resource.data.ownerUid.size() > 0
+        && request.resource.data.findingId is string
+        && request.resource.data.findingId.size() > 0
+        && request.resource.data.animalId is string
+        && request.resource.data.animalId.size() > 0;
     }
 
     match /users/{userId} {
       allow read: if isSignedIn();
       allow create, update: if isOwner(userId) && isValidPublicProfileWrite();
       allow delete: if false;
+    }
+
+    match /animalStats/{animalId} {
+      allow read, write: if request.auth != null;
+    }
+
+    match /globalFindingContributions/{contributionId} {
+      allow read, write: if request.auth != null;
     }
   }
 }

@@ -2,11 +2,17 @@ package com.example.tierdex
 
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FieldValue
 import java.security.MessageDigest
 
 object FirestoreFindingRepository {
     private const val TAG = "FirestoreFindings"
     private val firestore: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
+    private fun animalStatsDocument(animalId: String) =
+        firestore.collection("animalStats").document(animalId)
+    private fun globalFindingContributionDocument(ownerUid: String, findingId: String) =
+        firestore.collection("globalFindingContributions")
+            .document("${ownerUid.trim()}_${findingId.trim()}")
 
     private fun findingFingerprint(
         animalId: String,
@@ -40,6 +46,16 @@ object FirestoreFindingRepository {
 
     fun documentIdForFinding(finding: AnimalFinding): String {
         return hashedDocumentIdForFinding(finding)
+    }
+
+    private fun globalFindingCountFromValue(rawValue: Any?): Long {
+        return when (rawValue) {
+            is Long -> rawValue
+            is Int -> rawValue.toLong()
+            is Double -> rawValue.toLong()
+            is Float -> rawValue.toLong()
+            else -> 0L
+        }.coerceAtLeast(0L)
     }
 
     fun saveCurrentUserFinding(
@@ -252,4 +268,239 @@ object FirestoreFindingRepository {
                 onError(exception.message)
             }
     }
+
+    fun recordGlobalFindingContributionIfNeeded(
+        ownerUid: String,
+        finding: AnimalFinding,
+        onResult: (Boolean, String?) -> Unit = { _, _ -> }
+    ) {
+        val normalizedOwnerUid = ownerUid.trim()
+        val normalizedAnimalId = finding.animalId.trim()
+        val findingId = documentIdForFinding(finding).trim()
+
+        if (normalizedOwnerUid.isBlank() || normalizedAnimalId.isBlank() || findingId.isBlank()) {
+            onResult(false, "Ungültige Contribution-Daten")
+            return
+        }
+
+        val contributionDocument = globalFindingContributionDocument(normalizedOwnerUid, findingId)
+        val statsDocument = animalStatsDocument(normalizedAnimalId)
+        firestore.runTransaction { transaction ->
+            val contributionSnapshot = transaction.get(contributionDocument)
+            if (contributionSnapshot.exists()) {
+                return@runTransaction "exists"
+            }
+
+            val snapshot = transaction.get(statsDocument)
+            val currentCount = globalFindingCountFromValue(snapshot.get("globalFindingCount"))
+            val updatedCount = currentCount + 1L
+            transaction.set(
+                statsDocument,
+                hashMapOf(
+                    "animalId" to normalizedAnimalId,
+                    "globalFindingCount" to updatedCount,
+                    "updatedAt" to FieldValue.serverTimestamp()
+                )
+            )
+            transaction.set(
+                contributionDocument,
+                hashMapOf(
+                    "ownerUid" to normalizedOwnerUid,
+                    "findingId" to findingId,
+                    "animalId" to normalizedAnimalId,
+                    "updatedAt" to FieldValue.serverTimestamp()
+                )
+            )
+            "created"
+        }.addOnSuccessListener {
+            onResult(true, it)
+        }.addOnFailureListener { exception ->
+            Log.e(
+                TAG,
+                "Failed to record global finding contribution for $normalizedOwnerUid/$findingId: ${exception.message ?: "Unbekannter Fehler"}",
+                exception
+            )
+            onResult(false, exception.message)
+        }
+    }
+
+    fun removeGlobalFindingContributionIfExists(
+        ownerUid: String,
+        finding: AnimalFinding,
+        onResult: (Boolean, String?) -> Unit = { _, _ -> }
+    ) {
+        val normalizedOwnerUid = ownerUid.trim()
+        val normalizedAnimalId = finding.animalId.trim()
+        val findingId = documentIdForFinding(finding).trim()
+
+        if (normalizedOwnerUid.isBlank() || normalizedAnimalId.isBlank() || findingId.isBlank()) {
+            onResult(false, "Ungültige Contribution-Daten")
+            return
+        }
+
+        val contributionDocument = globalFindingContributionDocument(normalizedOwnerUid, findingId)
+        val statsDocument = animalStatsDocument(normalizedAnimalId)
+        firestore.runTransaction { transaction ->
+            val contributionSnapshot = transaction.get(contributionDocument)
+            if (!contributionSnapshot.exists()) {
+                return@runTransaction "missing"
+            }
+
+            val snapshot = transaction.get(statsDocument)
+            val currentCount = globalFindingCountFromValue(snapshot.get("globalFindingCount"))
+            val updatedCount = (currentCount - 1L).coerceAtLeast(0L)
+            transaction.set(
+                statsDocument,
+                hashMapOf(
+                    "animalId" to normalizedAnimalId,
+                    "globalFindingCount" to updatedCount,
+                    "updatedAt" to FieldValue.serverTimestamp()
+                )
+            )
+            transaction.delete(contributionDocument)
+            "removed"
+        }.addOnSuccessListener {
+            onResult(true, it)
+        }.addOnFailureListener { exception ->
+            Log.e(
+                TAG,
+                "Failed to remove global finding contribution for $normalizedOwnerUid/$findingId: ${exception.message ?: "Unbekannter Fehler"}",
+                exception
+            )
+            onResult(false, exception.message)
+        }
+    }
+
+    fun updateGlobalFindingContributionForChange(
+        ownerUid: String,
+        oldFinding: AnimalFinding,
+        newFinding: AnimalFinding,
+        onResult: (Boolean, String?) -> Unit = { _, _ -> }
+    ) {
+        val normalizedOwnerUid = ownerUid.trim()
+        if (normalizedOwnerUid.isBlank()) {
+            onResult(false, "Leere ownerUid")
+            return
+        }
+
+        val oldFindingId = documentIdForFinding(oldFinding).trim()
+        val newFindingId = documentIdForFinding(newFinding).trim()
+
+        if (oldFindingId == newFindingId) {
+            onResult(true, "unchanged")
+            return
+        }
+
+        removeGlobalFindingContributionIfExists(
+            ownerUid = normalizedOwnerUid,
+            finding = oldFinding
+        ) { removeSuccess, removeResult ->
+            if (!removeSuccess) {
+                onResult(false, removeResult)
+                return@removeGlobalFindingContributionIfExists
+            }
+
+            recordGlobalFindingContributionIfNeeded(
+                ownerUid = normalizedOwnerUid,
+                finding = newFinding,
+                onResult = { recordSuccess, recordResult ->
+                    if (!recordSuccess) {
+                        onResult(false, recordResult)
+                    } else {
+                        val status = when {
+                            removeResult == "removed" && recordResult == "created" -> "moved"
+                            removeResult == "missing" && recordResult == "created" -> "created"
+                            removeResult == "removed" && recordResult == "exists" -> "removed_only"
+                            else -> recordResult ?: removeResult
+                        }
+                        onResult(true, status)
+                    }
+                }
+            )
+        }
+    }
+
+    fun loadAnimalStats(
+        onResult: (Map<String, Int>) -> Unit,
+        onError: (String?) -> Unit = {}
+    ) {
+        firestore.collection("animalStats")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val countsByAnimalId = snapshot.documents.associateNotNull { document ->
+                    val animalId = document.getString("animalId").orEmpty().trim()
+                    if (animalId.isBlank()) {
+                        null
+                    } else {
+                        animalId to globalFindingCountFromValue(document.get("globalFindingCount")).toInt()
+                    }
+                }
+                onResult(countsByAnimalId)
+            }
+            .addOnFailureListener { exception ->
+                Log.e(
+                    TAG,
+                    "Failed to load animalStats: ${exception.message ?: "Unbekannter Fehler"}",
+                    exception
+                )
+                onError(exception.message)
+            }
+    }
+
+    fun backfillGlobalFindingCountsForCurrentUser(
+        ownerUid: String,
+        findings: List<AnimalFinding>,
+        onResult: (Boolean) -> Unit = {},
+        onError: (String?) -> Unit = {}
+    ) {
+        val normalizedOwnerUid = ownerUid.trim()
+        if (normalizedOwnerUid.isBlank()) {
+            onResult(false)
+            return
+        }
+
+        val uniqueFindings = findings
+            .filter { it.animalId.isNotBlank() }
+            .distinctBy { documentIdForFinding(it) }
+
+        if (uniqueFindings.isEmpty()) {
+            onResult(true)
+            return
+        }
+
+        var currentIndex = 0
+
+        fun processNext() {
+            if (currentIndex >= uniqueFindings.size) {
+                onResult(true)
+                return
+            }
+
+            val finding = uniqueFindings[currentIndex]
+            currentIndex += 1
+
+            recordGlobalFindingContributionIfNeeded(
+                ownerUid = normalizedOwnerUid,
+                finding = finding
+            ) { success, result ->
+                if (!success) {
+                    onError(result)
+                    onResult(false)
+                    return@recordGlobalFindingContributionIfNeeded
+                }
+                processNext()
+            }
+        }
+
+        processNext()
+    }
+}
+
+private inline fun <T, R : Any> Iterable<T>.associateNotNull(transform: (T) -> Pair<String, R>?): Map<String, R> {
+    val destination = LinkedHashMap<String, R>()
+    for (item in this) {
+        val entry = transform(item) ?: continue
+        destination[entry.first] = entry.second
+    }
+    return destination
 }

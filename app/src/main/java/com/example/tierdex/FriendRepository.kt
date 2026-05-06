@@ -14,6 +14,8 @@ data class PublicUserProfile(
     val searchDisplayName: String,
     val bio: String = "",
     val profilePhotoPath: String = "",
+    val wishAnimalId: String = "",
+    val favoriteAnimalId: String = "",
     val updatedAt: Timestamp? = null
 )
 
@@ -22,6 +24,8 @@ data class FriendUser(
     val displayName: String,
     val searchDisplayName: String,
     val profilePhotoPath: String = "",
+    val wishAnimalId: String = "",
+    val favoriteAnimalId: String = "",
     val connectedAt: Timestamp? = null
 )
 
@@ -410,6 +414,41 @@ object FriendRepository {
             }
     }
 
+    fun updatePublicProfileAnimalPreferences(
+        userId: String,
+        wishAnimalId: String,
+        favoriteAnimalId: String,
+        onResult: (Boolean, String?) -> Unit = { _, _ -> }
+    ) {
+        if (userId.isBlank()) {
+            onResult(false, "Leere userId")
+            return
+        }
+
+        val profileData = hashMapOf<String, Any>(
+            "wishAnimalId" to wishAnimalId.trim(),
+            "favoriteAnimalId" to favoriteAnimalId.trim(),
+            "updatedAt" to FieldValue.serverTimestamp()
+        )
+
+        firestore.collection("users")
+            .document(userId)
+            .set(profileData, com.google.firebase.firestore.SetOptions.merge())
+            .addOnSuccessListener {
+                onResult(true, null)
+            }
+            .addOnFailureListener { exception ->
+                val errorMessage = toFirestoreErrorMessage(
+                    functionName = "updatePublicProfileAnimalPreferences",
+                    operation = "WRITE",
+                    path = "users/$userId",
+                    exception = exception
+                )
+                Log.e(TAG, errorMessage, exception)
+                onResult(false, errorMessage)
+            }
+    }
+
     fun loadUserProfile(
         userId: String,
         onResult: (PublicUserProfile?) -> Unit,
@@ -436,6 +475,8 @@ object FriendRepository {
                         searchDisplayName = document.getString("searchDisplayName").orEmpty(),
                         bio = document.getString("bio").orEmpty(),
                         profilePhotoPath = document.getString("profilePhotoPath").orEmpty(),
+                        wishAnimalId = document.getString("wishAnimalId").orEmpty(),
+                        favoriteAnimalId = document.getString("favoriteAnimalId").orEmpty(),
                         updatedAt = document.getTimestamp("updatedAt")
                     )
                 )
@@ -485,6 +526,8 @@ object FriendRepository {
                             searchDisplayName = document.getString("searchDisplayName").orEmpty(),
                             bio = document.getString("bio").orEmpty(),
                             profilePhotoPath = document.getString("profilePhotoPath").orEmpty(),
+                            wishAnimalId = document.getString("wishAnimalId").orEmpty(),
+                            favoriteAnimalId = document.getString("favoriteAnimalId").orEmpty(),
                             updatedAt = document.getTimestamp("updatedAt")
                         )
                     }
@@ -684,6 +727,8 @@ object FriendRepository {
                                     displayName = it.displayName,
                                     searchDisplayName = it.searchDisplayName,
                                     profilePhotoPath = it.profilePhotoPath,
+                                    wishAnimalId = it.wishAnimalId,
+                                    favoriteAnimalId = it.favoriteAnimalId,
                                     connectedAt = connectedAt
                                 )
                             }

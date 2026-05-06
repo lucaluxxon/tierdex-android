@@ -360,6 +360,23 @@ private fun formatDailyAnimalHistoryText(
     }
 }
 
+private fun friendAnimalPreferenceLine(
+    label: String,
+    matchingFriends: List<FriendUser>
+): String? {
+    val resolvedNames = matchingFriends
+        .map { it.displayName.trim() }
+        .filter { it.isNotBlank() }
+        .distinct()
+
+    return when {
+        resolvedNames.isEmpty() -> null
+        resolvedNames.size == 1 -> "$label von ${resolvedNames.first()}"
+        resolvedNames.size == 2 -> "$label von ${resolvedNames[0]} und ${resolvedNames[1]}"
+        else -> "$label von ${resolvedNames.size} Freunden"
+    }
+}
+
 private fun parseFindingLocalDateOrNull(dateText: String): Date? {
     val normalizedDateText = dateText.trim()
     if (normalizedDateText.isBlank()) return null
@@ -1231,6 +1248,10 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         mutableStateOf(ProfileCollectionDateFilter.ALL.name)
     }
     var incomingRequestCount by rememberSaveable { mutableStateOf(0) }
+    var animalGlobalFindingCounts by remember { mutableStateOf<Map<String, Int>>(emptyMap()) }
+    var animalGlobalFindingCountsLoaded by remember { mutableStateOf(false) }
+    var animalGlobalFindingCountsLoadAttempted by remember { mutableStateOf(false) }
+    var globalFindingBackfillStartedForOwnerId by remember { mutableStateOf<String?>(null) }
     var showNotificationsScreen by rememberSaveable { mutableStateOf(false) }
     var authEntryMode by rememberSaveable { mutableStateOf<String?>(null) }
     var showAnimalPicker by rememberSaveable { mutableStateOf(false) }
@@ -1255,6 +1276,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     var wishlistCelebrationMessage by rememberSaveable { mutableStateOf<CelebrationMessage?>(null) }
     var questLevelUpMessage by rememberSaveable { mutableStateOf<CelebrationMessage?>(null) }
     var previousOwnerId by rememberSaveable { mutableStateOf(ownerId) }
+    var lastSyncedAnimalPreferenceSignature by rememberSaveable { mutableStateOf<String?>(null) }
     LaunchedEffect(ownerId) {
         favoriteAnimalId = prefs.getString(favoriteAnimalKey(preferenceOwnerId), null)
         wishlistAnimalId = prefs.getString(wishlistAnimalKey(preferenceOwnerId), null)
@@ -1386,6 +1408,33 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         "User profile ensure failed: ${result ?: "Unbekannter Fehler"}"
                     )
                 }
+            }
+        }
+    }
+    LaunchedEffect(ownerId, preferenceOwnerId, wishlistAnimalId, favoriteAnimalId) {
+        val safeOwnerId = ownerId ?: return@LaunchedEffect
+        val preferenceSignature = listOf(
+            safeOwnerId,
+            wishlistAnimalId.orEmpty().trim(),
+            favoriteAnimalId.orEmpty().trim()
+        ).joinToString("|")
+
+        if (lastSyncedAnimalPreferenceSignature == preferenceSignature) {
+            return@LaunchedEffect
+        }
+
+        lastSyncedAnimalPreferenceSignature = preferenceSignature
+        FriendRepository.updatePublicProfileAnimalPreferences(
+            userId = safeOwnerId,
+            wishAnimalId = wishlistAnimalId.orEmpty(),
+            favoriteAnimalId = favoriteAnimalId.orEmpty()
+        ) { success, result ->
+            if (!success) {
+                lastSyncedAnimalPreferenceSignature = null
+                Log.e(
+                    "FriendProfile",
+                    "Animal preferences sync failed: ${result ?: "Unbekannter Fehler"}"
+                )
             }
         }
     }
@@ -1736,8 +1785,94 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         incomingRequestCount = notifications.count { !it.isRead }
     }
 
+    fun refreshAnimalGlobalFindingCounts() {
+        if (currentOwnerId.isNullOrBlank()) {
+            animalGlobalFindingCounts = emptyMap()
+            animalGlobalFindingCountsLoaded = false
+            animalGlobalFindingCountsLoadAttempted = false
+            return
+        }
+
+        FirestoreFindingRepository.loadAnimalStats(
+            onResult = { counts ->
+                animalGlobalFindingCounts = counts
+                animalGlobalFindingCountsLoaded = true
+                animalGlobalFindingCountsLoadAttempted = true
+            },
+            onError = { error ->
+                Log.e(
+                    "GlobalStats",
+                    "stats load failed from TierdexApp ownerId=$currentOwnerId error=${error ?: "Unbekannter Fehler"}"
+                )
+                animalGlobalFindingCountsLoadAttempted = true
+            }
+        )
+    }
+
+    fun updateAnimalGlobalFindingCountLocally(animalId: String, delta: Int) {
+        val normalizedAnimalId = animalId.trim()
+        if (normalizedAnimalId.isBlank()) return
+
+        animalGlobalFindingCounts = animalGlobalFindingCounts.toMutableMap().apply {
+            val currentCount = this[normalizedAnimalId] ?: 0
+            this[normalizedAnimalId] = (currentCount + delta).coerceAtLeast(0)
+        }
+    }
+
+    fun updateAnimalGlobalFindingCountLocallyForChange(oldAnimalId: String, newAnimalId: String) {
+        val normalizedOldAnimalId = oldAnimalId.trim()
+        val normalizedNewAnimalId = newAnimalId.trim()
+        if (
+            normalizedOldAnimalId.isBlank() ||
+            normalizedNewAnimalId.isBlank() ||
+            normalizedOldAnimalId == normalizedNewAnimalId
+        ) {
+            return
+        }
+
+        animalGlobalFindingCounts = animalGlobalFindingCounts.toMutableMap().apply {
+            val oldCount = this[normalizedOldAnimalId] ?: 0
+            val newCount = this[normalizedNewAnimalId] ?: 0
+            this[normalizedOldAnimalId] = (oldCount - 1).coerceAtLeast(0)
+            this[normalizedNewAnimalId] = newCount + 1
+        }
+    }
+
     LaunchedEffect(currentOwnerId) {
         refreshNotifications()
+        refreshAnimalGlobalFindingCounts()
+    }
+    LaunchedEffect(currentOwnerId, findingsFromRoom) {
+        val safeOwnerId = currentOwnerId
+        if (safeOwnerId.isNullOrBlank()) {
+            globalFindingBackfillStartedForOwnerId = null
+            return@LaunchedEffect
+        }
+        if (findingsFromRoom.isEmpty()) {
+            return@LaunchedEffect
+        }
+        if (globalFindingBackfillStartedForOwnerId == safeOwnerId) {
+            return@LaunchedEffect
+        }
+
+        globalFindingBackfillStartedForOwnerId = safeOwnerId
+        FirestoreFindingRepository.backfillGlobalFindingCountsForCurrentUser(
+            ownerUid = safeOwnerId,
+            findings = findingsFromRoom,
+            onResult = { success ->
+                if (success) {
+                    refreshAnimalGlobalFindingCounts()
+                } else {
+                    globalFindingBackfillStartedForOwnerId = null
+                }
+            },
+            onError = { error ->
+                Log.e(
+                    "GlobalStats",
+                    "backfill error ownerId=$safeOwnerId error=${error ?: "Unbekannter Fehler"}"
+                )
+            }
+        )
     }
 
     LaunchedEffect(currentTab, currentOwnerId, showNotificationsScreen) {
@@ -2173,6 +2308,26 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                                 "CloudWrite",
                                                 "Firestore save on create failed: $result"
                                             )
+                                        } else {
+                                            FirestoreFindingRepository.recordGlobalFindingContributionIfNeeded(
+                                                ownerUid = currentOwnerId.orEmpty(),
+                                                finding = findingWithRemotePhoto
+                                            ) { counterSuccess, counterResult ->
+                                                if (!counterSuccess) {
+                                                    Log.e(
+                                                        "CloudWrite",
+                                                        "global finding contribution on create failed: $counterResult"
+                                                    )
+                                                } else {
+                                                    if (counterResult == "created") {
+                                                        updateAnimalGlobalFindingCountLocally(
+                                                            animalId = findingWithRemotePhoto.animalId,
+                                                            delta = 1
+                                                        )
+                                                    }
+                                                }
+                                                refreshAnimalGlobalFindingCounts()
+                                            }
                                         }
                                     }
                                 }
@@ -2206,6 +2361,25 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                                     "CloudSyncDelete",
                                                     "Deleted Firestore finding: documentId=$result"
                                                 )
+                                                FirestoreFindingRepository.removeGlobalFindingContributionIfExists(
+                                                    ownerUid = currentOwnerId.orEmpty(),
+                                                    finding = finding
+                                                ) { counterSuccess, counterResult ->
+                                                    if (!counterSuccess) {
+                                                        Log.e(
+                                                            "CloudSyncDelete",
+                                                            "global finding contribution removal on delete failed: $counterResult"
+                                                        )
+                                                    } else {
+                                                        if (counterResult == "removed") {
+                                                            updateAnimalGlobalFindingCountLocally(
+                                                                animalId = finding.animalId,
+                                                                delta = -1
+                                                            )
+                                                        }
+                                                    }
+                                                    refreshAnimalGlobalFindingCounts()
+                                                }
                                             } else {
                                                 Log.e(
                                                     "CloudSyncDelete",
@@ -2307,6 +2481,20 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                                     "CloudWrite",
                                                     "Firestore update on edit failed: $result"
                                                 )
+                                            } else {
+                                                FirestoreFindingRepository.updateGlobalFindingContributionForChange(
+                                                    ownerUid = currentOwnerId.orEmpty(),
+                                                    oldFinding = oldFinding,
+                                                    newFinding = preparedNewFinding
+                                                ) { counterSuccess, counterResult ->
+                                                    if (!counterSuccess) {
+                                                        Log.e(
+                                                            "CloudWrite",
+                                                            "global finding contribution update on edit failed: $counterResult"
+                                                        )
+                                                    }
+                                                    refreshAnimalGlobalFindingCounts()
+                                                }
                                             }
                                         }
                                     }
@@ -2369,6 +2557,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         selectedSubgroup = selectedSubgroupFilter,
                         onSelectedSubgroupChange = { selectedSubgroupFilter = it },
                         findingCountByAnimalId = findingCountByAnimalId,
+                        animalGlobalFindingCounts = emptyMap(),
+                        animalGlobalFindingCountsLoaded = false,
+                        animalGlobalFindingCountsLoadAttempted = true,
                         onAnimalClick = { animal ->
                             resetSearchState()
                             selectedAnimalId = animal.id
@@ -2484,6 +2675,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             selectedSubgroup = selectedSubgroupFilter,
                             onSelectedSubgroupChange = { selectedSubgroupFilter = it },
                             findingCountByAnimalId = findingCountByAnimalId,
+                            animalGlobalFindingCounts = animalGlobalFindingCounts,
+                            animalGlobalFindingCountsLoaded = animalGlobalFindingCountsLoaded,
+                            animalGlobalFindingCountsLoadAttempted = animalGlobalFindingCountsLoadAttempted,
                             onAnimalClick = { animal ->
                                 resetSearchState()
                                 selectedAnimalId = animal.id
@@ -5953,6 +6147,7 @@ private fun DailyAnimalScreen(
 ) {
     BackHandler(onBack = onClose)
 
+    var availableFriends by remember(currentUserId) { mutableStateOf<List<FriendUser>>(emptyList()) }
     var friendFindings by remember(animal.id, currentUserId) {
         mutableStateOf<List<FriendFeedItem>>(emptyList())
     }
@@ -5993,15 +6188,43 @@ private fun DailyAnimalScreen(
         )
     }
 
+    LaunchedEffect(currentUserId) {
+        availableFriends = emptyList()
+
+        if (currentUserId.isNullOrBlank()) {
+            return@LaunchedEffect
+        }
+
+        FriendRepository.loadFriends(
+            currentUserId = currentUserId,
+            onResult = { friends ->
+                availableFriends = friends
+            }
+        )
+    }
+
+    val wishAnimalFriends = remember(animal.id, availableFriends) {
+        availableFriends.filter { it.wishAnimalId == animal.id }
+    }
+    val favoriteAnimalFriends = remember(animal.id, availableFriends) {
+        availableFriends.filter { it.favoriteAnimalId == animal.id }
+    }
+    val wishAnimalFriendsText = remember(wishAnimalFriends) {
+        friendAnimalPreferenceLine("Wunschfund", wishAnimalFriends)
+    }
+    val favoriteAnimalFriendsText = remember(favoriteAnimalFriends) {
+        friendAnimalPreferenceLine("Lieblingstier", favoriteAnimalFriends)
+    }
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .safeDrawingPadding()
+            .statusBarsPadding()
+            .navigationBarsPadding()
             .padding(horizontal = 16.dp),
         contentPadding = PaddingValues(
             top = 12.dp,
-            bottom = if (showCloseButton) 40.dp else 48.dp
+            bottom = (if (showCloseButton) 40.dp else 48.dp) + 24.dp
         ),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
@@ -6055,6 +6278,20 @@ private fun DailyAnimalScreen(
                         )
                     }
                     dailyAnimalHistoryText?.takeIf { it.isNotBlank() }?.let {
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = TextSecondary
+                        )
+                    }
+                    wishAnimalFriendsText?.let {
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = TextSecondary
+                        )
+                    }
+                    favoriteAnimalFriendsText?.let {
                         Text(
                             text = it,
                             style = MaterialTheme.typography.bodySmall,
@@ -7733,6 +7970,19 @@ fun AnimalDetailScreen(
         )
     }
 
+    val wishAnimalFriends = remember(animal.id, availableFriends) {
+        availableFriends.filter { it.wishAnimalId == animal.id }
+    }
+    val favoriteAnimalFriends = remember(animal.id, availableFriends) {
+        availableFriends.filter { it.favoriteAnimalId == animal.id }
+    }
+    val wishAnimalFriendsText = remember(wishAnimalFriends) {
+        friendAnimalPreferenceLine("Wunschfund", wishAnimalFriends)
+    }
+    val favoriteAnimalFriendsText = remember(favoriteAnimalFriends) {
+        friendAnimalPreferenceLine("Lieblingstier", favoriteAnimalFriends)
+    }
+
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
@@ -8324,7 +8574,15 @@ fun AnimalDetailScreen(
             }
         }
 
-        if (!showsFindingFormOnly && !isEditMode && !dailyAnimalHistoryText.isNullOrBlank()) {
+        if (
+            !showsFindingFormOnly &&
+            !isEditMode &&
+            (
+                !dailyAnimalHistoryText.isNullOrBlank() ||
+                    wishAnimalFriendsText != null ||
+                    favoriteAnimalFriendsText != null
+            )
+        ) {
             item {
                 Card(
                     modifier = Modifier.fillMaxWidth(),
@@ -8332,12 +8590,32 @@ fun AnimalDetailScreen(
                     elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
                     colors = CardDefaults.cardColors(containerColor = CardBackground)
                 ) {
-                    Text(
-                        text = dailyAnimalHistoryText,
+                    Column(
                         modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = TextSecondary
-                    )
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        dailyAnimalHistoryText?.takeIf { it.isNotBlank() }?.let {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
+                            )
+                        }
+                        wishAnimalFriendsText?.let {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
+                            )
+                        }
+                        favoriteAnimalFriendsText?.let {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextSecondary
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -9120,6 +9398,9 @@ fun AnimalDetailScreen(
                 selectedSubgroup: String,
                 onSelectedSubgroupChange: (String) -> Unit,
                 findingCountByAnimalId: Map<String, Int>,
+                animalGlobalFindingCounts: Map<String, Int>,
+                animalGlobalFindingCountsLoaded: Boolean,
+                animalGlobalFindingCountsLoadAttempted: Boolean,
                 onAnimalClick: (AnimalEntry) -> Unit,
                 onOpenMap: (() -> Unit)? = null,
                 currentSortOption: String,
@@ -9347,9 +9628,17 @@ fun AnimalDetailScreen(
                     } else {
                         items(animals) { animal ->
                             val findingCount = findingCountByAnimalId[animal.id] ?: 0
+                            val globalFindingCount = if (animalGlobalFindingCountsLoaded) {
+                                max(animalGlobalFindingCounts[animal.id] ?: 0, findingCount)
+                            } else {
+                                null
+                            }
                             AnimalListItem(
                                 animal = animal,
                                 findingCount = findingCount,
+                                globalFindingCount = globalFindingCount,
+                                animalGlobalFindingCountsLoadAttempted = animalGlobalFindingCountsLoadAttempted,
+                                showGlobalFindingCount = !isPickerMode,
                                 onClick = { onAnimalClick(animal) }
                             )
                         }
@@ -9421,7 +9710,14 @@ fun AnimalDetailScreen(
             }
 
             @Composable
-            fun AnimalListItem(animal: AnimalEntry, findingCount: Int, onClick: () -> Unit) {
+            fun AnimalListItem(
+                animal: AnimalEntry,
+                findingCount: Int,
+                globalFindingCount: Int?,
+                animalGlobalFindingCountsLoadAttempted: Boolean,
+                showGlobalFindingCount: Boolean,
+                onClick: () -> Unit
+            ) {
 
                 val isFound = findingCount > 0
 
@@ -9450,19 +9746,23 @@ fun AnimalDetailScreen(
                     )
                 ) {
                     Row(
-                        modifier = Modifier.padding(16.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.Top
                     ) {
-
                         Icon(
                             imageVector = icon,
                             contentDescription = null,
                             tint = TextSecondary,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier
+                                .size(24.dp)
+                                .padding(top = 2.dp)
                         )
 
                         Column(
+                            modifier = Modifier.weight(1f),
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
                             Text(
@@ -9477,10 +9777,53 @@ fun AnimalDetailScreen(
                             )
 
                             Text(
-                                text = if (findingCount > 0) "âœ“ Gefunden ($findingCount)" else "Nicht gefunden",
+                                text = if (findingCount > 0) {
+                                    "Davon eigene Funde: $findingCount"
+                                } else {
+                                    "Nicht gefunden"
+                                },
                                 style = MaterialTheme.typography.labelSmall,
                                 color = if (findingCount > 0) PrimaryGreen else TextSecondary
                             )
+
+                            if (showGlobalFindingCount && globalFindingCount != null) {
+                                Text(
+                                    text = "Globale Funde: $globalFindingCount",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = TextSecondary
+                                )
+                            } else if (showGlobalFindingCount) {
+                                Text(
+                                    text = "Globale Funde: …",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = TextSecondary
+                                )
+                            }
+                        }
+
+                        if (isFound) {
+                            Surface(
+                                shape = RoundedCornerShape(999.dp),
+                                color = PrimaryGreen.copy(alpha = 0.12f),
+                                contentColor = PrimaryGreen
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                                    horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Done,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(14.dp)
+                                    )
+                                    Text(
+                                        text = "Gefunden",
+                                        style = MaterialTheme.typography.labelSmall,
+                                        color = PrimaryGreen
+                                    )
+                                }
+                            }
                         }
                     }
                 }
