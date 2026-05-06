@@ -87,6 +87,8 @@ import com.google.android.gms.tasks.CancellationTokenSource
 import java.io.BufferedReader
 import java.io.ByteArrayInputStream
 import java.io.File
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -218,6 +220,14 @@ private enum class ProfileCollectionSortOrder {
     OLDEST_FIRST
 }
 
+private enum class ProfileCollectionDateFilter {
+    ALL,
+    TODAY,
+    LAST_7_DAYS,
+    LAST_30_DAYS,
+    THIS_YEAR
+}
+
 private fun favoriteAnimalKey(ownerId: String): String = "$FAVORITE_ANIMAL_KEY_PREFIX$ownerId"
 
 private fun wishlistAnimalKey(ownerId: String): String = "$WISHLIST_ANIMAL_KEY_PREFIX$ownerId"
@@ -238,16 +248,17 @@ private fun currentAppDateText(): String =
 private fun currentDailyDateKey(): String =
     SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
 
-private fun parseFindingDateMillisOrNull(dateText: String): Long? {
+private fun parseFindingLocalDateOrNull(dateText: String): LocalDate? {
     val normalizedDateText = dateText.trim()
     if (normalizedDateText.isBlank()) return null
 
-    val supportedFormats = listOf("dd.MM.yyyy", "yyyy-MM-dd")
+    val supportedFormats = listOf(
+        DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()),
+        DateTimeFormatter.ISO_LOCAL_DATE
+    )
     return supportedFormats.firstNotNullOfOrNull { formatPattern ->
         runCatching {
-            SimpleDateFormat(formatPattern, Locale.getDefault()).apply {
-                isLenient = false
-            }.parse(normalizedDateText)?.time
+            LocalDate.parse(normalizedDateText, formatPattern)
         }.getOrNull()
     }
 }
@@ -258,14 +269,14 @@ private fun sortProfileFindings(
 ): List<AnimalFinding> {
     return findings.withIndex()
         .sortedWith { left, right ->
-            val leftDateMillis = parseFindingDateMillisOrNull(left.value.date)
-            val rightDateMillis = parseFindingDateMillisOrNull(right.value.date)
+            val leftDate = parseFindingLocalDateOrNull(left.value.date)
+            val rightDate = parseFindingLocalDateOrNull(right.value.date)
 
             when {
-                leftDateMillis != null && rightDateMillis != null -> {
+                leftDate != null && rightDate != null -> {
                     val dateComparison = when (sortOrder) {
-                        ProfileCollectionSortOrder.NEWEST_FIRST -> rightDateMillis.compareTo(leftDateMillis)
-                        ProfileCollectionSortOrder.OLDEST_FIRST -> leftDateMillis.compareTo(rightDateMillis)
+                        ProfileCollectionSortOrder.NEWEST_FIRST -> rightDate.compareTo(leftDate)
+                        ProfileCollectionSortOrder.OLDEST_FIRST -> leftDate.compareTo(rightDate)
                     }
                     if (dateComparison != 0) {
                         dateComparison
@@ -283,12 +294,31 @@ private fun sortProfileFindings(
                     }
                 }
 
-                leftDateMillis != null -> -1
-                rightDateMillis != null -> 1
+                leftDate != null -> -1
+                rightDate != null -> 1
                 else -> left.index.compareTo(right.index)
             }
         }
         .map { it.value }
+}
+
+private fun filterProfileFindings(
+    findings: List<AnimalFinding>,
+    dateFilter: ProfileCollectionDateFilter,
+    today: LocalDate = LocalDate.now()
+): List<AnimalFinding> {
+    if (dateFilter == ProfileCollectionDateFilter.ALL) return findings
+
+    return findings.filter { finding ->
+        val findingDate = parseFindingLocalDateOrNull(finding.date) ?: return@filter false
+        when (dateFilter) {
+            ProfileCollectionDateFilter.ALL -> true
+            ProfileCollectionDateFilter.TODAY -> findingDate == today
+            ProfileCollectionDateFilter.LAST_7_DAYS -> !findingDate.isBefore(today.minusDays(6))
+            ProfileCollectionDateFilter.LAST_30_DAYS -> !findingDate.isBefore(today.minusDays(29))
+            ProfileCollectionDateFilter.THIS_YEAR -> findingDate.year == today.year
+        }
+    }
 }
 
 private fun formatCoordinates(
@@ -6139,13 +6169,27 @@ fun ProfileScreen(
     var profileCollectionSortOrder by rememberSaveable {
         mutableStateOf(ProfileCollectionSortOrder.NEWEST_FIRST.name)
     }
+    var profileCollectionDateFilter by rememberSaveable {
+        mutableStateOf(ProfileCollectionDateFilter.ALL.name)
+    }
     val activeProfileCollectionSortOrder = remember(profileCollectionSortOrder) {
         runCatching { ProfileCollectionSortOrder.valueOf(profileCollectionSortOrder) }
             .getOrDefault(ProfileCollectionSortOrder.NEWEST_FIRST)
     }
-    val sortedProfileFindings = remember(findings, activeProfileCollectionSortOrder) {
+    val activeProfileCollectionDateFilter = remember(profileCollectionDateFilter) {
+        runCatching { ProfileCollectionDateFilter.valueOf(profileCollectionDateFilter) }
+            .getOrDefault(ProfileCollectionDateFilter.ALL)
+    }
+    val filteredAndSortedProfileFindings = remember(
+        findings,
+        activeProfileCollectionDateFilter,
+        activeProfileCollectionSortOrder
+    ) {
         sortProfileFindings(
-            findings = findings,
+            findings = filterProfileFindings(
+                findings = findings,
+                dateFilter = activeProfileCollectionDateFilter
+            ),
             sortOrder = activeProfileCollectionSortOrder
         )
     }
@@ -6647,13 +6691,65 @@ fun ProfileScreen(
             }
         }
 
+        item {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                listOf(
+                    ProfileCollectionDateFilter.ALL to "Alle",
+                    ProfileCollectionDateFilter.TODAY to "Heute",
+                    ProfileCollectionDateFilter.LAST_7_DAYS to "7 Tage",
+                    ProfileCollectionDateFilter.LAST_30_DAYS to "30 Tage",
+                    ProfileCollectionDateFilter.THIS_YEAR to "Dieses Jahr"
+                ).forEach { (filterOption, label) ->
+                    val isActive = filterOption == activeProfileCollectionDateFilter
+                    OutlinedButton(
+                        onClick = {
+                            profileCollectionDateFilter = filterOption.name
+                        },
+                        shape = RoundedCornerShape(999.dp),
+                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+                        border = BorderStroke(
+                            1.dp,
+                            if (isActive) PrimaryGreen else BorderColor
+                        ),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            containerColor = if (isActive) {
+                                PrimaryGreen.copy(alpha = 0.10f)
+                            } else {
+                                CardBackground
+                            },
+                            contentColor = if (isActive) PrimaryGreen else TextPrimary
+                        )
+                    ) {
+                        Text(
+                            text = label,
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
+                }
+            }
+        }
+
         if (findings.isEmpty()) {
             item {
                 Text("Noch keine Funde gespeichert.")
             }
+        } else if (filteredAndSortedProfileFindings.isEmpty()) {
+            item {
+                Text(
+                    text = "Für diesen Zeitraum gibt es noch keine Funde.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = TextSecondary
+                )
+            }
         } else {
             items(
-                items = sortedProfileFindings,
+                items = filteredAndSortedProfileFindings,
                 key = { finding ->
                     finding.roomId ?: FirestoreFindingRepository.findingFingerprint(finding)
                 }
