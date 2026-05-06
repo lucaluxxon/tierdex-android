@@ -166,6 +166,7 @@ import androidx.compose.material.icons.filled.Pets
 import androidx.compose.material.icons.filled.SetMeal
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Collections
 import androidx.compose.material.icons.filled.Comment
 import androidx.compose.material.icons.filled.Delete
@@ -8918,6 +8919,39 @@ fun AnimalDetailScreen(
                             TextButton(onClick = onDismiss) {
                                 Text("Abbrechen", color = Color.White)
                             }
+                            Surface(
+                                shape = RoundedCornerShape(999.dp),
+                                color = Color.White.copy(alpha = 0.18f),
+                                shadowElevation = 2.dp
+                            ) {
+                                IconButton(
+                                    onClick = {
+                                        val safeBitmap = loadedBitmap ?: return@IconButton
+                                        val croppedBitmap = cropBitmapToCenterFrame(
+                                            bitmap = safeBitmap,
+                                            containerSize = containerSize,
+                                            baseImageWidth = baseImageSize.first,
+                                            baseImageHeight = baseImageSize.second,
+                                            cropSizePx = cropSizePx,
+                                            scale = scale,
+                                            offset = offset
+                                        ) ?: return@IconButton
+
+                                        val croppedUri = saveBitmapForFinding(context, croppedBitmap)
+                                        if (croppedUri.isNotBlank()) {
+                                            onCropComplete(croppedUri)
+                                        }
+                                    },
+                                    enabled = loadedBitmap != null && containerSize != IntSize.Zero,
+                                    modifier = Modifier.size(40.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Done,
+                                        contentDescription = "Zuschnitt bestätigen",
+                                        tint = Color.White
+                                    )
+                                }
+                            }
                             IconButton(onClick = onDismiss) {
                                 Icon(
                                     imageVector = Icons.Filled.Close,
@@ -8925,36 +8959,6 @@ fun AnimalDetailScreen(
                                     tint = Color.White
                                 )
                             }
-                        }
-
-                        Button(
-                            onClick = {
-                                val safeBitmap = loadedBitmap ?: return@Button
-                                val croppedBitmap = cropBitmapToCenterFrame(
-                                    bitmap = safeBitmap,
-                                    containerSize = containerSize,
-                                    baseImageWidth = baseImageSize.first,
-                                    baseImageHeight = baseImageSize.second,
-                                    cropSizePx = cropSizePx,
-                                    scale = scale,
-                                    offset = offset
-                                ) ?: return@Button
-
-                                val croppedUri = saveBitmapForFinding(context, croppedBitmap)
-                                if (croppedUri.isNotBlank()) {
-                                    onCropComplete(croppedUri)
-                                }
-                            },
-                            modifier = Modifier
-                                .align(Alignment.BottomCenter)
-                                .safeDrawingPadding()
-                                .padding(24.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = PrimaryGreen
-                            ),
-                            enabled = loadedBitmap != null && containerSize != IntSize.Zero
-                        ) {
-                            Text("Zuschneiden")
                         }
                     }
                 }
