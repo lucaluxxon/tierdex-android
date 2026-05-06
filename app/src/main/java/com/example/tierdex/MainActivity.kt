@@ -87,9 +87,8 @@ import com.google.android.gms.tasks.CancellationTokenSource
 import java.io.BufferedReader
 import java.io.ByteArrayInputStream
 import java.io.File
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.UUID
@@ -248,19 +247,34 @@ private fun currentAppDateText(): String =
 private fun currentDailyDateKey(): String =
     SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
 
-private fun parseFindingLocalDateOrNull(dateText: String): LocalDate? {
+private fun parseFindingLocalDateOrNull(dateText: String): Date? {
     val normalizedDateText = dateText.trim()
     if (normalizedDateText.isBlank()) return null
 
-    val supportedFormats = listOf(
-        DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()),
-        DateTimeFormatter.ISO_LOCAL_DATE
-    )
+    val supportedFormats = listOf("dd.MM.yyyy", "yyyy-MM-dd")
     return supportedFormats.firstNotNullOfOrNull { formatPattern ->
         runCatching {
-            LocalDate.parse(normalizedDateText, formatPattern)
+            SimpleDateFormat(formatPattern, Locale.getDefault()).apply {
+                isLenient = false
+            }.parse(normalizedDateText)
         }.getOrNull()
     }
+}
+
+private fun calendarForDate(date: Date): Calendar =
+    Calendar.getInstance().apply {
+        time = date
+        set(Calendar.HOUR_OF_DAY, 0)
+        set(Calendar.MINUTE, 0)
+        set(Calendar.SECOND, 0)
+        set(Calendar.MILLISECOND, 0)
+    }
+
+private fun isSameCalendarDay(leftDate: Date, rightDate: Date): Boolean {
+    val leftCalendar = calendarForDate(leftDate)
+    val rightCalendar = calendarForDate(rightDate)
+    return leftCalendar.get(Calendar.YEAR) == rightCalendar.get(Calendar.YEAR) &&
+        leftCalendar.get(Calendar.DAY_OF_YEAR) == rightCalendar.get(Calendar.DAY_OF_YEAR)
 }
 
 private fun sortProfileFindings(
@@ -275,8 +289,8 @@ private fun sortProfileFindings(
             when {
                 leftDate != null && rightDate != null -> {
                     val dateComparison = when (sortOrder) {
-                        ProfileCollectionSortOrder.NEWEST_FIRST -> rightDate.compareTo(leftDate)
-                        ProfileCollectionSortOrder.OLDEST_FIRST -> leftDate.compareTo(rightDate)
+                        ProfileCollectionSortOrder.NEWEST_FIRST -> rightDate.time.compareTo(leftDate.time)
+                        ProfileCollectionSortOrder.OLDEST_FIRST -> leftDate.time.compareTo(rightDate.time)
                     }
                     if (dateComparison != 0) {
                         dateComparison
@@ -305,18 +319,35 @@ private fun sortProfileFindings(
 private fun filterProfileFindings(
     findings: List<AnimalFinding>,
     dateFilter: ProfileCollectionDateFilter,
-    today: LocalDate = LocalDate.now()
+    now: Date = Date()
 ): List<AnimalFinding> {
     if (dateFilter == ProfileCollectionDateFilter.ALL) return findings
 
+    val todayCalendar = calendarForDate(now)
+    val todayStartMillis = todayCalendar.timeInMillis
+    val sevenDaysStartMillis = Calendar.getInstance().apply {
+        timeInMillis = todayStartMillis
+        add(Calendar.DAY_OF_YEAR, -6)
+    }.timeInMillis
+    val thirtyDaysStartMillis = Calendar.getInstance().apply {
+        timeInMillis = todayStartMillis
+        add(Calendar.DAY_OF_YEAR, -29)
+    }.timeInMillis
+    val currentYear = todayCalendar.get(Calendar.YEAR)
+
     return findings.filter { finding ->
         val findingDate = parseFindingLocalDateOrNull(finding.date) ?: return@filter false
+        val findingCalendar = calendarForDate(findingDate)
+        val findingTimeMillis = findingCalendar.timeInMillis
         when (dateFilter) {
             ProfileCollectionDateFilter.ALL -> true
-            ProfileCollectionDateFilter.TODAY -> findingDate == today
-            ProfileCollectionDateFilter.LAST_7_DAYS -> !findingDate.isBefore(today.minusDays(6))
-            ProfileCollectionDateFilter.LAST_30_DAYS -> !findingDate.isBefore(today.minusDays(29))
-            ProfileCollectionDateFilter.THIS_YEAR -> findingDate.year == today.year
+            ProfileCollectionDateFilter.TODAY -> isSameCalendarDay(findingDate, now)
+            ProfileCollectionDateFilter.LAST_7_DAYS ->
+                findingTimeMillis in sevenDaysStartMillis..todayStartMillis
+            ProfileCollectionDateFilter.LAST_30_DAYS ->
+                findingTimeMillis in thirtyDaysStartMillis..todayStartMillis
+            ProfileCollectionDateFilter.THIS_YEAR ->
+                findingCalendar.get(Calendar.YEAR) == currentYear
         }
     }
 }
@@ -6172,6 +6203,7 @@ fun ProfileScreen(
     var profileCollectionDateFilter by rememberSaveable {
         mutableStateOf(ProfileCollectionDateFilter.ALL.name)
     }
+    var profileCollectionFilterMenuExpanded by remember { mutableStateOf(false) }
     val activeProfileCollectionSortOrder = remember(profileCollectionSortOrder) {
         runCatching { ProfileCollectionSortOrder.valueOf(profileCollectionSortOrder) }
             .getOrDefault(ProfileCollectionSortOrder.NEWEST_FIRST)
@@ -6192,6 +6224,13 @@ fun ProfileScreen(
             ),
             sortOrder = activeProfileCollectionSortOrder
         )
+    }
+    val activeProfileCollectionFilterLabel = when (activeProfileCollectionDateFilter) {
+        ProfileCollectionDateFilter.ALL -> "Alle"
+        ProfileCollectionDateFilter.TODAY -> "Heute"
+        ProfileCollectionDateFilter.LAST_7_DAYS -> "7 Tage"
+        ProfileCollectionDateFilter.LAST_30_DAYS -> "30 Tage"
+        ProfileCollectionDateFilter.THIS_YEAR -> "Dieses Jahr"
     }
     val groupIconForAnimal: (AnimalEntry?) -> ImageVector = { entry ->
         when (entry?.group) {
@@ -6655,81 +6694,81 @@ fun ProfileScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 8.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = "Gesamtsammlung",
+                    modifier = Modifier.weight(1f),
                     style = MaterialTheme.typography.titleMedium,
                     color = TextPrimary
                 )
-                OutlinedButton(
-                    onClick = {
-                        profileCollectionSortOrder = when (activeProfileCollectionSortOrder) {
-                            ProfileCollectionSortOrder.NEWEST_FIRST ->
-                                ProfileCollectionSortOrder.OLDEST_FIRST.name
-                            ProfileCollectionSortOrder.OLDEST_FIRST ->
-                                ProfileCollectionSortOrder.NEWEST_FIRST.name
-                        }
-                    },
-                    shape = RoundedCornerShape(999.dp),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
-                    border = BorderStroke(1.dp, BorderColor),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        containerColor = CardBackground,
-                        contentColor = TextPrimary
-                    )
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = when (activeProfileCollectionSortOrder) {
-                            ProfileCollectionSortOrder.NEWEST_FIRST -> "Neu zuerst"
-                            ProfileCollectionSortOrder.OLDEST_FIRST -> "Alt zuerst"
-                        },
-                        style = MaterialTheme.typography.labelMedium
-                    )
-                }
-            }
-        }
-
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                listOf(
-                    ProfileCollectionDateFilter.ALL to "Alle",
-                    ProfileCollectionDateFilter.TODAY to "Heute",
-                    ProfileCollectionDateFilter.LAST_7_DAYS to "7 Tage",
-                    ProfileCollectionDateFilter.LAST_30_DAYS to "30 Tage",
-                    ProfileCollectionDateFilter.THIS_YEAR to "Dieses Jahr"
-                ).forEach { (filterOption, label) ->
-                    val isActive = filterOption == activeProfileCollectionDateFilter
                     OutlinedButton(
                         onClick = {
-                            profileCollectionDateFilter = filterOption.name
+                            profileCollectionSortOrder = when (activeProfileCollectionSortOrder) {
+                                ProfileCollectionSortOrder.NEWEST_FIRST ->
+                                    ProfileCollectionSortOrder.OLDEST_FIRST.name
+                                ProfileCollectionSortOrder.OLDEST_FIRST ->
+                                    ProfileCollectionSortOrder.NEWEST_FIRST.name
+                            }
                         },
                         shape = RoundedCornerShape(999.dp),
                         contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
-                        border = BorderStroke(
-                            1.dp,
-                            if (isActive) PrimaryGreen else BorderColor
-                        ),
+                        border = BorderStroke(1.dp, BorderColor),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            containerColor = if (isActive) {
-                                PrimaryGreen.copy(alpha = 0.10f)
-                            } else {
-                                CardBackground
-                            },
-                            contentColor = if (isActive) PrimaryGreen else TextPrimary
+                            containerColor = CardBackground,
+                            contentColor = TextPrimary
                         )
                     ) {
                         Text(
-                            text = label,
+                            text = when (activeProfileCollectionSortOrder) {
+                                ProfileCollectionSortOrder.NEWEST_FIRST -> "Neu zuerst"
+                                ProfileCollectionSortOrder.OLDEST_FIRST -> "Alt zuerst"
+                            },
                             style = MaterialTheme.typography.labelMedium
                         )
+                    }
+                    Box {
+                        OutlinedButton(
+                            onClick = { profileCollectionFilterMenuExpanded = true },
+                            shape = RoundedCornerShape(999.dp),
+                            contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+                            border = BorderStroke(1.dp, BorderColor),
+                            colors = ButtonDefaults.outlinedButtonColors(
+                                containerColor = CardBackground,
+                                contentColor = TextPrimary
+                            )
+                        ) {
+                            Text(
+                                text = activeProfileCollectionFilterLabel,
+                                style = MaterialTheme.typography.labelMedium
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = profileCollectionFilterMenuExpanded,
+                            onDismissRequest = { profileCollectionFilterMenuExpanded = false },
+                            modifier = Modifier.background(CardBackground)
+                        ) {
+                            listOf(
+                                ProfileCollectionDateFilter.ALL to "Alle",
+                                ProfileCollectionDateFilter.TODAY to "Heute",
+                                ProfileCollectionDateFilter.LAST_7_DAYS to "7 Tage",
+                                ProfileCollectionDateFilter.LAST_30_DAYS to "30 Tage",
+                                ProfileCollectionDateFilter.THIS_YEAR to "Dieses Jahr"
+                            ).forEach { (filterOption, label) ->
+                                DropdownMenuItem(
+                                    text = { Text(label) },
+                                    onClick = {
+                                        profileCollectionDateFilter = filterOption.name
+                                        profileCollectionFilterMenuExpanded = false
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             }
