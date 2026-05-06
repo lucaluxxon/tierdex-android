@@ -12,6 +12,7 @@ data class AnimalFindingEntity(
     val note: String,
     val photoUri: String,
     val remotePhotoPath: String = "",
+    val thumbnailRemotePhotoPath: String = "",
     val photoUrisJson: String = "[]",
     val remotePhotoPathsJson: String = "[]",
     val latitude: Double? = null,

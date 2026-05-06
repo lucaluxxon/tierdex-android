@@ -1,6 +1,7 @@
 package com.example.tierdex
 
 import android.util.Log
+import android.os.SystemClock
 import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.FieldValue
@@ -1007,16 +1008,28 @@ object FriendRepository {
         onResult: (List<FriendFeedItem>) -> Unit,
         onError: (Exception) -> Unit
     ) {
+        val feedStartedAt = SystemClock.elapsedRealtime()
+        Log.d("FriendFeedTiming", "loadFriendsFeed start currentUserIdPresent=${currentUserId.isNotBlank()}")
         if (currentUserId.isBlank()) {
+            Log.d("FriendFeedTiming", "loadFriendsFeed end reason=blankUserId durationMs=${SystemClock.elapsedRealtime() - feedStartedAt}")
             onResult(emptyList())
             return
         }
 
+        val friendsReadStartedAt = SystemClock.elapsedRealtime()
         userDocument(currentUserId)
             .collection("friends")
             .get()
             .addOnSuccessListener { snapshot ->
+                Log.d(
+                    "FriendFeedTiming",
+                    "friends read end durationMs=${SystemClock.elapsedRealtime() - friendsReadStartedAt} friendCount=${snapshot.documents.size}"
+                )
                 if (snapshot.isEmpty) {
+                    Log.d(
+                        "FriendFeedTiming",
+                        "loadFriendsFeed end friendCount=0 itemCount=0 totalDurationMs=${SystemClock.elapsedRealtime() - feedStartedAt}"
+                    )
                     onResult(emptyList())
                     return@addOnSuccessListener
                 }
@@ -1028,6 +1041,10 @@ object FriendRepository {
                 fun finishIfReady() {
                     remaining -= 1
                     if (remaining == 0) {
+                        Log.d(
+                            "FriendFeedTiming",
+                            "loadFriendsFeed end friendCount=${snapshot.documents.size} itemCount=${feedItems.size} totalDurationMs=${SystemClock.elapsedRealtime() - feedStartedAt}"
+                        )
                         firstError?.let { onError(it) }
                         onResult(
                             feedItems.sortedByDescending {
@@ -1040,15 +1057,26 @@ object FriendRepository {
                 snapshot.documents.forEach { friendDocument ->
                     val friendUserId = friendDocument.getString("friendUserId").orEmpty()
                         .ifBlank { friendDocument.id }
+                    val safeFriendId = friendUserId.takeLast(6)
+                    val profileLoadStartedAt = SystemClock.elapsedRealtime()
 
                     loadUserProfile(
                         userId = friendUserId,
                         onResult = { profile ->
+                            Log.d(
+                                "FriendFeedTiming",
+                                "friend profile loaded friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - profileLoadStartedAt}"
+                            )
                             val friendDisplayName = profile?.displayName.orEmpty()
+                            val findingsLoadStartedAt = SystemClock.elapsedRealtime()
                             userDocument(friendUserId)
                                 .collection("findings")
                                 .get()
                                 .addOnSuccessListener { findingsSnapshot ->
+                                    Log.d(
+                                        "FriendFeedTiming",
+                                        "friend findings loaded friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - findingsLoadStartedAt} findingCount=${findingsSnapshot.documents.size}"
+                                    )
                                     if (findingsSnapshot.isEmpty) {
                                         finishIfReady()
                                         return@addOnSuccessListener
@@ -1063,6 +1091,9 @@ object FriendRepository {
                                     }
 
                                     findingsSnapshot.documents.forEach { findingDocument ->
+                                        val hasRemotePhotoPaths =
+                                            findingDocument.getPhotoValuesOrEmpty("remotePhotoPaths").isNotEmpty() ||
+                                                !findingDocument.getString("remotePhotoPath").isNullOrBlank()
                                         val finding = AnimalFinding(
                                             animalId = findingDocument.getString("animalId").orEmpty(),
                                             date = findingDocument.getString("date").orEmpty(),
@@ -1070,6 +1101,7 @@ object FriendRepository {
                                             note = findingDocument.getString("note").orEmpty(),
                                             photoUri = findingDocument.getString("photoUri").orEmpty(),
                                             remotePhotoPath = findingDocument.getString("remotePhotoPath").orEmpty(),
+                                            thumbnailRemotePhotoPath = findingDocument.getString("thumbnailRemotePhotoPath").orEmpty(),
                                             photoUris = findingDocument.getPhotoValuesOrEmpty("photoUris"),
                                             remotePhotoPaths = findingDocument.getPhotoValuesOrEmpty("remotePhotoPaths"),
                                             latitude = findingDocument.getDouble("latitude"),
@@ -1078,15 +1110,29 @@ object FriendRepository {
                                             ownerId = friendUserId,
                                             taggedFriendIds = findingDocument.getTaggedFriendIdsOrEmpty()
                                         )
+                                        Log.d(
+                                            "FriendFeedTiming",
+                                            "finding meta friend=*${safeFriendId} hasRemotePhotos=$hasRemotePhotoPaths remotePhotoCount=${effectiveRemotePhotoPaths(finding).size}"
+                                        )
+                                        val likeLoadStartedAt = SystemClock.elapsedRealtime()
                                         loadLikeInfoForFinding(
                                             ownerUserId = friendUserId,
                                             findingId = findingDocument.id,
                                             currentUserId = currentUserId,
                                             onResult = { likeCount, likedByCurrentUser ->
+                                                Log.d(
+                                                    "FriendFeedTiming",
+                                                    "like info loaded friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - likeLoadStartedAt}"
+                                                )
+                                                val commentCountStartedAt = SystemClock.elapsedRealtime()
                                                 loadCommentCountForFinding(
                                                     ownerUserId = friendUserId,
                                                     findingId = findingDocument.id,
                                                     onResult = { commentCount ->
+                                                        Log.d(
+                                                            "FriendFeedTiming",
+                                                            "comment count loaded friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - commentCountStartedAt}"
+                                                        )
                                                         feedItems += FriendFeedItem(
                                                             friendUserId = friendUserId,
                                                             friendDisplayName = friendDisplayName,
@@ -1099,6 +1145,10 @@ object FriendRepository {
                                                         finishFriendLoad()
                                                     },
                                                     onError = { exception ->
+                                                        Log.w(
+                                                            "FriendFeedTiming",
+                                                            "comment count failed friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - commentCountStartedAt} error=${exception.message ?: "Unbekannter Fehler"}"
+                                                        )
                                                         if (firstError == null) {
                                                             firstError = exception
                                                         }
@@ -1115,13 +1165,22 @@ object FriendRepository {
                                                 )
                                             },
                                             onError = { exception ->
+                                                Log.w(
+                                                    "FriendFeedTiming",
+                                                    "like info failed friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - likeLoadStartedAt} error=${exception.message ?: "Unbekannter Fehler"}"
+                                                )
                                                 if (firstError == null) {
                                                     firstError = exception
                                                 }
+                                                val commentCountStartedAt = SystemClock.elapsedRealtime()
                                                 loadCommentCountForFinding(
                                                     ownerUserId = friendUserId,
                                                     findingId = findingDocument.id,
                                                     onResult = { commentCount ->
+                                                        Log.d(
+                                                            "FriendFeedTiming",
+                                                            "comment count loaded after like failure friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - commentCountStartedAt}"
+                                                        )
                                                         feedItems += FriendFeedItem(
                                                             friendUserId = friendUserId,
                                                             friendDisplayName = friendDisplayName,
@@ -1132,6 +1191,10 @@ object FriendRepository {
                                                         finishFriendLoad()
                                                     },
                                                     onError = {
+                                                        Log.w(
+                                                            "FriendFeedTiming",
+                                                            "comment count failed after like failure friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - commentCountStartedAt}"
+                                                        )
                                                         feedItems += FriendFeedItem(
                                                             friendUserId = friendUserId,
                                                             friendDisplayName = friendDisplayName,
@@ -1163,6 +1226,10 @@ object FriendRepository {
                                 }
                         },
                         onError = { error ->
+                            Log.w(
+                                "FriendFeedTiming",
+                                "friend profile failed friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - profileLoadStartedAt} error=${error ?: "Unbekannter Fehler"}"
+                            )
                             if (firstError == null) {
                                 firstError = Exception(error ?: "Freundesprofil konnte nicht geladen werden")
                             }
@@ -1172,6 +1239,10 @@ object FriendRepository {
                 }
             }
             .addOnFailureListener { exception ->
+                Log.w(
+                    "FriendFeedTiming",
+                    "friends read failed durationMs=${SystemClock.elapsedRealtime() - friendsReadStartedAt} error=${exception.message ?: "Unbekannter Fehler"}"
+                )
                 val wrappedException = toFirestoreException(
                     functionName = "loadFriendsFeed",
                     operation = "READ",
@@ -1257,6 +1328,7 @@ object FriendRepository {
                                             note = findingDocument.getString("note").orEmpty(),
                                             photoUri = findingDocument.getString("photoUri").orEmpty(),
                                             remotePhotoPath = findingDocument.getString("remotePhotoPath").orEmpty(),
+                                            thumbnailRemotePhotoPath = findingDocument.getString("thumbnailRemotePhotoPath").orEmpty(),
                                             photoUris = findingDocument.getPhotoValuesOrEmpty("photoUris"),
                                             remotePhotoPaths = findingDocument.getPhotoValuesOrEmpty("remotePhotoPaths"),
                                             latitude = findingDocument.getDouble("latitude"),

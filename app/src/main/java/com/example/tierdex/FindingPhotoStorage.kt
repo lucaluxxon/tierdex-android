@@ -1,7 +1,9 @@
 package com.example.tierdex
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.net.Uri
+import android.os.SystemClock
 import android.util.Log
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.storage.FirebaseStorage
@@ -12,6 +14,8 @@ import java.io.File
 const val STORAGE_URI_PREFIX = "storage://"
 private const val FINDING_PHOTO_STORAGE_TAG = "FindingPhotoStorage"
 private const val FINDING_PHOTO_MAX_DOWNLOAD_BYTES = 10L * 1024 * 1024
+private const val FINDING_THUMBNAIL_MAX_EDGE_PX = 800
+private const val FINDING_THUMBNAIL_JPEG_QUALITY = 78
 
 fun storageUriFromPath(path: String): String = "${STORAGE_URI_PREFIX}${path.trim()}"
 
@@ -35,6 +39,11 @@ object FindingPhotoStorageRepository {
     fun buildRemotePhotoPath(userId: String, finding: AnimalFinding, photoIndex: Int): String {
         val documentId = FirestoreFindingRepository.documentIdForFinding(finding)
         return "users/$userId/findings/$documentId/photo_${photoIndex + 1}.jpg"
+    }
+
+    fun buildRemoteThumbnailPath(userId: String, finding: AnimalFinding): String {
+        val documentId = FirestoreFindingRepository.documentIdForFinding(finding)
+        return "users/$userId/findings/$documentId/thumb_photo.jpg"
     }
 
     fun buildProfilePhotoPath(userId: String): String {
@@ -84,6 +93,53 @@ object FindingPhotoStorageRepository {
         }
     }
 
+    suspend fun uploadFindingThumbnail(
+        context: Context,
+        userId: String,
+        finding: AnimalFinding,
+        onPrepared: ((Int) -> Unit)? = null
+    ): String {
+        val localPhotoUri = effectiveLocalPhotoUris(finding).firstOrNull().orEmpty().trim()
+        if (userId.isBlank() || localPhotoUri.isBlank()) {
+            return finding.thumbnailRemotePhotoPath.trim()
+        }
+
+        val remoteThumbnailPath = buildRemoteThumbnailPath(userId, finding)
+        val thumbnailBytes = withContext(Dispatchers.IO) {
+            runCatching {
+                val bitmap = loadCorrectlyOrientedBitmapFromUriString(
+                    context = context,
+                    uriString = localPhotoUri,
+                    maxImageSizePx = FINDING_THUMBNAIL_MAX_EDGE_PX
+                ) ?: return@runCatching null
+                createThumbnailBytes(bitmap)
+            }.getOrElse { exception ->
+                Log.w(
+                    FINDING_PHOTO_STORAGE_TAG,
+                    "Failed to prepare finding thumbnail bytes: ${exception.message ?: "Unbekannter Fehler"}",
+                    exception
+                )
+                null
+            }
+        } ?: return ""
+
+        onPrepared?.invoke(thumbnailBytes.size / 1024)
+
+        return withContext(Dispatchers.IO) {
+            runCatching {
+                Tasks.await(storage.reference.child(remoteThumbnailPath).putBytes(thumbnailBytes))
+                remoteThumbnailPath
+            }.getOrElse { exception ->
+                Log.w(
+                    FINDING_PHOTO_STORAGE_TAG,
+                    "Failed to upload finding thumbnail to Storage: ${exception.message ?: "Unbekannter Fehler"}",
+                    exception
+                )
+                ""
+            }
+        }
+    }
+
     suspend fun uploadProfilePhoto(
         context: Context,
         userId: String,
@@ -118,6 +174,12 @@ object FindingPhotoStorageRepository {
     fun loadFindingPhotoBytes(remotePhotoPath: String): ByteArray? {
         val trimmedPath = remotePhotoPath.trim()
         if (trimmedPath.isBlank()) return null
+        val loadStartedAt = SystemClock.elapsedRealtime()
+        val isThumbnail = trimmedPath.contains("thumb_photo", ignoreCase = true)
+        Log.d(
+            "FriendPhotoTiming",
+            "storage download start isRemote=true isThumbnail=$isThumbnail pathPresent=${trimmedPath.isNotBlank()}"
+        )
 
         return runCatching {
             Tasks.await(
@@ -125,7 +187,16 @@ object FindingPhotoStorageRepository {
                     .child(trimmedPath)
                     .getBytes(FINDING_PHOTO_MAX_DOWNLOAD_BYTES)
             )
+        }.onSuccess { bytes ->
+            Log.d(
+                "FriendPhotoTiming",
+                "storage download success isThumbnail=$isThumbnail durationMs=${SystemClock.elapsedRealtime() - loadStartedAt} sizeKb=${bytes.size / 1024}"
+            )
         }.getOrElse { exception ->
+            Log.w(
+                "FriendPhotoTiming",
+                "storage download failed isThumbnail=$isThumbnail durationMs=${SystemClock.elapsedRealtime() - loadStartedAt} error=${exception.message ?: "Unbekannter Fehler"}"
+            )
             Log.e(
                 FINDING_PHOTO_STORAGE_TAG,
                 "Failed to download finding photo from Storage: ${exception.message ?: "Unbekannter Fehler"}",
@@ -163,5 +234,31 @@ object FindingPhotoStorageRepository {
             )
             null
         }
+    }
+
+    private fun createThumbnailBytes(sourceBitmap: Bitmap): ByteArray? {
+        val scaledBitmap = scaleBitmapToMaxEdge(sourceBitmap, FINDING_THUMBNAIL_MAX_EDGE_PX)
+        return runCatching {
+            java.io.ByteArrayOutputStream().use { output ->
+                scaledBitmap.compress(
+                    Bitmap.CompressFormat.JPEG,
+                    FINDING_THUMBNAIL_JPEG_QUALITY,
+                    output
+                )
+                output.toByteArray()
+            }
+        }.getOrNull()
+    }
+
+    private fun scaleBitmapToMaxEdge(bitmap: Bitmap, maxEdgePx: Int): Bitmap {
+        val largestEdge = maxOf(bitmap.width, bitmap.height)
+        if (largestEdge <= maxEdgePx) {
+            return bitmap
+        }
+
+        val scaleFactor = maxEdgePx.toFloat() / largestEdge.toFloat()
+        val targetWidth = (bitmap.width * scaleFactor).toInt().coerceAtLeast(1)
+        val targetHeight = (bitmap.height * scaleFactor).toInt().coerceAtLeast(1)
+        return Bitmap.createScaledBitmap(bitmap, targetWidth, targetHeight, true)
     }
 }

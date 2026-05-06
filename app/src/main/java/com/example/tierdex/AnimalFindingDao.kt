@@ -41,7 +41,7 @@ interface AnimalFindingDao {
     suspend fun assignGlobalFindingsToOwner(ownerId: String): Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertFinding(finding: AnimalFindingEntity)
+    suspend fun insertFinding(finding: AnimalFindingEntity): Long
 
     @Update
     suspend fun updateFinding(finding: AnimalFindingEntity)
