@@ -30,6 +30,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -59,6 +60,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -75,6 +77,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.exifinterface.media.ExifInterface
@@ -116,6 +119,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.ui.Alignment
@@ -175,6 +180,7 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.compose.ui.zIndex
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
@@ -269,6 +275,7 @@ class MainActivity : ComponentActivity() {
             .addMigrations(AnimalFindingDatabase.MIGRATION_2_3)
             .addMigrations(AnimalFindingDatabase.MIGRATION_3_4)
             .addMigrations(AnimalFindingDatabase.MIGRATION_4_5)
+            .addMigrations(AnimalFindingDatabase.MIGRATION_5_6)
             .build()
     }
 
@@ -338,6 +345,8 @@ data class AnimalFinding(
     val note: String,
     val photoUri: String = "",
     val remotePhotoPath: String = "",
+    val photoUris: List<String> = emptyList(),
+    val remotePhotoPaths: List<String> = emptyList(),
     val latitude: Double? = null,
     val longitude: Double? = null,
     val locationSource: String? = null,
@@ -458,13 +467,70 @@ private fun isCrossDeviceDisplayableLocalPhoto(
         trimmedUri.startsWith("android.resource://")
 }
 
+fun normalizePhotoList(
+    photoValues: List<String>,
+    fallbackPhotoValue: String = ""
+): List<String> {
+    val normalizedPhotos = photoValues
+        .map { it.trim() }
+        .filter { it.isNotBlank() }
+        .distinct()
+
+    return (normalizedPhotos + listOf(fallbackPhotoValue.trim()))
+        .filter { it.isNotBlank() }
+        .distinct()
+        .take(3)
+}
+
+fun effectiveLocalPhotoUris(finding: AnimalFinding): List<String> {
+    return normalizePhotoList(
+        photoValues = finding.photoUris,
+        fallbackPhotoValue = finding.photoUri
+    )
+}
+
+fun effectiveRemotePhotoPaths(finding: AnimalFinding): List<String> {
+    return normalizePhotoList(
+        photoValues = finding.remotePhotoPaths,
+        fallbackPhotoValue = finding.remotePhotoPath
+    )
+}
+
+fun effectiveOwnPhotoSources(finding: AnimalFinding): List<String> {
+    val localPhotoUris = effectiveLocalPhotoUris(finding)
+    val remotePhotoUris = effectiveRemotePhotoPaths(finding).map(::storageUriFromPath)
+    return (localPhotoUris + remotePhotoUris)
+        .filter { it.isNotBlank() }
+        .distinct()
+        .take(3)
+}
+
+fun effectiveFriendPhotoSources(
+    finding: AnimalFinding,
+    ownerUserId: String?,
+    currentUserId: String?
+): List<String> {
+    val remotePhotoUris = effectiveRemotePhotoPaths(finding).map(::storageUriFromPath)
+    val localPhotoUris = effectiveLocalPhotoUris(finding).filter { photoUri ->
+        isCrossDeviceDisplayableLocalPhoto(
+            photoUri = photoUri,
+            ownerUserId = ownerUserId,
+            currentUserId = currentUserId
+        )
+    }
+
+    return (remotePhotoUris + localPhotoUris)
+        .filter { it.isNotBlank() }
+        .distinct()
+        .take(3)
+}
+
 private fun hasAnyFindingPhoto(finding: AnimalFinding): Boolean {
-    return finding.photoUri.isNotBlank() || finding.remotePhotoPath.isNotBlank()
+    return effectiveOwnPhotoSources(finding).isNotEmpty()
 }
 
 private fun preferredOwnedFindingPhotoUri(finding: AnimalFinding): String? {
-    return finding.photoUri.takeIf { it.isNotBlank() }
-        ?: finding.remotePhotoPath.takeIf { it.isNotBlank() }?.let(::storageUriFromPath)
+    return effectiveOwnPhotoSources(finding).firstOrNull()
 }
 
 private fun preferredFriendFindingPhotoUri(
@@ -472,14 +538,11 @@ private fun preferredFriendFindingPhotoUri(
     ownerUserId: String?,
     currentUserId: String?
 ): String? {
-    return finding.remotePhotoPath.takeIf { it.isNotBlank() }?.let(::storageUriFromPath)
-        ?: finding.photoUri.takeIf {
-            isCrossDeviceDisplayableLocalPhoto(
-                photoUri = it,
-                ownerUserId = ownerUserId,
-                currentUserId = currentUserId
-            )
-        }
+    return effectiveFriendPhotoSources(
+        finding = finding,
+        ownerUserId = ownerUserId,
+        currentUserId = currentUserId
+    ).firstOrNull()
 }
 
 private fun taggedFriendsSummaryText(
@@ -512,21 +575,97 @@ private fun taggedFriendsSummaryText(
 }
 
 @Composable
+private fun FindingPhotoCounter(
+    currentPage: Int,
+    totalCount: Int,
+    modifier: Modifier = Modifier,
+    showSingleCounter: Boolean = false
+) {
+    if (totalCount <= 0 || (totalCount == 1 && !showSingleCounter)) return
+
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = Icons.Filled.Collections,
+            contentDescription = null,
+            modifier = Modifier.size(14.dp),
+            tint = TextSecondary
+        )
+        Text(
+            text = "${currentPage.coerceIn(0, totalCount - 1) + 1}/$totalCount",
+            style = MaterialTheme.typography.labelMedium,
+            color = TextSecondary
+        )
+    }
+}
+
+@Composable
+private fun FindingPhotoPager(
+    photoSources: List<String>,
+    imageModifier: Modifier,
+    modifier: Modifier = Modifier,
+    onPageChanged: ((Int) -> Unit)? = null
+) {
+    val normalizedPhotoSources = photoSources
+        .map { it.trim() }
+        .filter { it.isNotBlank() }
+        .distinct()
+        .take(3)
+
+    if (normalizedPhotoSources.isEmpty()) return
+
+    if (normalizedPhotoSources.size == 1) {
+        LaunchedEffect(normalizedPhotoSources.first()) {
+            onPageChanged?.invoke(0)
+        }
+        UriImage(
+            uriString = normalizedPhotoSources.first(),
+            maxImageSizePx = 1024,
+            modifier = imageModifier
+        )
+        return
+    }
+
+    key(normalizedPhotoSources.joinToString(separator = "|")) {
+        val pagerState = rememberPagerState(pageCount = { normalizedPhotoSources.size })
+
+        LaunchedEffect(pagerState.currentPage, normalizedPhotoSources.size) {
+            onPageChanged?.invoke(pagerState.currentPage)
+        }
+
+        HorizontalPager(
+            state = pagerState,
+            modifier = modifier.fillMaxWidth()
+        ) { page ->
+            UriImage(
+                uriString = normalizedPhotoSources[page],
+                maxImageSizePx = 1024,
+                modifier = imageModifier
+            )
+        }
+    }
+}
+
+@Composable
 private fun FriendFindingPhotoBlock(
-    photoDisplayUri: String?,
+    photoSources: List<String>,
     hasPhoto: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onPageChanged: ((Int) -> Unit)? = null
 ) {
     if (!hasPhoto) return
 
-    if (!photoDisplayUri.isNullOrBlank()) {
-        UriImage(
-            uriString = photoDisplayUri,
-            maxImageSizePx = 1024,
-            modifier = modifier
+    if (photoSources.isNotEmpty()) {
+        FindingPhotoPager(
+            photoSources = photoSources,
+            imageModifier = modifier
                 .fillMaxWidth()
                 .height(190.dp)
-                .clip(RoundedCornerShape(14.dp))
+                .clip(RoundedCornerShape(14.dp)),
+            onPageChanged = onPageChanged
         )
     } else {
         Box(
@@ -1646,19 +1785,28 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                 val ownerIdForUpload = currentOwnerId
                                 val findingWithRemotePhoto = if (
                                     !ownerIdForUpload.isNullOrBlank() &&
-                                    finding.photoUri.isNotBlank()
+                                    effectiveLocalPhotoUris(finding).isNotEmpty()
                                 ) {
-                                    val remotePhotoPath = FindingPhotoStorageRepository.uploadFindingPhoto(
+                                    val remotePhotoPaths = FindingPhotoStorageRepository.uploadFindingPhotos(
                                         context = appContext,
                                         userId = ownerIdForUpload,
                                         finding = finding
                                     )
                                     finding.copy(
                                         ownerId = ownerIdForUpload,
-                                        remotePhotoPath = remotePhotoPath
+                                        photoUri = effectiveLocalPhotoUris(finding).firstOrNull().orEmpty(),
+                                        remotePhotoPath = remotePhotoPaths.firstOrNull().orEmpty(),
+                                        photoUris = effectiveLocalPhotoUris(finding),
+                                        remotePhotoPaths = remotePhotoPaths
                                     )
                                 } else {
-                                    finding.copy(ownerId = ownerIdForUpload)
+                                    finding.copy(
+                                        ownerId = ownerIdForUpload,
+                                        photoUri = effectiveLocalPhotoUris(finding).firstOrNull().orEmpty(),
+                                        remotePhotoPath = effectiveRemotePhotoPaths(finding).firstOrNull().orEmpty(),
+                                        photoUris = effectiveLocalPhotoUris(finding),
+                                        remotePhotoPaths = effectiveRemotePhotoPaths(finding)
+                                    )
                                 }
                                 val previousFindings = findingsFromRoom
                                 val questCelebration = detectQuestLevelUpMessage(
@@ -1748,30 +1896,40 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                 val ownerIdForUpload = currentOwnerId
                                 val preparedNewFinding = if (
                                     !ownerIdForUpload.isNullOrBlank() &&
-                                    newFinding.photoUri.isNotBlank()
+                                    effectiveLocalPhotoUris(newFinding).isNotEmpty()
                                 ) {
                                     val shouldUploadPhoto =
-                                        newFinding.photoUri != oldFinding.photoUri ||
-                                            newFinding.remotePhotoPath.isBlank()
-                                    val remotePhotoPath = if (shouldUploadPhoto) {
-                                        FindingPhotoStorageRepository.uploadFindingPhoto(
+                                        effectiveLocalPhotoUris(newFinding) != effectiveLocalPhotoUris(oldFinding) ||
+                                            effectiveRemotePhotoPaths(newFinding).isEmpty()
+                                    val remotePhotoPaths = if (shouldUploadPhoto) {
+                                        FindingPhotoStorageRepository.uploadFindingPhotos(
                                             context = appContext,
                                             userId = ownerIdForUpload,
                                             finding = newFinding
                                         )
                                     } else {
-                                        newFinding.remotePhotoPath.ifBlank { oldFinding.remotePhotoPath }
+                                        effectiveRemotePhotoPaths(newFinding).ifEmpty {
+                                            effectiveRemotePhotoPaths(oldFinding)
+                                        }
                                     }
                                     newFinding.copy(
                                         ownerId = ownerIdForUpload,
-                                        remotePhotoPath = remotePhotoPath
+                                        photoUri = effectiveLocalPhotoUris(newFinding).firstOrNull().orEmpty(),
+                                        remotePhotoPath = remotePhotoPaths.firstOrNull().orEmpty(),
+                                        photoUris = effectiveLocalPhotoUris(newFinding),
+                                        remotePhotoPaths = remotePhotoPaths
                                     )
                                 } else {
                                     newFinding.copy(
                                         ownerId = ownerIdForUpload,
-                                        remotePhotoPath = newFinding.remotePhotoPath.ifBlank {
-                                            oldFinding.remotePhotoPath
-                                        }
+                                        photoUri = effectiveLocalPhotoUris(newFinding).firstOrNull().orEmpty(),
+                                        remotePhotoPath = effectiveRemotePhotoPaths(newFinding)
+                                            .ifEmpty { effectiveRemotePhotoPaths(oldFinding) }
+                                            .firstOrNull()
+                                            .orEmpty(),
+                                        photoUris = effectiveLocalPhotoUris(newFinding),
+                                        remotePhotoPaths = effectiveRemotePhotoPaths(newFinding)
+                                            .ifEmpty { effectiveRemotePhotoPaths(oldFinding) }
                                     )
                                 }
                                 selectedFindingToEdit = preparedNewFinding
@@ -2833,6 +2991,10 @@ fun HomeScreen(
 
         latestFinding?.let { finding ->
             item {
+                val ownPhotoSources = effectiveOwnPhotoSources(latestFinding)
+                var currentPhotoPage by remember(latestFinding.roomId, latestFinding.photoUri, latestFinding.photoUris) {
+                    mutableStateOf(0)
+                }
                 Card(
                     onClick = { onEditFinding(finding) },
                     modifier = Modifier.fillMaxWidth(),
@@ -2857,25 +3019,37 @@ fun HomeScreen(
                             color = TextPrimary
                         )
 
-                        preferredOwnedFindingPhotoUri(latestFinding)?.let { photoDisplayUri ->
-                            UriImage(
-                                uriString = photoDisplayUri,
-                                maxImageSizePx = 1024,
-                                modifier = Modifier
+                        if (ownPhotoSources.isNotEmpty()) {
+                            FindingPhotoPager(
+                                photoSources = ownPhotoSources,
+                                imageModifier = Modifier
                                     .fillMaxWidth()
                                     .height(180.dp)
+                                    .clip(RoundedCornerShape(14.dp)),
+                                onPageChanged = { currentPhotoPage = it }
                             )
                         }
 
-                        FindingMetaRow(
-                            date = latestFinding.date,
-                            location = latestFinding.location,
-                            latitude = latestFinding.latitude,
-                            longitude = latestFinding.longitude
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            FindingMetaRow(
+                                date = latestFinding.date,
+                                location = latestFinding.location,
+                                latitude = latestFinding.latitude,
+                                longitude = latestFinding.longitude,
+                                modifier = Modifier.weight(1f)
+                            )
+                            FindingPhotoCounter(
+                                currentPage = currentPhotoPage,
+                                totalCount = ownPhotoSources.size
+                            )
+                        }
                         latestFinding.note.takeIf { it.isNotBlank() }?.let {
                             Text(
-                                text = "Notiz: $it",
+                                text = it,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = TextSecondary
                             )
@@ -4065,11 +4239,14 @@ fun FriendProfileScreen(
             else -> {
                 items(friendFeed, key = { it.friendUserId + "_" + it.findingId }) { feedItem ->
                     val animal = animalById[feedItem.finding.animalId]
-                    val friendPhotoDisplayUri = preferredFriendFindingPhotoUri(
+                    val friendPhotoSources = effectiveFriendPhotoSources(
                         finding = feedItem.finding,
                         ownerUserId = feedItem.friendUserId,
                         currentUserId = currentUserId
                     )
+                    var currentPhotoPage by remember(feedItem.friendUserId, feedItem.findingId, friendPhotoSources) {
+                        mutableStateOf(0)
+                    }
                     val taggedFriendsSummary = taggedFriendsSummaryText(
                         taggedFriendIds = feedItem.finding.taggedFriendIds,
                         currentUserId = currentUserId,
@@ -4094,9 +4271,10 @@ fun FriendProfileScreen(
                             verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
                             FriendFindingPhotoBlock(
-                                photoDisplayUri = friendPhotoDisplayUri,
+                                photoSources = friendPhotoSources,
                                 hasPhoto = hasAnyFindingPhoto(feedItem.finding),
-                                modifier = Modifier.clip(RoundedCornerShape(12.dp))
+                                modifier = Modifier.clip(RoundedCornerShape(12.dp)),
+                                onPageChanged = { currentPhotoPage = it }
                             )
 
                             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -4119,16 +4297,26 @@ fun FriendProfileScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                if (hasFindingMeta) {
-                                    FindingMetaRow(
-                                        date = feedItem.finding.date,
-                                        location = feedItem.finding.location,
-                                        latitude = feedItem.finding.latitude,
-                                        longitude = feedItem.finding.longitude,
-                                        modifier = Modifier.weight(1f)
+                                Row(
+                                    modifier = Modifier.weight(1f),
+                                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    if (hasFindingMeta) {
+                                        FindingMetaRow(
+                                            date = feedItem.finding.date,
+                                            location = feedItem.finding.location,
+                                            latitude = feedItem.finding.latitude,
+                                            longitude = feedItem.finding.longitude,
+                                            modifier = Modifier.weight(1f)
+                                        )
+                                    } else {
+                                        Spacer(modifier = Modifier.weight(1f))
+                                    }
+                                    FindingPhotoCounter(
+                                        currentPage = currentPhotoPage,
+                                        totalCount = friendPhotoSources.size
                                     )
-                                } else {
-                                    Spacer(modifier = Modifier.weight(1f))
                                 }
                                 Spacer(modifier = Modifier.width(12.dp))
                                 FriendFindingEngagementSummary(
@@ -4138,18 +4326,11 @@ fun FriendProfileScreen(
                             }
 
                             feedItem.finding.note.takeIf { it.isNotBlank() }?.let {
-                                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    Text(
-                                        text = "Notiz",
-                                        style = MaterialTheme.typography.labelMedium,
-                                        color = TextSecondary
-                                    )
-                                    Text(
-                                        text = it,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = TextPrimary
-                                    )
-                                }
+                                Text(
+                                    text = it,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = TextPrimary
+                                )
                             }
 
                             taggedFriendsSummary?.let {
@@ -4767,11 +4948,14 @@ fun FriendsScreen(
                         val comments = commentsByFeedKey[feedItemKey].orEmpty()
                         val isLoadingComments = feedItemKey in loadingCommentKeys
                         val commentInput = commentInputs[feedItemKey].orEmpty()
-                        val friendPhotoDisplayUri = preferredFriendFindingPhotoUri(
+                        val friendPhotoSources = effectiveFriendPhotoSources(
                             finding = feedItem.finding,
                             ownerUserId = feedItem.friendUserId,
                             currentUserId = currentUserId
                         )
+                        var currentPhotoPage by remember(feedItem.friendUserId, feedItem.findingId, friendPhotoSources) {
+                            mutableStateOf(0)
+                        }
                         val taggedFriendsSummary = taggedFriendsSummaryText(
                             taggedFriendIds = feedItem.finding.taggedFriendIds,
                             currentUserId = currentUserId,
@@ -4795,9 +4979,10 @@ fun FriendsScreen(
                                 verticalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
                                 FriendFindingPhotoBlock(
-                                    photoDisplayUri = friendPhotoDisplayUri,
+                                    photoSources = friendPhotoSources,
                                     hasPhoto = hasAnyFindingPhoto(feedItem.finding),
-                                    modifier = Modifier.clip(RoundedCornerShape(12.dp))
+                                    modifier = Modifier.clip(RoundedCornerShape(12.dp)),
+                                    onPageChanged = { currentPhotoPage = it }
                                 )
 
                                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -4832,16 +5017,26 @@ fun FriendsScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    if (hasFindingMeta) {
-                                        FindingMetaRow(
-                                            date = feedItem.finding.date,
-                                            location = feedItem.finding.location,
-                                            latitude = feedItem.finding.latitude,
-                                            longitude = feedItem.finding.longitude,
-                                            modifier = Modifier.weight(1f)
+                                    Row(
+                                        modifier = Modifier.weight(1f),
+                                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        if (hasFindingMeta) {
+                                            FindingMetaRow(
+                                                date = feedItem.finding.date,
+                                                location = feedItem.finding.location,
+                                                latitude = feedItem.finding.latitude,
+                                                longitude = feedItem.finding.longitude,
+                                                modifier = Modifier.weight(1f)
+                                            )
+                                        } else {
+                                            Spacer(modifier = Modifier.weight(1f))
+                                        }
+                                        FindingPhotoCounter(
+                                            currentPage = currentPhotoPage,
+                                            totalCount = friendPhotoSources.size
                                         )
-                                    } else {
-                                        Spacer(modifier = Modifier.weight(1f))
                                     }
                                     Spacer(modifier = Modifier.width(12.dp))
                                     FriendFindingEngagementSummary(
@@ -4851,18 +5046,11 @@ fun FriendsScreen(
                                 }
 
                                 feedItem.finding.note.takeIf { it.isNotBlank() }?.let {
-                                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                                        Text(
-                                            text = "Notiz",
-                                            style = MaterialTheme.typography.labelMedium,
-                                            color = TextSecondary
-                                        )
-                                        Text(
-                                            text = it,
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = TextPrimary
-                                        )
-                                    }
+                                    Text(
+                                        text = it,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = TextPrimary
+                                    )
                                 }
                                 taggedFriendsSummary?.let {
                                     Text(
@@ -5615,11 +5803,14 @@ private fun DailyAnimalScreen(
 
                         else -> {
                             friendFindings.forEach { feedItem ->
-                                val friendPhotoDisplayUri = preferredFriendFindingPhotoUri(
+                                val friendPhotoSources = effectiveFriendPhotoSources(
                                     finding = feedItem.finding,
                                     ownerUserId = feedItem.friendUserId,
                                     currentUserId = currentUserId
                                 )
+                                var currentPhotoPage by remember(feedItem.friendUserId, feedItem.findingId, friendPhotoSources) {
+                                    mutableStateOf(0)
+                                }
                                 Card(
                                     modifier = Modifier.fillMaxWidth(),
                                     shape = RoundedCornerShape(16.dp),
@@ -5633,20 +5824,32 @@ private fun DailyAnimalScreen(
                                         verticalArrangement = Arrangement.spacedBy(6.dp)
                                     ) {
                                         FriendFindingPhotoBlock(
-                                            photoDisplayUri = friendPhotoDisplayUri,
-                                            hasPhoto = hasAnyFindingPhoto(feedItem.finding)
+                                            photoSources = friendPhotoSources,
+                                            hasPhoto = hasAnyFindingPhoto(feedItem.finding),
+                                            onPageChanged = { currentPhotoPage = it }
                                         )
                                         Text(
                                             text = feedItem.friendDisplayName.ifBlank { "Unbenannter Nutzer" },
                                             style = MaterialTheme.typography.titleSmall,
                                             color = TextPrimary
                                         )
-                                        FindingMetaRow(
-                                            date = feedItem.finding.date,
-                                            location = feedItem.finding.location,
-                                            latitude = feedItem.finding.latitude,
-                                            longitude = feedItem.finding.longitude
-                                        )
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            FindingMetaRow(
+                                                date = feedItem.finding.date,
+                                                location = feedItem.finding.location,
+                                                latitude = feedItem.finding.latitude,
+                                                longitude = feedItem.finding.longitude,
+                                                modifier = Modifier.weight(1f)
+                                            )
+                                            FindingPhotoCounter(
+                                                currentPage = currentPhotoPage,
+                                                totalCount = friendPhotoSources.size
+                                            )
+                                        }
                                         feedItem.finding.note.takeIf { it.isNotBlank() }?.let {
                                             Text(
                                                 text = it,
@@ -6353,6 +6556,10 @@ fun ProfileScreen(
                 }
             ) { finding ->
                 val animal = animalById[finding.animalId]
+                val ownPhotoSources = effectiveOwnPhotoSources(finding)
+                var currentPhotoPage by remember(finding.roomId, finding.photoUri, finding.photoUris) {
+                    mutableStateOf(0)
+                }
 
                 Card(
                     onClick = { onEditFinding(finding) },
@@ -6373,27 +6580,38 @@ fun ProfileScreen(
                             style = MaterialTheme.typography.titleMedium
                         )
 
-                        preferredOwnedFindingPhotoUri(finding)?.let { photoDisplayUri ->
-                            UriImage(
-                                uriString = photoDisplayUri,
-                                maxImageSizePx = 1024,
-                                modifier = Modifier
+                        if (ownPhotoSources.isNotEmpty()) {
+                            FindingPhotoPager(
+                                photoSources = ownPhotoSources,
+                                imageModifier = Modifier
                                     .fillMaxWidth()
                                     .heightIn(max = 220.dp)
-                                    .clip(RoundedCornerShape(12.dp))
+                                    .clip(RoundedCornerShape(12.dp)),
+                                onPageChanged = { currentPhotoPage = it }
                             )
                         }
 
-                        FindingMetaRow(
-                            date = finding.date,
-                            location = finding.location,
-                            latitude = finding.latitude,
-                            longitude = finding.longitude
-                        )
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            FindingMetaRow(
+                                date = finding.date,
+                                location = finding.location,
+                                latitude = finding.latitude,
+                                longitude = finding.longitude,
+                                modifier = Modifier.weight(1f)
+                            )
+                            FindingPhotoCounter(
+                                currentPage = currentPhotoPage,
+                                totalCount = ownPhotoSources.size
+                            )
+                        }
 
                         if (finding.note.isNotBlank()) {
                             Text(
-                                text = "Notiz: ${finding.note}",
+                                text = finding.note,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = TextSecondary
                             )
@@ -6626,8 +6844,8 @@ fun AnimalDetailScreen(
     var note by rememberSaveable(initial?.roomId) {
         mutableStateOf(initial?.note ?: "")
     }
-    var selectedPhotoUri by rememberSaveable(initial?.roomId) {
-        mutableStateOf(initial?.photoUri ?: "")
+    var selectedPhotoUris by rememberSaveable(initial?.roomId) {
+        mutableStateOf(initial?.let(::effectiveLocalPhotoUris).orEmpty())
     }
     var latitude by rememberSaveable(initial?.roomId) {
         mutableStateOf(initial?.latitude)
@@ -6647,7 +6865,11 @@ fun AnimalDetailScreen(
     var showLocationPicker by rememberSaveable(initial?.roomId) { mutableStateOf(false) }
     var pendingLatitude by remember { mutableStateOf<Double?>(null) }
     var pendingLongitude by remember { mutableStateOf<Double?>(null) }
+    var cropPhotoIndex by remember { mutableStateOf<Int?>(null) }
     var cropPhotoUri by remember { mutableStateOf<String?>(null) }
+    var selectedPhotoPage by rememberSaveable(initial?.roomId) { mutableStateOf(0) }
+    var draggingPhotoUri by remember { mutableStateOf<String?>(null) }
+    var draggingPhotoOffsetX by remember { mutableStateOf(0f) }
     var availableFriends by remember(currentUserId) { mutableStateOf<List<FriendUser>>(emptyList()) }
     var availableFriendsError by remember(currentUserId) { mutableStateOf<String?>(null) }
     var friendFindings by remember(animal.id, currentUserId) {
@@ -6711,13 +6933,61 @@ fun AnimalDetailScreen(
         }
     }
 
-    val pickMedia = rememberLauncherForActivityResult(
+    fun normalizeSelectedPhotoUris(photoValues: List<String>): List<String> {
+        return photoValues
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+            .distinct()
+            .take(3)
+    }
+
+    fun reorderSelectedPhotos(fromIndex: Int, toIndex: Int) {
+        if (fromIndex == toIndex) return
+        if (fromIndex !in selectedPhotoUris.indices || toIndex !in selectedPhotoUris.indices) return
+
+        val updatedPhotoUris = selectedPhotoUris.toMutableList().apply {
+            val movedPhotoUri = removeAt(fromIndex)
+            add(toIndex, movedPhotoUri)
+        }
+
+        selectedPhotoUris = normalizeSelectedPhotoUris(updatedPhotoUris)
+        selectedPhotoPage = toIndex.coerceIn(0, selectedPhotoUris.lastIndex.coerceAtLeast(0))
+    }
+
+    fun appendPickedPhotoUris(pickedUris: List<Uri>) {
+        val remainingPhotoSlots = (3 - selectedPhotoUris.size).coerceAtLeast(0)
+        if (remainingPhotoSlots <= 0) return
+
+        pickedUris.forEach { pickedUri ->
+            persistReadPermission(context, pickedUri)
+        }
+
+        val updatedPhotoUris = normalizeSelectedPhotoUris(
+            selectedPhotoUris + pickedUris
+                .map { it.toString() }
+                .filter { it.isNotBlank() }
+                .take(remainingPhotoSlots)
+        )
+        selectedPhotoUris = updatedPhotoUris
+        selectedPhotoPage = updatedPhotoUris.lastIndex.coerceAtLeast(0)
+    }
+
+    val pickSingleMedia = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
     ) { uri ->
-        if (uri != null) {
-            persistReadPermission(context, uri)
-            selectedPhotoUri = uri.toString()
-        }
+        uri?.let { appendPickedPhotoUris(listOf(it)) }
+    }
+
+    val pickUpToTwoMedia = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(2)
+    ) { uris ->
+        appendPickedPhotoUris(uris)
+    }
+
+    val pickUpToThreeMedia = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickMultipleVisualMedia(3)
+    ) { uris ->
+        appendPickedPhotoUris(uris)
     }
 
     val currentFinding = editingFinding ?: initial
@@ -6731,21 +7001,24 @@ fun AnimalDetailScreen(
         locationSource = finding.locationSource
         selectedTaggedFriendIds = finding.taggedFriendIds
         locationStatusMessage = ""
-        selectedPhotoUri = finding.photoUri
+        selectedPhotoUris = effectiveLocalPhotoUris(finding)
+        selectedPhotoPage = 0
+        cropPhotoIndex = null
         cropPhotoUri = null
+        draggingPhotoUri = null
+        draggingPhotoOffsetX = 0f
         isEditMode = false
     }
-    val editablePhotoUri = when {
-        selectedPhotoUri.isNotBlank() &&
-            selectedPhotoUri != currentFinding?.photoUri -> selectedPhotoUri
-        else -> currentFinding?.let(::preferredOwnedFindingPhotoUri)
-            ?: selectedPhotoUri.takeIf { it.isNotBlank() }
+    val editablePhotoSources = when {
+        isEditMode -> selectedPhotoUris
+        currentFinding != null -> effectiveOwnPhotoSources(currentFinding)
+        else -> selectedPhotoUris
     }
     val hasTextualFindingDetails =
         !currentFinding?.date.isNullOrBlank() ||
             !currentFinding?.location.isNullOrBlank() ||
             !currentFinding?.note.isNullOrBlank()
-    val hasFindingPhoto = !editablePhotoUri.isNullOrBlank()
+    val hasFindingPhoto = editablePhotoSources.isNotEmpty()
 
     LaunchedEffect(currentUserId, animal.id) {
         friendFindings = emptyList()
@@ -6971,45 +7244,46 @@ fun AnimalDetailScreen(
                         )
 
                         if (hasFindingPhoto) {
-                            editablePhotoUri?.takeIf { it.isNotBlank() }?.let {
-                                Box(
-                                    modifier = Modifier
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(220.dp)
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .background(Color.White)
+                            ) {
+                                FindingPhotoPager(
+                                    photoSources = editablePhotoSources,
+                                    imageModifier = Modifier
                                         .fillMaxWidth()
-                                        .height(220.dp)
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .background(Color.White)
-                                ) {
-                                    UriImage(
-                                        uriString = it,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(220.dp),
-                                        maxImageSizePx = 1280
-                                    )
+                                        .height(220.dp),
+                                    onPageChanged = { selectedPhotoPage = it }
+                                )
 
-                                    if (editingFinding != null && isEditMode) {
-                                        Surface(
+                                if (editingFinding != null && isEditMode && selectedPhotoUris.isNotEmpty()) {
+                                    Surface(
+                                        modifier = Modifier
+                                            .align(Alignment.TopEnd)
+                                            .padding(8.dp),
+                                        shape = RoundedCornerShape(999.dp),
+                                        color = Color.White.copy(alpha = 0.92f),
+                                        shadowElevation = 4.dp
+                                    ) {
+                                        IconButton(
+                                            onClick = {
+                                                selectedPhotoUris.getOrNull(selectedPhotoPage)?.let { currentPhotoUri ->
+                                                    cropPhotoIndex = selectedPhotoPage
+                                                    cropPhotoUri = currentPhotoUri
+                                                }
+                                            },
                                             modifier = Modifier
-                                                .align(Alignment.TopEnd)
-                                                .padding(8.dp),
-                                            shape = RoundedCornerShape(999.dp),
-                                            color = Color.White.copy(alpha = 0.92f),
-                                            shadowElevation = 4.dp
+                                                .width(40.dp)
+                                                .height(40.dp)
                                         ) {
-                                            IconButton(
-                                                onClick = {
-                                                    cropPhotoUri = it
-                                                },
-                                                modifier = Modifier
-                                                    .width(40.dp)
-                                                    .height(40.dp)
-                                            ) {
-                                                Icon(
-                                                    imageVector = Icons.Filled.Edit,
-                                                    contentDescription = "Foto zuschneiden",
-                                                    tint = TextPrimary
-                                                )
-                                            }
+                                            Icon(
+                                                imageVector = Icons.Filled.Edit,
+                                                contentDescription = "Foto zuschneiden",
+                                                tint = TextPrimary
+                                            )
                                         }
                                     }
                                 }
@@ -7017,12 +7291,23 @@ fun AnimalDetailScreen(
                         }
 
                         if (hasTextualFindingDetails) {
-                            FindingMetaRow(
-                                date = currentFinding?.date,
-                                location = currentFinding?.location,
-                                latitude = currentFinding?.latitude,
-                                longitude = currentFinding?.longitude
-                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                FindingMetaRow(
+                                    date = currentFinding?.date,
+                                    location = currentFinding?.location,
+                                    latitude = currentFinding?.latitude,
+                                    longitude = currentFinding?.longitude,
+                                    modifier = Modifier.weight(1f)
+                                )
+                                FindingPhotoCounter(
+                                    currentPage = selectedPhotoPage,
+                                    totalCount = editablePhotoSources.size
+                                )
+                            }
 
                             val locationDetailText = when {
                                 currentFinding?.locationSource == "map" -> "Standort auf Karte gewählt"
@@ -7047,33 +7332,11 @@ fun AnimalDetailScreen(
                             }
 
                             currentFinding?.note?.takeIf { it.isNotBlank() }?.let {
-                                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                                    Text(
-                                        text = "Notiz",
-                                        style = MaterialTheme.typography.labelLarge,
-                                        color = TextSecondary
-                                    )
-                                    Text(
-                                        text = it,
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        color = TextPrimary
-                                    )
-                                }
-                            }
-                        }
-
-                        if (hasFindingPhoto && isEditMode) {
-                            OutlinedButton(
-                                onClick = {
-                                    pickMedia.launch(
-                                        PickVisualMediaRequest(
-                                            ActivityResultContracts.PickVisualMedia.ImageOnly
-                                        )
-                                    )
-                                },
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text("Anderes Foto auswählen")
+                                Text(
+                                    text = it,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    color = TextPrimary
+                                )
                             }
                         }
                     }
@@ -7201,11 +7464,14 @@ fun AnimalDetailScreen(
                                     color = TextSecondary
                                 )
                                 friendFindings.forEach { feedItem ->
-                                    val friendPhotoDisplayUri = preferredFriendFindingPhotoUri(
+                                    val friendPhotoSources = effectiveFriendPhotoSources(
                                         finding = feedItem.finding,
                                         ownerUserId = feedItem.friendUserId,
                                         currentUserId = currentUserId
                                     )
+                                    var currentPhotoPage by remember(feedItem.friendUserId, feedItem.findingId, friendPhotoSources) {
+                                        mutableStateOf(0)
+                                    }
                                     Card(
                                         shape = RoundedCornerShape(16.dp),
                                         colors = CardDefaults.cardColors(
@@ -7219,23 +7485,35 @@ fun AnimalDetailScreen(
                                             verticalArrangement = Arrangement.spacedBy(4.dp)
                                         ) {
                                             FriendFindingPhotoBlock(
-                                                photoDisplayUri = friendPhotoDisplayUri,
-                                                hasPhoto = hasAnyFindingPhoto(feedItem.finding)
+                                                photoSources = friendPhotoSources,
+                                                hasPhoto = hasAnyFindingPhoto(feedItem.finding),
+                                                onPageChanged = { currentPhotoPage = it }
                                             )
                                             Text(
                                                 text = feedItem.friendDisplayName.ifBlank { "Unbenannter Nutzer" },
                                                 style = MaterialTheme.typography.titleSmall,
                                                 color = TextPrimary
                                             )
-                                            FindingMetaRow(
-                                                date = feedItem.finding.date,
-                                                location = feedItem.finding.location,
-                                                latitude = feedItem.finding.latitude,
-                                                longitude = feedItem.finding.longitude
-                                            )
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                FindingMetaRow(
+                                                    date = feedItem.finding.date,
+                                                    location = feedItem.finding.location,
+                                                    latitude = feedItem.finding.latitude,
+                                                    longitude = feedItem.finding.longitude,
+                                                    modifier = Modifier.weight(1f)
+                                                )
+                                                FindingPhotoCounter(
+                                                    currentPage = currentPhotoPage,
+                                                    totalCount = friendPhotoSources.size
+                                                )
+                                            }
                                             feedItem.finding.note.takeIf { it.isNotBlank() }?.let {
                                                 Text(
-                                                    text = "Notiz: $it",
+                                                    text = it,
                                                     style = MaterialTheme.typography.bodySmall,
                                                     color = TextSecondary
                                                 )
@@ -7329,7 +7607,12 @@ fun AnimalDetailScreen(
                         longitude = currentFinding?.longitude
                         locationSource = currentFinding?.locationSource
                         locationStatusMessage = ""
-                        selectedPhotoUri = currentFinding?.photoUri.orEmpty()
+                        selectedPhotoUris = currentFinding?.let(::effectiveLocalPhotoUris).orEmpty()
+                        selectedPhotoPage = 0
+                        cropPhotoIndex = null
+                        cropPhotoUri = null
+                        draggingPhotoUri = null
+                        draggingPhotoOffsetX = 0f
                         isEditMode = true
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -7582,34 +7865,264 @@ fun AnimalDetailScreen(
                             }
                         }
 
-                        if (currentFinding?.photoUri.isNullOrBlank() && currentFinding?.remotePhotoPath.isNullOrBlank()) {
-                            OutlinedButton(
-                                onClick = {
-                                    pickMedia.launch(
-                                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        Column(
+                            modifier = Modifier.fillMaxWidth(),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            val remainingPhotoSlots = (3 - selectedPhotoUris.size).coerceAtLeast(0)
+                            if (selectedPhotoUris.size < 3) {
+                                OutlinedButton(
+                                    onClick = {
+                                        val imageOnlyRequest = PickVisualMediaRequest(
+                                            ActivityResultContracts.PickVisualMedia.ImageOnly
+                                        )
+                                        when (remainingPhotoSlots) {
+                                            1 -> pickSingleMedia.launch(imageOnlyRequest)
+                                            2 -> pickUpToTwoMedia.launch(imageOnlyRequest)
+                                            else -> pickUpToThreeMedia.launch(imageOnlyRequest)
+                                        }
+                                    }
+                                ) {
+                                    Text(
+                                        if (selectedPhotoUris.isEmpty()) {
+                                            "Foto hinzufügen"
+                                        } else {
+                                            "Weiteres Foto hinzufügen"
+                                        }
                                     )
                                 }
-                            ) {
+                            } else {
                                 Text(
-                                    if (selectedPhotoUri.isBlank()) "Foto auswählen"
-                                    else "Anderes Foto auswählen"
+                                    text = "Maximal 3 Fotos",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = TextSecondary
                                 )
                             }
-                        }
 
-                        if (selectedPhotoUri.isNotBlank() && selectedPhotoUri != currentFinding?.photoUri && currentFinding == null) {
-                            Text(
-                                text = "Foto",
-                                style = MaterialTheme.typography.labelLarge,
-                                color = TextSecondary
-                            )
-                            UriImage(
-                                uriString = selectedPhotoUri,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(220.dp),
-                                maxImageSizePx = 1280
-                            )
+                            if (selectedPhotoUris.isNotEmpty()) {
+                                val thumbnailWidth = 122.dp
+                                val thumbnailSpacing = 10.dp
+                                val density = LocalDensity.current
+                                val reorderStepPx = remember(density) {
+                                    with(density) { (thumbnailWidth + thumbnailSpacing).toPx() }
+                                }
+                                Text(
+                                    text = "Fotos",
+                                    style = MaterialTheme.typography.labelLarge,
+                                    color = TextSecondary
+                                )
+
+                                FindingPhotoPager(
+                                    photoSources = selectedPhotoUris,
+                                    imageModifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(220.dp)
+                                        .clip(RoundedCornerShape(16.dp)),
+                                    onPageChanged = { selectedPhotoPage = it }
+                                )
+
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .horizontalScroll(rememberScrollState()),
+                                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                                ) {
+                                    selectedPhotoUris.forEachIndexed { index, photoUri ->
+                                        key(photoUri) {
+                                            val isDragged = draggingPhotoUri == photoUri
+                                            Card(
+                                                modifier = Modifier
+                                                    .width(thumbnailWidth)
+                                                    .offset {
+                                                        IntOffset(
+                                                            x = if (isDragged) draggingPhotoOffsetX.roundToInt() else 0,
+                                                            y = 0
+                                                        )
+                                                    }
+                                                    .zIndex(if (isDragged) 1f else 0f)
+                                                    .pointerInput(photoUri, reorderStepPx, selectedPhotoUris) {
+                                                        detectDragGesturesAfterLongPress(
+                                                            onDragStart = {
+                                                                draggingPhotoUri = photoUri
+                                                                draggingPhotoOffsetX = 0f
+                                                            },
+                                                            onDragCancel = {
+                                                                draggingPhotoUri = null
+                                                                draggingPhotoOffsetX = 0f
+                                                            },
+                                                            onDragEnd = {
+                                                                draggingPhotoUri = null
+                                                                draggingPhotoOffsetX = 0f
+                                                            }
+                                                        ) { change, dragAmount ->
+                                                            change.consume()
+                                                            val activePhotoUri = draggingPhotoUri ?: return@detectDragGesturesAfterLongPress
+                                                            var currentDraggedIndex =
+                                                                selectedPhotoUris.indexOf(activePhotoUri)
+                                                            if (currentDraggedIndex == -1) {
+                                                                draggingPhotoUri = null
+                                                                draggingPhotoOffsetX = 0f
+                                                                return@detectDragGesturesAfterLongPress
+                                                            }
+
+                                                            var newOffsetX = draggingPhotoOffsetX + dragAmount.x
+                                                            val reorderThreshold = reorderStepPx / 2f
+
+                                                            while (
+                                                                newOffsetX > reorderThreshold &&
+                                                                currentDraggedIndex < selectedPhotoUris.lastIndex
+                                                            ) {
+                                                                reorderSelectedPhotos(
+                                                                    fromIndex = currentDraggedIndex,
+                                                                    toIndex = currentDraggedIndex + 1
+                                                                )
+                                                                currentDraggedIndex += 1
+                                                                newOffsetX -= reorderStepPx
+                                                            }
+
+                                                            while (
+                                                                newOffsetX < -reorderThreshold &&
+                                                                currentDraggedIndex > 0
+                                                            ) {
+                                                                reorderSelectedPhotos(
+                                                                    fromIndex = currentDraggedIndex,
+                                                                    toIndex = currentDraggedIndex - 1
+                                                                )
+                                                                currentDraggedIndex -= 1
+                                                                newOffsetX += reorderStepPx
+                                                            }
+
+                                                            draggingPhotoOffsetX = newOffsetX
+                                                        }
+                                                    },
+                                                shape = RoundedCornerShape(14.dp),
+                                                elevation = CardDefaults.cardElevation(
+                                                    defaultElevation = if (isDragged) 8.dp else 2.dp
+                                                ),
+                                                colors = CardDefaults.cardColors(
+                                                    containerColor = Color.White.copy(
+                                                        alpha = if (isDragged) 0.96f else 0.9f
+                                                    )
+                                                )
+                                            ) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(6.dp)
+                                                ) {
+                                                    UriImage(
+                                                        uriString = photoUri,
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .height(96.dp)
+                                                            .clip(RoundedCornerShape(12.dp)),
+                                                        maxImageSizePx = 512
+                                                    )
+                                                    if (index == 0) {
+                                                        Surface(
+                                                            modifier = Modifier
+                                                                .align(Alignment.TopStart)
+                                                                .padding(6.dp),
+                                                            shape = RoundedCornerShape(999.dp),
+                                                            color = Color.White.copy(alpha = 0.94f),
+                                                            shadowElevation = 2.dp
+                                                        ) {
+                                                            Row(
+                                                                modifier = Modifier.padding(
+                                                                    horizontal = 8.dp,
+                                                                    vertical = 4.dp
+                                                                ),
+                                                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                                                verticalAlignment = Alignment.CenterVertically
+                                                            ) {
+                                                                Icon(
+                                                                    imageVector = Icons.Filled.Star,
+                                                                    contentDescription = "Titelbild",
+                                                                    modifier = Modifier.size(12.dp),
+                                                                    tint = PrimaryGreen
+                                                                )
+                                                                Text(
+                                                                    text = "Titelbild",
+                                                                    style = MaterialTheme.typography.labelSmall,
+                                                                    color = TextPrimary
+                                                                )
+                                                            }
+                                                        }
+                                                    }
+
+                                                    Surface(
+                                                        modifier = Modifier
+                                                            .align(Alignment.TopEnd)
+                                                            .padding(6.dp),
+                                                        shape = RoundedCornerShape(999.dp),
+                                                        color = Color.White.copy(alpha = 0.94f),
+                                                        shadowElevation = 2.dp
+                                                    ) {
+                                                        IconButton(
+                                                            onClick = {
+                                                                val updatedPhotoUris = selectedPhotoUris
+                                                                    .filterIndexed { currentIndex, _ ->
+                                                                        currentIndex != index
+                                                                    }
+                                                                    .take(3)
+                                                                selectedPhotoUris = updatedPhotoUris
+                                                                selectedPhotoPage = selectedPhotoPage
+                                                                    .coerceAtMost(updatedPhotoUris.lastIndex.coerceAtLeast(0))
+                                                                if (cropPhotoIndex == index) {
+                                                                    cropPhotoIndex = null
+                                                                    cropPhotoUri = null
+                                                                }
+                                                                if (draggingPhotoUri == photoUri) {
+                                                                    draggingPhotoUri = null
+                                                                    draggingPhotoOffsetX = 0f
+                                                                }
+                                                            },
+                                                            modifier = Modifier.size(32.dp)
+                                                        ) {
+                                                            Icon(
+                                                                imageVector = Icons.Filled.Delete,
+                                                                contentDescription = "Foto entfernen",
+                                                                tint = TextPrimary,
+                                                                modifier = Modifier.size(16.dp)
+                                                            )
+                                                        }
+                                                    }
+
+                                                    Surface(
+                                                        modifier = Modifier
+                                                            .align(Alignment.BottomEnd)
+                                                            .padding(6.dp),
+                                                        shape = RoundedCornerShape(999.dp),
+                                                        color = Color.White.copy(alpha = 0.94f),
+                                                        shadowElevation = 2.dp
+                                                    ) {
+                                                        IconButton(
+                                                            onClick = {
+                                                                cropPhotoIndex = index
+                                                                cropPhotoUri = photoUri
+                                                            },
+                                                            modifier = Modifier.size(32.dp)
+                                                        ) {
+                                                            Icon(
+                                                                imageVector = Icons.Filled.Edit,
+                                                                contentDescription = "Foto zuschneiden",
+                                                                tint = TextPrimary,
+                                                                modifier = Modifier.size(16.dp)
+                                                            )
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+
+                                Text(
+                                    text = "Halten und ziehen, um Reihenfolge und Titelbild zu ändern.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = TextSecondary
+                                )
+                            }
                         }
 
                         Column(
@@ -7622,12 +8135,40 @@ fun AnimalDetailScreen(
                                         date.isNotBlank() ||
                                         location.isNotBlank() ||
                                         note.isNotBlank() ||
-                                        selectedPhotoUri.isNotBlank()
+                                        selectedPhotoUris.isNotEmpty()
                                     ) {
-                                        val storedPhotoUri = persistPhotoForFinding(
-                                            context,
-                                            selectedPhotoUri
-                                        )
+                                        val existingLocalPhotoUris = currentFinding
+                                            ?.let(::effectiveLocalPhotoUris)
+                                            .orEmpty()
+                                        val selectedLocalPhotoUris = selectedPhotoUris
+                                            .map { it.trim() }
+                                            .filter { it.isNotBlank() }
+                                            .distinct()
+                                            .take(3)
+                                        val rawLocalPhotoUris = when {
+                                            selectedLocalPhotoUris.isNotEmpty() -> selectedLocalPhotoUris
+                                            editingFinding != null -> existingLocalPhotoUris
+                                            else -> emptyList()
+                                        }
+                                        val storedPhotoUris = rawLocalPhotoUris
+                                            .map { photoValue ->
+                                                persistPhotoForFinding(context, photoValue)
+                                            }
+                                            .map { it.trim() }
+                                            .filter { it.isNotBlank() }
+                                            .distinct()
+                                            .take(3)
+                                        val existingRemotePhotoPaths = currentFinding
+                                            ?.let(::effectiveRemotePhotoPaths)
+                                            .orEmpty()
+                                        val synchronizedRemotePhotoPaths = if (
+                                            editingFinding != null &&
+                                            selectedLocalPhotoUris == existingLocalPhotoUris
+                                        ) {
+                                            existingRemotePhotoPaths
+                                        } else {
+                                            emptyList()
+                                        }
 
                                         val newFinding = AnimalFinding(
                                             roomId = editingFinding?.roomId,
@@ -7635,8 +8176,10 @@ fun AnimalDetailScreen(
                                             date = date.trim(),
                                             location = location.trim(),
                                             note = note.trim(),
-                                            photoUri = storedPhotoUri,
-                                            remotePhotoPath = editingFinding?.remotePhotoPath.orEmpty(),
+                                            photoUri = storedPhotoUris.firstOrNull().orEmpty(),
+                                            remotePhotoPath = synchronizedRemotePhotoPaths.firstOrNull().orEmpty(),
+                                            photoUris = storedPhotoUris,
+                                            remotePhotoPaths = synchronizedRemotePhotoPaths,
                                             latitude = latitude,
                                             longitude = longitude,
                                             locationSource = locationSource,
@@ -7656,7 +8199,12 @@ fun AnimalDetailScreen(
                                             date = ""
                                             location = ""
                                             note = ""
-                                            selectedPhotoUri = ""
+                                            selectedPhotoUris = emptyList()
+                                            selectedPhotoPage = 0
+                                            cropPhotoIndex = null
+                                            cropPhotoUri = null
+                                            draggingPhotoUri = null
+                                            draggingPhotoOffsetX = 0f
                                             selectedTaggedFriendIds = emptyList()
                                             latitude = null
                                             longitude = null
@@ -7669,7 +8217,12 @@ fun AnimalDetailScreen(
                                                 newFinding
                                             )
                                             editingFinding = newFinding
-                                            selectedPhotoUri = storedPhotoUri
+                                            selectedPhotoUris = storedPhotoUris
+                                            selectedPhotoPage = 0
+                                            cropPhotoIndex = null
+                                            cropPhotoUri = null
+                                            draggingPhotoUri = null
+                                            draggingPhotoOffsetX = 0f
                                             isEditMode = false
                                         }
                                     }
@@ -7693,9 +8246,13 @@ fun AnimalDetailScreen(
                                         longitude = currentFinding?.longitude
                                         locationSource = currentFinding?.locationSource
                                         locationStatusMessage = ""
-                                        selectedPhotoUri =
-                                            currentFinding?.photoUri.orEmpty()
+                                        selectedPhotoUris =
+                                            currentFinding?.let(::effectiveLocalPhotoUris).orEmpty()
+                                        selectedPhotoPage = 0
+                                        cropPhotoIndex = null
                                         cropPhotoUri = null
+                                        draggingPhotoUri = null
+                                        draggingPhotoOffsetX = 0f
                                         isEditMode = false
                                     },
                                     modifier = Modifier.fillMaxWidth(),
@@ -7728,12 +8285,24 @@ fun AnimalDetailScreen(
         }
     }
 
-    cropPhotoUri?.let { photoUriToCrop ->
+    if (cropPhotoIndex != null && !cropPhotoUri.isNullOrBlank()) {
+        val photoIndexToCrop = cropPhotoIndex ?: -1
+        val photoUriToCrop = cropPhotoUri.orEmpty()
         CropPhotoDialog(
             uriString = photoUriToCrop,
-            onDismiss = { cropPhotoUri = null },
+            onDismiss = {
+                cropPhotoIndex = null
+                cropPhotoUri = null
+            },
             onCropComplete = { croppedPhotoUri ->
-                selectedPhotoUri = croppedPhotoUri
+                selectedPhotoUris = normalizeSelectedPhotoUris(
+                    selectedPhotoUris
+                    .mapIndexed { index, existingPhotoUri ->
+                        if (index == photoIndexToCrop) croppedPhotoUri else existingPhotoUri
+                    }
+                )
+                selectedPhotoPage = photoIndexToCrop.coerceAtMost(selectedPhotoUris.lastIndex.coerceAtLeast(0))
+                cropPhotoIndex = null
                 cropPhotoUri = null
             }
         )

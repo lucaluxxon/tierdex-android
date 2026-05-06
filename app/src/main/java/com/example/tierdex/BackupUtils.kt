@@ -24,6 +24,8 @@ private data class BackupAnimalFindingDto(
     val note: String = "",
     val photoUri: String = "",
     val remotePhotoPath: String = "",
+    val photoUris: List<String> = emptyList(),
+    val remotePhotoPaths: List<String> = emptyList(),
     val latitude: Double? = null,
     val longitude: Double? = null,
     val locationSource: String? = null,
@@ -69,8 +71,8 @@ fun exportFindings(context: Context, findings: List<AnimalFinding>): File {
         zip.write(json.toByteArray(Charsets.UTF_8))
         zip.closeEntry()
 
-        findings.mapNotNull { finding ->
-            internalBackupFileName(finding.photoUri)
+        findings.flatMap { finding ->
+            effectiveLocalPhotoUris(finding).mapNotNull(::internalBackupFileName)
         }.distinct().forEach { fileName ->
             val sourceFile = File(imagesDir, fileName)
             if (!sourceFile.exists() || !sourceFile.isFile) return@forEach
@@ -188,8 +190,8 @@ private fun importZipBackup(context: Context, zipFile: File): BackupImportResult
         }
     }
 
-    val expectedImageNames = findings.mapNotNull { finding ->
-        internalBackupFileName(finding.photoUri)
+    val expectedImageNames = findings.flatMap { finding ->
+        effectiveLocalPhotoUris(finding).mapNotNull(::internalBackupFileName)
     }.distinct()
     val missingImageCount = expectedImageNames.count { it !in extractedImageNames }
     val isPartialImport = zipReadHadErrors || missingImageCount > 0
@@ -246,8 +248,10 @@ private fun parseFindingsJsonOrNull(json: String): List<AnimalFinding>? {
                 date = dto.date,
                 location = dto.location,
                 note = dto.note,
-                photoUri = dto.photoUri,
-                remotePhotoPath = dto.remotePhotoPath,
+                photoUri = normalizePhotoList(dto.photoUris, dto.photoUri).firstOrNull().orEmpty(),
+                remotePhotoPath = normalizePhotoList(dto.remotePhotoPaths, dto.remotePhotoPath).firstOrNull().orEmpty(),
+                photoUris = normalizePhotoList(dto.photoUris, dto.photoUri),
+                remotePhotoPaths = normalizePhotoList(dto.remotePhotoPaths, dto.remotePhotoPath),
                 latitude = dto.latitude,
                 longitude = dto.longitude,
                 locationSource = dto.locationSource,

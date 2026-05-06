@@ -32,6 +32,11 @@ object FindingPhotoStorageRepository {
         return "users/$userId/findings/$documentId/photo.jpg"
     }
 
+    fun buildRemotePhotoPath(userId: String, finding: AnimalFinding, photoIndex: Int): String {
+        val documentId = FirestoreFindingRepository.documentIdForFinding(finding)
+        return "users/$userId/findings/$documentId/photo_${photoIndex + 1}.jpg"
+    }
+
     fun buildProfilePhotoPath(userId: String): String {
         return "users/$userId/profile/photo.jpg"
     }
@@ -41,28 +46,41 @@ object FindingPhotoStorageRepository {
         userId: String,
         finding: AnimalFinding
     ): String {
-        val localPhotoUri = finding.photoUri.trim()
-        if (userId.isBlank() || localPhotoUri.isBlank()) {
-            return finding.remotePhotoPath.trim()
+        return uploadFindingPhotos(context, userId, finding).firstOrNull()
+            ?: finding.remotePhotoPath.trim()
+    }
+
+    suspend fun uploadFindingPhotos(
+        context: Context,
+        userId: String,
+        finding: AnimalFinding
+    ): List<String> {
+        val localPhotoUris = effectiveLocalPhotoUris(finding)
+        if (userId.isBlank() || localPhotoUris.isEmpty()) {
+            return effectiveRemotePhotoPaths(finding)
         }
 
-        val remotePhotoPath = buildRemotePhotoPath(userId, finding)
-        val photoBytes = withContext(Dispatchers.IO) {
-            readLocalPhotoBytes(context, localPhotoUri)
-        } ?: return finding.remotePhotoPath.trim()
-
         return withContext(Dispatchers.IO) {
-            runCatching {
-                Tasks.await(storage.reference.child(remotePhotoPath).putBytes(photoBytes))
-                remotePhotoPath
-            }.getOrElse { exception ->
-                Log.e(
-                    FINDING_PHOTO_STORAGE_TAG,
-                    "Failed to upload finding photo to Storage: ${exception.message ?: "Unbekannter Fehler"}",
-                    exception
-                )
-                finding.remotePhotoPath.trim()
-            }
+            localPhotoUris.mapIndexedNotNull { index, localPhotoUri ->
+                val remotePhotoPath = if (index == 0) {
+                    buildRemotePhotoPath(userId, finding)
+                } else {
+                    buildRemotePhotoPath(userId, finding, index)
+                }
+                val photoBytes = readLocalPhotoBytes(context, localPhotoUri) ?: return@mapIndexedNotNull null
+
+                runCatching {
+                    Tasks.await(storage.reference.child(remotePhotoPath).putBytes(photoBytes))
+                    remotePhotoPath
+                }.getOrElse { exception ->
+                    Log.e(
+                        FINDING_PHOTO_STORAGE_TAG,
+                        "Failed to upload finding photo $index to Storage: ${exception.message ?: "Unbekannter Fehler"}",
+                        exception
+                    )
+                    null
+                }
+            }.take(3)
         }
     }
 
