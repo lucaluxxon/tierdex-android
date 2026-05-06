@@ -213,6 +213,11 @@ private const val DAILY_ANIMAL_DISMISSED_KEY_PREFIX = "daily_animal_dismissed_"
 private const val LOCAL_PREFERENCES_OWNER_ID = "local"
 private val AppGreenBackground = Color(0xFF51734A)
 
+private enum class ProfileCollectionSortOrder {
+    NEWEST_FIRST,
+    OLDEST_FIRST
+}
+
 private fun favoriteAnimalKey(ownerId: String): String = "$FAVORITE_ANIMAL_KEY_PREFIX$ownerId"
 
 private fun wishlistAnimalKey(ownerId: String): String = "$WISHLIST_ANIMAL_KEY_PREFIX$ownerId"
@@ -232,6 +237,59 @@ private fun currentAppDateText(): String =
 
 private fun currentDailyDateKey(): String =
     SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+
+private fun parseFindingDateMillisOrNull(dateText: String): Long? {
+    val normalizedDateText = dateText.trim()
+    if (normalizedDateText.isBlank()) return null
+
+    val supportedFormats = listOf("dd.MM.yyyy", "yyyy-MM-dd")
+    return supportedFormats.firstNotNullOfOrNull { formatPattern ->
+        runCatching {
+            SimpleDateFormat(formatPattern, Locale.getDefault()).apply {
+                isLenient = false
+            }.parse(normalizedDateText)?.time
+        }.getOrNull()
+    }
+}
+
+private fun sortProfileFindings(
+    findings: List<AnimalFinding>,
+    sortOrder: ProfileCollectionSortOrder
+): List<AnimalFinding> {
+    return findings.withIndex()
+        .sortedWith { left, right ->
+            val leftDateMillis = parseFindingDateMillisOrNull(left.value.date)
+            val rightDateMillis = parseFindingDateMillisOrNull(right.value.date)
+
+            when {
+                leftDateMillis != null && rightDateMillis != null -> {
+                    val dateComparison = when (sortOrder) {
+                        ProfileCollectionSortOrder.NEWEST_FIRST -> rightDateMillis.compareTo(leftDateMillis)
+                        ProfileCollectionSortOrder.OLDEST_FIRST -> leftDateMillis.compareTo(rightDateMillis)
+                    }
+                    if (dateComparison != 0) {
+                        dateComparison
+                    } else {
+                        val leftRoomId = left.value.roomId
+                        val rightRoomId = right.value.roomId
+                        if (leftRoomId != null && rightRoomId != null && leftRoomId != rightRoomId) {
+                            when (sortOrder) {
+                                ProfileCollectionSortOrder.NEWEST_FIRST -> rightRoomId.compareTo(leftRoomId)
+                                ProfileCollectionSortOrder.OLDEST_FIRST -> leftRoomId.compareTo(rightRoomId)
+                            }
+                        } else {
+                            left.index.compareTo(right.index)
+                        }
+                    }
+                }
+
+                leftDateMillis != null -> -1
+                rightDateMillis != null -> 1
+                else -> left.index.compareTo(right.index)
+            }
+        }
+        .map { it.value }
+}
 
 private fun formatCoordinates(
     latitude: Double,
@@ -6078,7 +6136,19 @@ fun ProfileScreen(
     val animalById = remember(animals) { animals.associateBy { it.id } }
     val favoriteAnimal = animalById[favoriteAnimalId]
     val wishlistAnimal = animalById[wishlistAnimalId]
-    val reversedFindings = remember(findings) { findings.asReversed() }
+    var profileCollectionSortOrder by rememberSaveable {
+        mutableStateOf(ProfileCollectionSortOrder.NEWEST_FIRST.name)
+    }
+    val activeProfileCollectionSortOrder = remember(profileCollectionSortOrder) {
+        runCatching { ProfileCollectionSortOrder.valueOf(profileCollectionSortOrder) }
+            .getOrDefault(ProfileCollectionSortOrder.NEWEST_FIRST)
+    }
+    val sortedProfileFindings = remember(findings, activeProfileCollectionSortOrder) {
+        sortProfileFindings(
+            findings = findings,
+            sortOrder = activeProfileCollectionSortOrder
+        )
+    }
     val groupIconForAnimal: (AnimalEntry?) -> ImageVector = { entry ->
         when (entry?.group) {
             "Vögel" -> Icons.Filled.Air
@@ -6537,12 +6607,44 @@ fun ProfileScreen(
         }
 
         item {
-            Text(
-                text = "Gesamtsammlung",
-                modifier = Modifier.padding(top = 8.dp),
-                style = MaterialTheme.typography.titleMedium,
-                color = TextPrimary
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Gesamtsammlung",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = TextPrimary
+                )
+                OutlinedButton(
+                    onClick = {
+                        profileCollectionSortOrder = when (activeProfileCollectionSortOrder) {
+                            ProfileCollectionSortOrder.NEWEST_FIRST ->
+                                ProfileCollectionSortOrder.OLDEST_FIRST.name
+                            ProfileCollectionSortOrder.OLDEST_FIRST ->
+                                ProfileCollectionSortOrder.NEWEST_FIRST.name
+                        }
+                    },
+                    shape = RoundedCornerShape(999.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 0.dp),
+                    border = BorderStroke(1.dp, BorderColor),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = CardBackground,
+                        contentColor = TextPrimary
+                    )
+                ) {
+                    Text(
+                        text = when (activeProfileCollectionSortOrder) {
+                            ProfileCollectionSortOrder.NEWEST_FIRST -> "Neu zuerst"
+                            ProfileCollectionSortOrder.OLDEST_FIRST -> "Alt zuerst"
+                        },
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                }
+            }
         }
 
         if (findings.isEmpty()) {
@@ -6551,7 +6653,7 @@ fun ProfileScreen(
             }
         } else {
             items(
-                items = reversedFindings,
+                items = sortedProfileFindings,
                 key = { finding ->
                     finding.roomId ?: FirestoreFindingRepository.findingFingerprint(finding)
                 }
