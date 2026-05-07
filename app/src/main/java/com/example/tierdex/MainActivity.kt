@@ -530,6 +530,7 @@ class MainActivity : ComponentActivity() {
             .addMigrations(AnimalFindingDatabase.MIGRATION_4_5)
             .addMigrations(AnimalFindingDatabase.MIGRATION_5_6)
             .addMigrations(AnimalFindingDatabase.MIGRATION_6_7)
+            .addMigrations(AnimalFindingDatabase.MIGRATION_7_8)
             .build()
     }
 
@@ -782,10 +783,19 @@ fun effectiveFriendPhotoSources(
         )
     }
 
-    return (effectiveRemotePreviewUris + localPhotoUris)
+    val resolvedSources = (effectiveRemotePreviewUris + localPhotoUris)
         .filter { it.isNotBlank() }
         .distinct()
         .take(3)
+    val firstSourceIsThumbnail = resolvedSources.firstOrNull()?.contains(
+        "thumb_photo",
+        ignoreCase = true
+    ) == true
+    Log.d(
+        "FriendFeedCache",
+        "photo sources animalId=${finding.animalId} hasThumbnail=${finding.thumbnailRemotePhotoPath.trim().isNotBlank()} sourceCount=${resolvedSources.size} firstSourceIsThumbnail=$firstSourceIsThumbnail"
+    )
+    return resolvedSources
 }
 
 private fun hasAnyFindingPhoto(finding: AnimalFinding): Boolean {
@@ -1191,6 +1201,8 @@ enum class AppTab {
     PROFILE
 }
 
+private const val FINDING_NAV_SOURCE_ANIMAL_DETAIL = "ANIMAL_DETAIL"
+
 private enum class IntroLaunchSource {
     AUTOMATIC,
     SETTINGS
@@ -1226,6 +1238,7 @@ fun AppSplashScreen() {
 @Composable
 fun TierdexApp(database: AnimalFindingDatabase) {
     val dao = database.animalFindingDao()
+    val friendFeedCacheDao = database.friendFeedCacheDao()
     val scope = rememberCoroutineScope()
     var currentOwnerId by rememberSaveable { mutableStateOf(AuthSession.currentUserId) }
     var currentDisplayName by rememberSaveable { mutableStateOf(AuthSession.getCurrentDisplayName()) }
@@ -1251,6 +1264,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     var selectedFriendProfileUserId by rememberSaveable { mutableStateOf<String?>(null) }
     var selectedFriendProfileDisplayName by rememberSaveable { mutableStateOf<String?>(null) }
     var selectedFindingDetail by remember { mutableStateOf<AnimalFinding?>(null) }
+    var selectedFindingDetailSource by rememberSaveable { mutableStateOf<String?>(null) }
     val profileCollectionListState = rememberSaveable(saver = LazyListState.Saver) {
         LazyListState()
     }
@@ -1269,6 +1283,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     var authEntryMode by rememberSaveable { mutableStateOf<String?>(null) }
     var showAnimalPicker by rememberSaveable { mutableStateOf(false) }
     var selectedFindingToEdit by remember { mutableStateOf<AnimalFinding?>(null) }
+    var findingEditReturnSource by rememberSaveable { mutableStateOf<String?>(null) }
     var showSettingsScreen by rememberSaveable { mutableStateOf(false) }
     var showIntroScreen by rememberSaveable { mutableStateOf(false) }
     var showDailyAnimalScreen by rememberSaveable { mutableStateOf(false) }
@@ -1362,29 +1377,35 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         data class PhotoRepairCandidate(
             val finding: AnimalFinding,
             val localPhotoCount: Int,
+            val remotePhotoCount: Int,
             val hasRemotePhotos: Boolean,
             val hasThumbnail: Boolean,
             val needsOriginalUpload: Boolean,
-            val needsThumbnailUpload: Boolean
+            val needsThumbnailUploadFromLocal: Boolean,
+            val needsThumbnailUploadFromRemote: Boolean
         )
 
         val candidates = localFindings.mapNotNull { finding ->
             val localPhotoUris = effectiveLocalPhotoUris(finding)
-            if (finding.ownerId != ownerId || localPhotoUris.isEmpty()) {
+            if (finding.ownerId != ownerId) {
                 return@mapNotNull null
             }
 
-            val hasRemotePhotos = effectiveRemotePhotoPaths(finding).isNotEmpty()
+            val remotePhotoPaths = effectiveRemotePhotoPaths(finding)
+            val hasLocalPhotos = localPhotoUris.isNotEmpty()
+            val hasRemotePhotos = remotePhotoPaths.isNotEmpty()
             val hasThumbnail = finding.thumbnailRemotePhotoPath.trim().isNotBlank()
-            val needsOriginalUpload = !hasRemotePhotos
-            val needsThumbnailUpload = !hasThumbnail
-            if (!needsOriginalUpload && !needsThumbnailUpload) {
+            val needsOriginalUpload = hasLocalPhotos && !hasRemotePhotos
+            val needsThumbnailUploadFromLocal = !hasThumbnail && hasLocalPhotos
+            val needsThumbnailUploadFromRemote =
+                !hasThumbnail && !hasLocalPhotos && hasRemotePhotos
+            if (!needsOriginalUpload && !needsThumbnailUploadFromLocal && !needsThumbnailUploadFromRemote) {
                 return@mapNotNull null
             }
 
             val requiredLocalUris = when {
                 needsOriginalUpload -> localPhotoUris
-                needsThumbnailUpload -> listOf(localPhotoUris.first())
+                needsThumbnailUploadFromLocal -> listOf(localPhotoUris.first())
                 else -> emptyList()
             }
             if (!requiredLocalUris.all(::isRepairReadableLocalPhoto)) {
@@ -1394,23 +1415,29 @@ fun TierdexApp(database: AnimalFindingDatabase) {
             PhotoRepairCandidate(
                 finding = finding,
                 localPhotoCount = localPhotoUris.size,
+                remotePhotoCount = remotePhotoPaths.size,
                 hasRemotePhotos = hasRemotePhotos,
                 hasThumbnail = hasThumbnail,
                 needsOriginalUpload = needsOriginalUpload,
-                needsThumbnailUpload = needsThumbnailUpload
+                needsThumbnailUploadFromLocal = needsThumbnailUploadFromLocal,
+                needsThumbnailUploadFromRemote = needsThumbnailUploadFromRemote
             )
+        }
+
+        val remoteThumbnailRepairCandidateCount = candidates.count { candidate ->
+            candidate.needsThumbnailUploadFromRemote
         }
 
         Log.d(
             "FindingPhotoRepair",
-            "repair scan start ownerId=$ownerId localFindingCount=${localFindings.size} candidateCount=${candidates.size}"
+            "repair scan start ownerId=$ownerId localFindingCount=${localFindings.size} candidateCount=${candidates.size} remoteThumbnailRepairCandidateCount=$remoteThumbnailRepairCandidateCount"
         )
 
         candidates.forEach { candidate ->
             val candidateStartedAt = SystemClock.elapsedRealtime()
             Log.d(
                 "FindingPhotoRepair",
-                "candidate start animalId=${candidate.finding.animalId} localPhotoCount=${candidate.localPhotoCount} hasRemotePhotos=${candidate.hasRemotePhotos} hasThumbnail=${candidate.hasThumbnail} repairOriginals=${candidate.needsOriginalUpload} repairThumbnail=${candidate.needsThumbnailUpload}"
+                "candidate start animalId=${candidate.finding.animalId} localPhotoCount=${candidate.localPhotoCount} remotePhotoCount=${candidate.remotePhotoCount} hasRemoteOriginal=${candidate.hasRemotePhotos} hasThumbnail=${candidate.hasThumbnail} repairOriginals=${candidate.needsOriginalUpload} repairThumbnailFromLocal=${candidate.needsThumbnailUploadFromLocal} repairThumbnailFromRemote=${candidate.needsThumbnailUploadFromRemote}"
             )
 
             var repairedRemotePhotoPaths = effectiveRemotePhotoPaths(candidate.finding)
@@ -1431,16 +1458,43 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                 }
             }
 
-            if (candidate.needsThumbnailUpload) {
+            if (candidate.needsThumbnailUploadFromLocal) {
+                val thumbnailUploadStartedAt = SystemClock.elapsedRealtime()
                 repairedThumbnailPath = FindingPhotoStorageRepository.uploadFindingThumbnail(
                     context = context.applicationContext,
                     userId = ownerId,
                     finding = candidate.finding
                 )
+                Log.d(
+                    "FindingPhotoRepair",
+                    "candidate thumbnail upload animalId=${candidate.finding.animalId} source=local durationMs=${SystemClock.elapsedRealtime() - thumbnailUploadStartedAt}"
+                )
                 if (repairedThumbnailPath.isBlank()) {
                     Log.w(
                         "FindingPhotoRepair",
-                        "candidate thumbnail upload failed animalId=${candidate.finding.animalId}"
+                        "candidate thumbnail upload failed animalId=${candidate.finding.animalId} source=local"
+                    )
+                    return@forEach
+                }
+            } else if (candidate.needsThumbnailUploadFromRemote) {
+                val remoteOriginalPath = repairedRemotePhotoPaths.firstOrNull().orEmpty()
+                val remoteOriginalDownloadStartedAt = SystemClock.elapsedRealtime()
+                repairedThumbnailPath = FindingPhotoStorageRepository.uploadFindingThumbnailFromRemoteOriginal(
+                    context = context.applicationContext,
+                    userId = ownerId,
+                    finding = candidate.finding,
+                    remoteOriginalPhotoPath = remoteOriginalPath
+                )
+                val remoteThumbnailDurationMs =
+                    SystemClock.elapsedRealtime() - remoteOriginalDownloadStartedAt
+                Log.d(
+                    "FindingPhotoRepair",
+                    "candidate remote thumbnail upload animalId=${candidate.finding.animalId} hasRemoteOriginal=${remoteOriginalPath.isNotBlank()} remoteOriginalDownloadDurationMs=$remoteThumbnailDurationMs thumbnailUploadDurationMs=$remoteThumbnailDurationMs"
+                )
+                if (repairedThumbnailPath.isBlank()) {
+                    Log.w(
+                        "FindingPhotoRepair",
+                        "candidate thumbnail upload failed animalId=${candidate.finding.animalId} source=remoteOriginal"
                     )
                     return@forEach
                 }
@@ -2140,6 +2194,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     }
     BackHandler(enabled = selectedFindingDetail != null) {
         selectedFindingDetail = null
+        selectedFindingDetailSource = null
     }
 
     BackHandler(enabled = showAnimalPicker && selectedAnimalId == null) {
@@ -2211,7 +2266,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                     isFriendSearchOpen = false
                     selectedAnimalId = null
                     selectedFindingDetail = null
+                    selectedFindingDetailSource = null
                     selectedFindingToEdit = null
+                    findingEditReturnSource = null
                     startInFindingEditMode = false
                     openCreateFindingMode = false
                     showAnimalPicker = false
@@ -2241,6 +2298,8 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             selectedFriendProfileUserId = null
                             selectedFriendProfileDisplayName = null
                         }
+                        selectedFindingDetailSource = null
+                        findingEditReturnSource = null
                         showNotificationsScreen = false
                         currentTab = it
                     }
@@ -2415,11 +2474,14 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         animal = selectedFindingAnimal,
                         onBackClick = {
                             selectedFindingDetail = null
+                            selectedFindingDetailSource = null
                         },
                         onEditFinding = { finding ->
+                            val detailSource = selectedFindingDetailSource
                             selectedFindingDetail = null
                             selectedFindingToEdit = finding
                             selectedAnimalId = finding.animalId
+                            findingEditReturnSource = detailSource ?: currentTab.name
                             startInFindingEditMode = true
                             openCreateFindingMode = false
                         },
@@ -2447,20 +2509,25 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         dailyAnimalHistoryText = selectedAnimalDailyAnimalHistoryText,
                         onOpenFindingDetail = { finding ->
                             selectedFindingDetail = finding
+                            selectedFindingDetailSource = FINDING_NAV_SOURCE_ANIMAL_DETAIL
                             selectedFindingToEdit = null
+                            findingEditReturnSource = FINDING_NAV_SOURCE_ANIMAL_DETAIL
                             startInFindingEditMode = false
                             openCreateFindingMode = false
                         },
                         onReturnToFindingDetail = { finding ->
                             selectedFindingDetail = finding
+                            selectedFindingDetailSource = FINDING_NAV_SOURCE_ANIMAL_DETAIL
                             selectedAnimalId = null
                             selectedFindingToEdit = null
+                            findingEditReturnSource = FINDING_NAV_SOURCE_ANIMAL_DETAIL
                             startInFindingEditMode = false
                             openCreateFindingMode = false
                         },
                         onBackClick = {
                             if (startInFindingEditMode && selectedFindingToEdit != null) {
                                 selectedFindingDetail = selectedFindingToEdit
+                                selectedFindingDetailSource = findingEditReturnSource
                                 selectedAnimalId = null
                                 selectedFindingToEdit = null
                                 startInFindingEditMode = false
@@ -2468,7 +2535,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             } else {
                                 resetSearchState()
                                 selectedAnimalId = null
+                                selectedFindingDetailSource = null
                                 selectedFindingToEdit = null
+                                findingEditReturnSource = null
                                 startInFindingEditMode = false
                                 openCreateFindingMode = false
                             }
@@ -2683,6 +2752,26 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                         "CloudSyncDelete",
                                         "Deleted local finding: animalId=${finding.animalId}, date=${finding.date}, location=${finding.location}"
                                     )
+
+                                    val returnSource = findingEditReturnSource
+                                    selectedFindingDetail = null
+                                    selectedFindingDetailSource = null
+                                    selectedFindingToEdit = null
+                                    startInFindingEditMode = false
+                                    openCreateFindingMode = false
+                                    if (returnSource == FINDING_NAV_SOURCE_ANIMAL_DETAIL) {
+                                        selectedAnimalId = finding.animalId
+                                    } else {
+                                        selectedAnimalId = null
+                                        returnSource
+                                            ?.takeIf { it.isNotBlank() }
+                                            ?.runCatching { AppTab.valueOf(this) }
+                                            ?.getOrNull()
+                                            ?.let { returnTab ->
+                                                currentTab = returnTab
+                                            }
+                                    }
+                                    findingEditReturnSource = null
 
                                     if (currentOwnerId != null) {
                                         FirestoreFindingRepository.deleteCurrentUserFinding(finding) { success, result ->
@@ -3022,7 +3111,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         },
                         onEditFinding = { finding ->
                             selectedFindingDetail = finding
+                            selectedFindingDetailSource = currentTab.name
                             selectedFindingToEdit = null
+                            findingEditReturnSource = currentTab.name
                             startInFindingEditMode = false
                             openCreateFindingMode = false
                         },
@@ -3048,6 +3139,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         )
                     } else {
                         FriendsScreen(
+                            friendFeedCacheDao = friendFeedCacheDao,
                             currentUserId = currentOwnerId,
                             currentDisplayName = currentDisplayName,
                             allAnimals = animals,
@@ -3134,7 +3226,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         animals = animals,
                         onEditFinding = { finding ->
                             selectedFindingDetail = finding
+                            selectedFindingDetailSource = currentTab.name
                             selectedFindingToEdit = null
+                            findingEditReturnSource = currentTab.name
                             startInFindingEditMode = false
                             openCreateFindingMode = false
                         },
@@ -5334,6 +5428,7 @@ fun FriendProfileScreen(
 
 @Composable
 fun FriendsScreen(
+    friendFeedCacheDao: FriendFeedCacheDao,
     currentUserId: String?,
     currentDisplayName: String?,
     allAnimals: List<AnimalEntry>,
@@ -5344,6 +5439,7 @@ fun FriendsScreen(
     extraTopPadding: Dp = 0.dp,
     extraBottomPadding: Dp = 0.dp
 ) {
+    val scope = rememberCoroutineScope()
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var searchResults by remember { mutableStateOf<List<PublicUserProfile>>(emptyList()) }
     var friends by remember { mutableStateOf<List<FriendUser>>(emptyList()) }
@@ -5355,6 +5451,7 @@ fun FriendsScreen(
     var incomingRequests by remember { mutableStateOf<List<FriendRequest>>(emptyList()) }
     var outgoingRequestIds by remember { mutableStateOf<Set<String>>(emptySet()) }
     var infoMessage by rememberSaveable { mutableStateOf<String?>(null) }
+    var feedStatusMessage by remember(currentUserId) { mutableStateOf<String?>(null) }
     var errorMessage by rememberSaveable { mutableStateOf<String?>(null) }
     var searchErrorMessage by rememberSaveable { mutableStateOf<String?>(null) }
     var requestsErrorMessage by rememberSaveable { mutableStateOf<String?>(null) }
@@ -5362,6 +5459,7 @@ fun FriendsScreen(
     var feedErrorMessage by rememberSaveable { mutableStateOf<String?>(null) }
     var isSearching by remember { mutableStateOf(false) }
     var isRefreshing by remember { mutableStateOf(false) }
+    var isShowingCachedFeed by remember(currentUserId) { mutableStateOf(false) }
     var friendToRemove by remember { mutableStateOf<FriendUser?>(null) }
     var isFriendsListExpanded by rememberSaveable { mutableStateOf(false) }
     val animalById = remember(allAnimals) { allAnimals.associateBy { it.id } }
@@ -5394,7 +5492,13 @@ fun FriendsScreen(
 
     fun refreshFriendsData() {
         val safeUserId = currentUserId ?: return
+        Log.d("FriendFeedCache", "cloud refresh start cacheOwnerUserId=$safeUserId")
         isRefreshing = true
+        feedStatusMessage = if (isShowingCachedFeed) "Aktualisiere…" else null
+        Log.d(
+            "FriendFeedCache",
+            "inline refresh shown=${isShowingCachedFeed} fullScreenLoadingShown=${friendFeed.isEmpty()}"
+        )
         requestsErrorMessage = null
         friendsErrorMessage = null
         feedErrorMessage = null
@@ -5448,10 +5552,48 @@ fun FriendsScreen(
         FriendRepository.loadFriendsFeed(
             currentUserId = safeUserId,
             onResult = {
-                friendFeed = it
+                val sortedFeed = FriendRepository.sortFriendFeedItems(it)
+                Log.d(
+                    "FriendFeedCache",
+                    "cloud refresh end cacheOwnerUserId=$safeUserId itemCount=${sortedFeed.size}"
+                )
+                friendFeed = sortedFeed
+                isShowingCachedFeed = false
+                feedStatusMessage = null
+                Log.d(
+                    "FriendFeedCache",
+                    "cloud result applied count=${sortedFeed.size} fullScreenLoadingShown=false inlineRefreshShown=false"
+                )
+                scope.launch {
+                    val thumbnailPathCount = sortedFeed.count { feedItem ->
+                        feedItem.finding.thumbnailRemotePhotoPath.isNotBlank()
+                    }
+                    val remotePhotoPathCount = sortedFeed.sumOf { feedItem ->
+                        effectiveRemotePhotoPaths(feedItem.finding).size
+                    }
+                    Log.d(
+                        "FriendFeedCache",
+                        "cache replace start cacheOwnerUserId=$safeUserId itemCount=${sortedFeed.size} thumbnailPathCount=$thumbnailPathCount remotePhotoPathCount=$remotePhotoPathCount"
+                    )
+                    withContext(Dispatchers.IO) {
+                        friendFeedCacheDao.replaceFeedCacheForUser(
+                            cacheOwnerUserId = safeUserId,
+                            items = sortedFeed.map { feedItem -> feedItem.toCacheEntity(safeUserId) }
+                        )
+                    }
+                    Log.d(
+                        "FriendFeedCache",
+                        "cache replace end cacheOwnerUserId=$safeUserId itemCount=${sortedFeed.size} thumbnailPathCount=$thumbnailPathCount remotePhotoPathCount=$remotePhotoPathCount"
+                    )
+                }
                 finishLoad()
             },
             onError = { error ->
+                Log.w(
+                    "FriendFeedCache",
+                    "cloud refresh failed cacheOwnerUserId=$safeUserId error=${error.message ?: "Unbekannter Fehler"}"
+                )
+                feedStatusMessage = null
                 feedErrorMessage = error.message ?: "Der Freunde-Feed konnte gerade nicht geladen werden"
                 finishLoad()
             }
@@ -5461,6 +5603,10 @@ fun FriendsScreen(
     LaunchedEffect(currentUserId) {
         searchResults = emptyList()
         friends = emptyList()
+        Log.d(
+            "FriendFeedCache",
+            "friendFeed cleared reason=currentUserChanged hasCurrentUser=${!currentUserId.isNullOrBlank()}"
+        )
         friendFeed = emptyList()
         expandedCommentKeys = emptySet()
         commentsByFeedKey = emptyMap()
@@ -5475,7 +5621,42 @@ fun FriendsScreen(
         requestsErrorMessage = null
         friendsErrorMessage = null
         feedErrorMessage = null
+        feedStatusMessage = null
         if (!currentUserId.isNullOrBlank()) {
+            val safeUserId = currentUserId
+            Log.d("FriendFeedCache", "cache load start cacheOwnerUserId=$safeUserId")
+            val cachedFeed = withContext(Dispatchers.IO) {
+                FriendRepository.sortFriendFeedCacheEntities(
+                    friendFeedCacheDao.getFeedCacheForUser(safeUserId)
+                ).map { entity ->
+                    entity.toFriendFeedItem()
+                }
+            }
+            Log.d(
+                "FriendFeedCache",
+                "cache load end cacheOwnerUserId=$safeUserId itemCount=${cachedFeed.size}"
+            )
+            Log.d(
+                "FriendFeedCache",
+                "cache load detail cacheOwnerUserId=$safeUserId itemCount=${cachedFeed.size} thumbnailPathCount=${cachedFeed.count { it.finding.thumbnailRemotePhotoPath.isNotBlank() }} remotePhotoPathCount=${cachedFeed.sumOf { effectiveRemotePhotoPaths(it.finding).size }}"
+            )
+            if (cachedFeed.isNotEmpty()) {
+                friendFeed = cachedFeed
+                isShowingCachedFeed = true
+                feedStatusMessage = "Aktualisiere…"
+                Log.d("FriendFeedCache", "ui source=cache cacheOwnerUserId=$safeUserId")
+                Log.d(
+                    "FriendFeedCache",
+                    "cached items applied to UI count=${cachedFeed.size} fullScreenLoadingShown=false inlineRefreshShown=true"
+                )
+            } else {
+                isShowingCachedFeed = false
+                Log.d("FriendFeedCache", "ui source=cloudOnly cacheOwnerUserId=$safeUserId")
+                Log.d(
+                    "FriendFeedCache",
+                    "cached items applied to UI count=0 fullScreenLoadingShown=true inlineRefreshShown=false"
+                )
+            }
             refreshFriendsData()
         }
     }
@@ -5883,6 +6064,16 @@ fun FriendsScreen(
                 )
             }
 
+            feedStatusMessage?.let { message ->
+                item {
+                    Text(
+                        text = message,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextSecondary
+                    )
+                }
+            }
+
             feedErrorMessage?.let { message ->
                 item {
                     CompactSectionError(
@@ -5900,7 +6091,7 @@ fun FriendsScreen(
             }
 
             when {
-                friends.isEmpty() -> {
+                friends.isEmpty() && friendFeed.isEmpty() -> {
                     item {
                         Text(
                             text = "Füge Freunde hinzu, um ihre Funde hier zu sehen.",
@@ -5972,7 +6163,10 @@ fun FriendsScreen(
                                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                     FriendIdentityRow(
                                         displayName = feedItem.friendDisplayName,
-                                        profileImageUri = friendProfileImageUrisById[feedItem.friendUserId],
+                                        profileImageUri = friendProfileImageUrisById[feedItem.friendUserId]
+                                            ?: feedItem.friendProfilePhotoPath
+                                                .takeIf { it.isNotBlank() }
+                                                ?.let(::storageUriFromPath),
                                         onClick = {
                                             onOpenFriendProfile(
                                                 feedItem.friendUserId,
@@ -8153,7 +8347,7 @@ fun FundDetailScreen(
                             modifier = Modifier.weight(1f),
                             colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
                         ) {
-                            Text("Tierdetails ansehen")
+                            Text("Tierdetails")
                         }
                     }
                 }
@@ -8413,6 +8607,271 @@ fun AnimalDetailScreen(
         friendAnimalPreferenceLine("Lieblingstier", favoriteAnimalFriends)
     }
 
+    @Composable
+    fun FindingPhotoEditorSection() {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            val remainingPhotoSlots = (3 - selectedPhotoUris.size).coerceAtLeast(0)
+            if (selectedPhotoUris.size < 3) {
+                OutlinedButton(
+                    onClick = {
+                        val imageOnlyRequest = PickVisualMediaRequest(
+                            ActivityResultContracts.PickVisualMedia.ImageOnly
+                        )
+                        when (remainingPhotoSlots) {
+                            1 -> pickSingleMedia.launch(imageOnlyRequest)
+                            2 -> pickUpToTwoMedia.launch(imageOnlyRequest)
+                            else -> pickUpToThreeMedia.launch(imageOnlyRequest)
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        if (selectedPhotoUris.isEmpty()) {
+                            "Foto hinzufügen"
+                        } else {
+                            "Weiteres Foto hinzufügen"
+                        }
+                    )
+                }
+            } else {
+                Text(
+                    text = "Maximal 3 Fotos",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextSecondary
+                )
+            }
+
+            if (selectedPhotoUris.isNotEmpty()) {
+                val thumbnailWidth = 122.dp
+                val thumbnailSpacing = 10.dp
+                val density = LocalDensity.current
+                val reorderStepPx = remember(density) {
+                    with(density) { (thumbnailWidth + thumbnailSpacing).toPx() }
+                }
+                Text(
+                    text = "Fotos",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = TextSecondary
+                )
+
+                FindingPhotoPager(
+                    photoSources = selectedPhotoUris,
+                    imageModifier = Modifier
+                        .fillMaxWidth()
+                        .height(220.dp)
+                        .clip(RoundedCornerShape(16.dp)),
+                    onPageChanged = { selectedPhotoPage = it }
+                )
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    selectedPhotoUris.forEachIndexed { index, photoUri ->
+                        key(photoUri) {
+                            val isDragged = draggingPhotoUri == photoUri
+                            Card(
+                                modifier = Modifier
+                                    .width(thumbnailWidth)
+                                    .offset {
+                                        IntOffset(
+                                            x = if (isDragged) draggingPhotoOffsetX.roundToInt() else 0,
+                                            y = 0
+                                        )
+                                    }
+                                    .zIndex(if (isDragged) 1f else 0f)
+                                    .pointerInput(photoUri, reorderStepPx, selectedPhotoUris) {
+                                        detectDragGesturesAfterLongPress(
+                                            onDragStart = {
+                                                draggingPhotoUri = photoUri
+                                                draggingPhotoOffsetX = 0f
+                                            },
+                                            onDragCancel = {
+                                                draggingPhotoUri = null
+                                                draggingPhotoOffsetX = 0f
+                                            },
+                                            onDragEnd = {
+                                                draggingPhotoUri = null
+                                                draggingPhotoOffsetX = 0f
+                                            }
+                                        ) { change, dragAmount ->
+                                            change.consume()
+                                            val activePhotoUri =
+                                                draggingPhotoUri ?: return@detectDragGesturesAfterLongPress
+                                            var currentDraggedIndex =
+                                                selectedPhotoUris.indexOf(activePhotoUri)
+                                            if (currentDraggedIndex == -1) {
+                                                draggingPhotoUri = null
+                                                draggingPhotoOffsetX = 0f
+                                                return@detectDragGesturesAfterLongPress
+                                            }
+
+                                            var newOffsetX = draggingPhotoOffsetX + dragAmount.x
+                                            val reorderThreshold = reorderStepPx / 2f
+
+                                            while (
+                                                newOffsetX > reorderThreshold &&
+                                                currentDraggedIndex < selectedPhotoUris.lastIndex
+                                            ) {
+                                                reorderSelectedPhotos(
+                                                    fromIndex = currentDraggedIndex,
+                                                    toIndex = currentDraggedIndex + 1
+                                                )
+                                                currentDraggedIndex += 1
+                                                newOffsetX -= reorderStepPx
+                                            }
+
+                                            while (
+                                                newOffsetX < -reorderThreshold &&
+                                                currentDraggedIndex > 0
+                                            ) {
+                                                reorderSelectedPhotos(
+                                                    fromIndex = currentDraggedIndex,
+                                                    toIndex = currentDraggedIndex - 1
+                                                )
+                                                currentDraggedIndex -= 1
+                                                newOffsetX += reorderStepPx
+                                            }
+
+                                            draggingPhotoOffsetX = newOffsetX
+                                        }
+                                    },
+                                shape = RoundedCornerShape(14.dp),
+                                elevation = CardDefaults.cardElevation(
+                                    defaultElevation = if (isDragged) 8.dp else 2.dp
+                                ),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.White.copy(
+                                        alpha = if (isDragged) 0.96f else 0.9f
+                                    )
+                                )
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(6.dp)
+                                ) {
+                                    UriImage(
+                                        uriString = photoUri,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(96.dp)
+                                            .clip(RoundedCornerShape(12.dp)),
+                                        maxImageSizePx = 512
+                                    )
+                                    if (index == 0) {
+                                        Surface(
+                                            modifier = Modifier
+                                                .align(Alignment.TopStart)
+                                                .padding(6.dp),
+                                            shape = RoundedCornerShape(999.dp),
+                                            color = Color.White.copy(alpha = 0.94f),
+                                            shadowElevation = 2.dp
+                                        ) {
+                                            Row(
+                                                modifier = Modifier.padding(
+                                                    horizontal = 8.dp,
+                                                    vertical = 4.dp
+                                                ),
+                                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Filled.Star,
+                                                    contentDescription = "Titelbild",
+                                                    modifier = Modifier.size(12.dp),
+                                                    tint = PrimaryGreen
+                                                )
+                                                Text(
+                                                    text = "Titelbild",
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    color = TextPrimary
+                                                )
+                                            }
+                                        }
+                                    }
+
+                                    Surface(
+                                        modifier = Modifier
+                                            .align(Alignment.TopEnd)
+                                            .padding(6.dp),
+                                        shape = RoundedCornerShape(999.dp),
+                                        color = Color.White.copy(alpha = 0.94f),
+                                        shadowElevation = 2.dp
+                                    ) {
+                                        IconButton(
+                                            onClick = {
+                                                val updatedPhotoUris = selectedPhotoUris
+                                                    .filterIndexed { currentIndex, _ ->
+                                                        currentIndex != index
+                                                    }
+                                                    .take(3)
+                                                selectedPhotoUris = updatedPhotoUris
+                                                selectedPhotoPage = selectedPhotoPage
+                                                    .coerceAtMost(updatedPhotoUris.lastIndex.coerceAtLeast(0))
+                                                if (cropPhotoIndex == index) {
+                                                    cropPhotoIndex = null
+                                                    cropPhotoUri = null
+                                                }
+                                                if (draggingPhotoUri == photoUri) {
+                                                    draggingPhotoUri = null
+                                                    draggingPhotoOffsetX = 0f
+                                                }
+                                            },
+                                            modifier = Modifier.size(32.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Filled.Delete,
+                                                contentDescription = "Foto entfernen",
+                                                tint = TextPrimary,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                        }
+                                    }
+
+                                    Surface(
+                                        modifier = Modifier
+                                            .align(Alignment.BottomEnd)
+                                            .padding(6.dp),
+                                        shape = RoundedCornerShape(999.dp),
+                                        color = Color.White.copy(alpha = 0.94f),
+                                        shadowElevation = 2.dp
+                                    ) {
+                                        IconButton(
+                                            onClick = {
+                                                cropPhotoIndex = index
+                                                cropPhotoUri = photoUri
+                                            },
+                                            modifier = Modifier.size(32.dp)
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Filled.Edit,
+                                                contentDescription = "Foto zuschneiden",
+                                                tint = TextPrimary,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Text(
+                    text = "Halten und ziehen, um Reihenfolge und Titelbild zu ändern.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextSecondary
+                )
+            }
+        }
+    }
+
     LazyColumn(
         modifier = modifier
             .fillMaxSize()
@@ -8436,24 +8895,25 @@ fun AnimalDetailScreen(
                         modifier = Modifier.padding(20.dp),
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
+                        val animalSubgroupText = animal.subgroup
+                            .takeIf { it.isNotBlank() }
+                            ?: animal.group.takeIf { it.isNotBlank() }
                         Text(
                             text = animal.germanName,
                             style = MaterialTheme.typography.headlineSmall,
                             color = TextPrimary
                         )
-                        Text(
-                            text = if (editingFinding == null) {
-                                "Neuen Fund eintragen"
-                            } else {
-                                "Fund bearbeiten"
-                            },
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = TextSecondary
-                        )
                         animal.latinName.takeIf { it.isNotBlank() }?.let {
                             Text(
                                 text = it,
                                 style = MaterialTheme.typography.bodySmall,
+                                color = TextSecondary
+                            )
+                        }
+                        animalSubgroupText?.let {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodyMedium,
                                 color = TextSecondary
                             )
                         }
@@ -8574,27 +9034,75 @@ fun AnimalDetailScreen(
                                 ),
                                 elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
                             ) {
-                                Column(
+                                val previewPhotoUri = preferredOwnedFindingPhotoUri(finding)
+                                    ?: finding.thumbnailRemotePhotoPath
+                                        .takeIf { it.isNotBlank() }
+                                        ?.let(::storageUriFromPath)
+                                    ?: effectiveRemotePhotoPaths(finding)
+                                        .firstOrNull()
+                                        ?.let(::storageUriFromPath)
+                                Row(
                                     modifier = Modifier.padding(16.dp),
-                                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                                    verticalAlignment = Alignment.Top
                                 ) {
-                                    Text(
-                                        text = finding.date.ifBlank { "Fund ohne Datum" },
-                                        style = MaterialTheme.typography.titleSmall,
-                                        color = TextPrimary
-                                    )
-                                    FindingMetaRow(
-                                        date = null,
-                                        location = finding.location,
-                                        latitude = finding.latitude,
-                                        longitude = finding.longitude
-                                    )
-                                    finding.note.takeIf { it.isNotBlank() }?.let {
+                                    Surface(
+                                        modifier = Modifier
+                                            .size(76.dp)
+                                            .clip(RoundedCornerShape(14.dp)),
+                                        color = Color.White,
+                                        shadowElevation = 0.dp
+                                    ) {
+                                        if (previewPhotoUri != null) {
+                                            UriImage(
+                                                uriString = previewPhotoUri,
+                                                modifier = Modifier.fillMaxSize(),
+                                                maxImageSizePx = 512
+                                            )
+                                        } else {
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxSize()
+                                                    .background(Color.White),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Filled.Collections,
+                                                    contentDescription = null,
+                                                    tint = TextSecondary
+                                                )
+                                            }
+                                        }
+                                    }
+
+                                    Column(
+                                        modifier = Modifier.weight(1f),
+                                        verticalArrangement = Arrangement.spacedBy(6.dp),
+                                        horizontalAlignment = Alignment.Start
+                                    ) {
                                         Text(
-                                            text = it,
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = TextSecondary
+                                            text = finding.date.ifBlank { "Fund ohne Datum" },
+                                            style = MaterialTheme.typography.titleSmall,
+                                            color = TextPrimary,
+                                            textAlign = TextAlign.Start
                                         )
+
+                                        FindingMetaRow(
+                                            date = null,
+                                            location = finding.location,
+                                            latitude = finding.latitude,
+                                            longitude = finding.longitude,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+
+                                        finding.note.takeIf { it.isNotBlank() }?.let {
+                                            Text(
+                                                text = it,
+                                                style = MaterialTheme.typography.bodySmall,
+                                                color = TextSecondary,
+                                                textAlign = TextAlign.Start
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -9064,9 +9572,13 @@ fun AnimalDetailScreen(
                     ) {
                         Text(
                             text = if (editingFinding == null) "Neuen Fund eintragen" else "Fund bearbeiten",
+                            modifier = Modifier.fillMaxWidth(),
                             style = MaterialTheme.typography.titleMedium,
-                            color = TextPrimary
+                            color = TextPrimary,
+                            textAlign = TextAlign.Center
                         )
+
+                        FindingPhotoEditorSection()
 
                         OutlinedTextField(
                             value = date,
@@ -9292,266 +9804,6 @@ fun AnimalDetailScreen(
 
                         Column(
                             modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            val remainingPhotoSlots = (3 - selectedPhotoUris.size).coerceAtLeast(0)
-                            if (selectedPhotoUris.size < 3) {
-                                OutlinedButton(
-                                    onClick = {
-                                        val imageOnlyRequest = PickVisualMediaRequest(
-                                            ActivityResultContracts.PickVisualMedia.ImageOnly
-                                        )
-                                        when (remainingPhotoSlots) {
-                                            1 -> pickSingleMedia.launch(imageOnlyRequest)
-                                            2 -> pickUpToTwoMedia.launch(imageOnlyRequest)
-                                            else -> pickUpToThreeMedia.launch(imageOnlyRequest)
-                                        }
-                                    }
-                                ) {
-                                    Text(
-                                        if (selectedPhotoUris.isEmpty()) {
-                                            "Foto hinzufügen"
-                                        } else {
-                                            "Weiteres Foto hinzufügen"
-                                        }
-                                    )
-                                }
-                            } else {
-                                Text(
-                                    text = "Maximal 3 Fotos",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = TextSecondary
-                                )
-                            }
-
-                            if (selectedPhotoUris.isNotEmpty()) {
-                                val thumbnailWidth = 122.dp
-                                val thumbnailSpacing = 10.dp
-                                val density = LocalDensity.current
-                                val reorderStepPx = remember(density) {
-                                    with(density) { (thumbnailWidth + thumbnailSpacing).toPx() }
-                                }
-                                Text(
-                                    text = "Fotos",
-                                    style = MaterialTheme.typography.labelLarge,
-                                    color = TextSecondary
-                                )
-
-                                FindingPhotoPager(
-                                    photoSources = selectedPhotoUris,
-                                    imageModifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(220.dp)
-                                        .clip(RoundedCornerShape(16.dp)),
-                                    onPageChanged = { selectedPhotoPage = it }
-                                )
-
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .horizontalScroll(rememberScrollState()),
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                                ) {
-                                    selectedPhotoUris.forEachIndexed { index, photoUri ->
-                                        key(photoUri) {
-                                            val isDragged = draggingPhotoUri == photoUri
-                                            Card(
-                                                modifier = Modifier
-                                                    .width(thumbnailWidth)
-                                                    .offset {
-                                                        IntOffset(
-                                                            x = if (isDragged) draggingPhotoOffsetX.roundToInt() else 0,
-                                                            y = 0
-                                                        )
-                                                    }
-                                                    .zIndex(if (isDragged) 1f else 0f)
-                                                    .pointerInput(photoUri, reorderStepPx, selectedPhotoUris) {
-                                                        detectDragGesturesAfterLongPress(
-                                                            onDragStart = {
-                                                                draggingPhotoUri = photoUri
-                                                                draggingPhotoOffsetX = 0f
-                                                            },
-                                                            onDragCancel = {
-                                                                draggingPhotoUri = null
-                                                                draggingPhotoOffsetX = 0f
-                                                            },
-                                                            onDragEnd = {
-                                                                draggingPhotoUri = null
-                                                                draggingPhotoOffsetX = 0f
-                                                            }
-                                                        ) { change, dragAmount ->
-                                                            change.consume()
-                                                            val activePhotoUri = draggingPhotoUri ?: return@detectDragGesturesAfterLongPress
-                                                            var currentDraggedIndex =
-                                                                selectedPhotoUris.indexOf(activePhotoUri)
-                                                            if (currentDraggedIndex == -1) {
-                                                                draggingPhotoUri = null
-                                                                draggingPhotoOffsetX = 0f
-                                                                return@detectDragGesturesAfterLongPress
-                                                            }
-
-                                                            var newOffsetX = draggingPhotoOffsetX + dragAmount.x
-                                                            val reorderThreshold = reorderStepPx / 2f
-
-                                                            while (
-                                                                newOffsetX > reorderThreshold &&
-                                                                currentDraggedIndex < selectedPhotoUris.lastIndex
-                                                            ) {
-                                                                reorderSelectedPhotos(
-                                                                    fromIndex = currentDraggedIndex,
-                                                                    toIndex = currentDraggedIndex + 1
-                                                                )
-                                                                currentDraggedIndex += 1
-                                                                newOffsetX -= reorderStepPx
-                                                            }
-
-                                                            while (
-                                                                newOffsetX < -reorderThreshold &&
-                                                                currentDraggedIndex > 0
-                                                            ) {
-                                                                reorderSelectedPhotos(
-                                                                    fromIndex = currentDraggedIndex,
-                                                                    toIndex = currentDraggedIndex - 1
-                                                                )
-                                                                currentDraggedIndex -= 1
-                                                                newOffsetX += reorderStepPx
-                                                            }
-
-                                                            draggingPhotoOffsetX = newOffsetX
-                                                        }
-                                                    },
-                                                shape = RoundedCornerShape(14.dp),
-                                                elevation = CardDefaults.cardElevation(
-                                                    defaultElevation = if (isDragged) 8.dp else 2.dp
-                                                ),
-                                                colors = CardDefaults.cardColors(
-                                                    containerColor = Color.White.copy(
-                                                        alpha = if (isDragged) 0.96f else 0.9f
-                                                    )
-                                                )
-                                            ) {
-                                                Box(
-                                                    modifier = Modifier
-                                                        .fillMaxWidth()
-                                                        .padding(6.dp)
-                                                ) {
-                                                    UriImage(
-                                                        uriString = photoUri,
-                                                        modifier = Modifier
-                                                            .fillMaxWidth()
-                                                            .height(96.dp)
-                                                            .clip(RoundedCornerShape(12.dp)),
-                                                        maxImageSizePx = 512
-                                                    )
-                                                    if (index == 0) {
-                                                        Surface(
-                                                            modifier = Modifier
-                                                                .align(Alignment.TopStart)
-                                                                .padding(6.dp),
-                                                            shape = RoundedCornerShape(999.dp),
-                                                            color = Color.White.copy(alpha = 0.94f),
-                                                            shadowElevation = 2.dp
-                                                        ) {
-                                                            Row(
-                                                                modifier = Modifier.padding(
-                                                                    horizontal = 8.dp,
-                                                                    vertical = 4.dp
-                                                                ),
-                                                                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                                                                verticalAlignment = Alignment.CenterVertically
-                                                            ) {
-                                                                Icon(
-                                                                    imageVector = Icons.Filled.Star,
-                                                                    contentDescription = "Titelbild",
-                                                                    modifier = Modifier.size(12.dp),
-                                                                    tint = PrimaryGreen
-                                                                )
-                                                                Text(
-                                                                    text = "Titelbild",
-                                                                    style = MaterialTheme.typography.labelSmall,
-                                                                    color = TextPrimary
-                                                                )
-                                                            }
-                                                        }
-                                                    }
-
-                                                    Surface(
-                                                        modifier = Modifier
-                                                            .align(Alignment.TopEnd)
-                                                            .padding(6.dp),
-                                                        shape = RoundedCornerShape(999.dp),
-                                                        color = Color.White.copy(alpha = 0.94f),
-                                                        shadowElevation = 2.dp
-                                                    ) {
-                                                        IconButton(
-                                                            onClick = {
-                                                                val updatedPhotoUris = selectedPhotoUris
-                                                                    .filterIndexed { currentIndex, _ ->
-                                                                        currentIndex != index
-                                                                    }
-                                                                    .take(3)
-                                                                selectedPhotoUris = updatedPhotoUris
-                                                                selectedPhotoPage = selectedPhotoPage
-                                                                    .coerceAtMost(updatedPhotoUris.lastIndex.coerceAtLeast(0))
-                                                                if (cropPhotoIndex == index) {
-                                                                    cropPhotoIndex = null
-                                                                    cropPhotoUri = null
-                                                                }
-                                                                if (draggingPhotoUri == photoUri) {
-                                                                    draggingPhotoUri = null
-                                                                    draggingPhotoOffsetX = 0f
-                                                                }
-                                                            },
-                                                            modifier = Modifier.size(32.dp)
-                                                        ) {
-                                                            Icon(
-                                                                imageVector = Icons.Filled.Delete,
-                                                                contentDescription = "Foto entfernen",
-                                                                tint = TextPrimary,
-                                                                modifier = Modifier.size(16.dp)
-                                                            )
-                                                        }
-                                                    }
-
-                                                    Surface(
-                                                        modifier = Modifier
-                                                            .align(Alignment.BottomEnd)
-                                                            .padding(6.dp),
-                                                        shape = RoundedCornerShape(999.dp),
-                                                        color = Color.White.copy(alpha = 0.94f),
-                                                        shadowElevation = 2.dp
-                                                    ) {
-                                                        IconButton(
-                                                            onClick = {
-                                                                cropPhotoIndex = index
-                                                                cropPhotoUri = photoUri
-                                                            },
-                                                            modifier = Modifier.size(32.dp)
-                                                        ) {
-                                                            Icon(
-                                                                imageVector = Icons.Filled.Edit,
-                                                                contentDescription = "Foto zuschneiden",
-                                                                tint = TextPrimary,
-                                                                modifier = Modifier.size(16.dp)
-                                                            )
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-
-                                Text(
-                                    text = "Halten und ziehen, um Reihenfolge und Titelbild zu ändern.",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = TextSecondary
-                                )
-                            }
-                        }
-
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
                             verticalArrangement = Arrangement.spacedBy(12.dp)
                         ) {
                             Button(
@@ -9713,7 +9965,6 @@ fun AnimalDetailScreen(
                     onClick = {
                         editingFinding?.let {
                             onDeleteFinding(it)
-                            onBackClick()
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
@@ -10596,6 +10847,25 @@ fun AnimalDetailScreen(
 
                 if (
                     bitmap == null &&
+                    !loadFinished &&
+                    (uriString.startsWith("internal://") || uriString.startsWith(STORAGE_URI_PREFIX))
+                ) {
+                    Box(
+                        modifier = modifier.background(Color(0xFFF3F4F6)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Foto wird geladen…",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = TextSecondary,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(12.dp)
+                        )
+                    }
+                }
+
+                if (
+                    bitmap == null &&
                     loadFinished &&
                     (uriString.startsWith("internal://") || uriString.startsWith(STORAGE_URI_PREFIX))
                 ) {
@@ -11003,6 +11273,7 @@ fun AnimalDetailScreen(
                     loadCorrectlyOrientedBitmapFromFile(file, maxImageSizePx)
                 } else if (uriString.startsWith(STORAGE_URI_PREFIX)) {
                     loadCorrectlyOrientedBitmapFromStoragePath(
+                        context = context,
                         storagePathFromUri(uriString).orEmpty(),
                         maxImageSizePx
                     )
@@ -11035,6 +11306,7 @@ fun AnimalDetailScreen(
             }
 
             fun loadCorrectlyOrientedBitmapFromStoragePath(
+                context: Context,
                 remotePhotoPath: String,
                 maxImageSizePx: Int? = null
             ): Bitmap? {
@@ -11045,7 +11317,14 @@ fun AnimalDetailScreen(
                     "bitmap decode start isRemote=true isThumbnail=$isThumbnail maxImageSizePx=${maxImageSizePx ?: -1}"
                 )
                 val imageBytes =
-                    FindingPhotoStorageRepository.loadFindingPhotoBytes(remotePhotoPath) ?: return null
+                    if (isThumbnail) {
+                        FindingPhotoStorageRepository.loadFriendFeedThumbnailBytesCached(
+                            context = context.applicationContext,
+                            remotePhotoPath = remotePhotoPath
+                        )
+                    } else {
+                        FindingPhotoStorageRepository.loadFindingPhotoBytes(remotePhotoPath)
+                    } ?: return null
                 val bitmap = decodeSampledBitmapFromBytes(imageBytes, maxImageSizePx) ?: return null
                 val orientation = ByteArrayInputStream(imageBytes).use { input ->
                     ExifInterface(input).getAttributeInt(

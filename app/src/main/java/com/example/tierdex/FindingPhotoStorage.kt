@@ -10,12 +10,14 @@ import com.google.firebase.storage.FirebaseStorage
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.security.MessageDigest
 
 const val STORAGE_URI_PREFIX = "storage://"
 private const val FINDING_PHOTO_STORAGE_TAG = "FindingPhotoStorage"
 private const val FINDING_PHOTO_MAX_DOWNLOAD_BYTES = 10L * 1024 * 1024
 private const val FINDING_THUMBNAIL_MAX_EDGE_PX = 800
 private const val FINDING_THUMBNAIL_JPEG_QUALITY = 78
+private const val FRIEND_FEED_THUMB_CACHE_DIR = "friend_feed_thumbs"
 
 fun storageUriFromPath(path: String): String = "${STORAGE_URI_PREFIX}${path.trim()}"
 
@@ -30,6 +32,23 @@ fun storagePathFromUri(uriString: String): String? {
 
 object FindingPhotoStorageRepository {
     private val storage: FirebaseStorage by lazy { FirebaseStorage.getInstance() }
+
+    private fun isFriendFeedThumbnailStoragePath(remotePhotoPath: String): Boolean {
+        return remotePhotoPath.contains("thumb_photo", ignoreCase = true)
+    }
+
+    private fun sha256(input: String): String {
+        val digest = MessageDigest.getInstance("SHA-256").digest(input.toByteArray())
+        return digest.joinToString("") { byte -> "%02x".format(byte) }
+    }
+
+    private fun localFriendThumbnailCacheFile(context: Context, remotePhotoPath: String): File {
+        val cacheDir = File(context.filesDir, FRIEND_FEED_THUMB_CACHE_DIR)
+        if (!cacheDir.exists()) {
+            cacheDir.mkdirs()
+        }
+        return File(cacheDir, "${sha256(remotePhotoPath.trim())}.jpg")
+    }
 
     fun buildRemotePhotoPath(userId: String, finding: AnimalFinding): String {
         val documentId = FirestoreFindingRepository.documentIdForFinding(finding)
@@ -140,6 +159,68 @@ object FindingPhotoStorageRepository {
         }
     }
 
+    suspend fun uploadFindingThumbnailFromRemoteOriginal(
+        context: Context,
+        userId: String,
+        finding: AnimalFinding,
+        remoteOriginalPhotoPath: String,
+        onPrepared: ((Int) -> Unit)? = null
+    ): String {
+        val trimmedRemoteOriginalPhotoPath = remoteOriginalPhotoPath.trim()
+        if (
+            userId.isBlank() ||
+            trimmedRemoteOriginalPhotoPath.isBlank() ||
+            trimmedRemoteOriginalPhotoPath.contains("thumb_photo", ignoreCase = true)
+        ) {
+            return finding.thumbnailRemotePhotoPath.trim()
+        }
+
+        val remoteThumbnailPath = buildRemoteThumbnailPath(userId, finding)
+        val thumbnailBytes = withContext(Dispatchers.IO) {
+            runCatching {
+                val remoteOriginalDownloadStartedAt = SystemClock.elapsedRealtime()
+                val bitmap = loadCorrectlyOrientedBitmapFromStoragePath(
+                    context = context,
+                    remotePhotoPath = trimmedRemoteOriginalPhotoPath,
+                    maxImageSizePx = FINDING_THUMBNAIL_MAX_EDGE_PX
+                ) ?: return@runCatching null
+                Log.d(
+                    "FindingPhotoRepair",
+                    "remoteThumbnailRepair remote original download durationMs=${SystemClock.elapsedRealtime() - remoteOriginalDownloadStartedAt}"
+                )
+                createThumbnailBytes(bitmap)
+            }.getOrElse { exception ->
+                Log.w(
+                    FINDING_PHOTO_STORAGE_TAG,
+                    "Failed to prepare finding thumbnail bytes from remote original: ${exception.message ?: "Unbekannter Fehler"}",
+                    exception
+                )
+                null
+            }
+        } ?: return ""
+
+        onPrepared?.invoke(thumbnailBytes.size / 1024)
+
+        return withContext(Dispatchers.IO) {
+            runCatching {
+                val thumbnailUploadStartedAt = SystemClock.elapsedRealtime()
+                Tasks.await(storage.reference.child(remoteThumbnailPath).putBytes(thumbnailBytes))
+                Log.d(
+                    "FindingPhotoRepair",
+                    "remoteThumbnailRepair thumbnail upload durationMs=${SystemClock.elapsedRealtime() - thumbnailUploadStartedAt}"
+                )
+                remoteThumbnailPath
+            }.getOrElse { exception ->
+                Log.w(
+                    FINDING_PHOTO_STORAGE_TAG,
+                    "Failed to upload finding thumbnail from remote original to Storage: ${exception.message ?: "Unbekannter Fehler"}",
+                    exception
+                )
+                ""
+            }
+        }
+    }
+
     suspend fun uploadProfilePhoto(
         context: Context,
         userId: String,
@@ -204,6 +285,62 @@ object FindingPhotoStorageRepository {
             )
             null
         }
+    }
+
+    fun loadFriendFeedThumbnailBytesCached(context: Context, remotePhotoPath: String): ByteArray? {
+        val trimmedPath = remotePhotoPath.trim()
+        if (trimmedPath.isBlank() || !isFriendFeedThumbnailStoragePath(trimmedPath)) return null
+
+        val cacheStartedAt = SystemClock.elapsedRealtime()
+        val cacheFile = localFriendThumbnailCacheFile(context, trimmedPath)
+        if (cacheFile.exists() && cacheFile.isFile) {
+            val cachedBytes = runCatching { cacheFile.readBytes() }.getOrNull()
+            if (cachedBytes != null) {
+                Log.d(
+                    "FriendThumbCache",
+                    "thumbnail cache hit sizeKb=${cachedBytes.size / 1024} durationMs=${SystemClock.elapsedRealtime() - cacheStartedAt}"
+                )
+                return cachedBytes
+            }
+        }
+
+        Log.d(
+            "FriendThumbCache",
+            "thumbnail cache miss durationMs=${SystemClock.elapsedRealtime() - cacheStartedAt}"
+        )
+        val downloadStartedAt = SystemClock.elapsedRealtime()
+        Log.d("FriendThumbCache", "storage download start")
+        val downloadedBytes = runCatching {
+            Tasks.await(
+                storage.reference
+                    .child(trimmedPath)
+                    .getBytes(FINDING_PHOTO_MAX_DOWNLOAD_BYTES)
+            )
+        }.onSuccess { bytes ->
+            Log.d(
+                "FriendThumbCache",
+                "storage download end success=true sizeKb=${bytes.size / 1024} durationMs=${SystemClock.elapsedRealtime() - downloadStartedAt}"
+            )
+        }.getOrElse { exception ->
+            Log.w(
+                "FriendThumbCache",
+                "storage download end success=false durationMs=${SystemClock.elapsedRealtime() - downloadStartedAt} error=${exception.message ?: "Unbekannter Fehler"}"
+            )
+            null
+        } ?: return null
+
+        val writeStartedAt = SystemClock.elapsedRealtime()
+        val writeSuccess = runCatching {
+            cacheFile.writeBytes(downloadedBytes)
+            true
+        }.getOrElse {
+            false
+        }
+        Log.d(
+            "FriendThumbCache",
+            "local file write success=$writeSuccess sizeKb=${downloadedBytes.size / 1024} durationMs=${SystemClock.elapsedRealtime() - writeStartedAt}"
+        )
+        return downloadedBytes
     }
 
     private fun readLocalPhotoBytes(context: Context, photoUri: String): ByteArray? {

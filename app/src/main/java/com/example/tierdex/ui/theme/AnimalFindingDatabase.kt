@@ -6,14 +6,17 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.tierdex.AnimalFindingDao
 import com.example.tierdex.AnimalFindingEntity
+import com.example.tierdex.FriendFeedCacheDao
+import com.example.tierdex.FriendFeedCacheEntity
 
 @Database(
-    entities = [AnimalFindingEntity::class],
-    version = 7,
+    entities = [AnimalFindingEntity::class, FriendFeedCacheEntity::class],
+    version = 8,
     exportSchema = false
 )
 abstract class AnimalFindingDatabase : RoomDatabase() {
     abstract fun animalFindingDao(): AnimalFindingDao
+    abstract fun friendFeedCacheDao(): FriendFeedCacheDao
 
     companion object {
         val MIGRATION_1_2 = object : Migration(1, 2) {
@@ -61,6 +64,44 @@ abstract class AnimalFindingDatabase : RoomDatabase() {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL(
                     "ALTER TABLE animal_findings ADD COLUMN thumbnailRemotePhotoPath TEXT NOT NULL DEFAULT ''"
+                )
+            }
+        }
+
+        val MIGRATION_7_8 = object : Migration(7, 8) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL(
+                    """
+                    CREATE TABLE IF NOT EXISTS `friend_feed_cache` (
+                        `cacheOwnerUserId` TEXT NOT NULL,
+                        `findingId` TEXT NOT NULL,
+                        `ownerUserId` TEXT NOT NULL,
+                        `ownerDisplayName` TEXT NOT NULL,
+                        `ownerProfilePhotoPath` TEXT NOT NULL,
+                        `animalId` TEXT NOT NULL,
+                        `date` TEXT NOT NULL,
+                        `location` TEXT NOT NULL,
+                        `note` TEXT NOT NULL,
+                        `latitude` REAL,
+                        `longitude` REAL,
+                        `locationSource` TEXT,
+                        `photoUri` TEXT NOT NULL,
+                        `remotePhotoPath` TEXT NOT NULL,
+                        `thumbnailRemotePhotoPath` TEXT NOT NULL,
+                        `photoUrisJson` TEXT NOT NULL,
+                        `remotePhotoPathsJson` TEXT NOT NULL,
+                        `taggedFriendIdsJson` TEXT NOT NULL,
+                        `likeCount` INTEGER NOT NULL,
+                        `likedByCurrentUser` INTEGER NOT NULL,
+                        `commentCount` INTEGER NOT NULL,
+                        `sortDateMillis` INTEGER NOT NULL,
+                        `cachedAtMillis` INTEGER NOT NULL,
+                        PRIMARY KEY(`cacheOwnerUserId`, `ownerUserId`, `findingId`)
+                    )
+                    """.trimIndent()
+                )
+                database.execSQL(
+                    "CREATE INDEX IF NOT EXISTS `index_friend_feed_cache_cacheOwnerUserId` ON `friend_feed_cache` (`cacheOwnerUserId`)"
                 )
             }
         }

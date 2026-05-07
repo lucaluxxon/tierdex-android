@@ -41,6 +41,7 @@ data class FriendRequest(
 data class FriendFeedItem(
     val friendUserId: String,
     val friendDisplayName: String,
+    val friendProfilePhotoPath: String = "",
     val findingId: String,
     val finding: AnimalFinding,
     val likeCount: Int = 0,
@@ -113,6 +114,44 @@ object FriendRepository {
         }
 
         return Long.MIN_VALUE
+    }
+
+    fun parseFindingDateMillisForCache(dateText: String): Long = parseFindingDateMillis(dateText)
+
+    fun sortFriendFeedItems(items: List<FriendFeedItem>): List<FriendFeedItem> {
+        val sortedItems = items.sortedWith(
+            compareByDescending<FriendFeedItem> {
+                parseFindingDateMillis(it.finding.date)
+            }
+                .thenBy { it.friendUserId }
+                .thenBy { it.findingId }
+        )
+        val firstSortMillis = sortedItems.firstOrNull()?.let { item ->
+            parseFindingDateMillis(item.finding.date)
+        } ?: Long.MIN_VALUE
+        Log.d(
+            "FriendFeedTiming",
+            "cloud items sorted count=${sortedItems.size} firstItemSortMillis=$firstSortMillis firstItemDateParsed=${firstSortMillis != Long.MIN_VALUE}"
+        )
+        return sortedItems
+    }
+
+    fun sortFriendFeedCacheEntities(items: List<FriendFeedCacheEntity>): List<FriendFeedCacheEntity> {
+        val sortedItems = items.sortedWith(
+            compareByDescending<FriendFeedCacheEntity> {
+                if (it.sortDateMillis != Long.MIN_VALUE) it.sortDateMillis else it.cachedAtMillis
+            }
+                .thenBy { it.ownerUserId }
+                .thenBy { it.findingId }
+        )
+        val firstSortMillis = sortedItems.firstOrNull()?.let { item ->
+            if (item.sortDateMillis != Long.MIN_VALUE) item.sortDateMillis else item.cachedAtMillis
+        } ?: Long.MIN_VALUE
+        Log.d(
+            "FriendFeedCache",
+            "cache items sorted count=${sortedItems.size} firstItemSortMillis=$firstSortMillis firstItemDateParsed=${sortedItems.firstOrNull()?.sortDateMillis != Long.MIN_VALUE}"
+        )
+        return sortedItems
     }
 
     fun loadLikeInfoForFinding(
@@ -1041,16 +1080,13 @@ object FriendRepository {
                 fun finishIfReady() {
                     remaining -= 1
                     if (remaining == 0) {
+                        val sortedFeedItems = sortFriendFeedItems(feedItems)
                         Log.d(
                             "FriendFeedTiming",
-                            "loadFriendsFeed end friendCount=${snapshot.documents.size} itemCount=${feedItems.size} totalDurationMs=${SystemClock.elapsedRealtime() - feedStartedAt}"
+                            "loadFriendsFeed end friendCount=${snapshot.documents.size} itemCount=${sortedFeedItems.size} totalDurationMs=${SystemClock.elapsedRealtime() - feedStartedAt}"
                         )
                         firstError?.let { onError(it) }
-                        onResult(
-                            feedItems.sortedByDescending {
-                                parseFindingDateMillis(it.finding.date)
-                            }
-                        )
+                        onResult(sortedFeedItems)
                     }
                 }
 
@@ -1068,6 +1104,7 @@ object FriendRepository {
                                 "friend profile loaded friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - profileLoadStartedAt}"
                             )
                             val friendDisplayName = profile?.displayName.orEmpty()
+                            val friendProfilePhotoPath = profile?.profilePhotoPath.orEmpty()
                             val findingsLoadStartedAt = SystemClock.elapsedRealtime()
                             userDocument(friendUserId)
                                 .collection("findings")
@@ -1091,6 +1128,8 @@ object FriendRepository {
                                     }
 
                                     findingsSnapshot.documents.forEach { findingDocument ->
+                                        val thumbnailRemotePhotoPath =
+                                            findingDocument.getString("thumbnailRemotePhotoPath").orEmpty()
                                         val hasRemotePhotoPaths =
                                             findingDocument.getPhotoValuesOrEmpty("remotePhotoPaths").isNotEmpty() ||
                                                 !findingDocument.getString("remotePhotoPath").isNullOrBlank()
@@ -1101,7 +1140,7 @@ object FriendRepository {
                                             note = findingDocument.getString("note").orEmpty(),
                                             photoUri = findingDocument.getString("photoUri").orEmpty(),
                                             remotePhotoPath = findingDocument.getString("remotePhotoPath").orEmpty(),
-                                            thumbnailRemotePhotoPath = findingDocument.getString("thumbnailRemotePhotoPath").orEmpty(),
+                                            thumbnailRemotePhotoPath = thumbnailRemotePhotoPath,
                                             photoUris = findingDocument.getPhotoValuesOrEmpty("photoUris"),
                                             remotePhotoPaths = findingDocument.getPhotoValuesOrEmpty("remotePhotoPaths"),
                                             latitude = findingDocument.getDouble("latitude"),
@@ -1112,7 +1151,7 @@ object FriendRepository {
                                         )
                                         Log.d(
                                             "FriendFeedTiming",
-                                            "finding meta friend=*${safeFriendId} hasRemotePhotos=$hasRemotePhotoPaths remotePhotoCount=${effectiveRemotePhotoPaths(finding).size}"
+                                            "finding meta friend=*${safeFriendId} hasThumbnailRemotePhotoPath=${thumbnailRemotePhotoPath.isNotBlank()} hasRemotePhotoPaths=$hasRemotePhotoPaths remotePhotoPathCount=${effectiveRemotePhotoPaths(finding).size}"
                                         )
                                         val likeLoadStartedAt = SystemClock.elapsedRealtime()
                                         loadLikeInfoForFinding(
@@ -1136,6 +1175,7 @@ object FriendRepository {
                                                         feedItems += FriendFeedItem(
                                                             friendUserId = friendUserId,
                                                             friendDisplayName = friendDisplayName,
+                                                            friendProfilePhotoPath = friendProfilePhotoPath,
                                                             findingId = findingDocument.id,
                                                             finding = finding,
                                                             likeCount = likeCount,
@@ -1155,6 +1195,7 @@ object FriendRepository {
                                                         feedItems += FriendFeedItem(
                                                             friendUserId = friendUserId,
                                                             friendDisplayName = friendDisplayName,
+                                                            friendProfilePhotoPath = friendProfilePhotoPath,
                                                             findingId = findingDocument.id,
                                                             finding = finding,
                                                             likeCount = likeCount,
@@ -1184,6 +1225,7 @@ object FriendRepository {
                                                         feedItems += FriendFeedItem(
                                                             friendUserId = friendUserId,
                                                             friendDisplayName = friendDisplayName,
+                                                            friendProfilePhotoPath = friendProfilePhotoPath,
                                                             findingId = findingDocument.id,
                                                             finding = finding,
                                                             commentCount = commentCount
@@ -1198,6 +1240,7 @@ object FriendRepository {
                                                         feedItems += FriendFeedItem(
                                                             friendUserId = friendUserId,
                                                             friendDisplayName = friendDisplayName,
+                                                            friendProfilePhotoPath = friendProfilePhotoPath,
                                                             findingId = findingDocument.id,
                                                             finding = finding
                                                         )
