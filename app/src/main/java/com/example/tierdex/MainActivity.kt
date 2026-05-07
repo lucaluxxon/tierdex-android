@@ -113,8 +113,10 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Event
+import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Place
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -1263,6 +1265,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     var isFriendSearchOpen by rememberSaveable { mutableStateOf(false) }
     var selectedFriendProfileUserId by rememberSaveable { mutableStateOf<String?>(null) }
     var selectedFriendProfileDisplayName by rememberSaveable { mutableStateOf<String?>(null) }
+    var showProfileFriendsScreen by rememberSaveable { mutableStateOf(false) }
     var selectedFindingDetail by remember { mutableStateOf<AnimalFinding?>(null) }
     var selectedFindingDetailSource by rememberSaveable { mutableStateOf<String?>(null) }
     val profileCollectionListState = rememberSaveable(saver = LazyListState.Saver) {
@@ -2298,6 +2301,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             selectedFriendProfileUserId = null
                             selectedFriendProfileDisplayName = null
                         }
+                        if (it != AppTab.PROFILE) {
+                            showProfileFriendsScreen = false
+                        }
                         selectedFindingDetailSource = null
                         findingEditReturnSource = null
                         showNotificationsScreen = false
@@ -3214,38 +3220,50 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                 }
 
                 currentTab == AppTab.PROFILE -> {
-                    ProfileScreen(
-                        currentUserId = currentOwnerId,
-                        currentDisplayName = currentDisplayName,
-                        onDisplayNameSaved = { newDisplayName ->
-                            currentDisplayName = newDisplayName
-                        },
-                        collectedAnimalCount = collectedAnimalCount,
-                        totalFindings = allFindings.size,
-                        findings = findingsFromRoom,
-                        animals = animals,
-                        onEditFinding = { finding ->
-                            selectedFindingDetail = finding
-                            selectedFindingDetailSource = currentTab.name
-                            selectedFindingToEdit = null
-                            findingEditReturnSource = currentTab.name
-                            startInFindingEditMode = false
-                            openCreateFindingMode = false
-                        },
-                        profileCollectionListState = profileCollectionListState,
-                        profileCollectionSortOrder = profileCollectionSortOrder,
-                        onProfileCollectionSortOrderChange = {
-                            profileCollectionSortOrder = it
-                        },
-                        profileCollectionDateFilter = profileCollectionDateFilter,
-                        onProfileCollectionDateFilterChange = {
-                            profileCollectionDateFilter = it
-                        },
-                        favoriteAnimalId = favoriteAnimalId,
-                        wishlistAnimalId = wishlistAnimalId,
-                        extraTopPadding = innerPadding.calculateTopPadding(),
-                        extraBottomPadding = innerPadding.calculateBottomPadding()
-                    )
+                    if (showProfileFriendsScreen) {
+                        ProfileFriendsScreen(
+                            currentUserId = currentOwnerId,
+                            onBack = { showProfileFriendsScreen = false },
+                            extraTopPadding = innerPadding.calculateTopPadding(),
+                            extraBottomPadding = innerPadding.calculateBottomPadding()
+                        )
+                    } else {
+                        ProfileScreen(
+                            currentUserId = currentOwnerId,
+                            currentDisplayName = currentDisplayName,
+                            onDisplayNameSaved = { newDisplayName ->
+                                currentDisplayName = newDisplayName
+                            },
+                            collectedAnimalCount = collectedAnimalCount,
+                            totalFindings = allFindings.size,
+                            findings = findingsFromRoom,
+                            animals = animals,
+                            favoriteAnimalId = favoriteAnimalId,
+                            wishlistAnimalId = wishlistAnimalId,
+                            onEditFinding = { finding ->
+                                selectedFindingDetail = finding
+                                selectedFindingDetailSource = currentTab.name
+                                selectedFindingToEdit = null
+                                findingEditReturnSource = currentTab.name
+                                startInFindingEditMode = false
+                                openCreateFindingMode = false
+                            },
+                            onOpenFriends = {
+                                showProfileFriendsScreen = true
+                            },
+                            profileCollectionListState = profileCollectionListState,
+                            profileCollectionSortOrder = profileCollectionSortOrder,
+                            onProfileCollectionSortOrderChange = {
+                                profileCollectionSortOrder = it
+                            },
+                            profileCollectionDateFilter = profileCollectionDateFilter,
+                            onProfileCollectionDateFilterChange = {
+                                profileCollectionDateFilter = it
+                            },
+                            extraTopPadding = innerPadding.calculateTopPadding(),
+                            extraBottomPadding = innerPadding.calculateBottomPadding()
+                        )
+                    }
                 }
             }
             CelebrationBanner(
@@ -7294,6 +7312,7 @@ fun ProfileScreen(
     favoriteAnimalId: String?,
     wishlistAnimalId: String?,
     onEditFinding: (AnimalFinding) -> Unit,
+    onOpenFriends: () -> Unit,
     profileCollectionListState: LazyListState,
     profileCollectionSortOrder: String,
     onProfileCollectionSortOrderChange: (String) -> Unit,
@@ -7465,65 +7484,87 @@ fun ProfileScreen(
                 )
             ) {
                 Column(
-                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 24.dp),
+                    modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 24.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
                     Box(
-                        modifier = Modifier.size(168.dp),
-                        contentAlignment = Alignment.BottomEnd
+                        modifier = Modifier.fillMaxWidth(),
+                        contentAlignment = Alignment.TopCenter
                     ) {
                         Surface(
                             modifier = Modifier
-                                .size(152.dp)
-                                .clip(CircleShape),
-                            shape = CircleShape,
-                            color = PrimaryGreenSoft.copy(alpha = 0.65f)
+                                .fillMaxWidth()
+                                .height(118.dp),
+                            shape = RoundedCornerShape(20.dp),
+                            color = PrimaryGreenSoft.copy(alpha = 0.6f)
+                        ) {}
+
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 54.dp),
+                            contentAlignment = Alignment.TopCenter
                         ) {
-                            if (displayedProfileImageUri.isNotBlank()) {
-                                UriImage(
-                                    uriString = displayedProfileImageUri,
-                                    maxImageSizePx = 900,
+                            Box(
+                                modifier = Modifier.size(168.dp),
+                                contentAlignment = Alignment.BottomEnd
+                            ) {
+                                Surface(
                                     modifier = Modifier
-                                        .fillMaxSize()
-                                        .clip(CircleShape)
-                                )
-                            } else {
-                                Box(
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.Center
+                                        .size(152.dp)
+                                        .clip(CircleShape),
+                                    shape = CircleShape,
+                                    color = PrimaryGreenSoft.copy(alpha = 0.65f)
                                 ) {
-                                    Icon(
-                                        imageVector = Icons.Filled.Pets,
-                                        contentDescription = "Profilbild Platzhalter",
-                                        tint = PrimaryGreen,
-                                        modifier = Modifier.size(44.dp)
-                                    )
+                                    if (displayedProfileImageUri.isNotBlank()) {
+                                        UriImage(
+                                            uriString = displayedProfileImageUri,
+                                            maxImageSizePx = 900,
+                                            modifier = Modifier
+                                                .fillMaxSize()
+                                                .clip(CircleShape)
+                                        )
+                                    } else {
+                                        Box(
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Filled.Pets,
+                                                contentDescription = "Profilbild Platzhalter",
+                                                tint = PrimaryGreen,
+                                                modifier = Modifier.size(44.dp)
+                                            )
+                                        }
+                                    }
+                                }
+
+                                Surface(
+                                    shape = CircleShape,
+                                    color = Color.White,
+                                    shadowElevation = 4.dp
+                                ) {
+                                    IconButton(
+                                        onClick = {
+                                            profileImagePicker.launch(
+                                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                            )
+                                        },
+                                        modifier = Modifier.size(40.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Edit,
+                                            contentDescription = "Profilbild bearbeiten",
+                                            tint = TextPrimary
+                                        )
+                                    }
                                 }
                             }
                         }
-
-                        Surface(
-                            shape = CircleShape,
-                            color = Color.White,
-                            shadowElevation = 4.dp
-                        ) {
-                            IconButton(
-                                onClick = {
-                                    profileImagePicker.launch(
-                                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                                    )
-                                },
-                                modifier = Modifier.size(40.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.Edit,
-                                    contentDescription = "Profilbild bearbeiten",
-                                    tint = TextPrimary
-                                )
-                            }
-                        }
                     }
+
+                    Spacer(modifier = Modifier.height(92.dp))
 
                     Text(
                         text = currentDisplayName?.takeIf { it.isNotBlank() }?.let { "Profil von $it" }
@@ -7541,20 +7582,15 @@ fun ProfileScreen(
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = if (profileBio.isBlank()) {
-                                Arrangement.SpaceBetween
-                            } else {
-                                Arrangement.End
-                            },
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            if (profileBio.isBlank()) {
-                                Text(
-                                    text = "Bio",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    color = TextPrimary
-                                )
-                            }
+                            Text(
+                                text = profileBio.ifBlank { "Erzähl etwas über dich…" },
+                                modifier = Modifier.weight(1f),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = if (profileBio.isBlank()) TextSecondary else TextPrimary
+                            )
                             IconButton(
                                 onClick = {
                                     bioDraft = profileBio
@@ -7568,11 +7604,6 @@ fun ProfileScreen(
                                 )
                             }
                         }
-                        Text(
-                            text = profileBio.ifBlank { "Erzähl etwas über dich…" },
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = if (profileBio.isBlank()) TextSecondary else TextPrimary
-                        )
                     }
 
                     Row(
@@ -7681,6 +7712,33 @@ fun ProfileScreen(
                             Text("Name speichern")
                         }
                     }
+                }
+            }
+        }
+
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start
+            ) {
+                OutlinedButton(
+                    onClick = onOpenFriends,
+                    border = BorderStroke(1.dp, BorderColor),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = CardBackground,
+                        contentColor = TextPrimary
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Group,
+                        contentDescription = null,
+                        tint = TextPrimary
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Freunde",
+                        color = TextPrimary
+                    )
                 }
             }
         }
@@ -8012,6 +8070,201 @@ fun ProfileScreen(
                 )
             }
         )
+    }
+}
+
+@Composable
+private fun ProfileFriendsScreen(
+    currentUserId: String?,
+    onBack: () -> Unit,
+    extraTopPadding: Dp = 0.dp,
+    extraBottomPadding: Dp = 0.dp
+) {
+    BackHandler(onBack = onBack)
+
+    var friends by remember(currentUserId) { mutableStateOf<List<FriendUser>>(emptyList()) }
+    var isLoading by remember(currentUserId) { mutableStateOf(!currentUserId.isNullOrBlank()) }
+    var errorMessage by remember(currentUserId) { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(currentUserId) {
+        val safeUserId = currentUserId
+        if (safeUserId.isNullOrBlank()) {
+            friends = emptyList()
+            isLoading = false
+            errorMessage = "Freundesliste ist nur mit Login verfügbar"
+            return@LaunchedEffect
+        }
+
+        isLoading = true
+        errorMessage = null
+        FriendRepository.loadFriends(
+            currentUserId = safeUserId,
+            onResult = { loadedFriends ->
+                friends = loadedFriends
+                isLoading = false
+                errorMessage = null
+            },
+            onError = { error ->
+                friends = emptyList()
+                isLoading = false
+                errorMessage = error ?: "Freunde konnten nicht geladen werden"
+            }
+        )
+    }
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .padding(
+                start = 16.dp,
+                top = extraTopPadding + 16.dp,
+                end = 16.dp
+            ),
+        contentPadding = PaddingValues(bottom = extraBottomPadding + 24.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                IconButton(onClick = onBack) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Zurück zum Profil",
+                        tint = TextPrimary
+                    )
+                }
+                Text(
+                    text = "Freunde",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = TextPrimary
+                )
+            }
+        }
+
+        when {
+            isLoading -> {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = CardBackground,
+                            contentColor = TextPrimary
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(16.dp),
+                            verticalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            Text(
+                                text = "Freunde werden geladen",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = TextPrimary
+                            )
+                            LinearProgressIndicator(
+                                modifier = Modifier.fillMaxWidth(),
+                                color = PrimaryGreen
+                            )
+                        }
+                    }
+                }
+            }
+
+            !errorMessage.isNullOrBlank() -> {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = CardBackground,
+                            contentColor = TextPrimary
+                        )
+                    ) {
+                        Text(
+                            text = errorMessage.orEmpty(),
+                            modifier = Modifier.padding(16.dp),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextSecondary
+                        )
+                    }
+                }
+            }
+
+            friends.isEmpty() -> {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = CardBackground,
+                            contentColor = TextPrimary
+                        )
+                    ) {
+                        Text(
+                            text = "Noch keine Freunde hinzugefügt",
+                            modifier = Modifier.padding(16.dp),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextSecondary
+                        )
+                    }
+                }
+            }
+
+            else -> {
+                items(
+                    items = friends,
+                    key = { it.userId }
+                ) { friend ->
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = CardBackground,
+                            contentColor = TextPrimary
+                        )
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            FriendAvatar(
+                                displayName = friend.displayName,
+                                profileImageUri = friend.profilePhotoPath
+                                    .takeIf { it.isNotBlank() }
+                                    ?.let(::storageUriFromPath),
+                                modifier = Modifier.size(44.dp)
+                            )
+                            Column(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.spacedBy(2.dp)
+                            ) {
+                                Text(
+                                    text = friend.displayName.ifBlank { "Unbenannter Nutzer" },
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = TextPrimary
+                                )
+                                Text(
+                                    text = "Profilansicht folgt",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = TextSecondary
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -9042,7 +9295,7 @@ fun AnimalDetailScreen(
                                         .firstOrNull()
                                         ?.let(::storageUriFromPath)
                                 Row(
-                                    modifier = Modifier.padding(16.dp),
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp),
                                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                                     verticalAlignment = Alignment.Top
                                 ) {
