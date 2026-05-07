@@ -7960,7 +7960,12 @@ fun ProfileScreen(
 
                         Button(
                             onClick = {
-                                AuthSession.updateCurrentDisplayName(displayNameInput) { success, result ->
+                                val cleanDisplayName = displayNameInput.trim()
+                                if (cleanDisplayName.isBlank()) {
+                                    authMessage = "Bitte gib einen Namen ein"
+                                    return@Button
+                                }
+                                AuthSession.updateCurrentDisplayName(cleanDisplayName) { success, result ->
                                     if (success) {
                                         onDisplayNameSaved(AuthSession.getCurrentDisplayName())
                                         authMessage = "Name gespeichert"

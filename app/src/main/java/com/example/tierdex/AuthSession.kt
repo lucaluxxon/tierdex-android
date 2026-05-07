@@ -20,7 +20,8 @@ object AuthSession {
 
     fun getCurrentFirebaseUserId(): String? = firebaseAuth.currentUser?.uid
 
-    fun getCurrentDisplayName(): String? = firebaseAuth.currentUser?.displayName
+    fun getCurrentDisplayName(): String? =
+        firebaseAuth.currentUser?.displayName?.trim()?.takeIf { it.isNotBlank() }
 
     fun updateCurrentDisplayName(
         displayName: String,
@@ -32,16 +33,22 @@ object AuthSession {
             return
         }
 
+        val cleanDisplayName = displayName.trim()
+        if (cleanDisplayName.isBlank()) {
+            onResult(false, "Bitte gib einen Namen ein")
+            return
+        }
+
         try {
             val profileUpdates = UserProfileChangeRequest.Builder()
-                .setDisplayName(displayName.takeIf { it.isNotBlank() })
+                .setDisplayName(cleanDisplayName)
                 .build()
 
             currentUser
                 .updateProfile(profileUpdates)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        onResult(true, currentUser.displayName)
+                        onResult(true, currentUser.displayName?.trim())
                     } else {
                         onResult(false, task.exception?.message)
                     }
@@ -57,7 +64,8 @@ object AuthSession {
         password: String,
         onResult: (Boolean, String?) -> Unit
     ) {
-        if (email.isBlank() || password.isBlank()) {
+        val cleanDisplayName = displayName.trim()
+        if (cleanDisplayName.isBlank() || email.isBlank() || password.isBlank()) {
             onResult(false, "E-Mail und Passwort dürfen nicht leer sein")
             return
         }
@@ -74,7 +82,7 @@ object AuthSession {
                         }
 
                         val profileUpdates = UserProfileChangeRequest.Builder()
-                            .setDisplayName(displayName.takeIf { it.isNotBlank() })
+                            .setDisplayName(cleanDisplayName)
                             .build()
 
                         currentUser

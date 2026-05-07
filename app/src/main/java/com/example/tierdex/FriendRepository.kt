@@ -67,6 +67,28 @@ object FriendRepository {
         return displayName.orEmpty().trim().lowercase()
     }
 
+    private fun putDisplayNameFields(
+        target: MutableMap<String, Any>,
+        displayName: String?
+    ) {
+        val cleanDisplayName = displayName.orEmpty().trim()
+        if (cleanDisplayName.isNotBlank()) {
+            target["displayName"] = cleanDisplayName
+            target["searchDisplayName"] = normalizeDisplayName(cleanDisplayName)
+        }
+    }
+
+    private fun putActorDisplayName(
+        target: MutableMap<String, Any>,
+        fieldName: String,
+        displayName: String?
+    ) {
+        val cleanDisplayName = displayName.orEmpty().trim()
+        if (cleanDisplayName.isNotBlank()) {
+            target[fieldName] = cleanDisplayName
+        }
+    }
+
     private fun userDocument(userId: String) = firestore.collection("users").document(userId)
     private fun findingLikesCollection(ownerUserId: String, findingId: String) =
         userDocument(ownerUserId).collection("findings").document(findingId).collection("likes")
@@ -222,11 +244,11 @@ object FriendRepository {
                     onError(wrappedException)
                 }
         } else {
-            val likeData = hashMapOf(
+            val likeData = hashMapOf<String, Any>(
                 "likerUid" to currentUserId,
-                "createdAt" to FieldValue.serverTimestamp(),
-                "likerDisplayName" to currentDisplayName.orEmpty().trim()
+                "createdAt" to FieldValue.serverTimestamp()
             )
+            putActorDisplayName(likeData, "likerDisplayName", currentDisplayName)
             likeDocument.set(likeData)
                 .addOnSuccessListener { onResult(true) }
                 .addOnFailureListener { exception ->
@@ -339,12 +361,12 @@ object FriendRepository {
             return
         }
 
-        val commentData = hashMapOf(
+        val commentData = hashMapOf<String, Any>(
             "commenterUid" to currentUserId,
-            "commenterDisplayName" to currentDisplayName.orEmpty().trim(),
             "text" to trimmedText,
             "createdAt" to FieldValue.serverTimestamp()
         )
+        putActorDisplayName(commentData, "commenterDisplayName", currentDisplayName)
 
         findingCommentsCollection(ownerUserId, findingId)
             .document()
@@ -376,12 +398,10 @@ object FriendRepository {
             return
         }
 
-        val safeDisplayName = displayName.orEmpty().trim()
-        val profileData = hashMapOf(
-            "displayName" to safeDisplayName,
-            "searchDisplayName" to normalizeDisplayName(safeDisplayName),
+        val profileData = hashMapOf<String, Any>(
             "updatedAt" to FieldValue.serverTimestamp()
         )
+        putDisplayNameFields(profileData, displayName)
 
         firestore.collection("users")
             .document(userId)
@@ -422,11 +442,7 @@ object FriendRepository {
             "updatedAt" to FieldValue.serverTimestamp()
         )
 
-        displayName?.let { rawDisplayName ->
-            val safeDisplayName = rawDisplayName.trim()
-            profileData["displayName"] = safeDisplayName
-            profileData["searchDisplayName"] = normalizeDisplayName(safeDisplayName)
-        }
+        putDisplayNameFields(profileData, displayName)
 
         bio?.let { rawBio ->
             profileData["bio"] = rawBio.trim().take(300)
