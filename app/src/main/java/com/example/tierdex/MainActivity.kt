@@ -813,6 +813,16 @@ private fun preferredOwnedFindingPhotoUri(finding: AnimalFinding): String? {
     return effectiveOwnPhotoSources(finding).firstOrNull()
 }
 
+private fun profileFindingPreviewPhotoUri(finding: AnimalFinding): String? {
+    return effectiveLocalPhotoUris(finding).firstOrNull()
+        ?: finding.thumbnailRemotePhotoPath
+            .takeIf { it.isNotBlank() }
+            ?.let(::storageUriFromPath)
+        ?: effectiveRemotePhotoPaths(finding)
+            .firstOrNull()
+            ?.let(::storageUriFromPath)
+}
+
 private fun preferredFriendFindingPhotoUri(
     finding: AnimalFinding,
     ownerUserId: String?,
@@ -1271,6 +1281,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     var selectedFriendProfileUserId by rememberSaveable { mutableStateOf<String?>(null) }
     var selectedFriendProfileDisplayName by rememberSaveable { mutableStateOf<String?>(null) }
     var showProfileFriendsScreen by rememberSaveable { mutableStateOf(false) }
+    var showProfilePhotoGalleryScreen by rememberSaveable { mutableStateOf(false) }
     var selectedFindingDetail by remember { mutableStateOf<AnimalFinding?>(null) }
     var selectedFindingDetailSource by rememberSaveable { mutableStateOf<String?>(null) }
     val profileCollectionListState = rememberSaveable(saver = LazyListState.Saver) {
@@ -2308,6 +2319,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         }
                         if (it != AppTab.PROFILE) {
                             showProfileFriendsScreen = false
+                            showProfilePhotoGalleryScreen = false
                         }
                         selectedFindingDetailSource = null
                         findingEditReturnSource = null
@@ -3232,6 +3244,21 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             extraTopPadding = innerPadding.calculateTopPadding(),
                             extraBottomPadding = innerPadding.calculateBottomPadding()
                         )
+                    } else if (showProfilePhotoGalleryScreen) {
+                        ProfilePhotoGalleryScreen(
+                            findings = findingsFromRoom,
+                            onBack = { showProfilePhotoGalleryScreen = false },
+                            onOpenFinding = { finding ->
+                                selectedFindingDetail = finding
+                                selectedFindingDetailSource = currentTab.name
+                                selectedFindingToEdit = null
+                                findingEditReturnSource = currentTab.name
+                                startInFindingEditMode = false
+                                openCreateFindingMode = false
+                            },
+                            extraTopPadding = innerPadding.calculateTopPadding(),
+                            extraBottomPadding = innerPadding.calculateBottomPadding()
+                        )
                     } else {
                         ProfileScreen(
                             currentUserId = currentOwnerId,
@@ -3254,7 +3281,12 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                 openCreateFindingMode = false
                             },
                             onOpenFriends = {
+                                showProfilePhotoGalleryScreen = false
                                 showProfileFriendsScreen = true
+                            },
+                            onOpenPhotoGallery = {
+                                showProfileFriendsScreen = false
+                                showProfilePhotoGalleryScreen = true
                             },
                             profileCollectionListState = profileCollectionListState,
                             profileCollectionSortOrder = profileCollectionSortOrder,
@@ -7318,6 +7350,7 @@ fun ProfileScreen(
     wishlistAnimalId: String?,
     onEditFinding: (AnimalFinding) -> Unit,
     onOpenFriends: () -> Unit,
+    onOpenPhotoGallery: () -> Unit,
     profileCollectionListState: LazyListState,
     profileCollectionSortOrder: String,
     onProfileCollectionSortOrderChange: (String) -> Unit,
@@ -7362,13 +7395,7 @@ fun ProfileScreen(
             findings = findings,
             sortOrder = ProfileCollectionSortOrder.NEWEST_FIRST
         ).mapNotNull { finding ->
-            val previewSource = effectiveLocalPhotoUris(finding).firstOrNull()
-                ?: finding.thumbnailRemotePhotoPath
-                    .takeIf { it.isNotBlank() }
-                    ?.let(::storageUriFromPath)
-                ?: effectiveRemotePhotoPaths(finding)
-                    .firstOrNull()
-                    ?.let(::storageUriFromPath)
+            val previewSource = profileFindingPreviewPhotoUri(finding)
             if (previewSource.isNullOrBlank()) {
                 null
             } else {
@@ -7378,13 +7405,6 @@ fun ProfileScreen(
     }
     val visibleProfilePhotoPreviewFindings = remember(profilePhotoPreviewFindings) {
         profilePhotoPreviewFindings.take(5)
-    }
-    var showProfilePhotoGalleryPlaceholder by rememberSaveable { mutableStateOf(false) }
-    LaunchedEffect(showProfilePhotoGalleryPlaceholder) {
-        if (showProfilePhotoGalleryPlaceholder) {
-            Toast.makeText(context, "Bildergalerie folgt", Toast.LENGTH_SHORT).show()
-            showProfilePhotoGalleryPlaceholder = false
-        }
     }
     val activeProfileCollectionFilterLabel = when (activeProfileCollectionDateFilter) {
         ProfileCollectionDateFilter.ALL -> "Alle"
@@ -7588,16 +7608,21 @@ fun ProfileScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .align(Alignment.BottomCenter)
-                                .offset(x = 0.dp, y = (-12).dp),
+                                .offset(x = 0.dp, y = (-22).dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Box(
-                                modifier = Modifier.size(168.dp),
-                                contentAlignment = Alignment.BottomEnd
+                                modifier = Modifier.size(152.dp),
+                                contentAlignment = Alignment.Center
                             ) {
                                 Surface(
                                     modifier = Modifier
                                         .size(152.dp)
+                                        .border(
+                                            width = 2.dp,
+                                            color = Color.White.copy(alpha = 0.9f),
+                                            shape = CircleShape
+                                        )
                                         .clip(CircleShape),
                                     shape = CircleShape,
                                     color = PrimaryGreenSoft.copy(alpha = 0.65f)
@@ -7632,6 +7657,8 @@ fun ProfileScreen(
                                         )
                                     },
                                     modifier = Modifier
+                                        .align(Alignment.BottomEnd)
+                                        .offset(x = 4.dp, y = 4.dp)
                                         .size(28.dp)
                                 ) {
                                     Icon(
@@ -7740,7 +7767,9 @@ fun ProfileScreen(
                     }
 
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 8.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Card(
@@ -7753,57 +7782,56 @@ fun ProfileScreen(
                             )
                         ) {
                             Column(
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 13.dp),
-                                verticalArrangement = Arrangement.spacedBy(6.dp),
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 12.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Column(
-                                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                                    horizontalAlignment = Alignment.Start
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Favorite,
+                                        contentDescription = null,
+                                        tint = PrimaryGreen,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Text(
+                                        text = "Lieblingstier",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = TextSecondary,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                                if (favoriteAnimal == null) {
+                                    Text(
+                                        text = "Noch nicht gewählt",
+                                        modifier = Modifier.fillMaxWidth(),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = TextSecondary,
+                                        textAlign = TextAlign.Center
+                                    )
+                                } else {
                                     Row(
-                                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.Center,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Icon(
-                                            imageVector = Icons.Filled.Favorite,
-                                            contentDescription = null,
-                                            tint = PrimaryGreen,
+                                            imageVector = groupIconForAnimal(favoriteAnimal),
+                                            contentDescription = favoriteAnimal.group,
+                                            tint = TextSecondary,
                                             modifier = Modifier.size(16.dp)
                                         )
+                                        Spacer(modifier = Modifier.width(6.dp))
                                         Text(
-                                            text = "Lieblingstier",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = TextSecondary
-                                        )
-                                    }
-                                    if (favoriteAnimal == null) {
-                                        Text(
-                                            text = "Noch nicht gewählt",
-                                            modifier = Modifier.fillMaxWidth(),
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = TextSecondary,
+                                            text = favoriteAnimal.germanName,
+                                            style = MaterialTheme.typography.titleSmall,
+                                            color = TextPrimary,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
                                             textAlign = TextAlign.Center
                                         )
-                                    } else {
-                                        Row(
-                                            horizontalArrangement = Arrangement.spacedBy(6.dp),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Icon(
-                                                imageVector = groupIconForAnimal(favoriteAnimal),
-                                                contentDescription = favoriteAnimal.group,
-                                                tint = TextSecondary,
-                                                modifier = Modifier.size(16.dp)
-                                            )
-                                            Text(
-                                                text = favoriteAnimal.germanName,
-                                                style = MaterialTheme.typography.titleMedium,
-                                                color = TextPrimary,
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis
-                                            )
-                                        }
                                     }
                                 }
                             }
@@ -7819,57 +7847,56 @@ fun ProfileScreen(
                             )
                         ) {
                             Column(
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 13.dp),
-                                verticalArrangement = Arrangement.spacedBy(6.dp),
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 12.dp),
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Column(
-                                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                                    horizontalAlignment = Alignment.Start
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Star,
+                                        contentDescription = null,
+                                        tint = PrimaryGreen,
+                                        modifier = Modifier.size(16.dp)
+                                    )
+                                    Text(
+                                        text = "Wunschfund",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = TextSecondary,
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                                if (wishlistAnimal == null) {
+                                    Text(
+                                        text = "Nicht gewählt",
+                                        modifier = Modifier.fillMaxWidth(),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = TextSecondary,
+                                        textAlign = TextAlign.Center
+                                    )
+                                } else {
                                     Row(
-                                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.Center,
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Icon(
-                                            imageVector = Icons.Filled.Star,
-                                            contentDescription = null,
-                                            tint = PrimaryGreen,
+                                            imageVector = groupIconForAnimal(wishlistAnimal),
+                                            contentDescription = wishlistAnimal.group,
+                                            tint = TextSecondary,
                                             modifier = Modifier.size(16.dp)
                                         )
+                                        Spacer(modifier = Modifier.width(6.dp))
                                         Text(
-                                            text = "Wunschfund",
-                                            style = MaterialTheme.typography.bodySmall,
-                                            color = TextSecondary
-                                        )
-                                    }
-                                    if (wishlistAnimal == null) {
-                                        Text(
-                                            text = "Nicht gewählt",
-                                            modifier = Modifier.fillMaxWidth(),
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = TextSecondary,
+                                            text = wishlistAnimal.germanName,
+                                            style = MaterialTheme.typography.titleSmall,
+                                            color = TextPrimary,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
                                             textAlign = TextAlign.Center
                                         )
-                                    } else {
-                                        Row(
-                                            horizontalArrangement = Arrangement.spacedBy(6.dp),
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Icon(
-                                                imageVector = groupIconForAnimal(wishlistAnimal),
-                                                contentDescription = wishlistAnimal.group,
-                                                tint = TextSecondary,
-                                                modifier = Modifier.size(16.dp)
-                                            )
-                                            Text(
-                                                text = wishlistAnimal.germanName,
-                                                style = MaterialTheme.typography.titleMedium,
-                                                color = TextPrimary,
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis
-                                            )
-                                        }
                                     }
                                 }
                             }
@@ -8011,7 +8038,7 @@ fun ProfileScreen(
                                     ) {
                                         IconButton(
                                             onClick = {
-                                                showProfilePhotoGalleryPlaceholder = true
+                                                onOpenPhotoGallery()
                                             },
                                             modifier = Modifier
                                                 .align(Alignment.TopEnd)
@@ -8442,6 +8469,119 @@ private fun ProfileFriendsScreen(
                                     color = TextSecondary
                                 )
                             }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProfilePhotoGalleryScreen(
+    findings: List<AnimalFinding>,
+    onBack: () -> Unit,
+    onOpenFinding: (AnimalFinding) -> Unit,
+    extraTopPadding: Dp = 0.dp,
+    extraBottomPadding: Dp = 0.dp
+) {
+    BackHandler(onBack = onBack)
+
+    val photoFindings = remember(findings) {
+        sortProfileFindings(
+            findings = findings,
+            sortOrder = ProfileCollectionSortOrder.NEWEST_FIRST
+        ).mapNotNull { finding ->
+            profileFindingPreviewPhotoUri(finding)?.takeIf { it.isNotBlank() }?.let { previewUri ->
+                finding to previewUri
+            }
+        }
+    }
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .padding(
+                start = 16.dp,
+                top = extraTopPadding + 16.dp,
+                end = 16.dp
+            ),
+        contentPadding = PaddingValues(bottom = extraBottomPadding + 24.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                IconButton(onClick = onBack) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Zurück zum Profil",
+                        tint = TextPrimary
+                    )
+                }
+                Text(
+                    text = "Fundbilder",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = TextPrimary
+                )
+            }
+        }
+
+        if (photoFindings.isEmpty()) {
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = CardBackground,
+                        contentColor = TextPrimary
+                    )
+                ) {
+                    Text(
+                        text = "Noch keine Fundbilder vorhanden",
+                        modifier = Modifier.padding(16.dp),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
+                }
+            }
+        } else {
+            photoFindings.chunked(3).forEach { photoRow ->
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        photoRow.forEach { (finding, previewUri) ->
+                            Card(
+                                onClick = { onOpenFinding(finding) },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .aspectRatio(1f),
+                                shape = RoundedCornerShape(16.dp),
+                                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = Color.White
+                                )
+                            ) {
+                                UriImage(
+                                    uriString = previewUri,
+                                    maxImageSizePx = 720,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                        }
+                        repeat(3 - photoRow.size) {
+                            Spacer(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .aspectRatio(1f)
+                            )
                         }
                     }
                 }
