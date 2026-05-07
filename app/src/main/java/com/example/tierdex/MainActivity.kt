@@ -3875,6 +3875,11 @@ fun HomeQuestCompactCard(
                 style = MaterialTheme.typography.bodySmall,
                 color = TextSecondary
             )
+            Text(
+                text = quest.rewardLabel,
+                style = MaterialTheme.typography.labelSmall,
+                color = if (quest.xpReward != null) PrimaryGreen else TextSecondary
+            )
         }
     }
 }
@@ -4763,6 +4768,7 @@ enum class QuestType {
     TOTAL_FINDINGS,
     PHOTO_FINDINGS,
     DAILY_ANIMAL,
+    TOTAL_SPECIES_PERCENT,
     BIRDS,
     FISH,
     MAMMALS,
@@ -4771,14 +4777,20 @@ enum class QuestType {
 }
 
 data class QuestUiModel(
-    val id: String,
+    val questId: String,
+    val stageId: String,
+    val awardKey: String,
     val type: QuestType,
     val title: String,
     val description: String,
     val progress: Int,
     val goal: Int,
-    val isCompleted: Boolean
+    val isCompleted: Boolean,
+    val xpReward: Int? = null
 ) {
+    val id: String
+        get() = stageId
+
     val shownProgress: Int
         get() = progress.coerceAtMost(goal)
 
@@ -4807,11 +4819,15 @@ data class QuestUiModel(
             "Noch $remainingToGoal bis zum Ziel"
         }
 
+    val rewardLabel: String
+        get() = xpReward?.let { "Belohnung: $it XP" } ?: "Belohnung: XP folgt"
+
     val icon: ImageVector
         get() = when (type) {
             QuestType.TOTAL_FINDINGS -> Icons.Filled.Collections
             QuestType.PHOTO_FINDINGS -> Icons.Filled.PhotoCamera
             QuestType.DAILY_ANIMAL -> Icons.Filled.Star
+            QuestType.TOTAL_SPECIES_PERCENT -> Icons.Filled.Star
             QuestType.BIRDS -> Icons.Filled.Air
             QuestType.FISH -> Icons.Filled.SetMeal
             QuestType.MAMMALS -> Icons.Filled.Pets
@@ -4886,6 +4902,7 @@ fun QuestCard(quest: QuestUiModel) {
                     QuestType.TOTAL_FINDINGS -> "Gesamtfunde"
                     QuestType.PHOTO_FINDINGS -> "Fotoquest"
                     QuestType.DAILY_ANIMAL -> "Tagesquest"
+                    QuestType.TOTAL_SPECIES_PERCENT -> "Tierdex-Fortschritt"
                     QuestType.BIRDS -> "Vögel"
                     QuestType.FISH -> "Fische"
                     QuestType.MAMMALS -> "Säugetiere"
@@ -4921,6 +4938,12 @@ fun QuestCard(quest: QuestUiModel) {
                 color = TextSecondary
             )
 
+            Text(
+                text = quest.rewardLabel,
+                style = MaterialTheme.typography.bodySmall,
+                color = if (quest.xpReward != null) PrimaryGreen else TextSecondary
+            )
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -4953,6 +4976,40 @@ fun getNextQuestGoal(
     return goals.last()
 }
 
+fun calculateQuestXpReward(
+    type: QuestType,
+    goal: Int
+): Int? {
+    return when (type) {
+        QuestType.TOTAL_FINDINGS,
+        QuestType.PHOTO_FINDINGS,
+        QuestType.TOTAL_SPECIES_PERCENT,
+        QuestType.BIRDS,
+        QuestType.FISH,
+        QuestType.MAMMALS,
+        QuestType.AMPHIBIANS,
+        QuestType.REPTILES -> goal * 10
+        QuestType.DAILY_ANIMAL -> 20
+    }
+}
+
+fun buildQuestStageId(
+    questId: String,
+    stageGoal: Int
+): String = "$questId:$stageGoal"
+
+fun buildQuestAwardKey(
+    questId: String,
+    stageGoal: Int
+): String = "$questId:$stageGoal"
+
+data class GroupQuestConfig(
+    val label: String,
+    val questId: String,
+    val type: QuestType,
+    val aliases: List<String>
+)
+
 fun buildHomeQuests(
     findings: List<AnimalFinding>,
     animals: List<AnimalEntry>,
@@ -4962,29 +5019,66 @@ fun buildHomeQuests(
     photoFindingCount: Int
 ): List<QuestUiModel> {
     val animalById = animals.associateBy { it.id }
-    val findingsByGroup = findings
-        .mapNotNull { finding -> animalById[finding.animalId]?.group }
-        .groupingBy { normalizeQuestGroupName(it) }
-        .eachCount()
+    val uniqueSpeciesByGroup = findings
+        .mapNotNull { finding ->
+            animalById[finding.animalId]?.group?.let(::normalizeQuestGroupName)?.let { group ->
+                group to finding.animalId
+            }
+        }
+        .groupBy(
+            keySelector = { it.first },
+            valueTransform = { it.second }
+        )
+        .mapValues { (_, animalIds) -> animalIds.toSet().size }
 
+    val totalQuestGoal = getNextQuestGoal(totalFindings, listOf(1, 5, 10, 25, 50))
     val totalQuest = QuestUiModel(
-        id = "total_findings",
+        questId = "total_findings",
+        stageId = buildQuestStageId("total_findings", totalQuestGoal),
+        awardKey = buildQuestAwardKey("total_findings", totalQuestGoal),
         type = QuestType.TOTAL_FINDINGS,
         title = "Funde sammeln",
         description = "Erreiche die nächste Stufe über alle gespeicherten Funde hinweg.",
         progress = totalFindings,
-        goal = getNextQuestGoal(totalFindings, listOf(1, 5, 10, 25, 50)),
-        isCompleted = totalFindings >= 50
+        goal = totalQuestGoal,
+        isCompleted = totalFindings >= 50,
+        xpReward = calculateQuestXpReward(QuestType.TOTAL_FINDINGS, totalQuestGoal)
     )
 
+    val photoQuestGoal = getNextQuestGoal(photoFindingCount, listOf(1, 3, 5, 10, 20))
     val photoQuest = QuestUiModel(
-        id = "photo_findings",
+        questId = "photo_findings",
+        stageId = buildQuestStageId("photo_findings", photoQuestGoal),
+        awardKey = buildQuestAwardKey("photo_findings", photoQuestGoal),
         type = QuestType.PHOTO_FINDINGS,
         title = "Funde mit Foto",
         description = "Dokumentiere deine Beobachtungen mit Bildern.",
         progress = photoFindingCount,
-        goal = getNextQuestGoal(photoFindingCount, listOf(1, 3, 5, 10, 20)),
-        isCompleted = photoFindingCount >= 20
+        goal = photoQuestGoal,
+        isCompleted = photoFindingCount >= 20,
+        xpReward = calculateQuestXpReward(QuestType.PHOTO_FINDINGS, photoQuestGoal)
+    )
+
+    val collectionPercent = if (animals.isNotEmpty()) {
+        ((collectedAnimalCount.toFloat() / animals.size.toFloat()) * 100f).toInt()
+    } else {
+        0
+    }
+    val collectionQuestGoal = getNextQuestGoal(
+        collectionPercent,
+        listOf(10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
+    )
+    val collectionQuest = QuestUiModel(
+        questId = "total_species_percent",
+        stageId = buildQuestStageId("total_species_percent", collectionQuestGoal),
+        awardKey = buildQuestAwardKey("total_species_percent", collectionQuestGoal),
+        type = QuestType.TOTAL_SPECIES_PERCENT,
+        title = "Tierdex füllen",
+        description = "Erreiche die nächste Prozentstufe über alle unterschiedlichen Tierarten hinweg.",
+        progress = collectionPercent,
+        goal = collectionQuestGoal,
+        isCompleted = collectionPercent >= 100,
+        xpReward = calculateQuestXpReward(QuestType.TOTAL_SPECIES_PERCENT, collectionQuestGoal)
     )
 
     val todayDateText = currentAppDateText()
@@ -4995,43 +5089,51 @@ fun buildHomeQuests(
     } ?: false
     val dailyAnimalQuest = dailyAnimal?.let { todayAnimal ->
         QuestUiModel(
-            id = "daily_animal_${todayAnimal.id}_${currentDailyDateKey()}",
+            questId = "daily_animal",
+            stageId = "daily_animal:${todayAnimal.id}:${currentDailyDateKey()}",
+            awardKey = "daily_animal:${todayAnimal.id}:${currentDailyDateKey()}",
             type = QuestType.DAILY_ANIMAL,
             title = "Tier des Tages finden",
             description = "Finde heute das Tier des Tages und trage deinen Fund ein.",
             progress = if (dailyAnimalFoundToday) 1 else 0,
             goal = 1,
-            isCompleted = dailyAnimalFoundToday
+            isCompleted = dailyAnimalFoundToday,
+            xpReward = calculateQuestXpReward(QuestType.DAILY_ANIMAL, 1)
         )
     }
 
     val groupQuestConfigs = listOf(
-        Triple("Vögel", QuestType.BIRDS, listOf("Vogel", "Vögel")),
-        Triple("Fische", QuestType.FISH, listOf("Fisch", "Fische")),
-        Triple("Säugetiere", QuestType.MAMMALS, listOf("Säugetier", "Säugetiere")),
-        Triple("Amphibien", QuestType.AMPHIBIANS, listOf("Amphibie", "Amphibien")),
-        Triple("Reptilien", QuestType.REPTILES, listOf("Reptil", "Reptilien"))
+        GroupQuestConfig("Vögel", "group_species_birds", QuestType.BIRDS, listOf("Vogel", "Vögel")),
+        GroupQuestConfig("Fische", "group_species_fish", QuestType.FISH, listOf("Fisch", "Fische")),
+        GroupQuestConfig("Säugetiere", "group_species_mammals", QuestType.MAMMALS, listOf("Säugetier", "Säugetiere")),
+        GroupQuestConfig("Amphibien", "group_species_amphibians", QuestType.AMPHIBIANS, listOf("Amphibie", "Amphibien")),
+        GroupQuestConfig("Reptilien", "group_species_reptiles", QuestType.REPTILES, listOf("Reptil", "Reptilien"))
     )
 
-    val groupQuests = groupQuestConfigs.map { (label, type, aliases) ->
-        val progress = findingsByGroup
-            .filterKeys { key -> key in aliases.map { normalizeQuestGroupName(it) } }
+    val groupQuests = groupQuestConfigs.map { config ->
+        val progress = uniqueSpeciesByGroup
+            .filterKeys { key -> key in config.aliases.map { normalizeQuestGroupName(it) } }
             .values
             .sum()
+        val groupQuestGoal = getNextQuestGoal(progress, listOf(1, 3, 5, 10))
         QuestUiModel(
-            id = "group_$label",
-            type = type,
-            title = "$label entdecken",
-            description = "Sammle Funde aus der Tiergruppe $label.",
+            questId = config.questId,
+            stageId = buildQuestStageId(config.questId, groupQuestGoal),
+            awardKey = buildQuestAwardKey(config.questId, groupQuestGoal),
+            type = config.type,
+            title = "${config.label} entdecken",
+            description = "Sammle unterschiedliche Arten aus der Tiergruppe ${config.label}.",
             progress = progress,
-            goal = getNextQuestGoal(progress, listOf(1, 3, 5, 10)),
-            isCompleted = progress >= 10
+            goal = groupQuestGoal,
+            isCompleted = progress >= 10,
+            xpReward = calculateQuestXpReward(config.type, groupQuestGoal)
         )
     }
 
     return buildList {
         add(totalQuest)
         add(photoQuest)
+        add(collectionQuest)
         dailyAnimalQuest?.let { add(it) }
         addAll(
             groupQuests
@@ -5100,12 +5202,24 @@ fun detectQuestLevelUpMessage(
 
     val relevantAliases = matchedGroupConfig.second.map(::normalizeQuestGroupName).toSet()
     val animalById = animals.associateBy { it.id }
-    val previousGroupCount = previousFindings.count { finding ->
-        animalById[finding.animalId]?.group?.let(::normalizeQuestGroupName) in relevantAliases
-    }
+    val previousGroupCount = previousFindings
+        .mapNotNull { finding ->
+            finding.animalId.takeIf {
+                animalById[finding.animalId]?.group?.let(::normalizeQuestGroupName) in relevantAliases
+            }
+        }
+        .toSet()
+        .size
+    val currentGroupCount = (
+        previousFindings.map { it.animalId } + listOf(newFinding.animalId)
+        ).filter { animalId ->
+            animalById[animalId]?.group?.let(::normalizeQuestGroupName) in relevantAliases
+        }
+        .toSet()
+        .size
     val groupGoal = reachedGoal(
         previous = previousGroupCount,
-        current = previousGroupCount + 1,
+        current = currentGroupCount,
         goals = listOf(1, 3, 5, 10)
     )
 
