@@ -5528,6 +5528,38 @@ fun FriendsScreen(
 
     fun feedKey(feedItem: FriendFeedItem): String = "${feedItem.friendUserId}_${feedItem.findingId}"
 
+    fun overlayFriendFeedDisplayNames(
+        cacheOwnerUserId: String,
+        profileDisplayNamesByUserId: Map<String, String>
+    ) {
+        if (profileDisplayNamesByUserId.isEmpty()) return
+
+        val updatedFeed = friendFeed.map { existingItem ->
+            val preferredDisplayName = FriendRepository.resolvePreferredFriendFeedDisplayName(
+                currentProfileDisplayName = profileDisplayNamesByUserId[existingItem.friendUserId],
+                freshFeedDisplayName = existingItem.friendDisplayName,
+                cachedDisplayName = existingItem.friendDisplayName
+            )
+            if (preferredDisplayName == existingItem.friendDisplayName) {
+                existingItem
+            } else {
+                existingItem.copy(friendDisplayName = preferredDisplayName)
+            }
+        }
+
+        if (updatedFeed == friendFeed) return
+
+        friendFeed = updatedFeed
+        scope.launch {
+            withContext(Dispatchers.IO) {
+                friendFeedCacheDao.replaceFeedCacheForUser(
+                    cacheOwnerUserId = cacheOwnerUserId,
+                    items = updatedFeed.map { feedItem -> feedItem.toCacheEntity(cacheOwnerUserId) }
+                )
+            }
+        }
+    }
+
     fun loadCommentsForFeedItem(feedItem: FriendFeedItem) {
         val key = feedKey(feedItem)
         loadingCommentKeys = loadingCommentKeys + key
@@ -5711,6 +5743,14 @@ fun FriendsScreen(
                     "FriendFeedCache",
                     "cached items applied to UI count=${cachedFeed.size} fullScreenLoadingShown=false inlineRefreshShown=true"
                 )
+                FriendRepository.loadDisplayNamesForUserIds(
+                    userIds = cachedFeed.map { it.friendUserId }
+                ) { profileDisplayNamesByUserId ->
+                    overlayFriendFeedDisplayNames(
+                        cacheOwnerUserId = safeUserId,
+                        profileDisplayNamesByUserId = profileDisplayNamesByUserId
+                    )
+                }
             } else {
                 isShowingCachedFeed = false
                 Log.d("FriendFeedCache", "ui source=cloudOnly cacheOwnerUserId=$safeUserId")

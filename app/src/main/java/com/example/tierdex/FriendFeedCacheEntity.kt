@@ -39,7 +39,7 @@ fun FriendFeedItem.toCacheEntity(cacheOwnerUserId: String): FriendFeedCacheEntit
         cacheOwnerUserId = cacheOwnerUserId,
         findingId = findingId,
         ownerUserId = friendUserId,
-        ownerDisplayName = friendDisplayName,
+        ownerDisplayName = friendDisplayName.trim(),
         ownerProfilePhotoPath = friendProfilePhotoPath,
         animalId = finding.animalId,
         date = finding.date,
@@ -65,7 +65,7 @@ fun FriendFeedItem.toCacheEntity(cacheOwnerUserId: String): FriendFeedCacheEntit
 fun FriendFeedCacheEntity.toFriendFeedItem(): FriendFeedItem {
     return FriendFeedItem(
         friendUserId = ownerUserId,
-        friendDisplayName = ownerDisplayName,
+        friendDisplayName = ownerDisplayName.trim(),
         friendProfilePhotoPath = ownerProfilePhotoPath,
         findingId = findingId,
         finding = AnimalFinding(

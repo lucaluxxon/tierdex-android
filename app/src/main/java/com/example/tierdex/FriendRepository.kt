@@ -63,18 +63,22 @@ object FriendRepository {
     private const val STATUS_ACCEPTED = "accepted"
     private val firestore: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
 
+    private fun cleanDisplayName(displayName: String?): String {
+        return displayName.orEmpty().trim()
+    }
+
     private fun normalizeDisplayName(displayName: String?): String {
-        return displayName.orEmpty().trim().lowercase()
+        return cleanDisplayName(displayName).lowercase()
     }
 
     private fun putDisplayNameFields(
         target: MutableMap<String, Any>,
         displayName: String?
     ) {
-        val cleanDisplayName = displayName.orEmpty().trim()
-        if (cleanDisplayName.isNotBlank()) {
-            target["displayName"] = cleanDisplayName
-            target["searchDisplayName"] = normalizeDisplayName(cleanDisplayName)
+        val normalizedDisplayName = cleanDisplayName(displayName)
+        if (normalizedDisplayName.isNotBlank()) {
+            target["displayName"] = normalizedDisplayName
+            target["searchDisplayName"] = normalizeDisplayName(normalizedDisplayName)
         }
     }
 
@@ -83,9 +87,66 @@ object FriendRepository {
         fieldName: String,
         displayName: String?
     ) {
-        val cleanDisplayName = displayName.orEmpty().trim()
-        if (cleanDisplayName.isNotBlank()) {
-            target[fieldName] = cleanDisplayName
+        val normalizedDisplayName = cleanDisplayName(displayName)
+        if (normalizedDisplayName.isNotBlank()) {
+            target[fieldName] = normalizedDisplayName
+        }
+    }
+
+    fun resolvePreferredFriendFeedDisplayName(
+        currentProfileDisplayName: String?,
+        freshFeedDisplayName: String?,
+        cachedDisplayName: String? = null
+    ): String {
+        return listOf(
+            cleanDisplayName(currentProfileDisplayName),
+            cleanDisplayName(freshFeedDisplayName),
+            cleanDisplayName(cachedDisplayName)
+        ).firstOrNull { it.isNotBlank() }.orEmpty()
+    }
+
+    fun loadDisplayNamesForUserIds(
+        userIds: Collection<String>,
+        onResult: (Map<String, String>) -> Unit
+    ) {
+        val normalizedUserIds = userIds
+            .map(::cleanDisplayName)
+            .filter { it.isNotBlank() }
+            .distinct()
+
+        if (normalizedUserIds.isEmpty()) {
+            onResult(emptyMap())
+            return
+        }
+
+        val displayNamesByUserId = mutableMapOf<String, String>()
+        var remaining = normalizedUserIds.size
+
+        fun finish() {
+            remaining -= 1
+            if (remaining == 0) {
+                onResult(displayNamesByUserId.toMap())
+            }
+        }
+
+        normalizedUserIds.forEach { userId ->
+            loadUserProfile(
+                userId = userId,
+                onResult = { profile ->
+                    val displayName = cleanDisplayName(profile?.displayName)
+                    if (displayName.isNotBlank()) {
+                        displayNamesByUserId[userId] = displayName
+                    }
+                    finish()
+                },
+                onError = { error ->
+                    Log.w(
+                        TAG,
+                        "loadDisplayNamesForUserIds failed for userId=$userId: ${error ?: "Unbekannter Fehler"}"
+                    )
+                    finish()
+                }
+            )
         }
     }
 
