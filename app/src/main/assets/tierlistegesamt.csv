@@ -735,6 +735,9 @@ fisch_donau_goldsteinbeisser;Fische;Süsswasserfische und Neunaugen;Donau-Goldst
 fisch_baltischer_goldsteinbeisser;Fische;Süsswasserfische und Neunaugen;Baltischer Goldsteinbeisser;Sabanejewia baltica;;;
 fisch_lachs;Fische;Süsswasserfische und Neunaugen;Lachs;Salmo salar;;;
 fisch_forelle;Fische;Süsswasserfische und Neunaugen;Forelle;Salmo trutta;;;
+fisch_bachforelle;Fische;Süsswasserfische und Neunaugen;Bachforelle;Salmo trutta fario;;;
+fisch_seeforelle;Fische;Süsswasserfische und Neunaugen;Seeforelle;Salmo trutta lacustris;;;
+fisch_meerforelle;Fische;Süsswasserfische und Neunaugen;Meerforelle;Salmo trutta trutta;;;
 fisch_ammersee_saibling;Fische;Süsswasserfische und Neunaugen;Ammersee-Saibling;Salvelinus evasus;;;
 fisch_bachsaibling;Fische;Süsswasserfische und Neunaugen;Bachsaibling;Salvelinus fontinalis;;;
 fisch_tiefseesaibling;Fische;Süsswasserfische und Neunaugen;Tiefseesaibling;Salvelinus profundus;;;

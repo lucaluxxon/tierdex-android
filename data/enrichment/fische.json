@@ -3475,7 +3475,70 @@
       "Wikipedia"
     ],
     "needsReview": true,
-    "reviewNote": "Sammelbegriff für mehrere Formen; später bei Bedarf genauer differenzieren."
+    "reviewNote": "Sammelbegriff für die Salmo-trutta-Gruppe; Bachforelle, Seeforelle und Meerforelle sollten langfristig getrennt gepflegt werden."
+  },
+  {
+    "id": "fisch_bachforelle",
+    "habitats": [
+      "Bäche",
+      "Flüsse",
+      "Quellregionen",
+      "Kiesgründe"
+    ],
+    "distributionGermany": "In Deutschland in kühlen, strukturreichen Fließgewässern weit verbreitet, vielerorts aber durch Gewässerverbauung, Erwärmung und Besatz beeinflusst.",
+    "rarityGame": "mittel",
+    "activity": "Meist in Deckung oder Strömungskanten, besonders in der Dämmerung aktiv.",
+    "season": "Ganzjährig möglich, besonders gut in klaren Gewässern außerhalb starker Hochwasserphasen beobachtbar.",
+    "shortDescription": "Standörtliche Forellenform kühler, sauerstoffreicher Bäche und Flüsse mit dunkler Punktzeichnung und oft rötlichen Tupfen.",
+    "observationTip": "Achte in klaren Bächen und Flüssen auf Forellen an Unterständen, Gumpen, Wurzeln und Strömungskanten.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Eigener Eintrag für die bach- und flussbewohnende Form der Salmo-trutta-Gruppe; nicht mit dem allgemeinen Altbestand fisch_forelle gleichsetzen."
+  },
+  {
+    "id": "fisch_seeforelle",
+    "habitats": [
+      "Seen",
+      "Zuflüsse",
+      "Flussmündungen",
+      "Kiesgründe"
+    ],
+    "distributionGermany": "In Deutschland vor allem in geeigneten tiefen und kühlen Seen mit durchgängigen Laichzuflüssen; Vorkommen regional begrenzt und oft schutzabhängig.",
+    "rarityGame": "selten",
+    "activity": "Im See häufig im Freiwasser, zur Laichzeit in Zuflüssen und Mündungsbereichen unterwegs.",
+    "season": "Besonders während der Wanderzeiten in Zuflüssen und Mündungsbereichen, sonst schwerer direkt zu beobachten.",
+    "shortDescription": "Große, meist silbrig wirkende Forellenform, die in Seen lebt und zum Laichen in Zuflüsse aufsteigt.",
+    "observationTip": "Achte an klaren Seezuflüssen und Mündungen auf große silbrige Forellen, besonders während der Wanderzeit.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Eigener Eintrag für die seelebende Form der Salmo-trutta-Gruppe; nicht mit Meerforelle oder Lachsforelle gleichsetzen."
+  },
+  {
+    "id": "fisch_meerforelle",
+    "habitats": [
+      "Flüsse",
+      "Flussmündungen",
+      "Küstengewässer",
+      "Kiesgründe"
+    ],
+    "distributionGermany": "In Deutschland vor allem in Nord- und Ostseezuflüssen sowie küstennahen Gewässern; ihr Vorkommen hängt stark von durchgängigen Flüssen und geeigneten Laichplätzen ab.",
+    "rarityGame": "selten",
+    "activity": "Wandernd, oft in der Dämmerung aktiv, je nach Gewässer auch tagsüber beobachtbar.",
+    "season": "Besonders während der Wanderzeiten in Flüssen und Mündungsbereichen, regional unterschiedlich.",
+    "shortDescription": "Silbrige, wandernde Forellenform, die im Meer lebt und zum Laichen in Flüsse aufsteigt.",
+    "observationTip": "Achte in klaren Flüssen, Mündungen und küstennahen Bereichen auf große silbrige Forellen mit kräftigem Körperbau.",
+    "sources": [
+      "BfN",
+      "Wikipedia"
+    ],
+    "needsReview": true,
+    "reviewNote": "Eigener Eintrag für die anadrome Wanderform der Salmo-trutta-Gruppe; nicht mit Lachsforelle als Handelsbezeichnung gleichsetzen."
   },
   {
     "id": "fisch_ammersee_saibling",
