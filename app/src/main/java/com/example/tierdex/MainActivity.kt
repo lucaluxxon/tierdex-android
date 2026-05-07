@@ -212,12 +212,16 @@ private const val FINDING_IMAGES_DIR = "finding_images"
 private const val STARTUP_HINT_SHOWN_KEY_PREFIX = "startup_hint_shown_"
 private const val INTRO_PENDING_KEY_PREFIX = "intro_pending_"
 private const val INTRO_SEEN_KEY_PREFIX = "intro_seen_"
+private const val HAS_USED_AUTH_BEFORE_KEY = "has_used_auth_before"
 private const val WISHLIST_ANIMAL_KEY_PREFIX = "wishAnimalId_"
 private const val FAVORITE_ANIMAL_KEY_PREFIX = "favoriteAnimalId_"
 private const val PROFILE_BIO_KEY_PREFIX = "profileBio_"
 private const val PROFILE_IMAGE_KEY_PREFIX = "profileImage_"
 private const val PROFILE_BACKGROUND_IMAGE_KEY_PREFIX = "profileBackgroundImage_"
 private const val NOTIFICATION_READ_IDS_KEY_PREFIX = "notification_read_ids_"
+
+private fun defaultAuthEntryMode(prefs: android.content.SharedPreferences): String =
+    if (prefs.getBoolean(HAS_USED_AUTH_BEFORE_KEY, false)) "login" else "register"
 private const val DAILY_ANIMAL_DATE_KEY_PREFIX = "daily_animal_date_"
 private const val DAILY_ANIMAL_ID_KEY_PREFIX = "daily_animal_id_"
 private const val DAILY_ANIMAL_DISMISSED_KEY_PREFIX = "daily_animal_dismissed_"
@@ -1299,7 +1303,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     var animalGlobalFindingCountsLoadAttempted by remember { mutableStateOf(false) }
     var globalFindingBackfillStartedForOwnerId by remember { mutableStateOf<String?>(null) }
     var showNotificationsScreen by rememberSaveable { mutableStateOf(false) }
-    var authEntryMode by rememberSaveable { mutableStateOf<String?>(null) }
+    var authEntryMode by rememberSaveable {
+        mutableStateOf<String?>(defaultAuthEntryMode(prefs))
+    }
     var showAnimalPicker by rememberSaveable { mutableStateOf(false) }
     var selectedFindingToEdit by remember { mutableStateOf<AnimalFinding?>(null) }
     var findingEditReturnSource by rememberSaveable { mutableStateOf<String?>(null) }
@@ -2387,6 +2393,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             authEntryMode = null
                         },
                         onAuthSuccess = { userId, fromRegistration ->
+                            prefs.edit().putBoolean(HAS_USED_AUTH_BEFORE_KEY, true).apply()
                             AuthSession.setCurrentUserId(userId)
                             currentOwnerId = userId
                             currentDisplayName = AuthSession.getCurrentDisplayName()
@@ -2435,7 +2442,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             resetSearchState()
                             currentOwnerId = null
                             currentDisplayName = null
-                            authEntryMode = null
+                            authEntryMode = defaultAuthEntryMode(prefs)
                             showSettingsScreen = false
                             currentTab = AppTab.PROFILE
                         },
@@ -7175,6 +7182,9 @@ fun AuthEntryScreen(
     var password by rememberSaveable { mutableStateOf("") }
     var authMode by rememberSaveable(initialAuthMode) { mutableStateOf(initialAuthMode) }
     var authMessage by rememberSaveable { mutableStateOf<String?>(null) }
+    val trimmedDisplayName = displayName.trim()
+    val trimmedEmail = email.trim()
+    val trimmedPassword = password.trim()
 
     BackHandler(onBack = onBack)
 
@@ -7288,9 +7298,17 @@ fun AuthEntryScreen(
                     Button(
                         onClick = {
                             if (authMode == "register") {
+                                if (
+                                    trimmedDisplayName.isBlank() ||
+                                    trimmedEmail.isBlank() ||
+                                    trimmedPassword.isBlank()
+                                ) {
+                                    authMessage = "Bitte fülle alle Felder aus."
+                                    return@Button
+                                }
                                 AuthSession.registerWithEmail(
-                                    displayName,
-                                    email,
+                                    trimmedDisplayName,
+                                    trimmedEmail,
                                     password
                                 ) { success, result ->
                                     if (success) {
@@ -7304,7 +7322,11 @@ fun AuthEntryScreen(
                                     }
                                 }
                             } else {
-                                AuthSession.loginWithEmail(email, password) { success, result ->
+                                if (trimmedEmail.isBlank() || trimmedPassword.isBlank()) {
+                                    authMessage = "Bitte fülle alle Felder aus."
+                                    return@Button
+                                }
+                                AuthSession.loginWithEmail(trimmedEmail, password) { success, result ->
                                     if (success) {
                                         AuthSession.getCurrentFirebaseUserId()
                                             ?.let { firebaseUserId ->
