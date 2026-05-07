@@ -35,6 +35,7 @@ import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -187,6 +188,7 @@ import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.zIndex
@@ -7355,6 +7357,35 @@ fun ProfileScreen(
             sortOrder = activeProfileCollectionSortOrder
         )
     }
+    val profilePhotoPreviewFindings = remember(findings) {
+        sortProfileFindings(
+            findings = findings,
+            sortOrder = ProfileCollectionSortOrder.NEWEST_FIRST
+        ).mapNotNull { finding ->
+            val previewSource = effectiveLocalPhotoUris(finding).firstOrNull()
+                ?: finding.thumbnailRemotePhotoPath
+                    .takeIf { it.isNotBlank() }
+                    ?.let(::storageUriFromPath)
+                ?: effectiveRemotePhotoPaths(finding)
+                    .firstOrNull()
+                    ?.let(::storageUriFromPath)
+            if (previewSource.isNullOrBlank()) {
+                null
+            } else {
+                finding to previewSource
+            }
+        }
+    }
+    val visibleProfilePhotoPreviewFindings = remember(profilePhotoPreviewFindings) {
+        profilePhotoPreviewFindings.take(5)
+    }
+    var showProfilePhotoGalleryPlaceholder by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(showProfilePhotoGalleryPlaceholder) {
+        if (showProfilePhotoGalleryPlaceholder) {
+            Toast.makeText(context, "Bildergalerie folgt", Toast.LENGTH_SHORT).show()
+            showProfilePhotoGalleryPlaceholder = false
+        }
+    }
     val activeProfileCollectionFilterLabel = when (activeProfileCollectionDateFilter) {
         ProfileCollectionDateFilter.ALL -> "Alle"
         ProfileCollectionDateFilter.TODAY -> "Heute"
@@ -7503,12 +7534,12 @@ fun ProfileScreen(
                 Column(
                     modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 18.dp, bottom = 22.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(214.dp),
+                            .height(204.dp),
                         contentAlignment = Alignment.TopCenter
                     ) {
                         Surface(
@@ -7548,7 +7579,7 @@ fun ProfileScreen(
                             Icon(
                                 imageVector = Icons.Filled.Edit,
                                 contentDescription = "Hintergrundbild bearbeiten",
-                                tint = TextPrimary,
+                                tint = Color.White,
                                 modifier = Modifier.size(16.dp)
                             )
                         }
@@ -7557,7 +7588,7 @@ fun ProfileScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .align(Alignment.BottomCenter)
-                                .offset(x = 0.dp, y = (-22).dp),
+                                .offset(x = 0.dp, y = (-12).dp),
                             contentAlignment = Alignment.Center
                         ) {
                             Box(
@@ -7600,12 +7631,13 @@ fun ProfileScreen(
                                             PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                                         )
                                     },
-                                    modifier = Modifier.size(28.dp)
+                                    modifier = Modifier
+                                        .size(28.dp)
                                 ) {
                                     Icon(
                                         imageVector = Icons.Filled.Edit,
                                         contentDescription = "Profilbild bearbeiten",
-                                        tint = TextPrimary,
+                                        tint = Color.White,
                                         modifier = Modifier.size(16.dp)
                                     )
                                 }
@@ -7618,8 +7650,7 @@ fun ProfileScreen(
                             ?: "Profil",
                         style = MaterialTheme.typography.headlineSmall,
                         color = TextPrimary,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(top = 2.dp)
+                        textAlign = TextAlign.Center
                     )
 
                     Column(
@@ -7707,6 +7738,143 @@ fun ProfileScreen(
                             )
                         }
                     }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Card(
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(16.dp),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = CardBackground,
+                                contentColor = TextPrimary
+                            )
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 13.dp),
+                                verticalArrangement = Arrangement.spacedBy(6.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Column(
+                                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                                    horizontalAlignment = Alignment.Start
+                                ) {
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Favorite,
+                                            contentDescription = null,
+                                            tint = PrimaryGreen,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                        Text(
+                                            text = "Lieblingstier",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = TextSecondary
+                                        )
+                                    }
+                                    if (favoriteAnimal == null) {
+                                        Text(
+                                            text = "Noch nicht gewählt",
+                                            modifier = Modifier.fillMaxWidth(),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = TextSecondary,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    } else {
+                                        Row(
+                                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Icon(
+                                                imageVector = groupIconForAnimal(favoriteAnimal),
+                                                contentDescription = favoriteAnimal.group,
+                                                tint = TextSecondary,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                            Text(
+                                                text = favoriteAnimal.germanName,
+                                                style = MaterialTheme.typography.titleMedium,
+                                                color = TextPrimary,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        Card(
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(16.dp),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = CardBackground,
+                                contentColor = TextPrimary
+                            )
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 13.dp),
+                                verticalArrangement = Arrangement.spacedBy(6.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Column(
+                                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                                    horizontalAlignment = Alignment.Start
+                                ) {
+                                    Row(
+                                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Star,
+                                            contentDescription = null,
+                                            tint = PrimaryGreen,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                        Text(
+                                            text = "Wunschfund",
+                                            style = MaterialTheme.typography.bodySmall,
+                                            color = TextSecondary
+                                        )
+                                    }
+                                    if (wishlistAnimal == null) {
+                                        Text(
+                                            text = "Nicht gewählt",
+                                            modifier = Modifier.fillMaxWidth(),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = TextSecondary,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    } else {
+                                        Row(
+                                            horizontalArrangement = Arrangement.spacedBy(6.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Icon(
+                                                imageVector = groupIconForAnimal(wishlistAnimal),
+                                                contentDescription = wishlistAnimal.group,
+                                                tint = TextSecondary,
+                                                modifier = Modifier.size(16.dp)
+                                            )
+                                            Text(
+                                                text = wishlistAnimal.germanName,
+                                                style = MaterialTheme.typography.titleMedium,
+                                                color = TextPrimary,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -7791,14 +7959,11 @@ fun ProfileScreen(
             }
         }
 
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
+        if (profilePhotoPreviewFindings.isNotEmpty()) {
+            item {
                 Card(
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(18.dp),
                     elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = CardBackground,
@@ -7806,98 +7971,67 @@ fun ProfileScreen(
                     )
                 ) {
                     Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
+                        Text(
+                            text = "Fotos",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = TextPrimary
+                        )
                         Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalAlignment = Alignment.CenterVertically
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Filled.Favorite,
-                                contentDescription = null,
-                                tint = PrimaryGreen,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Text(
-                                text = "Lieblingsfund",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = TextPrimary
-                            )
-                            favoriteAnimal?.let {
-                                Icon(
-                                    imageVector = groupIconForAnimal(it),
-                                    contentDescription = it.group,
-                                    tint = TextSecondary,
-                                    modifier = Modifier.size(18.dp)
-                                )
-                            }
-                        }
+                            visibleProfilePhotoPreviewFindings.forEachIndexed { index, (finding, previewSource) ->
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .aspectRatio(1f)
+                                ) {
+                                    Card(
+                                        onClick = { onEditFinding(finding) },
+                                        modifier = Modifier.fillMaxSize(),
+                                        shape = RoundedCornerShape(14.dp),
+                                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                                        colors = CardDefaults.cardColors(
+                                            containerColor = Color.White
+                                        )
+                                    ) {
+                                        UriImage(
+                                            uriString = previewSource,
+                                            maxImageSizePx = 420,
+                                            modifier = Modifier.fillMaxSize()
+                                        )
+                                    }
 
-                        if (favoriteAnimal == null) {
-                            Text(
-                                text = "Noch nicht gewählt",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = TextSecondary
-                            )
-                        } else {
-                            Text(
-                                text = favoriteAnimal.germanName,
-                                style = MaterialTheme.typography.titleMedium,
-                                color = TextPrimary
-                            )
-                        }
-                    }
-                }
-
-                Card(
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(16.dp),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = CardBackground,
-                        contentColor = TextPrimary
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier.padding(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Star,
-                                contentDescription = null,
-                                tint = PrimaryGreen,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Text(
-                                text = "Wunschfund",
-                                style = MaterialTheme.typography.titleMedium,
-                                color = TextPrimary
-                            )
-                            wishlistAnimal?.let {
-                                Icon(
-                                    imageVector = groupIconForAnimal(it),
-                                    contentDescription = it.group,
-                                    tint = TextSecondary,
-                                    modifier = Modifier.size(18.dp)
-                                )
+                                    if (
+                                        index == visibleProfilePhotoPreviewFindings.lastIndex &&
+                                        profilePhotoPreviewFindings.size > visibleProfilePhotoPreviewFindings.size
+                                    ) {
+                                        IconButton(
+                                            onClick = {
+                                                showProfilePhotoGalleryPlaceholder = true
+                                            },
+                                            modifier = Modifier
+                                                .align(Alignment.TopEnd)
+                                                .padding(4.dp)
+                                                .size(24.dp)
+                                                .background(
+                                                    Color.Black.copy(alpha = 0.22f),
+                                                    CircleShape
+                                                )
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Filled.Collections,
+                                                contentDescription = "Alle Bilder ansehen",
+                                                tint = Color.White,
+                                                modifier = Modifier.size(14.dp)
+                                            )
+                                        }
+                                    }
+                                }
                             }
-                        }
-                        if (wishlistAnimal == null) {
-                            Text(
-                                text = "Nicht gewählt",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = TextSecondary
-                            )
-                        } else {
-                            Text(
-                                text = wishlistAnimal.germanName,
-                                style = MaterialTheme.typography.titleMedium
-                            )
                         }
                     }
                 }
