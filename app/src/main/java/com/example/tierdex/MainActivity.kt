@@ -214,6 +214,7 @@ private const val WISHLIST_ANIMAL_KEY_PREFIX = "wishAnimalId_"
 private const val FAVORITE_ANIMAL_KEY_PREFIX = "favoriteAnimalId_"
 private const val PROFILE_BIO_KEY_PREFIX = "profileBio_"
 private const val PROFILE_IMAGE_KEY_PREFIX = "profileImage_"
+private const val PROFILE_BACKGROUND_IMAGE_KEY_PREFIX = "profileBackgroundImage_"
 private const val NOTIFICATION_READ_IDS_KEY_PREFIX = "notification_read_ids_"
 private const val DAILY_ANIMAL_DATE_KEY_PREFIX = "daily_animal_date_"
 private const val DAILY_ANIMAL_ID_KEY_PREFIX = "daily_animal_id_"
@@ -241,6 +242,8 @@ private fun favoriteAnimalKey(ownerId: String): String = "$FAVORITE_ANIMAL_KEY_P
 private fun wishlistAnimalKey(ownerId: String): String = "$WISHLIST_ANIMAL_KEY_PREFIX$ownerId"
 private fun profileBioKey(ownerId: String): String = "$PROFILE_BIO_KEY_PREFIX$ownerId"
 private fun profileImageKey(ownerId: String): String = "$PROFILE_IMAGE_KEY_PREFIX$ownerId"
+private fun profileBackgroundImageKey(ownerId: String): String =
+    "$PROFILE_BACKGROUND_IMAGE_KEY_PREFIX$ownerId"
 private fun notificationReadIdsKey(ownerId: String): String = "$NOTIFICATION_READ_IDS_KEY_PREFIX$ownerId"
 private fun dailyAnimalDateKey(ownerId: String): String = "$DAILY_ANIMAL_DATE_KEY_PREFIX$ownerId"
 private fun dailyAnimalIdKey(ownerId: String): String = "$DAILY_ANIMAL_ID_KEY_PREFIX$ownerId"
@@ -7379,11 +7382,25 @@ fun ProfileScreen(
     var profileImageUri by rememberSaveable(preferenceOwnerId) {
         mutableStateOf(prefs.getString(profileImageKey(preferenceOwnerId), "").orEmpty())
     }
+    var profileBackgroundImageUri by rememberSaveable(preferenceOwnerId) {
+        mutableStateOf(prefs.getString(profileBackgroundImageKey(preferenceOwnerId), "").orEmpty())
+    }
     var remoteProfilePhotoPath by rememberSaveable(preferenceOwnerId) { mutableStateOf("") }
     var showBioEditor by rememberSaveable(preferenceOwnerId) { mutableStateOf(false) }
     var bioDraft by rememberSaveable(preferenceOwnerId) { mutableStateOf(profileBio) }
     val displayedProfileImageUri = profileImageUri.ifBlank {
         remoteProfilePhotoPath.takeIf { it.isNotBlank() }?.let(::storageUriFromPath).orEmpty()
+    }
+    val profileBackgroundPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia()
+    ) { uri ->
+        uri?.let {
+            val storedBackgroundUri = persistPhotoForFinding(context, it.toString())
+            profileBackgroundImageUri = storedBackgroundUri
+            prefs.edit()
+                .putString(profileBackgroundImageKey(preferenceOwnerId), storedBackgroundUri)
+                .apply()
+        }
     }
     val profileImagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia()
@@ -7484,27 +7501,64 @@ fun ProfileScreen(
                 )
             ) {
                 Column(
-                    modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 24.dp),
+                    modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 18.dp, bottom = 22.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     Box(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(214.dp),
                         contentAlignment = Alignment.TopCenter
                     ) {
                         Surface(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(118.dp),
+                                .height(196.dp),
                             shape = RoundedCornerShape(20.dp),
                             color = PrimaryGreenSoft.copy(alpha = 0.6f)
-                        ) {}
+                        ) {
+                            if (profileBackgroundImageUri.isNotBlank()) {
+                                UriImage(
+                                    uriString = profileBackgroundImageUri,
+                                    maxImageSizePx = 1400,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(
+                                        Color.White.copy(alpha = if (profileBackgroundImageUri.isNotBlank()) 0.12f else 0f)
+                                    )
+                            )
+                        }
+
+                        IconButton(
+                            onClick = {
+                                profileBackgroundPicker.launch(
+                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                )
+                            },
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(7.dp)
+                                .size(28.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Filled.Edit,
+                                contentDescription = "Hintergrundbild bearbeiten",
+                                tint = TextPrimary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
 
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(top = 54.dp),
-                            contentAlignment = Alignment.TopCenter
+                                .align(Alignment.BottomCenter)
+                                .offset(x = 0.dp, y = (-22).dp),
+                            contentAlignment = Alignment.Center
                         ) {
                             Box(
                                 modifier = Modifier.size(168.dp),
@@ -7540,45 +7594,39 @@ fun ProfileScreen(
                                     }
                                 }
 
-                                Surface(
-                                    shape = CircleShape,
-                                    color = Color.White,
-                                    shadowElevation = 4.dp
-                                ) {
-                                    IconButton(
-                                        onClick = {
-                                            profileImagePicker.launch(
-                                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
-                                            )
-                                        },
-                                        modifier = Modifier.size(40.dp)
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Filled.Edit,
-                                            contentDescription = "Profilbild bearbeiten",
-                                            tint = TextPrimary
+                                IconButton(
+                                    onClick = {
+                                        profileImagePicker.launch(
+                                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                                         )
-                                    }
+                                    },
+                                    modifier = Modifier.size(28.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.Edit,
+                                        contentDescription = "Profilbild bearbeiten",
+                                        tint = TextPrimary,
+                                        modifier = Modifier.size(16.dp)
+                                    )
                                 }
                             }
                         }
                     }
-
-                    Spacer(modifier = Modifier.height(92.dp))
 
                     Text(
                         text = currentDisplayName?.takeIf { it.isNotBlank() }?.let { "Profil von $it" }
                             ?: "Profil",
                         style = MaterialTheme.typography.headlineSmall,
                         color = TextPrimary,
-                        textAlign = TextAlign.Center
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(top = 2.dp)
                     )
 
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 4.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
@@ -7613,7 +7661,7 @@ fun ProfileScreen(
                         Column(
                             modifier = Modifier
                                 .weight(1f)
-                                .padding(vertical = 10.dp),
+                                .padding(vertical = 6.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
@@ -7637,7 +7685,7 @@ fun ProfileScreen(
                         Column(
                             modifier = Modifier
                                 .weight(1f)
-                                .padding(vertical = 10.dp),
+                                .padding(vertical = 6.dp),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
