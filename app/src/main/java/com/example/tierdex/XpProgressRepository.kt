@@ -21,6 +21,12 @@ data class XpProgressSnapshot(
     val progressWithinLevel: Float
 )
 
+data class XpAwardGrantResult(
+    val awardedXp: Int,
+    val grantedKeys: Set<String>,
+    val totalXpAfterGrant: Int
+)
+
 object XpProgressRepository {
     private val xpStepAnchors = sortedMapOf(
         1 to 50,
@@ -118,6 +124,58 @@ object XpProgressRepository {
             prefs = prefs,
             userId = userId,
             awardedXpKeys = loadAwardedXpKeys(prefs, userId) + cleanAwardKey
+        )
+    }
+
+    fun grantXpAwardsIfAbsent(
+        prefs: SharedPreferences,
+        userId: String?,
+        awards: Collection<Pair<String, Int>>
+    ): XpAwardGrantResult {
+        val existingAwardedKeys = loadAwardedXpKeys(prefs, userId).toMutableSet()
+        val cleanAwards = awards
+            .mapNotNull { (awardKey, xpValue) ->
+                val cleanAwardKey = awardKey.trim()
+                if (cleanAwardKey.isBlank() || xpValue <= 0) {
+                    null
+                } else {
+                    cleanAwardKey to xpValue
+                }
+            }
+            .distinctBy { it.first }
+
+        if (cleanAwards.isEmpty()) {
+            return XpAwardGrantResult(
+                awardedXp = 0,
+                grantedKeys = emptySet(),
+                totalXpAfterGrant = loadTotalXp(prefs, userId)
+            )
+        }
+
+        var updatedTotalXp = loadTotalXp(prefs, userId)
+        val grantedKeys = mutableSetOf<String>()
+
+        cleanAwards.forEach { (awardKey, xpValue) ->
+            if (awardKey !in existingAwardedKeys) {
+                existingAwardedKeys += awardKey
+                grantedKeys += awardKey
+                updatedTotalXp += xpValue
+            }
+        }
+
+        if (grantedKeys.isNotEmpty()) {
+            prefs.edit()
+                .putInt(totalXpKey(userId), updatedTotalXp.coerceAtLeast(0))
+                .putStringSet(awardedXpKeysKey(userId), existingAwardedKeys)
+                .apply()
+        }
+
+        return XpAwardGrantResult(
+            awardedXp = cleanAwards
+                .filter { (awardKey, _) -> awardKey in grantedKeys }
+                .sumOf { it.second },
+            grantedKeys = grantedKeys,
+            totalXpAfterGrant = updatedTotalXp.coerceAtLeast(0)
         )
     }
 

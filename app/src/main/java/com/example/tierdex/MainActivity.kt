@@ -2590,10 +2590,33 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                     remotePhotoPaths = effectiveRemotePhotoPaths(finding)
                                 )
                                 val previousFindings = findingsFromRoom
-                                val questCelebration = detectQuestLevelUpMessage(
+                                val currentFindingsForQuestCheck = previousFindings + localFinding
+                                val baseFindingAwards = buildBaseFindingXpAwards(
                                     previousFindings = previousFindings,
-                                    newFinding = localFinding,
-                                    animals = animals
+                                    newFinding = localFinding
+                                )
+                                val newlyCompletedQuestStages = detectNewlyCompletedQuestStages(
+                                    previousFindings = previousFindings,
+                                    currentFindings = currentFindingsForQuestCheck,
+                                    animals = animals,
+                                    dailyAnimal = dailyAnimal
+                                )
+                                val awardedXpResult = XpProgressRepository.grantXpAwardsIfAbsent(
+                                    prefs = prefs,
+                                    userId = currentOwnerId,
+                                    awards = baseFindingAwards +
+                                        newlyCompletedQuestStages.mapNotNull { quest ->
+                                            quest.xpReward?.let { xpReward ->
+                                                quest.awardKey to xpReward
+                                            }
+                                        }
+                                )
+                                val grantedQuestStages = newlyCompletedQuestStages.filter { quest ->
+                                    quest.awardKey in awardedXpResult.grantedKeys
+                                }
+                                val questCelebration = buildQuestCelebrationMessage(
+                                    awardedQuests = grantedQuestStages,
+                                    awardedXp = awardedXpResult.awardedXp
                                 )
 
                                 val roomInsertStartedAt = SystemClock.elapsedRealtime()
@@ -5147,90 +5170,139 @@ fun buildHomeQuests(
     }
 }
 
+private fun collectedAnimalCountForQuestProgress(findings: List<AnimalFinding>): Int {
+    return findings.map { it.animalId.trim() }
+        .filter { it.isNotBlank() }
+        .toSet()
+        .size
+}
+
+private fun photoFindingCountForQuestProgress(findings: List<AnimalFinding>): Int {
+    return findings.count { it.photoUri.isNotBlank() }
+}
+
+private fun hasXpEligiblePhoto(finding: AnimalFinding): Boolean {
+    return effectiveLocalPhotoUris(finding).isNotEmpty() ||
+        effectiveRemotePhotoPaths(finding).isNotEmpty() ||
+        finding.thumbnailRemotePhotoPath.trim().isNotBlank()
+}
+
+private fun hasXpEligibleLocation(finding: AnimalFinding): Boolean {
+    return finding.latitude != null && finding.longitude != null
+}
+
+private fun buildBaseFindingXpAwards(
+    previousFindings: List<AnimalFinding>,
+    newFinding: AnimalFinding
+): List<Pair<String, Int>> {
+    val animalId = newFinding.animalId.trim()
+    if (animalId.isBlank()) return emptyList()
+
+    val sameAnimalFindingIndex = previousFindings.count { finding ->
+        finding.animalId.trim() == animalId
+    } + 1
+
+    val baseXpReward = when (sameAnimalFindingIndex) {
+        1 -> 10
+        2 -> 5
+        3 -> 3
+        else -> 0
+    }
+    if (baseXpReward <= 0) return emptyList()
+
+    val awards = mutableListOf(
+        "finding_base:$animalId:$sameAnimalFindingIndex" to baseXpReward
+    )
+
+    if (hasXpEligiblePhoto(newFinding)) {
+        awards += "finding_photo:$animalId:$sameAnimalFindingIndex" to 3
+    }
+    if (hasXpEligibleLocation(newFinding)) {
+        awards += "finding_location:$animalId:$sameAnimalFindingIndex" to 3
+    }
+
+    return awards
+}
+
 fun normalizeQuestGroupName(group: String): String {
     return group.trim().lowercase()
 }
 
-fun detectQuestLevelUpMessage(
+fun detectNewlyCompletedQuestStages(
     previousFindings: List<AnimalFinding>,
-    newFinding: AnimalFinding,
-    animals: List<AnimalEntry>
+    currentFindings: List<AnimalFinding>,
+    animals: List<AnimalEntry>,
+    dailyAnimal: AnimalEntry?
+): List<QuestUiModel> {
+    val previousQuests = buildHomeQuests(
+        findings = previousFindings,
+        animals = animals,
+        dailyAnimal = dailyAnimal,
+        collectedAnimalCount = collectedAnimalCountForQuestProgress(previousFindings),
+        totalFindings = previousFindings.size,
+        photoFindingCount = photoFindingCountForQuestProgress(previousFindings)
+    )
+    val previousCompletedAwardKeys = previousQuests
+        .filter { it.isCompleted }
+        .map { it.awardKey }
+        .toSet()
+
+    val currentQuests = buildHomeQuests(
+        findings = currentFindings,
+        animals = animals,
+        dailyAnimal = dailyAnimal,
+        collectedAnimalCount = collectedAnimalCountForQuestProgress(currentFindings),
+        totalFindings = currentFindings.size,
+        photoFindingCount = photoFindingCountForQuestProgress(currentFindings)
+    )
+
+    return currentQuests.filter { quest ->
+        quest.isCompleted &&
+            quest.xpReward != null &&
+            quest.awardKey !in previousCompletedAwardKeys
+    }
+}
+
+fun buildQuestCelebrationMessage(
+    awardedQuests: List<QuestUiModel>,
+    awardedXp: Int
 ): CelebrationMessage? {
-    fun reachedGoal(previous: Int, current: Int, goals: List<Int>): Int? {
-        return goals.firstOrNull { goal -> previous < goal && current >= goal }
-    }
+    if (awardedQuests.isEmpty() || awardedXp <= 0) return null
 
-    val totalGoal = reachedGoal(
-        previous = previousFindings.size,
-        current = previousFindings.size + 1,
-        goals = listOf(1, 5, 10, 25, 50)
-    )
-    if (totalGoal != null) {
+    if (awardedQuests.size > 1) {
         return CelebrationMessage(
-            title = "Quest geschafft: $totalGoal Funde!",
-            subtitle = "Deine Gesamtfund-Quest hat eine neue Stufe erreicht."
+            title = "Mehrere Quests geschafft!",
+            subtitle = "Du hast ${awardedQuests.size} Queststufen abgeschlossen und +$awardedXp XP erhalten."
         )
     }
 
-    if (newFinding.photoUri.isNotBlank()) {
-        val previousPhotoCount = previousFindings.count { it.photoUri.isNotBlank() }
-        val photoGoal = reachedGoal(
-            previous = previousPhotoCount,
-            current = previousPhotoCount + 1,
-            goals = listOf(1, 3, 5, 10, 20)
-        )
-        if (photoGoal != null) {
-            return CelebrationMessage(
-                title = "Quest geschafft: $photoGoal Foto-Funde!",
-                subtitle = "Deine Fotoquest hat eine neue Stufe erreicht."
-            )
-        }
+    val quest = awardedQuests.first()
+    val title = when (quest.type) {
+        QuestType.TOTAL_FINDINGS -> "Quest geschafft: ${quest.goal} Funde!"
+        QuestType.PHOTO_FINDINGS -> "Quest geschafft: ${quest.goal} Foto-Funde!"
+        QuestType.DAILY_ANIMAL -> "Quest geschafft: Tier des Tages!"
+        QuestType.TOTAL_SPECIES_PERCENT -> "Quest geschafft: ${quest.goal}% Tierdex!"
+        QuestType.BIRDS,
+        QuestType.FISH,
+        QuestType.MAMMALS,
+        QuestType.AMPHIBIANS,
+        QuestType.REPTILES -> "Quest geschafft: ${quest.goal} ${quest.title}!"
     }
-
-    val foundAnimal = animals.firstOrNull { it.id == newFinding.animalId }
-    val normalizedGroup = foundAnimal?.group?.let(::normalizeQuestGroupName) ?: return null
-    val groupQuestConfigs = listOf(
-        "Vögel" to listOf("Vogel", "Vögel"),
-        "Fische" to listOf("Fisch", "Fische"),
-        "Säugetiere" to listOf("Säugetier", "Säugetiere"),
-        "Amphibien" to listOf("Amphibie", "Amphibien"),
-        "Reptilien" to listOf("Reptil", "Reptilien")
+    val subtitle = when (quest.type) {
+        QuestType.TOTAL_FINDINGS -> "Deine Gesamtfund-Quest hat eine neue Stufe erreicht. +$awardedXp XP"
+        QuestType.PHOTO_FINDINGS -> "Deine Fotoquest hat eine neue Stufe erreicht. +$awardedXp XP"
+        QuestType.DAILY_ANIMAL -> "Du hast die Tagesquest abgeschlossen und +$awardedXp XP erhalten."
+        QuestType.TOTAL_SPECIES_PERCENT -> "Dein Tierdex-Fortschritt hat eine neue Prozentstufe erreicht. +$awardedXp XP"
+        QuestType.BIRDS,
+        QuestType.FISH,
+        QuestType.MAMMALS,
+        QuestType.AMPHIBIANS,
+        QuestType.REPTILES -> "Deine ${quest.title}-Quest hat eine neue Stufe erreicht. +$awardedXp XP"
+    }
+    return CelebrationMessage(
+        title = title,
+        subtitle = subtitle
     )
-    val matchedGroupConfig = groupQuestConfigs.firstOrNull { (_, aliases) ->
-        normalizedGroup in aliases.map(::normalizeQuestGroupName)
-    } ?: return null
-
-    val relevantAliases = matchedGroupConfig.second.map(::normalizeQuestGroupName).toSet()
-    val animalById = animals.associateBy { it.id }
-    val previousGroupCount = previousFindings
-        .mapNotNull { finding ->
-            finding.animalId.takeIf {
-                animalById[finding.animalId]?.group?.let(::normalizeQuestGroupName) in relevantAliases
-            }
-        }
-        .toSet()
-        .size
-    val currentGroupCount = (
-        previousFindings.map { it.animalId } + listOf(newFinding.animalId)
-        ).filter { animalId ->
-            animalById[animalId]?.group?.let(::normalizeQuestGroupName) in relevantAliases
-        }
-        .toSet()
-        .size
-    val groupGoal = reachedGoal(
-        previous = previousGroupCount,
-        current = currentGroupCount,
-        goals = listOf(1, 3, 5, 10)
-    )
-
-    return if (groupGoal != null) {
-        CelebrationMessage(
-            title = "Quest geschafft: $groupGoal ${matchedGroupConfig.first}!",
-            subtitle = "Deine ${matchedGroupConfig.first}-Quest hat eine neue Stufe erreicht."
-        )
-    } else {
-        null
-    }
 }
 
 @Composable
@@ -7553,6 +7625,17 @@ fun ProfileScreen(
         runCatching { ProfileCollectionDateFilter.valueOf(profileCollectionDateFilter) }
             .getOrDefault(ProfileCollectionDateFilter.ALL)
     }
+    val xpSnapshot = remember(
+        currentUserId,
+        totalFindings,
+        collectedAnimalCount,
+        findings.size
+    ) {
+        XpProgressRepository.buildSnapshot(
+            prefs = prefs,
+            userId = currentUserId
+        )
+    }
     val filteredAndSortedProfileFindings = remember(
         findings,
         activeProfileCollectionDateFilter,
@@ -7942,10 +8025,81 @@ fun ProfileScreen(
                         }
                     }
 
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(18.dp),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = CardBackground,
+                            contentColor = TextPrimary
+                        )
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Column(
+                                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                                ) {
+                                    Text(
+                                        text = "Level ${xpSnapshot.level}",
+                                        style = MaterialTheme.typography.titleLarge,
+                                        color = TextPrimary
+                                    )
+                                    Text(
+                                        text = xpSnapshot.title,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = TextSecondary
+                                    )
+                                }
+                                Text(
+                                    text = "${xpSnapshot.totalXp} XP",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    color = PrimaryGreen
+                                )
+                            }
+
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(14.dp)
+                                    .border(
+                                        border = BorderStroke(1.dp, BorderColor),
+                                        shape = RoundedCornerShape(999.dp)
+                                    )
+                                    .clip(RoundedCornerShape(999.dp))
+                                    .background(Color(0xFFF6F7F8))
+                                    .padding(2.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth(xpSnapshot.progressWithinLevel)
+                                        .fillMaxHeight()
+                                        .clip(RoundedCornerShape(4.dp))
+                                        .background(PrimaryGreen)
+                                )
+                            }
+
+                            Text(
+                                text = xpSnapshot.nextLevelStartXp?.let {
+                                    val xpForCurrentLevel = xpSnapshot.xpIntoCurrentLevel + xpSnapshot.xpNeededForNextLevel
+                                    "${xpSnapshot.xpIntoCurrentLevel} / $xpForCurrentLevel XP"
+                                } ?: "Max-Level erreicht",
+                                modifier = Modifier.fillMaxWidth(),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = TextSecondary,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 8.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Card(
