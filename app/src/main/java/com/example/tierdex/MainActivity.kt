@@ -637,7 +637,10 @@ data class TierdexNotification(
     val createdAtText: String,
     val createdAt: Timestamp? = null,
     val isRead: Boolean,
-    val relatedUserId: String? = null
+    val relatedUserId: String? = null,
+    val relatedOwnerUserId: String? = null,
+    val relatedFindingId: String? = null,
+    val relatedAnimalId: String? = null
 )
 
 private fun friendRequestNotificationId(request: FriendRequest): String =
@@ -1987,7 +1990,10 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                     createdAtText = formatNotificationTimestamp(createdAt),
                                     createdAt = createdAt,
                                     isRead = notificationId in readIds,
-                                    relatedUserId = likerUid
+                                    relatedUserId = likerUid,
+                                    relatedOwnerUserId = currentUserId,
+                                    relatedFindingId = findingId,
+                                    relatedAnimalId = findingDocument.getString("animalId")
                                 )
                             }
                             finishLoad()
@@ -2019,7 +2025,10 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                     createdAtText = formatNotificationTimestamp(createdAt),
                                     createdAt = createdAt,
                                     isRead = notificationId in readIds,
-                                    relatedUserId = commenterUid
+                                    relatedUserId = commenterUid,
+                                    relatedOwnerUserId = currentUserId,
+                                    relatedFindingId = findingId,
+                                    relatedAnimalId = findingDocument.getString("animalId")
                                 )
                             }
                             finishLoad()
@@ -2515,8 +2524,49 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         onBack = { showNotificationsScreen = false },
                         onNotificationClick = { notification ->
                             markNotificationAsRead(notification.id)
-                            showNotificationsScreen = false
-                            currentTab = AppTab.FRIENDS
+                            when (notification.type) {
+                                "friend_request" -> {
+                                    showNotificationsScreen = false
+                                    currentTab = AppTab.FRIENDS
+                                }
+
+                                "like", "comment" -> {
+                                    val relatedOwnerUserId = notification.relatedOwnerUserId?.trim().orEmpty()
+                                    val relatedFindingId = notification.relatedFindingId?.trim().orEmpty()
+                                    val matchedFinding = if (
+                                        relatedOwnerUserId.isNotBlank() &&
+                                        relatedFindingId.isNotBlank() &&
+                                        relatedOwnerUserId == currentOwnerId
+                                    ) {
+                                        findingsFromRoom.firstOrNull { finding ->
+                                            FirestoreFindingRepository.documentIdForFinding(finding)
+                                                .trim() == relatedFindingId
+                                        }
+                                    } else {
+                                        null
+                                    }
+
+                                    if (matchedFinding != null) {
+                                        showNotificationsScreen = false
+                                        selectedFindingDetail = matchedFinding
+                                        selectedFindingDetailSource = currentTab.name
+                                        selectedFindingToEdit = null
+                                        findingEditReturnSource = currentTab.name
+                                        startInFindingEditMode = false
+                                        openCreateFindingMode = false
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "Fund konnte nicht geöffnet werden.",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
+
+                                else -> {
+                                    showNotificationsScreen = false
+                                }
+                            }
                             refreshNotifications()
                         },
                         onMarkAllAsRead = { markAllNotificationsAsRead() },
@@ -2529,8 +2579,14 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                     val findingDetail = selectedFindingDetail ?: return@Box
                     FundDetailScreen(
                         modifier = Modifier.padding(innerPadding),
+                        currentUserId = currentOwnerId,
+                        currentDisplayName = currentDisplayName,
                         finding = findingDetail,
                         animal = selectedFindingAnimal,
+                        findingOwnerUserId = currentOwnerId,
+                        findingDocumentId = currentOwnerId?.takeIf { it.isNotBlank() }?.let {
+                            FirestoreFindingRepository.documentIdForFinding(findingDetail).trim()
+                        },
                         onBackClick = {
                             selectedFindingDetail = null
                             selectedFindingDetailSource = null
@@ -8059,6 +8115,7 @@ fun ProfileScreen(
     var profileBio by rememberSaveable(preferenceOwnerId) {
         mutableStateOf(prefs.getString(profileBioKey(preferenceOwnerId), "").orEmpty())
     }
+    var friendNamesById by remember(currentUserId) { mutableStateOf<Map<String, String>>(emptyMap()) }
     var profileImageUri by rememberSaveable(preferenceOwnerId) {
         mutableStateOf(prefs.getString(profileImageKey(preferenceOwnerId), "").orEmpty())
     }
@@ -8151,6 +8208,19 @@ fun ProfileScreen(
                     Log.e("ProfileScreen", "Firestore test load failed: $error")
                 }
             )
+            FriendRepository.loadFriends(
+                currentUserId = currentUserId,
+                onResult = { friends ->
+                    friendNamesById = friends.associate { friend ->
+                        friend.userId to friend.displayName.trim()
+                    }
+                },
+                onError = {
+                    friendNamesById = emptyMap()
+                }
+            )
+        } else {
+            friendNamesById = emptyMap()
         }
     }
 
@@ -8878,8 +8948,59 @@ fun ProfileScreen(
             ) { finding ->
                 val animal = animalById[finding.animalId]
                 val ownPhotoSources = effectiveOwnPhotoSources(finding)
+                val findingDocumentId = remember(finding) {
+                    FirestoreFindingRepository.documentIdForFinding(finding).trim()
+                }
+                val taggedFriendsSummary = remember(
+                    finding.taggedFriendIds,
+                    currentUserId,
+                    currentDisplayName,
+                    friendNamesById
+                ) {
+                    currentUserId?.takeIf { it.isNotBlank() }?.let { ownerUserId ->
+                        taggedFriendsSummaryText(
+                            taggedFriendIds = finding.taggedFriendIds,
+                            currentUserId = currentUserId,
+                            ownerUserId = ownerUserId,
+                            ownerDisplayName = currentDisplayName.orEmpty(),
+                            friendNamesById = friendNamesById
+                        )
+                    }
+                }
                 var currentPhotoPage by remember(finding.roomId, finding.photoUri, finding.photoUris) {
                     mutableStateOf(0)
+                }
+                var likeCount by remember(currentUserId, findingDocumentId) { mutableStateOf(0) }
+                var commentCount by remember(currentUserId, findingDocumentId) { mutableStateOf(0) }
+
+                LaunchedEffect(currentUserId, findingDocumentId) {
+                    val safeUserId = currentUserId?.trim().orEmpty()
+                    if (safeUserId.isBlank() || findingDocumentId.isBlank()) {
+                        likeCount = 0
+                        commentCount = 0
+                        return@LaunchedEffect
+                    }
+                    FriendRepository.loadLikeInfoForFinding(
+                        ownerUserId = safeUserId,
+                        findingId = findingDocumentId,
+                        currentUserId = safeUserId,
+                        onResult = { loadedLikeCount, _ ->
+                            likeCount = loadedLikeCount
+                        },
+                        onError = {
+                            likeCount = 0
+                        }
+                    )
+                    FriendRepository.loadCommentCountForFinding(
+                        ownerUserId = safeUserId,
+                        findingId = findingDocumentId,
+                        onResult = { loadedCommentCount ->
+                            commentCount = loadedCommentCount
+                        },
+                        onError = {
+                            commentCount = 0
+                        }
+                    )
                 }
 
                 Card(
@@ -8927,6 +9048,21 @@ fun ProfileScreen(
                             FindingPhotoCounter(
                                 currentPage = currentPhotoPage,
                                 totalCount = ownPhotoSources.size
+                            )
+                        }
+
+                        if (currentUserId?.isNotBlank() == true) {
+                            FriendFindingEngagementSummary(
+                                likeCount = likeCount,
+                                commentCount = commentCount
+                            )
+                        }
+
+                        taggedFriendsSummary?.let {
+                            Text(
+                                text = it,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = TextSecondary
                             )
                         }
 
@@ -9444,19 +9580,122 @@ fun StatisticsScreen(
 @Composable
 fun FundDetailScreen(
     modifier: Modifier = Modifier,
+    currentUserId: String?,
+    currentDisplayName: String?,
     finding: AnimalFinding,
     animal: AnimalEntry?,
+    findingOwnerUserId: String?,
+    findingDocumentId: String?,
     onBackClick: () -> Unit,
     onEditFinding: (AnimalFinding) -> Unit,
     onOpenAnimalDetails: (AnimalFinding) -> Unit
 ) {
     val photoSources = effectiveOwnPhotoSources(finding)
     var selectedPhotoPage by remember(finding.roomId, photoSources) { mutableStateOf(0) }
+    var likeCount by remember(findingOwnerUserId, findingDocumentId) { mutableStateOf(0) }
+    var commentCount by remember(findingOwnerUserId, findingDocumentId) { mutableStateOf(0) }
+    var comments by remember(findingOwnerUserId, findingDocumentId) {
+        mutableStateOf<List<FriendFindingComment>>(emptyList())
+    }
+    var socialLoading by remember(findingOwnerUserId, findingDocumentId) { mutableStateOf(false) }
+    var socialErrorMessage by remember(findingOwnerUserId, findingDocumentId) { mutableStateOf<String?>(null) }
+    var friendNamesById by remember(currentUserId) { mutableStateOf<Map<String, String>>(emptyMap()) }
     val locationDetailText = when {
         finding.locationSource == "map" -> "Standort auf Karte gewählt"
         finding.locationSource == "gps" ||
             (finding.latitude != null && finding.longitude != null) -> "GPS-Standort gespeichert"
         else -> null
+    }
+    val taggedFriendsSummary = remember(
+        finding.taggedFriendIds,
+        currentUserId,
+        findingOwnerUserId,
+        currentDisplayName,
+        friendNamesById
+    ) {
+        val ownerUserId = findingOwnerUserId?.takeIf { it.isNotBlank() } ?: return@remember null
+        taggedFriendsSummaryText(
+            taggedFriendIds = finding.taggedFriendIds,
+            currentUserId = currentUserId,
+            ownerUserId = ownerUserId,
+            ownerDisplayName = currentDisplayName.orEmpty(),
+            friendNamesById = friendNamesById
+        )
+    }
+
+    LaunchedEffect(currentUserId) {
+        val safeUserId = currentUserId?.trim().orEmpty()
+        if (safeUserId.isBlank()) {
+            friendNamesById = emptyMap()
+            return@LaunchedEffect
+        }
+        FriendRepository.loadFriends(
+            currentUserId = safeUserId,
+            onResult = { friends ->
+                friendNamesById = friends.associate { friend ->
+                    friend.userId to friend.displayName.trim()
+                }
+            },
+            onError = {
+                friendNamesById = emptyMap()
+            }
+        )
+    }
+
+    LaunchedEffect(currentUserId, findingOwnerUserId, findingDocumentId) {
+        val safeOwnerUserId = findingOwnerUserId?.trim().orEmpty()
+        val safeFindingId = findingDocumentId?.trim().orEmpty()
+        val safeCurrentUserId = currentUserId?.trim().orEmpty()
+        if (safeOwnerUserId.isBlank() || safeFindingId.isBlank() || safeCurrentUserId.isBlank()) {
+            likeCount = 0
+            commentCount = 0
+            comments = emptyList()
+            socialErrorMessage = null
+            socialLoading = false
+            return@LaunchedEffect
+        }
+
+        socialLoading = true
+        socialErrorMessage = null
+        var pendingLoads = 2
+
+        fun finishLoad() {
+            pendingLoads -= 1
+            if (pendingLoads <= 0) {
+                socialLoading = false
+            }
+        }
+
+        FriendRepository.loadLikeInfoForFinding(
+            ownerUserId = safeOwnerUserId,
+            findingId = safeFindingId,
+            currentUserId = safeCurrentUserId,
+            onResult = { loadedLikeCount, _ ->
+                likeCount = loadedLikeCount
+                finishLoad()
+            },
+            onError = { exception ->
+                likeCount = 0
+                socialErrorMessage = socialErrorMessage ?: exception.message
+                finishLoad()
+            }
+        )
+
+        FriendRepository.loadCommentsForFinding(
+            ownerUserId = safeOwnerUserId,
+            findingId = safeFindingId,
+            onResult = { loadedComments ->
+                comments = loadedComments
+                commentCount = loadedComments.size
+                finishLoad()
+            },
+            onError = { exception ->
+                comments = emptyList()
+                commentCount = 0
+                socialErrorMessage = socialErrorMessage ?: exception.message
+                finishLoad()
+            }
+        )
     }
 
     LazyColumn(
@@ -9609,6 +9848,19 @@ fun FundDetailScreen(
                         )
                     }
 
+                    taggedFriendsSummary?.let {
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = TextSecondary
+                        )
+                    }
+
+                    FriendFindingEngagementSummary(
+                        likeCount = likeCount,
+                        commentCount = commentCount
+                    )
+
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
@@ -9629,6 +9881,85 @@ fun FundDetailScreen(
                         ) {
                             Text("Tierdetails")
                         }
+                    }
+                }
+            }
+        }
+
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(20.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+                colors = CardDefaults.cardColors(containerColor = CardBackground)
+            ) {
+                Column(
+                    modifier = Modifier.padding(20.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = "Kommentare",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = TextPrimary
+                    )
+                    when {
+                        socialLoading -> {
+                            Text(
+                                text = "Kommentare werden geladen …",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = TextSecondary
+                            )
+                        }
+
+                        comments.isEmpty() -> {
+                            Text(
+                                text = "Noch keine Kommentare.",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = TextSecondary
+                            )
+                        }
+
+                        else -> {
+                            comments.forEach { comment ->
+                                Column(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalArrangement = Arrangement.spacedBy(3.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = comment.commenterDisplayName.ifBlank { "Unbenannter Nutzer" },
+                                            style = MaterialTheme.typography.labelMedium,
+                                            color = TextPrimary,
+                                            fontWeight = FontWeight.SemiBold
+                                        )
+                                        comment.createdAt?.let {
+                                            Text(
+                                                text = formatNotificationTimestamp(it),
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = TextSecondary
+                                            )
+                                        }
+                                    }
+                                    Text(
+                                        text = comment.text,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = TextPrimary
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    socialErrorMessage?.takeIf { it.isNotBlank() }?.let {
+                        Text(
+                            text = it,
+                            style = MaterialTheme.typography.bodySmall,
+                            color = TextSecondary
+                        )
                     }
                 }
             }
