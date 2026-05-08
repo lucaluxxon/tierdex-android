@@ -744,15 +744,20 @@ fun normalizePhotoList(
     photoValues: List<String>,
     fallbackPhotoValue: String = ""
 ): List<String> {
-    val normalizedPhotos = photoValues
-        .map { it.trim() }
-        .filter { it.isNotBlank() }
-        .distinct()
+    val normalizedPhotos = LinkedHashSet<String>()
+    photoValues.forEach { photoValue ->
+        val trimmedValue = photoValue.trim()
+        if (trimmedValue.isNotBlank()) {
+            normalizedPhotos += trimmedValue
+        }
+    }
 
-    return (normalizedPhotos + listOf(fallbackPhotoValue.trim()))
-        .filter { it.isNotBlank() }
-        .distinct()
-        .take(3)
+    val trimmedFallback = fallbackPhotoValue.trim()
+    if (trimmedFallback.isNotBlank()) {
+        normalizedPhotos += trimmedFallback
+    }
+
+    return normalizedPhotos.take(3)
 }
 
 fun effectiveLocalPhotoUris(finding: AnimalFinding): List<String> {
@@ -771,8 +776,13 @@ fun effectiveRemotePhotoPaths(finding: AnimalFinding): List<String> {
 
 fun effectiveOwnPhotoSources(finding: AnimalFinding): List<String> {
     val localPhotoUris = effectiveLocalPhotoUris(finding)
-    val remotePhotoUris = effectiveRemotePhotoPaths(finding).map(::storageUriFromPath)
-    return (localPhotoUris + remotePhotoUris)
+    if (localPhotoUris.isNotEmpty()) {
+        return localPhotoUris.take(3)
+    }
+
+    return effectiveRemotePhotoPaths(finding)
+        .map(::storageUriFromPath)
+        .map { it.trim() }
         .filter { it.isNotBlank() }
         .distinct()
         .take(3)
@@ -800,7 +810,11 @@ fun effectiveFriendPhotoSources(
         )
     }
 
-    val resolvedSources = (effectiveRemotePreviewUris + localPhotoUris)
+    val resolvedSources = if (effectiveRemotePreviewUris.isNotEmpty()) {
+        effectiveRemotePreviewUris
+    } else {
+        localPhotoUris
+    }.map { it.trim() }
         .filter { it.isNotBlank() }
         .distinct()
         .take(3)
@@ -816,7 +830,8 @@ fun effectiveFriendPhotoSources(
 }
 
 private fun hasAnyFindingPhoto(finding: AnimalFinding): Boolean {
-    return effectiveOwnPhotoSources(finding).isNotEmpty()
+    return effectiveLocalPhotoUris(finding).isNotEmpty() ||
+        effectiveRemotePhotoPaths(finding).isNotEmpty()
 }
 
 private fun preferredOwnedFindingPhotoUri(finding: AnimalFinding): String? {
