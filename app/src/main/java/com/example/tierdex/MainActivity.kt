@@ -3,6 +3,7 @@
 import android.Manifest
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -22,7 +23,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
@@ -1327,7 +1330,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
 
     var wishlistAnimalId by rememberSaveable { mutableStateOf<String?>(null) }
     var wishlistCelebrationMessage by rememberSaveable { mutableStateOf<CelebrationMessage?>(null) }
-    var questLevelUpMessage by rememberSaveable { mutableStateOf<CelebrationMessage?>(null) }
+    var xpPopupMessage by remember { mutableStateOf<XpPopupMessage?>(null) }
     var previousOwnerId by rememberSaveable { mutableStateOf(ownerId) }
     var lastSyncedAnimalPreferenceSignature by rememberSaveable { mutableStateOf<String?>(null) }
 
@@ -1691,10 +1694,10 @@ fun TierdexApp(database: AnimalFindingDatabase) {
             wishlistCelebrationMessage = null
         }
     }
-    LaunchedEffect(questLevelUpMessage) {
-        if (questLevelUpMessage != null) {
-            delay(2200)
-            questLevelUpMessage = null
+    LaunchedEffect(xpPopupMessage?.id) {
+        if (xpPopupMessage != null) {
+            delay(if (xpPopupMessage?.levelUpTitle != null) 6400 else 5200)
+            xpPopupMessage = null
         }
     }
     LaunchedEffect(ownerId, currentDisplayName) {
@@ -1710,6 +1713,32 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                     )
                 }
             }
+        }
+    }
+    LaunchedEffect(currentOwnerId) {
+        val safeOwnerId = currentOwnerId ?: return@LaunchedEffect
+        val dailyLoginKey = "daily_login:${currentDailyDateKey()}"
+        val xpSnapshotBeforeDailyLogin = XpProgressRepository.buildSnapshot(
+            prefs = prefs,
+            userId = safeOwnerId
+        )
+        val dailyLoginResult = XpProgressRepository.grantXpAwardsIfAbsent(
+            prefs = prefs,
+            userId = safeOwnerId,
+            awards = listOf(dailyLoginKey to 2)
+        )
+        if (dailyLoginKey in dailyLoginResult.grantedKeys) {
+            val xpSnapshotAfterDailyLogin = XpProgressRepository.buildSnapshot(
+                prefs = prefs,
+                userId = safeOwnerId
+            )
+            xpPopupMessage = buildSimpleXpPopupMessage(
+                reason = "Täglicher Login",
+                detail = "",
+                awardedXp = dailyLoginResult.awardedXp,
+                previousSnapshot = xpSnapshotBeforeDailyLogin,
+                currentSnapshot = xpSnapshotAfterDailyLogin
+            )
         }
     }
     LaunchedEffect(ownerId, preferenceOwnerId, wishlistAnimalId, favoriteAnimalId) {
@@ -2537,6 +2566,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         startInCreateMode = openCreateFindingMode && selectedFindingToEdit == null,
                         startInFindingEditMode = startInFindingEditMode,
                         dailyAnimalHistoryText = selectedAnimalDailyAnimalHistoryText,
+                        onSocialXpFeedback = { popupMessage ->
+                            xpPopupMessage = popupMessage
+                        },
                         onOpenFindingDetail = { finding ->
                             selectedFindingDetail = finding
                             selectedFindingDetailSource = FINDING_NAV_SOURCE_ANIMAL_DETAIL
@@ -2591,6 +2623,10 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                 )
                                 val previousFindings = findingsFromRoom
                                 val currentFindingsForQuestCheck = previousFindings + localFinding
+                                val xpSnapshotBeforeSave = XpProgressRepository.buildSnapshot(
+                                    prefs = prefs,
+                                    userId = currentOwnerId
+                                )
                                 val baseFindingAwards = buildBaseFindingXpAwards(
                                     previousFindings = previousFindings,
                                     newFinding = localFinding
@@ -2614,9 +2650,17 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                 val grantedQuestStages = newlyCompletedQuestStages.filter { quest ->
                                     quest.awardKey in awardedXpResult.grantedKeys
                                 }
-                                val questCelebration = buildQuestCelebrationMessage(
-                                    awardedQuests = grantedQuestStages,
-                                    awardedXp = awardedXpResult.awardedXp
+                                val xpSnapshotAfterSave = XpProgressRepository.buildSnapshot(
+                                    prefs = prefs,
+                                    userId = currentOwnerId
+                                )
+                                val xpGainPopup = buildXpAwardPopupMessage(
+                                    awardedXp = awardedXpResult.awardedXp,
+                                    grantedKeys = awardedXpResult.grantedKeys,
+                                    baseFindingAwards = baseFindingAwards,
+                                    grantedQuestStages = grantedQuestStages,
+                                    previousSnapshot = xpSnapshotBeforeSave,
+                                    currentSnapshot = xpSnapshotAfterSave
                                 )
 
                                 val roomInsertStartedAt = SystemClock.elapsedRealtime()
@@ -2642,10 +2686,10 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                     )
                                 }
 
-                                questLevelUpMessage = questCelebration
+                                xpPopupMessage = xpGainPopup
                                 Log.d(
                                     "FindingSaveTiming",
-                                    "questLevelUpMessage set animalId=${localFindingWithRoomId.animalId} hasQuestCelebration=${questCelebration != null} elapsedMs=${SystemClock.elapsedRealtime() - saveStartedAt}"
+                                    "xpPopupMessage set animalId=${localFindingWithRoomId.animalId} hasXpPopup=${xpGainPopup != null} elapsedMs=${SystemClock.elapsedRealtime() - saveStartedAt}"
                                 )
                                 Log.d(
                                     "FindingSaveTiming",
@@ -3183,6 +3227,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             friendUserId = selectedFriendUserId,
                             initialDisplayName = selectedFriendProfileDisplayName,
                             allAnimals = animals,
+                            onSocialXpFeedback = { popupMessage ->
+                                xpPopupMessage = popupMessage
+                            },
                             onBack = {
                                 selectedFriendProfileUserId = null
                                 selectedFriendProfileDisplayName = null
@@ -3203,6 +3250,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                 selectedFriendProfileUserId = friendUserId
                                 selectedFriendProfileDisplayName = friendDisplayName
                                 isFriendSearchOpen = false
+                            },
+                            onSocialXpFeedback = { popupMessage ->
+                                xpPopupMessage = popupMessage
                             },
                             extraTopPadding = innerPadding.calculateTopPadding(),
                             extraBottomPadding = innerPadding.calculateBottomPadding()
@@ -3344,13 +3394,13 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         end = 16.dp
                     )
             )
-            CelebrationBanner(
-                visible = questLevelUpMessage != null,
-                message = questLevelUpMessage,
+            XpGainPopup(
+                visible = xpPopupMessage != null,
+                message = xpPopupMessage,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .padding(
-                        top = innerPadding.calculateTopPadding() + 108.dp,
+                        top = innerPadding.calculateTopPadding() + 62.dp,
                         start = 16.dp,
                         end = 16.dp
                     )
@@ -3447,6 +3497,174 @@ fun CelebrationBanner(
                     style = MaterialTheme.typography.bodyMedium,
                     color = TextSecondary
                 )
+            }
+        }
+    }
+}
+
+@Composable
+fun XpGainPopup(
+    visible: Boolean,
+    message: XpPopupMessage?,
+    modifier: Modifier = Modifier
+) {
+    val scale by animateFloatAsState(
+        targetValue = if (visible) 1f else 0.96f,
+        animationSpec = tween(durationMillis = 220),
+        label = "xpPopupScale"
+    )
+    val containerColor by animateColorAsState(
+        targetValue = if (visible) PrimaryGreenSoft.copy(alpha = 0.98f) else PrimaryGreenSoft.copy(alpha = 0.92f),
+        animationSpec = tween(durationMillis = 260),
+        label = "xpPopupContainerColor"
+    )
+    val progressAnim = remember(message?.id) {
+        Animatable(message?.beforeSnapshot?.progressWithinLevel ?: 0f)
+    }
+
+    LaunchedEffect(message?.id, visible) {
+        val currentMessage = message ?: return@LaunchedEffect
+        if (!visible) return@LaunchedEffect
+
+        progressAnim.snapTo(currentMessage.beforeSnapshot.progressWithinLevel)
+        if (currentMessage.afterSnapshot.level == currentMessage.beforeSnapshot.level) {
+            progressAnim.animateTo(
+                targetValue = currentMessage.afterSnapshot.progressWithinLevel,
+                animationSpec = tween(durationMillis = 650)
+            )
+        } else {
+            progressAnim.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(durationMillis = 420)
+            )
+            progressAnim.snapTo(0f)
+            progressAnim.animateTo(
+                targetValue = currentMessage.afterSnapshot.progressWithinLevel,
+                animationSpec = tween(durationMillis = 520)
+            )
+        }
+    }
+
+    AnimatedVisibility(
+        visible = visible && message != null,
+        modifier = modifier,
+        enter = fadeIn() + slideInVertically(initialOffsetY = { -it / 3 }) + scaleIn(initialScale = 0.96f),
+        exit = fadeOut() + slideOutVertically(targetOffsetY = { -it / 4 }) + scaleOut(targetScale = 0.98f)
+    ) {
+        val currentMessage = message ?: return@AnimatedVisibility
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .graphicsLayer {
+                    scaleX = scale
+                    scaleY = scale
+                },
+            shape = RoundedCornerShape(22.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
+            colors = CardDefaults.cardColors(containerColor = containerColor),
+            border = BorderStroke(1.dp, PrimaryGreen.copy(alpha = 0.24f))
+        ) {
+            Column(
+                modifier = Modifier.padding(horizontal = 18.dp, vertical = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(
+                        modifier = Modifier.weight(1f),
+                        verticalArrangement = Arrangement.spacedBy(2.dp)
+                    ) {
+                        Text(
+                            text = currentMessage.reason,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = TextPrimary
+                        )
+                        Text(
+                            text = "Level ${currentMessage.afterSnapshot.level} • ${currentMessage.afterSnapshot.title}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = TextSecondary
+                        )
+                    }
+                    Text(
+                        text = currentMessage.xpLabel,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = PrimaryGreen,
+                        textAlign = TextAlign.End
+                    )
+                }
+
+                if (currentMessage.detail.isNotBlank()) {
+                    Text(
+                        text = currentMessage.detail,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextSecondary
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(12.dp)
+                        .border(
+                            border = BorderStroke(1.dp, BorderColor),
+                            shape = RoundedCornerShape(999.dp)
+                        )
+                        .clip(RoundedCornerShape(999.dp))
+                        .background(Color(0xFFF6F7F8))
+                        .padding(2.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(progressAnim.value.coerceIn(0f, 1f))
+                            .fillMaxHeight()
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(PrimaryGreen)
+                    )
+                }
+
+                Text(
+                    text = currentMessage.afterSnapshot.nextLevelStartXp?.let {
+                        val xpForCurrentLevel = currentMessage.afterSnapshot.xpIntoCurrentLevel +
+                            currentMessage.afterSnapshot.xpNeededForNextLevel
+                        "${currentMessage.afterSnapshot.xpIntoCurrentLevel} / $xpForCurrentLevel XP"
+                    } ?: "Max-Level erreicht",
+                    modifier = Modifier.fillMaxWidth(),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = TextSecondary,
+                    textAlign = TextAlign.Center
+                )
+
+                if (currentMessage.levelUpTitle != null && currentMessage.levelUpSubtitle != null) {
+                    Card(
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.White.copy(alpha = 0.72f),
+                            contentColor = TextPrimary
+                        ),
+                        border = BorderStroke(1.dp, PrimaryGreen.copy(alpha = 0.2f))
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 14.dp, vertical = 12.dp),
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Text(
+                                text = currentMessage.levelUpTitle,
+                                style = MaterialTheme.typography.labelLarge,
+                                color = PrimaryGreen
+                            )
+                            Text(
+                                text = currentMessage.levelUpSubtitle,
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = TextPrimary
+                            )
+                        }
+                    }
+                }
             }
         }
     }
@@ -4864,6 +5082,17 @@ data class CelebrationMessage(
     val subtitle: String
 )
 
+data class XpPopupMessage(
+    val id: Long = SystemClock.elapsedRealtime(),
+    val reason: String,
+    val xpLabel: String,
+    val detail: String,
+    val beforeSnapshot: XpProgressSnapshot,
+    val afterSnapshot: XpProgressSnapshot,
+    val levelUpTitle: String? = null,
+    val levelUpSubtitle: String? = null
+)
+
 @Composable
 fun QuestCard(quest: QuestUiModel) {
     Card(
@@ -5263,45 +5492,156 @@ fun detectNewlyCompletedQuestStages(
     }
 }
 
-fun buildQuestCelebrationMessage(
-    awardedQuests: List<QuestUiModel>,
-    awardedXp: Int
-): CelebrationMessage? {
-    if (awardedQuests.isEmpty() || awardedXp <= 0) return null
+fun buildXpAwardPopupMessage(
+    awardedXp: Int,
+    grantedKeys: Set<String>,
+    baseFindingAwards: List<Pair<String, Int>>,
+    grantedQuestStages: List<QuestUiModel>,
+    previousSnapshot: XpProgressSnapshot,
+    currentSnapshot: XpProgressSnapshot
+): XpPopupMessage? {
+    if (awardedXp <= 0) return null
 
-    if (awardedQuests.size > 1) {
-        return CelebrationMessage(
-            title = "Mehrere Quests geschafft!",
-            subtitle = "Du hast ${awardedQuests.size} Queststufen abgeschlossen und +$awardedXp XP erhalten."
-        )
+    val grantedBaseFindingXp = baseFindingAwards.firstOrNull { (awardKey, _) ->
+        awardKey in grantedKeys && awardKey.startsWith("finding_base:")
+    }?.second
+    val grantedPhotoXp = baseFindingAwards.any { (awardKey, _) ->
+        awardKey in grantedKeys && awardKey.startsWith("finding_photo:")
+    }
+    val grantedLocationXp = baseFindingAwards.any { (awardKey, _) ->
+        awardKey in grantedKeys && awardKey.startsWith("finding_location:")
+    }
+    val grantedQuestXp = grantedQuestStages.sumOf { it.xpReward ?: 0 }
+
+    val summaryParts = buildList {
+        when (grantedBaseFindingXp) {
+            10 -> add("Artfund")
+            5 -> add("Artfund")
+            3 -> add("Artfund")
+        }
+        if (grantedPhotoXp) add("Foto")
+        if (grantedLocationXp) add("Standort")
+        when (grantedQuestStages.size) {
+            1 -> add("Quest abgeschlossen")
+            in 2..Int.MAX_VALUE -> add("${grantedQuestStages.size} Quests")
+        }
+    }.distinct()
+
+    val subtitle = summaryParts.joinToString(" • ")
+
+    val reason = when {
+        grantedQuestStages.size == 1 &&
+            grantedBaseFindingXp == null &&
+            !grantedPhotoXp &&
+            !grantedLocationXp -> "Quest abgeschlossen"
+        grantedQuestStages.size > 1 -> "Mehrere Belohnungen"
+        grantedBaseFindingXp != null -> "Artfund"
+        else -> "Fund gespeichert"
     }
 
-    val quest = awardedQuests.first()
-    val title = when (quest.type) {
-        QuestType.TOTAL_FINDINGS -> "Quest geschafft: ${quest.goal} Funde!"
-        QuestType.PHOTO_FINDINGS -> "Quest geschafft: ${quest.goal} Foto-Funde!"
-        QuestType.DAILY_ANIMAL -> "Quest geschafft: Tier des Tages!"
-        QuestType.TOTAL_SPECIES_PERCENT -> "Quest geschafft: ${quest.goal}% Tierdex!"
-        QuestType.BIRDS,
-        QuestType.FISH,
-        QuestType.MAMMALS,
-        QuestType.AMPHIBIANS,
-        QuestType.REPTILES -> "Quest geschafft: ${quest.goal} ${quest.title}!"
+    return XpPopupMessage(
+        reason = reason,
+        xpLabel = if (summaryParts.size > 1) "Gesamt +$awardedXp XP" else "+$awardedXp XP",
+        detail = subtitle,
+        beforeSnapshot = previousSnapshot,
+        afterSnapshot = currentSnapshot,
+        levelUpTitle = if (currentSnapshot.level > previousSnapshot.level) "Levelaufstieg!" else null,
+        levelUpSubtitle = if (currentSnapshot.level > previousSnapshot.level) {
+            "Level ${currentSnapshot.level} • ${currentSnapshot.title}"
+        } else {
+            null
+        }
+    )
+}
+
+fun buildSimpleXpPopupMessage(
+    reason: String,
+    detail: String,
+    awardedXp: Int,
+    previousSnapshot: XpProgressSnapshot,
+    currentSnapshot: XpProgressSnapshot
+): XpPopupMessage? {
+    if (awardedXp <= 0) return null
+
+    return XpPopupMessage(
+        reason = reason,
+        xpLabel = "+$awardedXp XP",
+        detail = detail,
+        beforeSnapshot = previousSnapshot,
+        afterSnapshot = currentSnapshot,
+        levelUpTitle = if (currentSnapshot.level > previousSnapshot.level) "Levelaufstieg!" else null,
+        levelUpSubtitle = if (currentSnapshot.level > previousSnapshot.level) {
+            "Level ${currentSnapshot.level} • ${currentSnapshot.title}"
+        } else {
+            null
+        }
+    )
+}
+
+fun grantSocialXpIfEligible(
+    prefs: SharedPreferences,
+    userId: String?,
+    findingOwnerId: String?,
+    findingId: String,
+    actionType: String,
+    uniqueSuffix: String = ""
+): XpPopupMessage? {
+    val cleanUserId = userId?.trim().orEmpty()
+    val cleanFindingOwnerId = findingOwnerId?.trim().orEmpty()
+    val cleanFindingId = findingId.trim()
+    if (cleanUserId.isBlank() || cleanFindingOwnerId.isBlank() || cleanFindingId.isBlank()) {
+        return null
     }
-    val subtitle = when (quest.type) {
-        QuestType.TOTAL_FINDINGS -> "Deine Gesamtfund-Quest hat eine neue Stufe erreicht. +$awardedXp XP"
-        QuestType.PHOTO_FINDINGS -> "Deine Fotoquest hat eine neue Stufe erreicht. +$awardedXp XP"
-        QuestType.DAILY_ANIMAL -> "Du hast die Tagesquest abgeschlossen und +$awardedXp XP erhalten."
-        QuestType.TOTAL_SPECIES_PERCENT -> "Dein Tierdex-Fortschritt hat eine neue Prozentstufe erreicht. +$awardedXp XP"
-        QuestType.BIRDS,
-        QuestType.FISH,
-        QuestType.MAMMALS,
-        QuestType.AMPHIBIANS,
-        QuestType.REPTILES -> "Deine ${quest.title}-Quest hat eine neue Stufe erreicht. +$awardedXp XP"
+    if (cleanUserId == cleanFindingOwnerId) {
+        return null
     }
-    return CelebrationMessage(
-        title = title,
-        subtitle = subtitle
+
+    val dateKey = currentDailyDateKey()
+    val socialPrefix = when (actionType) {
+        "like" -> "social_like"
+        "comment" -> "social_comment"
+        else -> return null
+    }
+    val awardedTodayCount = XpProgressRepository.loadAwardedXpKeys(prefs, cleanUserId).count { awardKey ->
+        awardKey.startsWith("$socialPrefix:$dateKey:")
+    }
+    if (awardedTodayCount >= 3) {
+        return null
+    }
+
+    val awardKey = when (actionType) {
+        "like" -> "$socialPrefix:$dateKey:$cleanFindingOwnerId:$cleanFindingId"
+        else -> {
+            val cleanUniqueSuffix = uniqueSuffix.trim().ifBlank {
+                System.currentTimeMillis().toString()
+            }
+            "$socialPrefix:$dateKey:$cleanFindingOwnerId:$cleanFindingId:$cleanUniqueSuffix"
+        }
+    }
+
+    val previousSnapshot = XpProgressRepository.buildSnapshot(
+        prefs = prefs,
+        userId = cleanUserId
+    )
+    val awardResult = XpProgressRepository.grantXpAwardsIfAbsent(
+        prefs = prefs,
+        userId = cleanUserId,
+        awards = listOf(awardKey to 2)
+    )
+    if (awardKey !in awardResult.grantedKeys) {
+        return null
+    }
+
+    val currentSnapshot = XpProgressRepository.buildSnapshot(
+        prefs = prefs,
+        userId = cleanUserId
+    )
+    return buildSimpleXpPopupMessage(
+        reason = if (actionType == "like") "Like" else "Kommentar",
+        detail = "",
+        awardedXp = awardResult.awardedXp,
+        previousSnapshot = previousSnapshot,
+        currentSnapshot = currentSnapshot
     )
 }
 
@@ -5311,12 +5651,17 @@ fun FriendProfileScreen(
     friendUserId: String,
     initialDisplayName: String?,
     allAnimals: List<AnimalEntry>,
+    onSocialXpFeedback: (XpPopupMessage?) -> Unit,
     onBack: () -> Unit,
     extraTopPadding: Dp = 0.dp,
     extraBottomPadding: Dp = 0.dp
 ) {
     BackHandler(onBack = onBack)
 
+    val context = LocalContext.current
+    val prefs = remember(context) {
+        context.getSharedPreferences("tierdex_prefs", android.content.Context.MODE_PRIVATE)
+    }
     var profile by remember(friendUserId) { mutableStateOf<PublicUserProfile?>(null) }
     var friendFeed by remember(friendUserId) { mutableStateOf<List<FriendFeedItem>>(emptyList()) }
     var friends by remember(currentUserId) { mutableStateOf<List<FriendUser>>(emptyList()) }
@@ -5684,9 +6029,14 @@ fun FriendsScreen(
     onCloseFriendSearch: () -> Unit,
     onIncomingRequestsChanged: () -> Unit,
     onOpenFriendProfile: (String, String) -> Unit,
+    onSocialXpFeedback: (XpPopupMessage?) -> Unit,
     extraTopPadding: Dp = 0.dp,
     extraBottomPadding: Dp = 0.dp
 ) {
+    val context = LocalContext.current
+    val prefs = remember(context) {
+        context.getSharedPreferences("tierdex_prefs", android.content.Context.MODE_PRIVATE)
+    }
     val scope = rememberCoroutineScope()
     var searchQuery by rememberSaveable { mutableStateOf("") }
     var searchResults by remember { mutableStateOf<List<PublicUserProfile>>(emptyList()) }
@@ -6563,6 +6913,16 @@ fun FriendsScreen(
                                                         } else {
                                                             "Gefällt mir entfernt."
                                                         }
+                                                        if (isNowLiked) {
+                                                            val xpPopup = grantSocialXpIfEligible(
+                                                                prefs = prefs,
+                                                                userId = currentUserId,
+                                                                findingOwnerId = feedItem.friendUserId,
+                                                                findingId = feedItem.findingId,
+                                                                actionType = "like"
+                                                            )
+                                                            onSocialXpFeedback(xpPopup)
+                                                        }
                                                     },
                                                     onError = {
                                                         errorMessage = "Der Like konnte nicht gespeichert werden."
@@ -6703,6 +7063,16 @@ fun FriendsScreen(
                                                             if (success) {
                                                                 commentInputs = commentInputs + (feedItemKey to "")
                                                                 loadCommentsForFeedItem(feedItem)
+                                                                val commentAwardSuffix = System.currentTimeMillis().toString()
+                                                                val xpPopup = grantSocialXpIfEligible(
+                                                                    prefs = prefs,
+                                                                    userId = currentUserId,
+                                                                    findingOwnerId = feedItem.friendUserId,
+                                                                    findingId = feedItem.findingId,
+                                                                    actionType = "comment",
+                                                                    uniqueSuffix = commentAwardSuffix
+                                                                )
+                                                                onSocialXpFeedback(xpPopup)
                                                             } else {
                                                                 errorMessage = "Der Kommentar konnte nicht gespeichert werden."
                                                             }
@@ -9278,6 +9648,7 @@ fun AnimalDetailScreen(
     startInCreateMode: Boolean = false,
     startInFindingEditMode: Boolean = false,
     dailyAnimalHistoryText: String?,
+    onSocialXpFeedback: (XpPopupMessage?) -> Unit,
     onOpenFindingDetail: (AnimalFinding) -> Unit,
     onReturnToFindingDetail: (AnimalFinding) -> Unit,
     onBackClick: () -> Unit,
@@ -9292,6 +9663,9 @@ fun AnimalDetailScreen(
     extraBottomPadding: Dp = 0.dp
 ) {
     val context = LocalContext.current
+    val prefs = remember(context) {
+        context.getSharedPreferences("tierdex_prefs", android.content.Context.MODE_PRIVATE)
+    }
     val initial = initialFinding
     var date by rememberSaveable(initial?.roomId) {
         mutableStateOf(initial?.date ?: currentAppDateText())
@@ -10346,6 +10720,16 @@ fun AnimalDetailScreen(
                                                                         } else {
                                                                             existingItem
                                                                         }
+                                                                    }
+                                                                    if (isNowLiked) {
+                                                                        val xpPopup = grantSocialXpIfEligible(
+                                                                            prefs = prefs,
+                                                                            userId = currentUserId,
+                                                                            findingOwnerId = feedItem.friendUserId,
+                                                                            findingId = feedItem.findingId,
+                                                                            actionType = "like"
+                                                                        )
+                                                                        onSocialXpFeedback(xpPopup)
                                                                     }
                                                                 },
                                                                 onError = {
