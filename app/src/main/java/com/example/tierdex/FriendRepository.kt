@@ -62,9 +62,19 @@ object FriendRepository {
     private const val STATUS_PENDING = "pending"
     private const val STATUS_ACCEPTED = "accepted"
     private val firestore: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
+    private val blockedStoredDisplayNames = setOf(
+        "unbenannter nutzer",
+        "unbenannter freund"
+    )
 
     private fun cleanDisplayName(displayName: String?): String {
         return displayName.orEmpty().trim()
+    }
+
+    private fun isPersistableDisplayName(displayName: String?): Boolean {
+        val cleanedDisplayName = cleanDisplayName(displayName)
+        if (cleanedDisplayName.isBlank()) return false
+        return cleanedDisplayName.lowercase() !in blockedStoredDisplayNames
     }
 
     private fun normalizeDisplayName(displayName: String?): String {
@@ -75,8 +85,8 @@ object FriendRepository {
         target: MutableMap<String, Any>,
         displayName: String?
     ) {
-        val normalizedDisplayName = cleanDisplayName(displayName)
-        if (normalizedDisplayName.isNotBlank()) {
+        if (isPersistableDisplayName(displayName)) {
+            val normalizedDisplayName = cleanDisplayName(displayName)
             target["displayName"] = normalizedDisplayName
             target["searchDisplayName"] = normalizeDisplayName(normalizedDisplayName)
         }
@@ -459,22 +469,43 @@ object FriendRepository {
             return
         }
 
-        val profileData = hashMapOf<String, Any>(
-            "updatedAt" to FieldValue.serverTimestamp()
-        )
-        putDisplayNameFields(profileData, displayName)
+        val userDocument = firestore.collection("users").document(userId)
+        userDocument
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val profileData = hashMapOf<String, Any>(
+                    "updatedAt" to FieldValue.serverTimestamp()
+                )
+                val existingDisplayName = snapshot.getString("displayName")
+                if (!isPersistableDisplayName(existingDisplayName)) {
+                    putDisplayNameFields(profileData, displayName)
+                }
 
-        firestore.collection("users")
-            .document(userId)
-            .set(profileData, com.google.firebase.firestore.SetOptions.merge())
-            .addOnSuccessListener {
-                Log.d(TAG, "User profile ensured for $userId")
-                onResult(true, null)
+                userDocument
+                    .set(profileData, com.google.firebase.firestore.SetOptions.merge())
+                    .addOnSuccessListener {
+                        Log.d(TAG, "User profile ensured for $userId")
+                        onResult(true, null)
+                    }
+                    .addOnFailureListener { exception ->
+                        val errorMessage = toFirestoreErrorMessage(
+                            functionName = "ensureUserProfile",
+                            operation = "WRITE",
+                            path = "users/$userId",
+                            exception = exception
+                        )
+                        Log.e(
+                            TAG,
+                            errorMessage,
+                            exception
+                        )
+                        onResult(false, errorMessage)
+                    }
             }
             .addOnFailureListener { exception ->
                 val errorMessage = toFirestoreErrorMessage(
                     functionName = "ensureUserProfile",
-                    operation = "WRITE",
+                    operation = "READ",
                     path = "users/$userId",
                     exception = exception
                 )

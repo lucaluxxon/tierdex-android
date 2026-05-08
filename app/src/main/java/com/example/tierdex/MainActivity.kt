@@ -4136,13 +4136,12 @@ fun HomeQuestCompactCard(
     quest: QuestUiModel,
     modifier: Modifier = Modifier
 ) {
-    val completedCardColor = PrimaryGreenSoft.copy(alpha = 0.9f)
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(18.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (quest.isCompleted) completedCardColor else CardBackground,
+            containerColor = CardBackground,
             contentColor = TextPrimary
         )
     ) {
@@ -4197,6 +4196,77 @@ fun HomeQuestCompactCard(
 }
 
 @Composable
+fun QuestSectionCard(
+    title: String,
+    questCount: Int,
+    expanded: Boolean,
+    onToggleExpanded: () -> Unit,
+    modifier: Modifier = Modifier,
+    emptyMessage: String? = null,
+    content: @Composable () -> Unit
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(18.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = CardBackground,
+            contentColor = TextPrimary
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 18.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onToggleExpanded),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                ) {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = TextPrimary
+                    )
+                    Text(
+                        text = if (questCount > 0) {
+                            "$questCount Quest${if (questCount == 1) "" else "s"}"
+                        } else {
+                            "Derzeit keine Queststufen"
+                        },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = TextSecondary
+                    )
+                }
+
+                Text(
+                    text = if (expanded) "Ausblenden" else "Anzeigen",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = PrimaryGreen
+                )
+            }
+
+            if (expanded) {
+                if (questCount > 0) {
+                    content()
+                } else if (!emptyMessage.isNullOrBlank()) {
+                    Text(
+                        text = emptyMessage,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun HomeScreen(
     collectedAnimalCount: Int,
     totalAnimalCount: Int,
@@ -4217,7 +4287,7 @@ fun HomeScreen(
     val latestAnimal = latestFinding?.animalId?.let { animalById[it] }
     val wishlistAnimal = wishlistAnimalId?.let { animalById[it] }
 
-    val photoFindingCount = findings.count { it.photoUri.isNotBlank() }
+    val photoFindingCount = findings.count(::hasXpEligiblePhoto)
     val findingsWithLocationCount = findings.count { it.latitude != null && it.longitude != null }
     val collectionPercent = if (totalAnimalCount > 0) {
         (collectedAnimalCount.toFloat() / totalAnimalCount.toFloat()) * 100f
@@ -4237,6 +4307,35 @@ fun HomeScreen(
                 photoFindingCount = photoFindingCount
             )
         }
+    val questSections = remember(quests) { buildQuestSections(quests) }
+    var collectionQuestsExpanded by rememberSaveable { mutableStateOf(true) }
+    var groupQuestsExpanded by rememberSaveable { mutableStateOf(false) }
+    var qualityQuestsExpanded by rememberSaveable { mutableStateOf(false) }
+    var dailyQuestsExpanded by rememberSaveable { mutableStateOf(false) }
+    var socialQuestsExpanded by rememberSaveable { mutableStateOf(false) }
+    var completedQuestsExpanded by rememberSaveable { mutableStateOf(false) }
+
+    fun isQuestSectionExpanded(sectionType: QuestSectionType): Boolean {
+        return when (sectionType) {
+            QuestSectionType.COLLECTION -> collectionQuestsExpanded
+            QuestSectionType.GROUPS -> groupQuestsExpanded
+            QuestSectionType.QUALITY -> qualityQuestsExpanded
+            QuestSectionType.DAILY -> dailyQuestsExpanded
+            QuestSectionType.SOCIAL -> socialQuestsExpanded
+            QuestSectionType.COMPLETED -> completedQuestsExpanded
+        }
+    }
+
+    fun toggleQuestSection(sectionType: QuestSectionType) {
+        when (sectionType) {
+            QuestSectionType.COLLECTION -> collectionQuestsExpanded = !collectionQuestsExpanded
+            QuestSectionType.GROUPS -> groupQuestsExpanded = !groupQuestsExpanded
+            QuestSectionType.QUALITY -> qualityQuestsExpanded = !qualityQuestsExpanded
+            QuestSectionType.DAILY -> dailyQuestsExpanded = !dailyQuestsExpanded
+            QuestSectionType.SOCIAL -> socialQuestsExpanded = !socialQuestsExpanded
+            QuestSectionType.COMPLETED -> completedQuestsExpanded = !completedQuestsExpanded
+        }
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -4521,19 +4620,37 @@ fun HomeScreen(
             )
         }
 
-        items(quests.chunked(2)) { questRow ->
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
+        items(questSections, key = { it.id }) { section ->
+            QuestSectionCard(
+                title = section.title,
+                questCount = section.quests.size,
+                expanded = isQuestSectionExpanded(section.type),
+                onToggleExpanded = { toggleQuestSection(section.type) },
+                emptyMessage = section.emptyMessage
             ) {
-                questRow.forEach { quest ->
-                    HomeQuestCompactCard(
-                        quest = quest,
-                        modifier = Modifier.weight(1f)
-                    )
-                }
-                if (questRow.size == 1) {
-                    Spacer(modifier = Modifier.weight(1f))
+                when (section.type) {
+                    QuestSectionType.COMPLETED -> {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            section.quests.forEach { quest ->
+                                HomeQuestCompactCard(
+                                    quest = quest,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+                        }
+                    }
+
+                    else -> {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(10.dp)
+                        ) {
+                            section.quests.forEach { quest ->
+                                QuestCard(quest = quest)
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -5079,6 +5196,7 @@ private fun SettingsContentCard(
 enum class QuestType {
     TOTAL_FINDINGS,
     PHOTO_FINDINGS,
+    LOCATION_FINDINGS,
     DAILY_ANIMAL,
     TOTAL_SPECIES_PERCENT,
     BIRDS,
@@ -5086,6 +5204,15 @@ enum class QuestType {
     MAMMALS,
     AMPHIBIANS,
     REPTILES
+}
+
+enum class QuestSectionType {
+    COLLECTION,
+    GROUPS,
+    QUALITY,
+    DAILY,
+    SOCIAL,
+    COMPLETED
 }
 
 data class QuestUiModel(
@@ -5138,6 +5265,7 @@ data class QuestUiModel(
         get() = when (type) {
             QuestType.TOTAL_FINDINGS -> Icons.Filled.Collections
             QuestType.PHOTO_FINDINGS -> Icons.Filled.PhotoCamera
+            QuestType.LOCATION_FINDINGS -> Icons.Filled.Place
             QuestType.DAILY_ANIMAL -> Icons.Filled.Star
             QuestType.TOTAL_SPECIES_PERCENT -> Icons.Filled.Star
             QuestType.BIRDS -> Icons.Filled.Air
@@ -5147,6 +5275,14 @@ data class QuestUiModel(
             QuestType.REPTILES -> Icons.Filled.BugReport
         }
 }
+
+data class QuestSectionUiModel(
+    val id: String,
+    val title: String,
+    val type: QuestSectionType,
+    val quests: List<QuestUiModel> = emptyList(),
+    val emptyMessage: String? = null
+)
 
 data class CelebrationMessage(
     val title: String,
@@ -5171,7 +5307,7 @@ fun QuestCard(quest: QuestUiModel) {
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (quest.isCompleted) PrimaryGreenSoft.copy(alpha = 0.45f) else CardBackground,
+            containerColor = CardBackground,
             contentColor = TextPrimary
         )
     ) {
@@ -5224,6 +5360,7 @@ fun QuestCard(quest: QuestUiModel) {
                 text = when (quest.type) {
                     QuestType.TOTAL_FINDINGS -> "Gesamtfunde"
                     QuestType.PHOTO_FINDINGS -> "Fotoquest"
+                    QuestType.LOCATION_FINDINGS -> "Standortquest"
                     QuestType.DAILY_ANIMAL -> "Tagesquest"
                     QuestType.TOTAL_SPECIES_PERCENT -> "Tierdex-Fortschritt"
                     QuestType.BIRDS -> "Vögel"
@@ -5306,13 +5443,14 @@ fun calculateQuestXpReward(
     return when (type) {
         QuestType.TOTAL_FINDINGS,
         QuestType.PHOTO_FINDINGS,
+        QuestType.LOCATION_FINDINGS,
         QuestType.TOTAL_SPECIES_PERCENT,
         QuestType.BIRDS,
         QuestType.FISH,
         QuestType.MAMMALS,
         QuestType.AMPHIBIANS,
         QuestType.REPTILES -> goal * 10
-        QuestType.DAILY_ANIMAL -> 20
+        QuestType.DAILY_ANIMAL -> goal * 20
     }
 }
 
@@ -5332,6 +5470,30 @@ data class GroupQuestConfig(
     val type: QuestType,
     val aliases: List<String>
 )
+
+private fun buildQuestSeriesStages(
+    questId: String,
+    type: QuestType,
+    title: String,
+    description: String,
+    progress: Int,
+    goals: List<Int>
+): List<QuestUiModel> {
+    return goals.map { goal ->
+        QuestUiModel(
+            questId = questId,
+            stageId = buildQuestStageId(questId, goal),
+            awardKey = buildQuestAwardKey(questId, goal),
+            type = type,
+            title = title,
+            description = description,
+            progress = progress,
+            goal = goal,
+            isCompleted = progress >= goal,
+            xpReward = calculateQuestXpReward(type, goal)
+        )
+    }
+}
 
 fun buildHomeQuests(
     findings: List<AnimalFinding>,
@@ -5354,32 +5516,32 @@ fun buildHomeQuests(
         )
         .mapValues { (_, animalIds) -> animalIds.toSet().size }
 
-    val totalQuestGoal = getNextQuestGoal(totalFindings, listOf(1, 5, 10, 25, 50))
-    val totalQuest = QuestUiModel(
+    val totalQuestStages = buildQuestSeriesStages(
         questId = "total_findings",
-        stageId = buildQuestStageId("total_findings", totalQuestGoal),
-        awardKey = buildQuestAwardKey("total_findings", totalQuestGoal),
         type = QuestType.TOTAL_FINDINGS,
         title = "Funde sammeln",
         description = "Erreiche die nächste Stufe über alle gespeicherten Funde hinweg.",
         progress = totalFindings,
-        goal = totalQuestGoal,
-        isCompleted = totalFindings >= 50,
-        xpReward = calculateQuestXpReward(QuestType.TOTAL_FINDINGS, totalQuestGoal)
+        goals = listOf(1, 5, 10, 25, 50, 100, 250, 500)
     )
 
-    val photoQuestGoal = getNextQuestGoal(photoFindingCount, listOf(1, 3, 5, 10, 20))
-    val photoQuest = QuestUiModel(
+    val photoQuestStages = buildQuestSeriesStages(
         questId = "photo_findings",
-        stageId = buildQuestStageId("photo_findings", photoQuestGoal),
-        awardKey = buildQuestAwardKey("photo_findings", photoQuestGoal),
         type = QuestType.PHOTO_FINDINGS,
         title = "Funde mit Foto",
         description = "Dokumentiere deine Beobachtungen mit Bildern.",
         progress = photoFindingCount,
-        goal = photoQuestGoal,
-        isCompleted = photoFindingCount >= 20,
-        xpReward = calculateQuestXpReward(QuestType.PHOTO_FINDINGS, photoQuestGoal)
+        goals = listOf(1, 5, 10, 25, 50, 100)
+    )
+
+    val locationFindingCount = locationFindingCountForQuestProgress(findings)
+    val locationQuestStages = buildQuestSeriesStages(
+        questId = "location_findings",
+        type = QuestType.LOCATION_FINDINGS,
+        title = "Funde mit Standort",
+        description = "Speichere Fundorte mit Koordinaten zu deinen Beobachtungen.",
+        progress = locationFindingCount,
+        goals = listOf(1, 5, 10, 25, 50, 100)
     )
 
     val collectionPercent = if (animals.isNotEmpty()) {
@@ -5387,43 +5549,14 @@ fun buildHomeQuests(
     } else {
         0
     }
-    val collectionQuestGoal = getNextQuestGoal(
-        collectionPercent,
-        listOf(10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
-    )
-    val collectionQuest = QuestUiModel(
+    val collectionQuestStages = buildQuestSeriesStages(
         questId = "total_species_percent",
-        stageId = buildQuestStageId("total_species_percent", collectionQuestGoal),
-        awardKey = buildQuestAwardKey("total_species_percent", collectionQuestGoal),
         type = QuestType.TOTAL_SPECIES_PERCENT,
         title = "Tierdex füllen",
         description = "Erreiche die nächste Prozentstufe über alle unterschiedlichen Tierarten hinweg.",
         progress = collectionPercent,
-        goal = collectionQuestGoal,
-        isCompleted = collectionPercent >= 100,
-        xpReward = calculateQuestXpReward(QuestType.TOTAL_SPECIES_PERCENT, collectionQuestGoal)
+        goals = listOf(10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
     )
-
-    val todayDateText = currentAppDateText()
-    val dailyAnimalFoundToday = dailyAnimal?.let { todayAnimal ->
-        findings.any { finding ->
-            finding.animalId == todayAnimal.id && finding.date == todayDateText
-        }
-    } ?: false
-    val dailyAnimalQuest = dailyAnimal?.let { todayAnimal ->
-        QuestUiModel(
-            questId = "daily_animal",
-            stageId = "daily_animal:${todayAnimal.id}:${currentDailyDateKey()}",
-            awardKey = "daily_animal:${todayAnimal.id}:${currentDailyDateKey()}",
-            type = QuestType.DAILY_ANIMAL,
-            title = "Tier des Tages finden",
-            description = "Finde heute das Tier des Tages und trage deinen Fund ein.",
-            progress = if (dailyAnimalFoundToday) 1 else 0,
-            goal = 1,
-            isCompleted = dailyAnimalFoundToday,
-            xpReward = calculateQuestXpReward(QuestType.DAILY_ANIMAL, 1)
-        )
-    }
 
     val groupQuestConfigs = listOf(
         GroupQuestConfig("Vögel", "group_species_birds", QuestType.BIRDS, listOf("Vogel", "Vögel")),
@@ -5438,36 +5571,101 @@ fun buildHomeQuests(
             .filterKeys { key -> key in config.aliases.map { normalizeQuestGroupName(it) } }
             .values
             .sum()
-        val groupQuestGoal = getNextQuestGoal(progress, listOf(1, 3, 5, 10))
-        QuestUiModel(
+        buildQuestSeriesStages(
             questId = config.questId,
-            stageId = buildQuestStageId(config.questId, groupQuestGoal),
-            awardKey = buildQuestAwardKey(config.questId, groupQuestGoal),
             type = config.type,
             title = "${config.label} entdecken",
             description = "Sammle unterschiedliche Arten aus der Tiergruppe ${config.label}.",
             progress = progress,
-            goal = groupQuestGoal,
-            isCompleted = progress >= 10,
-            xpReward = calculateQuestXpReward(config.type, groupQuestGoal)
+            goals = listOf(1, 5, 10, 25, 50)
         )
-    }
+    }.flatten()
 
     return buildList {
-        add(totalQuest)
-        add(photoQuest)
-        add(collectionQuest)
-        dailyAnimalQuest?.let { add(it) }
-        addAll(
-            groupQuests
-                .sortedWith(
-                    compareBy<QuestUiModel> { it.isCompleted }
-                        .thenByDescending { it.progressFraction }
-                        .thenByDescending { it.progress }
-                )
-                .take(3)
-        )
+        addAll(totalQuestStages)
+        addAll(photoQuestStages)
+        addAll(locationQuestStages)
+        addAll(collectionQuestStages)
+        addAll(groupQuests)
     }
+}
+
+private fun buildQuestSections(
+    quests: List<QuestUiModel>
+): List<QuestSectionUiModel> {
+    val nextOpenQuestsBySeries = quests
+        .groupBy { it.questId }
+        .mapNotNull { (_, stages) ->
+            stages.sortedBy { it.goal }.firstOrNull { !it.isCompleted }
+        }
+
+    val completedQuests = quests
+        .filter { it.isCompleted }
+        .sortedWith(
+            compareBy<QuestUiModel> { it.type.ordinal }
+                .thenBy { it.title }
+                .thenBy { it.goal }
+        )
+
+    val collectionQuests = nextOpenQuestsBySeries.filter { quest ->
+        quest.type == QuestType.TOTAL_FINDINGS || quest.type == QuestType.TOTAL_SPECIES_PERCENT
+    }.sortedWith(compareBy<QuestUiModel> { it.type.ordinal }.thenBy { it.goal })
+
+    val groupQuests = nextOpenQuestsBySeries.filter { quest ->
+        quest.type in listOf(
+            QuestType.BIRDS,
+            QuestType.FISH,
+            QuestType.MAMMALS,
+            QuestType.AMPHIBIANS,
+            QuestType.REPTILES
+        )
+    }.sortedWith(compareBy<QuestUiModel> { it.type.ordinal }.thenBy { it.goal })
+
+    val qualityQuests = nextOpenQuestsBySeries.filter { quest ->
+        quest.type == QuestType.PHOTO_FINDINGS || quest.type == QuestType.LOCATION_FINDINGS
+    }.sortedWith(compareBy<QuestUiModel> { it.type.ordinal }.thenBy { it.goal })
+
+    return listOf(
+        QuestSectionUiModel(
+            id = "collection",
+            title = "Sammelfortschritt",
+            type = QuestSectionType.COLLECTION,
+            quests = collectionQuests
+        ),
+        QuestSectionUiModel(
+            id = "groups",
+            title = "Tiergruppen",
+            type = QuestSectionType.GROUPS,
+            quests = groupQuests
+        ),
+        QuestSectionUiModel(
+            id = "quality",
+            title = "Fundqualität",
+            type = QuestSectionType.QUALITY,
+            quests = qualityQuests
+        ),
+        QuestSectionUiModel(
+            id = "daily",
+            title = "Tages-Tier",
+            type = QuestSectionType.DAILY,
+            quests = emptyList(),
+            emptyMessage = "Noch nicht aktiv: Für diese dauerhafte Quest fehlt aktuell eine verlässliche Zuordnung von Funddatum zu damaligem Tier des Tages."
+        ),
+        QuestSectionUiModel(
+            id = "social",
+            title = "Soziale Quests",
+            type = QuestSectionType.SOCIAL,
+            quests = emptyList(),
+            emptyMessage = "Soziale Quests wie Likes, Kommentare oder Freunde folgen später."
+        ),
+        QuestSectionUiModel(
+            id = "completed",
+            title = "Abgeschlossene Quests",
+            type = QuestSectionType.COMPLETED,
+            quests = completedQuests,
+            emptyMessage = "Noch keine Queststufen abgeschlossen."
+        )
+    )
 }
 
 private fun collectedAnimalCountForQuestProgress(findings: List<AnimalFinding>): Int {
@@ -5478,7 +5676,11 @@ private fun collectedAnimalCountForQuestProgress(findings: List<AnimalFinding>):
 }
 
 private fun photoFindingCountForQuestProgress(findings: List<AnimalFinding>): Int {
-    return findings.count { it.photoUri.isNotBlank() }
+    return findings.count(::hasXpEligiblePhoto)
+}
+
+private fun locationFindingCountForQuestProgress(findings: List<AnimalFinding>): Int {
+    return findings.count(::hasXpEligibleLocation)
 }
 
 private fun hasXpEligiblePhoto(finding: AnimalFinding): Boolean {
@@ -8730,8 +8932,25 @@ fun ProfileScreen(
                                 }
                                 AuthSession.updateCurrentDisplayName(cleanDisplayName) { success, result ->
                                     if (success) {
-                                        onDisplayNameSaved(AuthSession.getCurrentDisplayName())
-                                        authMessage = "Name gespeichert"
+                                        val updatedDisplayName = AuthSession.getCurrentDisplayName()
+                                            ?: cleanDisplayName
+                                        currentUserId?.takeIf { it.isNotBlank() }?.let { userId ->
+                                            FriendRepository.updatePublicUserProfile(
+                                                userId = userId,
+                                                displayName = updatedDisplayName
+                                            ) { firestoreSuccess, firestoreResult ->
+                                                if (firestoreSuccess) {
+                                                    onDisplayNameSaved(updatedDisplayName)
+                                                    authMessage = "Name gespeichert"
+                                                } else {
+                                                    authMessage = firestoreResult
+                                                        ?: "Name konnte nicht in Firestore gespeichert werden"
+                                                }
+                                            }
+                                        } ?: run {
+                                            onDisplayNameSaved(updatedDisplayName)
+                                            authMessage = "Name gespeichert"
+                                        }
                                     } else {
                                         authMessage =
                                             result ?: "Name konnte nicht gespeichert werden"
