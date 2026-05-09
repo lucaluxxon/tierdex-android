@@ -1,6 +1,7 @@
 ﻿package com.example.tierdex
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -11,6 +12,7 @@ import android.graphics.Matrix
 import android.net.Uri
 import android.os.Bundle
 import android.os.SystemClock
+import android.provider.MediaStore
 import android.util.Log
 import android.util.LruCache
 import android.widget.Toast
@@ -557,6 +559,50 @@ private fun parseFindingLocalDateOrNull(dateText: String): Date? {
             }.parse(normalizedDateText)
         }.getOrNull()
     }
+}
+
+private fun buildLocalImagePickerIntent(
+    context: Context,
+    allowMultiple: Boolean
+): Intent {
+    val localGalleryIntent = Intent(
+        Intent.ACTION_PICK,
+        MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+    ).apply {
+        type = "image/*"
+        putExtra(Intent.EXTRA_LOCAL_ONLY, true)
+        if (allowMultiple) {
+            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        }
+    }
+
+    return if (localGalleryIntent.resolveActivity(context.packageManager) != null) {
+        localGalleryIntent
+    } else {
+        Intent(Intent.ACTION_GET_CONTENT).apply {
+            type = "image/*"
+            addCategory(Intent.CATEGORY_OPENABLE)
+            putExtra(Intent.EXTRA_LOCAL_ONLY, true)
+            if (allowMultiple) {
+                putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+            }
+        }
+    }
+}
+
+private fun extractPickedImageUris(data: Intent?): List<Uri> {
+    if (data == null) return emptyList()
+
+    val clipData = data.clipData
+    if (clipData != null) {
+        return buildList {
+            for (index in 0 until clipData.itemCount) {
+                clipData.getItemAt(index)?.uri?.let(::add)
+            }
+        }
+    }
+
+    return listOfNotNull(data.data)
 }
 
 private fun calendarForDate(date: Date): Calendar =
@@ -11181,22 +11227,12 @@ fun AnimalDetailScreen(
         selectedPhotoPage = updatedPhotoUris.lastIndex.coerceAtLeast(0)
     }
 
-    val pickSingleMedia = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia()
-    ) { uri ->
-        uri?.let { appendPickedPhotoUris(listOf(it)) }
-    }
-
-    val pickUpToTwoMedia = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickMultipleVisualMedia(2)
-    ) { uris ->
-        appendPickedPhotoUris(uris)
-    }
-
-    val pickUpToThreeMedia = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickMultipleVisualMedia(3)
-    ) { uris ->
-        appendPickedPhotoUris(uris)
+    val localFindingPhotoPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            appendPickedPhotoUris(extractPickedImageUris(result.data))
+        }
     }
 
     val currentFinding = editingFinding ?: initial
@@ -11277,14 +11313,12 @@ fun AnimalDetailScreen(
             if (selectedPhotoUris.size < 3) {
                 OutlinedButton(
                     onClick = {
-                        val imageOnlyRequest = PickVisualMediaRequest(
-                            ActivityResultContracts.PickVisualMedia.ImageOnly
+                        localFindingPhotoPicker.launch(
+                            buildLocalImagePickerIntent(
+                                context = context,
+                                allowMultiple = remainingPhotoSlots > 1
+                            )
                         )
-                        when (remainingPhotoSlots) {
-                            1 -> pickSingleMedia.launch(imageOnlyRequest)
-                            2 -> pickUpToTwoMedia.launch(imageOnlyRequest)
-                            else -> pickUpToThreeMedia.launch(imageOnlyRequest)
-                        }
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
