@@ -230,6 +230,10 @@ private const val DAILY_ANIMAL_ID_KEY_PREFIX = "daily_animal_id_"
 private const val DAILY_ANIMAL_DISMISSED_KEY_PREFIX = "daily_animal_dismissed_"
 private const val DAILY_ANIMAL_HISTORY_KEY_PREFIX = "daily_animal_history_"
 private const val DAILY_ANIMAL_HISTORY_RECORDED_DATE_KEY_PREFIX = "daily_animal_history_recorded_date_"
+private const val DAILY_ANIMAL_ASSIGNMENTS_KEY_PREFIX = "daily_animal_assignments_"
+private const val DAILY_ANIMAL_QUEST_HIT_ROOM_IDS_KEY_PREFIX = "daily_animal_quest_hit_room_ids_"
+private const val SOCIAL_LIKES_GIVEN_COUNT_KEY_PREFIX = "social_likes_given_count_"
+private const val SOCIAL_COMMENTS_WRITTEN_COUNT_KEY_PREFIX = "social_comments_written_count_"
 private const val LOCAL_PREFERENCES_OWNER_ID = "local"
 private val AppGreenBackground = Color(0xFF51734A)
 
@@ -260,6 +264,12 @@ private fun dailyAnimalDismissedKey(ownerId: String): String = "$DAILY_ANIMAL_DI
 private fun dailyAnimalHistoryKey(ownerId: String): String = "$DAILY_ANIMAL_HISTORY_KEY_PREFIX$ownerId"
 private fun dailyAnimalHistoryRecordedDateKey(ownerId: String): String =
     "$DAILY_ANIMAL_HISTORY_RECORDED_DATE_KEY_PREFIX$ownerId"
+private fun dailyAnimalAssignmentsKey(ownerId: String): String = "$DAILY_ANIMAL_ASSIGNMENTS_KEY_PREFIX$ownerId"
+private fun dailyAnimalQuestHitRoomIdsKey(ownerId: String): String =
+    "$DAILY_ANIMAL_QUEST_HIT_ROOM_IDS_KEY_PREFIX$ownerId"
+private fun socialLikesGivenCountKey(ownerId: String): String = "$SOCIAL_LIKES_GIVEN_COUNT_KEY_PREFIX$ownerId"
+private fun socialCommentsWrittenCountKey(ownerId: String): String =
+    "$SOCIAL_COMMENTS_WRITTEN_COUNT_KEY_PREFIX$ownerId"
 
 private fun introPendingKey(ownerId: String): String = "$INTRO_PENDING_KEY_PREFIX$ownerId"
 
@@ -334,6 +344,147 @@ private fun recordDailyAnimalHistoryIfNeeded(
     )
     saveDailyAnimalHistory(prefs, ownerId, history)
     prefs.edit().putString(recordedDateKey, todayKey).apply()
+}
+
+private fun loadDailyAnimalAssignments(
+    prefs: android.content.SharedPreferences,
+    ownerId: String
+): Map<String, String> {
+    val rawJson = prefs.getString(dailyAnimalAssignmentsKey(ownerId), null).orEmpty().trim()
+    if (rawJson.isBlank()) return emptyMap()
+
+    return runCatching {
+        val rootObject = Gson().fromJson(rawJson, JsonObject::class.java) ?: JsonObject()
+        rootObject.entrySet().mapNotNull { (dateKey, jsonElement) ->
+            val normalizedDateKey = dateKey.trim()
+            val animalId = jsonElement?.asString.orEmpty().trim()
+            if (normalizedDateKey.isBlank() || animalId.isBlank()) {
+                null
+            } else {
+                normalizedDateKey to animalId
+            }
+        }.toMap()
+    }.getOrDefault(emptyMap())
+}
+
+private fun saveDailyAnimalAssignments(
+    prefs: android.content.SharedPreferences,
+    ownerId: String,
+    assignments: Map<String, String>
+) {
+    val assignmentsJson = JsonObject().apply {
+        assignments.toSortedMap().forEach { (dateKey, animalId) ->
+            if (dateKey.isNotBlank() && animalId.isNotBlank()) {
+                addProperty(dateKey, animalId)
+            }
+        }
+    }.toString()
+
+    prefs.edit().putString(dailyAnimalAssignmentsKey(ownerId), assignmentsJson).apply()
+}
+
+private fun recordDailyAnimalAssignmentForDate(
+    prefs: android.content.SharedPreferences,
+    ownerId: String,
+    dateKey: String,
+    animalId: String
+) {
+    val normalizedDateKey = dateKey.trim()
+    val normalizedAnimalId = animalId.trim()
+    if (normalizedDateKey.isBlank() || normalizedAnimalId.isBlank()) return
+
+    val assignments = loadDailyAnimalAssignments(prefs, ownerId).toMutableMap()
+    if (assignments[normalizedDateKey] == normalizedAnimalId) return
+
+    assignments[normalizedDateKey] = normalizedAnimalId
+    saveDailyAnimalAssignments(prefs, ownerId, assignments)
+}
+
+private fun normalizeFindingDateKey(dateText: String): String? {
+    val parsedDate = parseFindingLocalDateOrNull(dateText) ?: return null
+    return SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(parsedDate)
+}
+
+private fun loadDailyAnimalQuestHitRoomIds(
+    prefs: android.content.SharedPreferences,
+    ownerId: String
+): Set<Int> {
+    return prefs.getStringSet(dailyAnimalQuestHitRoomIdsKey(ownerId), emptySet())
+        ?.mapNotNull { value -> value.toIntOrNull() }
+        ?.toSet()
+        .orEmpty()
+}
+
+private fun saveDailyAnimalQuestHitRoomIds(
+    prefs: android.content.SharedPreferences,
+    ownerId: String,
+    roomIds: Set<Int>
+) {
+    prefs.edit()
+        .putStringSet(
+            dailyAnimalQuestHitRoomIdsKey(ownerId),
+            roomIds.map { it.toString() }.toSet()
+        )
+        .apply()
+}
+
+private fun countDailyAnimalQuestHits(
+    prefs: android.content.SharedPreferences,
+    ownerId: String
+): Int = loadDailyAnimalQuestHitRoomIds(prefs, ownerId).size
+
+private fun loadSocialLikesGivenCount(
+    prefs: android.content.SharedPreferences,
+    ownerId: String
+): Int = prefs.getInt(socialLikesGivenCountKey(ownerId), 0).coerceAtLeast(0)
+
+private fun loadSocialCommentsWrittenCount(
+    prefs: android.content.SharedPreferences,
+    ownerId: String
+): Int = prefs.getInt(socialCommentsWrittenCountKey(ownerId), 0).coerceAtLeast(0)
+
+private fun incrementSocialLikesGivenCount(
+    prefs: android.content.SharedPreferences,
+    ownerId: String
+): Int {
+    val newCount = loadSocialLikesGivenCount(prefs, ownerId) + 1
+    prefs.edit().putInt(socialLikesGivenCountKey(ownerId), newCount).apply()
+    return newCount
+}
+
+private fun incrementSocialCommentsWrittenCount(
+    prefs: android.content.SharedPreferences,
+    ownerId: String
+): Int {
+    val newCount = loadSocialCommentsWrittenCount(prefs, ownerId) + 1
+    prefs.edit().putInt(socialCommentsWrittenCountKey(ownerId), newCount).apply()
+    return newCount
+}
+
+private data class SocialQuestProgress(
+    val friendCount: Int = 0,
+    val likesGivenCount: Int = 0,
+    val commentsWrittenCount: Int = 0
+)
+
+private fun recordDailyAnimalQuestHitIfEligible(
+    prefs: android.content.SharedPreferences,
+    ownerId: String,
+    finding: AnimalFinding
+): Boolean {
+    val roomId = finding.roomId ?: return false
+    val normalizedAnimalId = finding.animalId.trim()
+    val findingDateKey = normalizeFindingDateKey(finding.date) ?: return false
+    val expectedAnimalId = loadDailyAnimalAssignments(prefs, ownerId)[findingDateKey]?.trim().orEmpty()
+    if (normalizedAnimalId.isBlank() || expectedAnimalId.isBlank() || normalizedAnimalId != expectedAnimalId) {
+        return false
+    }
+
+    val recordedRoomIds = loadDailyAnimalQuestHitRoomIds(prefs, ownerId).toMutableSet()
+    if (!recordedRoomIds.add(roomId)) return false
+
+    saveDailyAnimalQuestHitRoomIds(prefs, ownerId, recordedRoomIds)
+    return true
 }
 
 private fun getDailyAnimalHistoryEntry(
@@ -1349,6 +1500,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     var wishlistAnimalId by rememberSaveable { mutableStateOf<String?>(null) }
     var wishlistCelebrationMessage by rememberSaveable { mutableStateOf<CelebrationMessage?>(null) }
     var xpPopupMessage by remember { mutableStateOf<XpPopupMessage?>(null) }
+    var socialFriendQuestProgress by remember(currentOwnerId) { mutableStateOf(0) }
     var previousOwnerId by rememberSaveable { mutableStateOf(ownerId) }
     var lastSyncedAnimalPreferenceSignature by rememberSaveable { mutableStateOf<String?>(null) }
 
@@ -1832,11 +1984,34 @@ fun TierdexApp(database: AnimalFindingDatabase) {
             animalId = activeAnimal.id,
             todayKey = todayKey
         )
+        recordDailyAnimalAssignmentForDate(
+            prefs = prefs,
+            ownerId = preferenceOwnerId,
+            dateKey = todayKey,
+            animalId = activeAnimal.id
+        )
 
         dailyAnimalId = activeAnimal.id
         isDailyAnimalOpenedFromHomeTile = false
         val isDismissedToday = prefs.getBoolean(dailyAnimalDismissedKey(preferenceOwnerId), false)
         showDailyAnimalScreen = !isDismissedToday
+    }
+
+    LaunchedEffect(currentOwnerId) {
+        val safeUserId = currentOwnerId
+        if (safeUserId.isNullOrBlank()) {
+            socialFriendQuestProgress = 0
+        } else {
+            FriendRepository.loadFriends(
+                currentUserId = safeUserId,
+                onResult = { loadedFriends ->
+                    socialFriendQuestProgress = loadedFriends.size
+                },
+                onError = {
+                    socialFriendQuestProgress = 0
+                }
+            )
+        }
     }
 
     val findingCountByAnimalId = allFindings
@@ -2693,7 +2868,15 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                     remotePhotoPaths = effectiveRemotePhotoPaths(finding)
                                 )
                                 val previousFindings = findingsFromRoom
-                                val currentFindingsForQuestCheck = previousFindings + localFinding
+                                val previousDailyAnimalQuestProgress = countDailyAnimalQuestHits(
+                                    prefs = prefs,
+                                    ownerId = preferenceOwnerId
+                                )
+                                val previousPerfectFindingQuestProgress = countPerfectFindingQuestProgress(
+                                    findings = previousFindings,
+                                    prefs = prefs,
+                                    ownerId = preferenceOwnerId
+                                )
                                 val xpSnapshotBeforeSave = XpProgressRepository.buildSnapshot(
                                     prefs = prefs,
                                     userId = currentOwnerId
@@ -2702,11 +2885,45 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                     previousFindings = previousFindings,
                                     newFinding = localFinding
                                 )
+
+                                val roomInsertStartedAt = SystemClock.elapsedRealtime()
+                                Log.d(
+                                    "FindingSaveTiming",
+                                    "dao.insertFinding start animalId=${localFinding.animalId}"
+                                )
+                                val insertedRowId = dao.insertFinding(
+                                    localFinding.toEntity(ownerIdOverride = currentOwnerId)
+                                )
+                                Log.d(
+                                    "FindingSaveTiming",
+                                    "dao.insertFinding end animalId=${localFinding.animalId} durationMs=${SystemClock.elapsedRealtime() - roomInsertStartedAt} rowId=$insertedRowId"
+                                )
+                                val localFindingWithRoomId = localFinding.copy(roomId = insertedRowId.toInt())
+                                recordDailyAnimalQuestHitIfEligible(
+                                    prefs = prefs,
+                                    ownerId = preferenceOwnerId,
+                                    finding = localFindingWithRoomId
+                                )
+                                val currentDailyAnimalQuestProgress = countDailyAnimalQuestHits(
+                                    prefs = prefs,
+                                    ownerId = preferenceOwnerId
+                                )
+                                val currentFindingsForQuestCheck = previousFindings + localFindingWithRoomId
+                                val currentPerfectFindingQuestProgress = countPerfectFindingQuestProgress(
+                                    findings = currentFindingsForQuestCheck,
+                                    prefs = prefs,
+                                    ownerId = preferenceOwnerId
+                                )
                                 val newlyCompletedQuestStages = detectNewlyCompletedQuestStages(
                                     previousFindings = previousFindings,
                                     currentFindings = currentFindingsForQuestCheck,
                                     animals = animals,
-                                    dailyAnimal = dailyAnimal
+                                    dailyAnimal = dailyAnimal,
+                                    previousDailyAnimalQuestProgress = previousDailyAnimalQuestProgress,
+                                    currentDailyAnimalQuestProgress = currentDailyAnimalQuestProgress,
+                                    previousPerfectFindingQuestProgress = previousPerfectFindingQuestProgress,
+                                    currentPerfectFindingQuestProgress = currentPerfectFindingQuestProgress,
+                                    wishlistAnimalId = wishlistAnimalId
                                 )
                                 val awardedXpResult = XpProgressRepository.grantXpAwardsIfAbsent(
                                     prefs = prefs,
@@ -2733,20 +2950,6 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                     previousSnapshot = xpSnapshotBeforeSave,
                                     currentSnapshot = xpSnapshotAfterSave
                                 )
-
-                                val roomInsertStartedAt = SystemClock.elapsedRealtime()
-                                Log.d(
-                                    "FindingSaveTiming",
-                                    "dao.insertFinding start animalId=${localFinding.animalId}"
-                                )
-                                val insertedRowId = dao.insertFinding(
-                                    localFinding.toEntity(ownerIdOverride = currentOwnerId)
-                                )
-                                Log.d(
-                                    "FindingSaveTiming",
-                                    "dao.insertFinding end animalId=${localFinding.animalId} durationMs=${SystemClock.elapsedRealtime() - roomInsertStartedAt} rowId=$insertedRowId"
-                                )
-                                val localFindingWithRoomId = localFinding.copy(roomId = insertedRowId.toInt())
 
                                 if (wishlistAnimalId == localFindingWithRoomId.animalId) {
                                     wishlistAnimalId = null
@@ -3268,6 +3471,15 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         findings = findingsFromRoom,
                         animals = animals,
                         dailyAnimal = dailyAnimal,
+                        dailyAnimalQuestProgress = countDailyAnimalQuestHits(prefs, preferenceOwnerId),
+                        perfectFindingQuestProgress = countPerfectFindingQuestProgress(
+                            findings = findingsFromRoom,
+                            prefs = prefs,
+                            ownerId = preferenceOwnerId
+                        ),
+                        socialFriendCount = socialFriendQuestProgress,
+                        socialLikesGivenCount = loadSocialLikesGivenCount(prefs, preferenceOwnerId),
+                        socialCommentsWrittenCount = loadSocialCommentsWrittenCount(prefs, preferenceOwnerId),
                         favoriteAnimalId = favoriteAnimalId,
                         wishlistAnimalId = wishlistAnimalId,
                         roomFindingsCount = allFindings.size,
@@ -3317,6 +3529,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             isFriendSearchOpen = isFriendSearchOpen,
                             onCloseFriendSearch = { isFriendSearchOpen = false },
                             onIncomingRequestsChanged = { refreshNotifications() },
+                            onConfirmedFriendsChanged = { socialFriendQuestProgress = it },
                             onOpenFriendProfile = { friendUserId, friendDisplayName ->
                                 selectedFriendProfileUserId = friendUserId
                                 selectedFriendProfileDisplayName = friendDisplayName
@@ -4146,8 +4359,8 @@ fun HomeQuestCompactCard(
         )
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             Text(
                 text = quest.title,
@@ -4160,18 +4373,17 @@ fun HomeQuestCompactCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = when (quest.type) {
-                        QuestType.TOTAL_SPECIES_PERCENT -> "${quest.percentLabel} / ${quest.goal}%"
-                        else -> "${quest.shownProgress}/${quest.goal}"
-                    },
+                    text = "${quest.shownProgress} / ${quest.goal}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = TextPrimary
                 )
-                Text(
-                    text = if (quest.isCompleted) "Geschafft" else quest.percentLabel,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = if (quest.isCompleted) PrimaryGreen else TextSecondary
-                )
+                if (quest.isCompleted) {
+                    Text(
+                        text = "Geschafft",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = PrimaryGreen
+                    )
+                }
             }
             if (!quest.isCompleted) {
                 QuestProgressBar(
@@ -4185,12 +4397,16 @@ fun HomeQuestCompactCard(
             Text(
                 text = quest.encouragementLabel,
                 style = MaterialTheme.typography.bodySmall,
-                color = TextSecondary
+                color = TextSecondary,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
             )
             Text(
                 text = quest.rewardLabel,
                 style = MaterialTheme.typography.labelSmall,
-                color = if (quest.xpReward != null) PrimaryGreen else TextSecondary
+                color = if (quest.xpReward != null) PrimaryGreen else TextSecondary,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.End
             )
         }
     }
@@ -4304,6 +4520,11 @@ fun HomeScreen(
     findings: List<AnimalFinding>,
     animals: List<AnimalEntry>,
     dailyAnimal: AnimalEntry?,
+    dailyAnimalQuestProgress: Int,
+    perfectFindingQuestProgress: Int,
+    socialFriendCount: Int,
+    socialLikesGivenCount: Int,
+    socialCommentsWrittenCount: Int,
     favoriteAnimalId: String?,
     wishlistAnimalId: String?,
     onOpenDailyAnimal: () -> Unit,
@@ -4327,20 +4548,41 @@ fun HomeScreen(
     val collectionProgress = (collectionPercent / 100f).coerceIn(0f, 1f)
     val collectionPercentLabel = String.format(Locale.GERMANY, "%.2f %%", collectionPercent.toDouble())
     val quests =
-        remember(findings, animals, dailyAnimal, collectedAnimalCount, totalFindings, photoFindingCount) {
+        remember(
+            findings,
+            animals,
+            dailyAnimal,
+            collectedAnimalCount,
+            totalFindings,
+            photoFindingCount,
+            dailyAnimalQuestProgress,
+            perfectFindingQuestProgress,
+            socialFriendCount,
+            socialLikesGivenCount,
+            socialCommentsWrittenCount,
+            wishlistAnimalId
+        ) {
             buildHomeQuests(
                 findings = findings,
                 animals = animals,
                 dailyAnimal = dailyAnimal,
                 collectedAnimalCount = collectedAnimalCount,
                 totalFindings = totalFindings,
-                photoFindingCount = photoFindingCount
+                photoFindingCount = photoFindingCount,
+                dailyAnimalQuestProgress = dailyAnimalQuestProgress,
+                perfectFindingQuestProgress = perfectFindingQuestProgress,
+                socialFriendCount = socialFriendCount,
+                socialLikesGivenCount = socialLikesGivenCount,
+                socialCommentsWrittenCount = socialCommentsWrittenCount,
+                wishlistAnimalId = wishlistAnimalId
             )
         }
     val questSections = remember(quests) { buildQuestSections(quests) }
     var collectionQuestsExpanded by rememberSaveable { mutableStateOf(true) }
     var groupQuestsExpanded by rememberSaveable { mutableStateOf(false) }
     var qualityQuestsExpanded by rememberSaveable { mutableStateOf(false) }
+    var socialQuestsExpanded by rememberSaveable { mutableStateOf(false) }
+    var otherQuestsExpanded by rememberSaveable { mutableStateOf(false) }
     var completedQuestsExpanded by rememberSaveable { mutableStateOf(false) }
 
     fun isQuestSectionExpanded(sectionType: QuestSectionType): Boolean {
@@ -4349,7 +4591,8 @@ fun HomeScreen(
             QuestSectionType.GROUPS -> groupQuestsExpanded
             QuestSectionType.QUALITY -> qualityQuestsExpanded
             QuestSectionType.DAILY -> false
-            QuestSectionType.SOCIAL -> false
+            QuestSectionType.SOCIAL -> socialQuestsExpanded
+            QuestSectionType.OTHER -> otherQuestsExpanded
             QuestSectionType.COMPLETED -> completedQuestsExpanded
         }
     }
@@ -4360,7 +4603,8 @@ fun HomeScreen(
             QuestSectionType.GROUPS -> groupQuestsExpanded = !groupQuestsExpanded
             QuestSectionType.QUALITY -> qualityQuestsExpanded = !qualityQuestsExpanded
             QuestSectionType.DAILY -> Unit
-            QuestSectionType.SOCIAL -> Unit
+            QuestSectionType.SOCIAL -> socialQuestsExpanded = !socialQuestsExpanded
+            QuestSectionType.OTHER -> otherQuestsExpanded = !otherQuestsExpanded
             QuestSectionType.COMPLETED -> completedQuestsExpanded = !completedQuestsExpanded
         }
     }
@@ -5227,7 +5471,16 @@ enum class QuestType {
     PHOTO_FINDINGS,
     LOCATION_FINDINGS,
     DAILY_ANIMAL,
-    TOTAL_SPECIES_PERCENT,
+    SOCIAL_FRIENDS,
+    SOCIAL_LIKES_GIVEN,
+    SOCIAL_COMMENTS_WRITTEN,
+    SOCIAL_FRIEND_TAGGED_FINDINGS,
+    TOTAL_SPECIES_ENTRIES,
+    SPECIAL_PERFECT_FINDING,
+    SPECIAL_SINGLE_SUBGROUP_SPECIES,
+    SPECIAL_ALPHABET_SPECIES,
+    SPECIAL_PHOTO_UPGRADE,
+    SPECIAL_WISH_ANIMAL_FOUND,
     BIRDS,
     FISH,
     MAMMALS,
@@ -5241,6 +5494,7 @@ enum class QuestSectionType {
     QUALITY,
     DAILY,
     SOCIAL,
+    OTHER,
     COMPLETED
 }
 
@@ -5255,7 +5509,8 @@ data class QuestUiModel(
     val goal: Int,
     val isCompleted: Boolean,
     val xpReward: Int? = null,
-    val preciseProgressPercent: Float? = null
+    val preciseProgressPercent: Float? = null,
+    val customEncouragementLabel: String? = null
 ) {
     val id: String
         get() = stageId
@@ -5266,28 +5521,50 @@ data class QuestUiModel(
     val progressFraction: Float
         get() = if (goal > 0) shownProgress.toFloat() / goal.toFloat() else 0f
 
-    val progressSummaryLabel: String
-        get() = when (type) {
-            QuestType.TOTAL_SPECIES_PERCENT ->
-                "Fortschritt: ${formatQuestPercentLabel(preciseProgressPercent ?: shownProgress.toFloat())} / $goal%"
+    private fun progressUnit(singular: Boolean): String = when (type) {
+        QuestType.TOTAL_FINDINGS -> if (singular) "Fund" else "Funde"
+        QuestType.PHOTO_FINDINGS -> if (singular) "Foto-Fund" else "Foto-Funde"
+        QuestType.LOCATION_FINDINGS -> if (singular) "Standort-Fund" else "Standort-Funde"
+        QuestType.DAILY_ANIMAL -> if (singular) "Tier-des-Tages-Treffer" else "Tier-des-Tages-Treffer"
+        QuestType.SOCIAL_FRIENDS -> if (singular) "Freund" else "Freunde"
+        QuestType.SOCIAL_LIKES_GIVEN -> if (singular) "Like" else "Likes"
+        QuestType.SOCIAL_COMMENTS_WRITTEN -> if (singular) "Kommentar" else "Kommentare"
+        QuestType.SOCIAL_FRIEND_TAGGED_FINDINGS -> if (singular) "Fund mit Freund" else "Funde mit Freund"
+        QuestType.TOTAL_SPECIES_ENTRIES -> if (singular) "Tierdex-Eintrag" else "Tierdex-Einträge"
+        QuestType.SPECIAL_PERFECT_FINDING -> if (singular) "perfekter Fund" else "perfekte Funde"
+        QuestType.SPECIAL_SINGLE_SUBGROUP_SPECIES -> if (singular) "einzigartige Tierart" else "einzigartige Tierarten"
+        QuestType.SPECIAL_ALPHABET_SPECIES -> if (singular) "Anfangsbuchstabe" else "Anfangsbuchstaben"
+        QuestType.SPECIAL_PHOTO_UPGRADE -> if (singular) "Upgrade" else "Upgrades"
+        QuestType.SPECIAL_WISH_ANIMAL_FOUND -> if (singular) "Wunsch-Tier" else "Wunsch-Tiere"
+        QuestType.BIRDS -> if (singular) "Vogelart" else "Vogelarten"
+        QuestType.FISH -> if (singular) "Fischart" else "Fischarten"
+        QuestType.MAMMALS -> if (singular) "Säugetierart" else "Säugetierarten"
+        QuestType.AMPHIBIANS -> if (singular) "Amphibienart" else "Amphibienarten"
+        QuestType.REPTILES -> if (singular) "Reptilienart" else "Reptilienarten"
+    }
 
-            else -> "Fortschritt: $shownProgress / $goal"
-        }
+    val progressSummaryLabel: String
+        get() = "Fortschritt: $shownProgress / $goal"
 
     val percentLabel: String
         get() = when (type) {
-            QuestType.TOTAL_SPECIES_PERCENT -> formatQuestPercentLabel(preciseProgressPercent ?: shownProgress.toFloat())
+            QuestType.TOTAL_SPECIES_ENTRIES -> "${(progressFraction * 100f).toInt()}%"
             else -> "${(progressFraction * 100f).toInt()}%"
         }
 
     val remainingToGoal: Int
         get() = (goal - progress).coerceAtLeast(0)
 
+    val remainingToNextStageLabel: String
+        get() = {
+            val singular = remainingToGoal == 1
+            val unit = progressUnit(singular = singular)
+            "Noch $remainingToGoal $unit bis zur nächsten Stufe"
+        }()
+
     val nextStageLabel: String
         get() = if (isCompleted) {
             "Stufe gemeistert"
-        } else if (type == QuestType.TOTAL_SPECIES_PERCENT) {
-            "Nächste Stufe: $goal%"
         } else {
             "Nächste Stufe: $goal"
         }
@@ -5295,10 +5572,10 @@ data class QuestUiModel(
     val encouragementLabel: String
         get() = if (isCompleted) {
             "Belohnung freigeschaltet"
-        } else if (remainingToGoal == 1) {
-            "Noch 1 Fund bis zum Ziel"
+        } else if (!customEncouragementLabel.isNullOrBlank()) {
+            customEncouragementLabel
         } else {
-            "Noch $remainingToGoal bis zum Ziel"
+            remainingToNextStageLabel
         }
 
     val rewardLabel: String
@@ -5310,17 +5587,22 @@ data class QuestUiModel(
             QuestType.PHOTO_FINDINGS -> Icons.Filled.PhotoCamera
             QuestType.LOCATION_FINDINGS -> Icons.Filled.Place
             QuestType.DAILY_ANIMAL -> Icons.Filled.Star
-            QuestType.TOTAL_SPECIES_PERCENT -> Icons.Filled.Star
+            QuestType.SOCIAL_FRIENDS -> Icons.Filled.Group
+            QuestType.SOCIAL_LIKES_GIVEN -> Icons.Filled.Favorite
+            QuestType.SOCIAL_COMMENTS_WRITTEN -> Icons.Filled.Comment
+            QuestType.SOCIAL_FRIEND_TAGGED_FINDINGS -> Icons.Filled.Group
+            QuestType.TOTAL_SPECIES_ENTRIES -> Icons.Filled.Star
+            QuestType.SPECIAL_PERFECT_FINDING -> Icons.Filled.Star
+            QuestType.SPECIAL_SINGLE_SUBGROUP_SPECIES -> Icons.Filled.Pets
+            QuestType.SPECIAL_ALPHABET_SPECIES -> Icons.Filled.Collections
+            QuestType.SPECIAL_PHOTO_UPGRADE -> Icons.Filled.PhotoCamera
+            QuestType.SPECIAL_WISH_ANIMAL_FOUND -> Icons.Filled.Favorite
             QuestType.BIRDS -> Icons.Filled.Air
             QuestType.FISH -> Icons.Filled.SetMeal
             QuestType.MAMMALS -> Icons.Filled.Pets
             QuestType.AMPHIBIANS -> Icons.Filled.WaterDrop
             QuestType.REPTILES -> Icons.Filled.BugReport
         }
-}
-
-private fun formatQuestPercentLabel(value: Float): String {
-    return String.format(Locale.GERMANY, "%.2f%%", value.toDouble())
 }
 
 data class QuestSectionUiModel(
@@ -5360,8 +5642,8 @@ fun QuestCard(quest: QuestUiModel) {
         )
     ) {
         Column(
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 18.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.padding(horizontal = 18.dp, vertical = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -5395,37 +5677,14 @@ fun QuestCard(quest: QuestUiModel) {
                             tint = PrimaryGreen,
                             modifier = Modifier.size(18.dp)
                         )
+                        Text(
+                            text = "Geschafft",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = PrimaryGreen
+                        )
                     }
-                    Text(
-                        text = if (quest.isCompleted) "Geschafft" else "Aktiv",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = if (quest.isCompleted) PrimaryGreen else TextSecondary
-                    )
                 }
             }
-
-            Text(
-                text = when (quest.type) {
-                    QuestType.TOTAL_FINDINGS -> "Gesamtfunde"
-                    QuestType.PHOTO_FINDINGS -> "Fotoquest"
-                    QuestType.LOCATION_FINDINGS -> "Standortquest"
-                    QuestType.DAILY_ANIMAL -> "Tagesquest"
-                    QuestType.TOTAL_SPECIES_PERCENT -> "Tierdex-Fortschritt"
-                    QuestType.BIRDS -> "Vögel"
-                    QuestType.FISH -> "Fische"
-                    QuestType.MAMMALS -> "Säugetiere"
-                    QuestType.AMPHIBIANS -> "Amphibien"
-                    QuestType.REPTILES -> "Reptilien"
-                },
-                style = MaterialTheme.typography.labelSmall,
-                color = TextSecondary
-            )
-
-            Text(
-                text = quest.description,
-                style = MaterialTheme.typography.bodyMedium,
-                color = TextSecondary
-            )
 
             Text(
                 text = quest.progressSummaryLabel,
@@ -5441,33 +5700,20 @@ fun QuestCard(quest: QuestUiModel) {
             )
 
             Text(
-                text = quest.nextStageLabel,
+                text = quest.encouragementLabel,
                 style = MaterialTheme.typography.bodySmall,
-                color = TextSecondary
+                color = if (quest.isCompleted) PrimaryGreen else TextSecondary,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
             )
 
             Text(
                 text = quest.rewardLabel,
                 style = MaterialTheme.typography.bodySmall,
-                color = if (quest.xpReward != null) PrimaryGreen else TextSecondary
-            )
-
-            Row(
+                color = if (quest.xpReward != null) PrimaryGreen else TextSecondary,
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = quest.percentLabel,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = TextSecondary
-                )
-                Text(
-                    text = quest.encouragementLabel,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = if (quest.isCompleted) PrimaryGreen else TextSecondary
-                )
-            }
+                textAlign = TextAlign.End
+            )
         }
     }
 }
@@ -5492,13 +5738,22 @@ fun calculateQuestXpReward(
         QuestType.TOTAL_FINDINGS,
         QuestType.PHOTO_FINDINGS,
         QuestType.LOCATION_FINDINGS,
-        QuestType.TOTAL_SPECIES_PERCENT,
+        QuestType.TOTAL_SPECIES_ENTRIES,
         QuestType.BIRDS,
         QuestType.FISH,
         QuestType.MAMMALS,
         QuestType.AMPHIBIANS,
         QuestType.REPTILES -> goal * 10
         QuestType.DAILY_ANIMAL -> goal * 20
+        QuestType.SOCIAL_FRIENDS -> goal * 20
+        QuestType.SOCIAL_LIKES_GIVEN -> goal * 5
+        QuestType.SOCIAL_COMMENTS_WRITTEN -> goal * 10
+        QuestType.SOCIAL_FRIEND_TAGGED_FINDINGS -> goal * 10
+        QuestType.SPECIAL_PERFECT_FINDING,
+        QuestType.SPECIAL_SINGLE_SUBGROUP_SPECIES,
+        QuestType.SPECIAL_ALPHABET_SPECIES,
+        QuestType.SPECIAL_PHOTO_UPGRADE,
+        QuestType.SPECIAL_WISH_ANIMAL_FOUND -> goal * 10
     }
 }
 
@@ -5525,7 +5780,8 @@ private fun buildQuestSeriesStages(
     title: String,
     description: String,
     progress: Int,
-    goals: List<Int>
+    goals: List<Int>,
+    xpRewardForGoal: ((Int) -> Int?)? = null
 ): List<QuestUiModel> {
     return goals.map { goal ->
         QuestUiModel(
@@ -5538,7 +5794,7 @@ private fun buildQuestSeriesStages(
             progress = progress,
             goal = goal,
             isCompleted = progress >= goal,
-            xpReward = calculateQuestXpReward(type, goal)
+            xpReward = xpRewardForGoal?.invoke(goal) ?: calculateQuestXpReward(type, goal)
         )
     }
 }
@@ -5549,9 +5805,24 @@ fun buildHomeQuests(
     dailyAnimal: AnimalEntry?,
     collectedAnimalCount: Int,
     totalFindings: Int,
-    photoFindingCount: Int
+    photoFindingCount: Int,
+    dailyAnimalQuestProgress: Int = 0,
+    perfectFindingQuestProgress: Int = 0,
+    socialFriendCount: Int = 0,
+    socialLikesGivenCount: Int = 0,
+    socialCommentsWrittenCount: Int = 0,
+    wishlistAnimalId: String? = null
 ): List<QuestUiModel> {
     val animalById = animals.associateBy { it.id }
+    val friendTaggedFindingsCount = findings.count { finding ->
+        finding.taggedFriendIds.any { taggedFriendId -> taggedFriendId.trim().isNotBlank() }
+    }
+    val singleSubgroupSpeciesCount = countSingleSubgroupSpeciesProgress(findings, animals)
+    val (alphabetSpeciesProgress, availableAlphabetLetterCount) = countAlphabetSpeciesProgress(findings, animals)
+    val photoUpgradeQuestProgress = countPhotoUpgradeQuestProgress(findings)
+    val wishAnimalProgress = wishlistAnimalId?.takeIf { it.isNotBlank() }?.let { wishId ->
+        if (findings.any { finding -> finding.animalId.trim() == wishId }) 1 else 0
+    } ?: 0
     val uniqueSpeciesByGroup = findings
         .mapNotNull { finding ->
             animalById[finding.animalId]?.group?.let(::normalizeQuestGroupName)?.let { group ->
@@ -5567,7 +5838,7 @@ fun buildHomeQuests(
     val totalQuestStages = buildQuestSeriesStages(
         questId = "total_findings",
         type = QuestType.TOTAL_FINDINGS,
-        title = "Funde sammeln",
+        title = "Funde insgesamt",
         description = "Erreiche die nächste Stufe über alle gespeicherten Funde hinweg.",
         progress = totalFindings,
         goals = listOf(1, 5, 10, 25, 50, 100, 250, 500)
@@ -5592,27 +5863,104 @@ fun buildHomeQuests(
         goals = listOf(1, 5, 10, 25, 50, 100)
     )
 
-    val collectionPercent = if (animals.isNotEmpty()) {
-        (collectedAnimalCount.toFloat() / animals.size.toFloat()) * 100f
-    } else {
-        0f
-    }
-    val collectionQuestProgress = collectionPercent.toInt()
-    val collectionQuestStages = listOf(10, 20, 30, 40, 50, 60, 70, 80, 90, 100).map { goal ->
+    val collectionQuestStages = buildQuestSeriesStages(
+        questId = "total_species_entries",
+        type = QuestType.TOTAL_SPECIES_ENTRIES,
+        title = "Tierdex-Einträge",
+        description = "Erreiche die nächste Stufe über alle unterschiedlichen entdeckten Tiere hinweg.",
+        progress = collectedAnimalCount,
+        goals = listOf(1, 5, 10, 25, 50, 100, 250, 500)
+    )
+    val dailyAnimalQuestStages = buildQuestSeriesStages(
+        questId = "daily_animal",
+        type = QuestType.DAILY_ANIMAL,
+        title = "Tier des Tages",
+        description = "Finde Tiere, die an ihrem jeweiligen Fundtag das Tier des Tages waren.",
+        progress = dailyAnimalQuestProgress,
+        goals = listOf(1, 5, 10, 20, 50, 100)
+    )
+    val socialFriendsQuestStages = buildQuestSeriesStages(
+        questId = "social_friends",
+        type = QuestType.SOCIAL_FRIENDS,
+        title = "Freunde hinzufügen",
+        description = "Erreiche bestätigte Freundschaften in deinem Netzwerk.",
+        progress = socialFriendCount,
+        goals = listOf(1, 3, 5, 10, 20)
+    )
+    val socialLikesQuestStages = buildQuestSeriesStages(
+        questId = "social_likes_given",
+        type = QuestType.SOCIAL_LIKES_GIVEN,
+        title = "Funde von Freunden liken",
+        description = "Vergib Likes auf Funde anderer Nutzer.",
+        progress = socialLikesGivenCount,
+        goals = listOf(1, 5, 10, 25, 50, 100)
+    )
+    val socialCommentsQuestStages = buildQuestSeriesStages(
+        questId = "social_comments_written",
+        type = QuestType.SOCIAL_COMMENTS_WRITTEN,
+        title = "Funde von Freunden kommentieren",
+        description = "Schreibe Kommentare auf Funde anderer Nutzer.",
+        progress = socialCommentsWrittenCount,
+        goals = listOf(1, 5, 10, 25, 50, 100)
+    )
+    val socialFriendTaggedFindingsQuestStages = buildQuestSeriesStages(
+        questId = "social_friend_tagged_findings",
+        type = QuestType.SOCIAL_FRIEND_TAGGED_FINDINGS,
+        title = "Fund mit Freund verzeichnen",
+        description = "Verzeichne eigene Funde mit mindestens einem getaggten Freund.",
+        progress = friendTaggedFindingsCount,
+        goals = listOf(1, 5, 10, 25, 50, 100)
+    )
+    val perfectFindingQuestStages = buildQuestSeriesStages(
+        questId = "special_perfect_finding",
+        type = QuestType.SPECIAL_PERFECT_FINDING,
+        title = "Der perfekte Fund",
+        description = "",
+        progress = perfectFindingQuestProgress,
+        goals = listOf(1, 3, 5, 10),
+        xpRewardForGoal = { goal -> goal * 250 }
+    )
+    val singleSubgroupQuestStages = buildQuestSeriesStages(
+        questId = "special_single_subgroup_species",
+        type = QuestType.SPECIAL_SINGLE_SUBGROUP_SPECIES,
+        title = "Einzigartig",
+        description = "",
+        progress = singleSubgroupSpeciesCount,
+        goals = listOf(1, 3, 5, 10),
+        xpRewardForGoal = { goal -> goal * 50 }
+    )
+    val alphabetQuestStages = buildAlphabetQuestStages(
+        progress = alphabetSpeciesProgress,
+        availableLetterCount = availableAlphabetLetterCount
+    )
+    val photoUpgradeQuestStages = buildQuestSeriesStages(
+        questId = "special_photo_upgrade",
+        type = QuestType.SPECIAL_PHOTO_UPGRADE,
+        title = "Upgrade",
+        description = "",
+        progress = photoUpgradeQuestProgress,
+        goals = listOf(1, 5, 10, 25),
+        xpRewardForGoal = { goal -> goal * 25 }
+    )
+    val wishAnimalQuestStages = listOf(
         QuestUiModel(
-            questId = "total_species_percent",
-            stageId = buildQuestStageId("total_species_percent", goal),
-            awardKey = buildQuestAwardKey("total_species_percent", goal),
-            type = QuestType.TOTAL_SPECIES_PERCENT,
-            title = "Tierdex füllen",
-            description = "Erreiche die nächste Prozentstufe über alle unterschiedlichen Tierarten hinweg.",
-            progress = collectionQuestProgress,
-            goal = goal,
-            isCompleted = collectionQuestProgress >= goal,
-            xpReward = calculateQuestXpReward(QuestType.TOTAL_SPECIES_PERCENT, goal),
-            preciseProgressPercent = collectionPercent
+            questId = "special_wish_animal_found",
+            stageId = buildQuestStageId("special_wish_animal_found", 1),
+            awardKey = buildQuestAwardKey("special_wish_animal_found", 1),
+            type = QuestType.SPECIAL_WISH_ANIMAL_FOUND,
+            title = "Finde dein Wunsch-Tier",
+            description = "",
+            progress = wishAnimalProgress,
+            goal = 1,
+            isCompleted = wishAnimalProgress >= 1,
+            xpReward = 100,
+            customEncouragementLabel = if (wishlistAnimalId.isNullOrBlank()) {
+                "Wähle zuerst ein Wunsch-Tier"
+            } else {
+                null
+            }
         )
-    }
+    )
 
     val groupQuestConfigs = listOf(
         GroupQuestConfig("Vögel", "group_species_birds", QuestType.BIRDS, listOf("Vogel", "Vögel")),
@@ -5639,16 +5987,42 @@ fun buildHomeQuests(
 
     return buildList {
         addAll(totalQuestStages)
+        addAll(dailyAnimalQuestStages)
         addAll(photoQuestStages)
         addAll(locationQuestStages)
         addAll(collectionQuestStages)
         addAll(groupQuests)
+        addAll(socialFriendsQuestStages)
+        addAll(socialLikesQuestStages)
+        addAll(socialCommentsQuestStages)
+        addAll(socialFriendTaggedFindingsQuestStages)
+        addAll(perfectFindingQuestStages)
+        addAll(singleSubgroupQuestStages)
+        addAll(alphabetQuestStages)
+        addAll(photoUpgradeQuestStages)
+        addAll(wishAnimalQuestStages)
     }
 }
 
 private fun buildQuestSections(
     quests: List<QuestUiModel>
 ): List<QuestSectionUiModel> {
+    fun collectionQuestOrder(quest: QuestUiModel): Int = when (quest.type) {
+        QuestType.TOTAL_FINDINGS -> 0
+        QuestType.TOTAL_SPECIES_ENTRIES -> 1
+        QuestType.DAILY_ANIMAL -> 2
+        else -> 99
+    }
+
+    fun otherQuestOrder(quest: QuestUiModel): Int = when (quest.type) {
+        QuestType.SPECIAL_PERFECT_FINDING -> 0
+        QuestType.SPECIAL_SINGLE_SUBGROUP_SPECIES -> 1
+        QuestType.SPECIAL_ALPHABET_SPECIES -> 2
+        QuestType.SPECIAL_PHOTO_UPGRADE -> 3
+        QuestType.SPECIAL_WISH_ANIMAL_FOUND -> 4
+        else -> 99
+    }
+
     val nextOpenQuestsBySeries = quests
         .groupBy { it.questId }
         .mapNotNull { (_, stages) ->
@@ -5664,8 +6038,10 @@ private fun buildQuestSections(
         )
 
     val collectionQuests = nextOpenQuestsBySeries.filter { quest ->
-        quest.type == QuestType.TOTAL_FINDINGS || quest.type == QuestType.TOTAL_SPECIES_PERCENT
-    }.sortedWith(compareBy<QuestUiModel> { it.type.ordinal }.thenBy { it.goal })
+        quest.type == QuestType.TOTAL_FINDINGS ||
+            quest.type == QuestType.TOTAL_SPECIES_ENTRIES ||
+            quest.type == QuestType.DAILY_ANIMAL
+    }.sortedWith(compareBy<QuestUiModel> { collectionQuestOrder(it) }.thenBy { it.goal })
 
     val groupQuests = nextOpenQuestsBySeries.filter { quest ->
         quest.type in listOf(
@@ -5681,13 +6057,31 @@ private fun buildQuestSections(
         quest.type == QuestType.PHOTO_FINDINGS || quest.type == QuestType.LOCATION_FINDINGS
     }.sortedWith(compareBy<QuestUiModel> { it.type.ordinal }.thenBy { it.goal })
 
+    val socialQuests = nextOpenQuestsBySeries.filter { quest ->
+        quest.type in listOf(
+            QuestType.SOCIAL_FRIENDS,
+            QuestType.SOCIAL_LIKES_GIVEN,
+            QuestType.SOCIAL_COMMENTS_WRITTEN,
+            QuestType.SOCIAL_FRIEND_TAGGED_FINDINGS
+        )
+    }.sortedWith(compareBy<QuestUiModel> { it.type.ordinal }.thenBy { it.goal })
+
+    val otherQuests = nextOpenQuestsBySeries.filter { quest ->
+        quest.type in listOf(
+            QuestType.SPECIAL_PERFECT_FINDING,
+            QuestType.SPECIAL_SINGLE_SUBGROUP_SPECIES,
+            QuestType.SPECIAL_ALPHABET_SPECIES,
+            QuestType.SPECIAL_PHOTO_UPGRADE,
+            QuestType.SPECIAL_WISH_ANIMAL_FOUND
+        )
+    }.sortedWith(compareBy<QuestUiModel> { otherQuestOrder(it) }.thenBy { it.goal })
+
     return listOf(
         QuestSectionUiModel(
             id = "collection",
             title = "Sammelfortschritt",
             type = QuestSectionType.COLLECTION,
-            quests = collectionQuests,
-            supportingMessage = "Tier des Tages: Aktuell gibt es hier noch keine eigene dauerhafte Questserie."
+            quests = collectionQuests
         ),
         QuestSectionUiModel(
             id = "groups",
@@ -5700,6 +6094,19 @@ private fun buildQuestSections(
             title = "Fundqualität",
             type = QuestSectionType.QUALITY,
             quests = qualityQuests
+        ),
+        QuestSectionUiModel(
+            id = "social",
+            title = "Soziale Quests",
+            type = QuestSectionType.SOCIAL,
+            quests = socialQuests,
+            emptyMessage = "Soziale Questserien werden ergänzt, sobald dafür verlässliche Gesamtzähler vorliegen."
+        ),
+        QuestSectionUiModel(
+            id = "other",
+            title = "Sonstige",
+            type = QuestSectionType.OTHER,
+            quests = otherQuests
         ),
         QuestSectionUiModel(
             id = "completed",
@@ -5773,11 +6180,165 @@ fun normalizeQuestGroupName(group: String): String {
     return group.trim().lowercase()
 }
 
+private fun orderedFindingsForQuestProgress(findings: List<AnimalFinding>): List<AnimalFinding> {
+    return findings.withIndex()
+        .sortedWith(compareBy<IndexedValue<AnimalFinding>> { it.value.roomId ?: Int.MAX_VALUE }.thenBy { it.index })
+        .map { it.value }
+}
+
+private fun questPhotoCount(finding: AnimalFinding): Int {
+    val localCount = effectiveLocalPhotoUris(finding).size.coerceAtLeast(if (finding.photoUri.trim().isNotBlank()) 1 else 0)
+    val remoteCount = effectiveRemotePhotoPaths(finding).size.coerceAtLeast(if (finding.remotePhotoPath.trim().isNotBlank()) 1 else 0)
+    return max(localCount, remoteCount)
+}
+
+private fun countPerfectFindingQuestProgress(
+    findings: List<AnimalFinding>,
+    prefs: SharedPreferences,
+    ownerId: String
+): Int {
+    val secureDailyHitRoomIds = loadDailyAnimalQuestHitRoomIds(prefs, ownerId)
+    if (secureDailyHitRoomIds.isEmpty()) return 0
+
+    val discoveredSpecies = mutableSetOf<String>()
+    var count = 0
+    orderedFindingsForQuestProgress(findings).forEach { finding ->
+        val animalId = finding.animalId.trim()
+        if (animalId.isBlank()) return@forEach
+        val isNewSpecies = discoveredSpecies.add(animalId)
+        val roomId = finding.roomId
+        val hasTaggedFriend = finding.taggedFriendIds.any { it.trim().isNotBlank() }
+        if (
+            isNewSpecies &&
+            roomId != null &&
+            roomId in secureDailyHitRoomIds &&
+            questPhotoCount(finding) >= 3 &&
+            hasXpEligibleLocation(finding) &&
+            hasTaggedFriend
+        ) {
+            count += 1
+        }
+    }
+    return count
+}
+
+private fun countSingleSubgroupSpeciesProgress(
+    findings: List<AnimalFinding>,
+    animals: List<AnimalEntry>
+): Int {
+    val subgroupSpeciesCounts = animals
+        .mapNotNull { animal ->
+            val subgroup = animal.subgroup.trim()
+            if (subgroup.isBlank()) null else subgroup.lowercase()
+        }
+        .groupingBy { it }
+        .eachCount()
+    val uniqueSubgroupAnimalIds = animals
+        .filter { animal ->
+            val subgroup = animal.subgroup.trim()
+            subgroup.isNotBlank() && subgroupSpeciesCounts[subgroup.lowercase()] == 1
+        }
+        .map { it.id }
+        .toSet()
+
+    return findings.map { it.animalId.trim() }
+        .filter { it in uniqueSubgroupAnimalIds }
+        .toSet()
+        .size
+}
+
+private fun normalizeAlphabetQuestLetter(name: String): String? {
+    val trimmedName = name.trim()
+    if (trimmedName.isBlank()) return null
+    val firstChar = when (trimmedName.first()) {
+        'Ä', 'ä' -> 'A'
+        'Ö', 'ö' -> 'O'
+        'Ü', 'ü' -> 'U'
+        else -> trimmedName.first().uppercaseChar()
+    }
+    val normalized = when (firstChar) {
+        'Ä' -> 'A'
+        'Ö' -> 'O'
+        'Ü' -> 'U'
+        else -> firstChar
+    }
+    if (normalized !in 'A'..'Z' || normalized == 'X' || normalized == 'Y') return null
+    return normalized.toString()
+}
+
+private fun countAlphabetSpeciesProgress(
+    findings: List<AnimalFinding>,
+    animals: List<AnimalEntry>
+): Pair<Int, Int> {
+    val animalById = animals.associateBy { it.id }
+    val availableLetters = animals.mapNotNull { animal ->
+        normalizeAlphabetQuestLetter(animal.germanName)
+    }.toSet()
+    val foundLetters = findings.mapNotNull { finding ->
+        animalById[finding.animalId]?.germanName?.let(::normalizeAlphabetQuestLetter)
+    }.toSet()
+    return foundLetters.size to availableLetters.size
+}
+
+private fun countPhotoUpgradeQuestProgress(findings: List<AnimalFinding>): Int {
+    val speciesWithPhotoLessFinding = mutableSetOf<String>()
+    val upgradedSpecies = mutableSetOf<String>()
+
+    orderedFindingsForQuestProgress(findings).forEach { finding ->
+        val animalId = finding.animalId.trim()
+        if (animalId.isBlank() || animalId in upgradedSpecies) return@forEach
+        val hasPhoto = hasXpEligiblePhoto(finding)
+        if (!hasPhoto) {
+            speciesWithPhotoLessFinding += animalId
+        } else if (animalId in speciesWithPhotoLessFinding) {
+            upgradedSpecies += animalId
+        }
+    }
+
+    return upgradedSpecies.size
+}
+
+private fun buildAlphabetQuestStages(progress: Int, availableLetterCount: Int): List<QuestUiModel> {
+    if (availableLetterCount <= 0) return emptyList()
+
+    val standardStages = listOf(5, 10, 15, 20).filter { it < availableLetterCount }
+    val stages = buildList<Pair<Int, String>> {
+        standardStages.forEach { goal -> add(goal to goal.toString()) }
+        add(availableLetterCount to "all")
+    }
+
+    return stages.map { (goal, stageSuffix) ->
+        QuestUiModel(
+            questId = "special_alphabet_species",
+            stageId = "special_alphabet_species:$stageSuffix",
+            awardKey = "special_alphabet_species:$stageSuffix",
+            type = QuestType.SPECIAL_ALPHABET_SPECIES,
+            title = "Alphabet-Sammler",
+            description = "",
+            progress = progress,
+            goal = goal,
+            isCompleted = progress >= goal,
+            xpReward = if (stageSuffix == "all") 500 else goal * 10
+        )
+    }
+}
+
 fun detectNewlyCompletedQuestStages(
     previousFindings: List<AnimalFinding>,
     currentFindings: List<AnimalFinding>,
     animals: List<AnimalEntry>,
-    dailyAnimal: AnimalEntry?
+    dailyAnimal: AnimalEntry?,
+    previousDailyAnimalQuestProgress: Int = 0,
+    currentDailyAnimalQuestProgress: Int = previousDailyAnimalQuestProgress,
+    previousPerfectFindingQuestProgress: Int = 0,
+    currentPerfectFindingQuestProgress: Int = previousPerfectFindingQuestProgress,
+    previousSocialFriendCount: Int = 0,
+    currentSocialFriendCount: Int = previousSocialFriendCount,
+    previousSocialLikesGivenCount: Int = 0,
+    currentSocialLikesGivenCount: Int = previousSocialLikesGivenCount,
+    previousSocialCommentsWrittenCount: Int = 0,
+    currentSocialCommentsWrittenCount: Int = previousSocialCommentsWrittenCount,
+    wishlistAnimalId: String? = null
 ): List<QuestUiModel> {
     val previousQuests = buildHomeQuests(
         findings = previousFindings,
@@ -5785,7 +6346,13 @@ fun detectNewlyCompletedQuestStages(
         dailyAnimal = dailyAnimal,
         collectedAnimalCount = collectedAnimalCountForQuestProgress(previousFindings),
         totalFindings = previousFindings.size,
-        photoFindingCount = photoFindingCountForQuestProgress(previousFindings)
+        photoFindingCount = photoFindingCountForQuestProgress(previousFindings),
+        dailyAnimalQuestProgress = previousDailyAnimalQuestProgress,
+        perfectFindingQuestProgress = previousPerfectFindingQuestProgress,
+        socialFriendCount = previousSocialFriendCount,
+        socialLikesGivenCount = previousSocialLikesGivenCount,
+        socialCommentsWrittenCount = previousSocialCommentsWrittenCount,
+        wishlistAnimalId = wishlistAnimalId
     )
     val previousCompletedAwardKeys = previousQuests
         .filter { it.isCompleted }
@@ -5798,7 +6365,13 @@ fun detectNewlyCompletedQuestStages(
         dailyAnimal = dailyAnimal,
         collectedAnimalCount = collectedAnimalCountForQuestProgress(currentFindings),
         totalFindings = currentFindings.size,
-        photoFindingCount = photoFindingCountForQuestProgress(currentFindings)
+        photoFindingCount = photoFindingCountForQuestProgress(currentFindings),
+        dailyAnimalQuestProgress = currentDailyAnimalQuestProgress,
+        perfectFindingQuestProgress = currentPerfectFindingQuestProgress,
+        socialFriendCount = currentSocialFriendCount,
+        socialLikesGivenCount = currentSocialLikesGivenCount,
+        socialCommentsWrittenCount = currentSocialCommentsWrittenCount,
+        wishlistAnimalId = wishlistAnimalId
     )
 
     return currentQuests.filter { quest ->
@@ -5894,13 +6467,49 @@ fun buildSimpleXpPopupMessage(
     )
 }
 
-fun grantSocialXpIfEligible(
+private fun buildEligibleSocialActionAward(
+    prefs: SharedPreferences,
+    userId: String,
+    findingOwnerId: String,
+    findingId: String,
+    actionType: String,
+    uniqueSuffix: String = ""
+): Pair<String, Int>? {
+    val dateKey = currentDailyDateKey()
+    val socialPrefix = when (actionType) {
+        "like" -> "social_like"
+        "comment" -> "social_comment"
+        else -> return null
+    }
+    val awardedTodayCount = XpProgressRepository.loadAwardedXpKeys(prefs, userId).count { awardKey ->
+        awardKey.startsWith("$socialPrefix:$dateKey:")
+    }
+    if (awardedTodayCount >= 3) {
+        return null
+    }
+
+    val awardKey = when (actionType) {
+        "like" -> "$socialPrefix:$dateKey:$findingOwnerId:$findingId"
+        else -> {
+            val cleanUniqueSuffix = uniqueSuffix.trim().ifBlank {
+                System.currentTimeMillis().toString()
+            }
+            "$socialPrefix:$dateKey:$findingOwnerId:$findingId:$cleanUniqueSuffix"
+        }
+    }
+    return awardKey to 2
+}
+
+private fun grantSocialXpIfEligible(
     prefs: SharedPreferences,
     userId: String?,
     findingOwnerId: String?,
     findingId: String,
     actionType: String,
-    uniqueSuffix: String = ""
+    uniqueSuffix: String = "",
+    animals: List<AnimalEntry> = emptyList(),
+    previousSocialQuestProgress: SocialQuestProgress = SocialQuestProgress(),
+    currentSocialQuestProgress: SocialQuestProgress = previousSocialQuestProgress
 ): XpPopupMessage? {
     val cleanUserId = userId?.trim().orEmpty()
     val cleanFindingOwnerId = findingOwnerId?.trim().orEmpty()
@@ -5912,27 +6521,28 @@ fun grantSocialXpIfEligible(
         return null
     }
 
-    val dateKey = currentDailyDateKey()
-    val socialPrefix = when (actionType) {
-        "like" -> "social_like"
-        "comment" -> "social_comment"
-        else -> return null
-    }
-    val awardedTodayCount = XpProgressRepository.loadAwardedXpKeys(prefs, cleanUserId).count { awardKey ->
-        awardKey.startsWith("$socialPrefix:$dateKey:")
-    }
-    if (awardedTodayCount >= 3) {
+    val socialActionAward = buildEligibleSocialActionAward(
+        prefs = prefs,
+        userId = cleanUserId,
+        findingOwnerId = cleanFindingOwnerId,
+        findingId = cleanFindingId,
+        actionType = actionType,
+        uniqueSuffix = uniqueSuffix
+    )
+    val newlyCompletedQuestStages = detectNewlyCompletedQuestStages(
+        previousFindings = emptyList(),
+        currentFindings = emptyList(),
+        animals = animals,
+        dailyAnimal = null,
+        previousSocialFriendCount = previousSocialQuestProgress.friendCount,
+        currentSocialFriendCount = currentSocialQuestProgress.friendCount,
+        previousSocialLikesGivenCount = previousSocialQuestProgress.likesGivenCount,
+        currentSocialLikesGivenCount = currentSocialQuestProgress.likesGivenCount,
+        previousSocialCommentsWrittenCount = previousSocialQuestProgress.commentsWrittenCount,
+        currentSocialCommentsWrittenCount = currentSocialQuestProgress.commentsWrittenCount
+    )
+    if (socialActionAward == null && newlyCompletedQuestStages.isEmpty()) {
         return null
-    }
-
-    val awardKey = when (actionType) {
-        "like" -> "$socialPrefix:$dateKey:$cleanFindingOwnerId:$cleanFindingId"
-        else -> {
-            val cleanUniqueSuffix = uniqueSuffix.trim().ifBlank {
-                System.currentTimeMillis().toString()
-            }
-            "$socialPrefix:$dateKey:$cleanFindingOwnerId:$cleanFindingId:$cleanUniqueSuffix"
-        }
     }
 
     val previousSnapshot = XpProgressRepository.buildSnapshot(
@@ -5942,9 +6552,18 @@ fun grantSocialXpIfEligible(
     val awardResult = XpProgressRepository.grantXpAwardsIfAbsent(
         prefs = prefs,
         userId = cleanUserId,
-        awards = listOf(awardKey to 2)
+        awards = buildList {
+            socialActionAward?.let(::add)
+            addAll(newlyCompletedQuestStages.mapNotNull { quest ->
+                quest.xpReward?.let { xpReward -> quest.awardKey to xpReward }
+            })
+        }
     )
-    if (awardKey !in awardResult.grantedKeys) {
+    val grantedSocialAction = socialActionAward?.first in awardResult.grantedKeys
+    val grantedQuestStages = newlyCompletedQuestStages.filter { quest ->
+        quest.awardKey in awardResult.grantedKeys
+    }
+    if (!grantedSocialAction && grantedQuestStages.isEmpty()) {
         return null
     }
 
@@ -5952,12 +6571,101 @@ fun grantSocialXpIfEligible(
         prefs = prefs,
         userId = cleanUserId
     )
-    return buildSimpleXpPopupMessage(
-        reason = if (actionType == "like") "Like" else "Kommentar",
-        detail = "",
-        awardedXp = awardResult.awardedXp,
-        previousSnapshot = previousSnapshot,
-        currentSnapshot = currentSnapshot
+    if (grantedQuestStages.isEmpty()) {
+        return buildSimpleXpPopupMessage(
+            reason = if (actionType == "like") "Like" else "Kommentar",
+            detail = "",
+            awardedXp = awardResult.awardedXp,
+            previousSnapshot = previousSnapshot,
+            currentSnapshot = currentSnapshot
+        )
+    }
+
+    val detailParts = buildList {
+        if (grantedSocialAction) {
+            add(if (actionType == "like") "Like" else "Kommentar")
+        }
+        when (grantedQuestStages.size) {
+            1 -> add("Quest abgeschlossen")
+            else -> add("${grantedQuestStages.size} Quests")
+        }
+    }
+
+    return XpPopupMessage(
+        reason = if (grantedSocialAction) "Mehrere Belohnungen" else "Quest abgeschlossen",
+        xpLabel = if (detailParts.size > 1 || grantedQuestStages.size > 1) {
+            "Gesamt +${awardResult.awardedXp} XP"
+        } else {
+            "+${awardResult.awardedXp} XP"
+        },
+        detail = detailParts.joinToString(" • "),
+        beforeSnapshot = previousSnapshot,
+        afterSnapshot = currentSnapshot,
+        levelUpTitle = if (currentSnapshot.level > previousSnapshot.level) "Levelaufstieg!" else null,
+        levelUpSubtitle = if (currentSnapshot.level > previousSnapshot.level) {
+            "Level ${currentSnapshot.level} • ${currentSnapshot.title}"
+        } else {
+            null
+        }
+    )
+}
+
+private fun grantSocialQuestXpIfEligible(
+    prefs: SharedPreferences,
+    userId: String?,
+    animals: List<AnimalEntry>,
+    previousSocialQuestProgress: SocialQuestProgress,
+    currentSocialQuestProgress: SocialQuestProgress
+): XpPopupMessage? {
+    val cleanUserId = userId?.trim().orEmpty()
+    if (cleanUserId.isBlank()) return null
+
+    val newlyCompletedQuestStages = detectNewlyCompletedQuestStages(
+        previousFindings = emptyList(),
+        currentFindings = emptyList(),
+        animals = animals,
+        dailyAnimal = null,
+        previousSocialFriendCount = previousSocialQuestProgress.friendCount,
+        currentSocialFriendCount = currentSocialQuestProgress.friendCount,
+        previousSocialLikesGivenCount = previousSocialQuestProgress.likesGivenCount,
+        currentSocialLikesGivenCount = currentSocialQuestProgress.likesGivenCount,
+        previousSocialCommentsWrittenCount = previousSocialQuestProgress.commentsWrittenCount,
+        currentSocialCommentsWrittenCount = currentSocialQuestProgress.commentsWrittenCount
+    )
+    if (newlyCompletedQuestStages.isEmpty()) return null
+
+    val previousSnapshot = XpProgressRepository.buildSnapshot(
+        prefs = prefs,
+        userId = cleanUserId
+    )
+    val awardResult = XpProgressRepository.grantXpAwardsIfAbsent(
+        prefs = prefs,
+        userId = cleanUserId,
+        awards = newlyCompletedQuestStages.mapNotNull { quest ->
+            quest.xpReward?.let { xpReward -> quest.awardKey to xpReward }
+        }
+    )
+    val grantedQuestStages = newlyCompletedQuestStages.filter { quest ->
+        quest.awardKey in awardResult.grantedKeys
+    }
+    if (grantedQuestStages.isEmpty()) return null
+
+    val currentSnapshot = XpProgressRepository.buildSnapshot(
+        prefs = prefs,
+        userId = cleanUserId
+    )
+    return XpPopupMessage(
+        reason = if (grantedQuestStages.size > 1) "Mehrere Belohnungen" else "Quest abgeschlossen",
+        xpLabel = if (grantedQuestStages.size > 1) "Gesamt +${awardResult.awardedXp} XP" else "+${awardResult.awardedXp} XP",
+        detail = if (grantedQuestStages.size > 1) "${grantedQuestStages.size} Quests" else "Quest abgeschlossen",
+        beforeSnapshot = previousSnapshot,
+        afterSnapshot = currentSnapshot,
+        levelUpTitle = if (currentSnapshot.level > previousSnapshot.level) "Levelaufstieg!" else null,
+        levelUpSubtitle = if (currentSnapshot.level > previousSnapshot.level) {
+            "Level ${currentSnapshot.level} • ${currentSnapshot.title}"
+        } else {
+            null
+        }
     )
 }
 
@@ -6344,6 +7052,7 @@ fun FriendsScreen(
     isFriendSearchOpen: Boolean,
     onCloseFriendSearch: () -> Unit,
     onIncomingRequestsChanged: () -> Unit,
+    onConfirmedFriendsChanged: (Int) -> Unit,
     onOpenFriendProfile: (String, String) -> Unit,
     onSocialXpFeedback: (XpPopupMessage?) -> Unit,
     extraTopPadding: Dp = 0.dp,
@@ -6461,9 +7170,11 @@ fun FriendsScreen(
             currentUserId = safeUserId,
             onResult = {
                 friends = it
+                onConfirmedFriendsChanged(it.size)
                 finishLoad()
             },
             onError = { error ->
+                onConfirmedFriendsChanged(0)
                 friendsErrorMessage = error ?: "Freunde konnten gerade nicht geladen werden"
                 finishLoad()
             }
@@ -6549,6 +7260,7 @@ fun FriendsScreen(
     LaunchedEffect(currentUserId) {
         searchResults = emptyList()
         friends = emptyList()
+        onConfirmedFriendsChanged(0)
         Log.d(
             "FriendFeedCache",
             "friendFeed cleared reason=currentUserChanged hasCurrentUser=${!currentUserId.isNullOrBlank()}"
@@ -6612,6 +7324,8 @@ fun FriendsScreen(
                 )
             }
             refreshFriendsData()
+        } else {
+            onConfirmedFriendsChanged(0)
         }
     }
 
@@ -6973,6 +7687,22 @@ fun FriendsScreen(
                                         ) { success, result ->
                                             if (success) {
                                                 infoMessage = "Anfrage angenommen."
+                                                val xpPopup = grantSocialQuestXpIfEligible(
+                                                    prefs = prefs,
+                                                    userId = currentUserId,
+                                                    animals = allAnimals,
+                                                    previousSocialQuestProgress = SocialQuestProgress(
+                                                        friendCount = friends.size,
+                                                        likesGivenCount = loadSocialLikesGivenCount(prefs, currentUserId.orEmpty()),
+                                                        commentsWrittenCount = loadSocialCommentsWrittenCount(prefs, currentUserId.orEmpty())
+                                                    ),
+                                                    currentSocialQuestProgress = SocialQuestProgress(
+                                                        friendCount = friends.size + 1,
+                                                        likesGivenCount = loadSocialLikesGivenCount(prefs, currentUserId.orEmpty()),
+                                                        commentsWrittenCount = loadSocialCommentsWrittenCount(prefs, currentUserId.orEmpty())
+                                                    )
+                                                )
+                                                onSocialXpFeedback(xpPopup)
                                                 refreshFriendsData()
                                             } else {
                                                 errorMessage =
@@ -7230,12 +7960,31 @@ fun FriendsScreen(
                                                             "Gefällt mir entfernt."
                                                         }
                                                         if (isNowLiked) {
+                                                            val previousLikesGivenCount = loadSocialLikesGivenCount(
+                                                                prefs,
+                                                                currentUserId.orEmpty()
+                                                            )
+                                                            val currentLikesGivenCount = incrementSocialLikesGivenCount(
+                                                                prefs,
+                                                                currentUserId.orEmpty()
+                                                            )
                                                             val xpPopup = grantSocialXpIfEligible(
                                                                 prefs = prefs,
                                                                 userId = currentUserId,
                                                                 findingOwnerId = feedItem.friendUserId,
                                                                 findingId = feedItem.findingId,
-                                                                actionType = "like"
+                                                                actionType = "like",
+                                                                animals = allAnimals,
+                                                                previousSocialQuestProgress = SocialQuestProgress(
+                                                                    friendCount = friends.size,
+                                                                    likesGivenCount = previousLikesGivenCount,
+                                                                    commentsWrittenCount = loadSocialCommentsWrittenCount(prefs, currentUserId.orEmpty())
+                                                                ),
+                                                                currentSocialQuestProgress = SocialQuestProgress(
+                                                                    friendCount = friends.size,
+                                                                    likesGivenCount = currentLikesGivenCount,
+                                                                    commentsWrittenCount = loadSocialCommentsWrittenCount(prefs, currentUserId.orEmpty())
+                                                                )
                                                             )
                                                             onSocialXpFeedback(xpPopup)
                                                         }
@@ -7380,13 +8129,32 @@ fun FriendsScreen(
                                                                 commentInputs = commentInputs + (feedItemKey to "")
                                                                 loadCommentsForFeedItem(feedItem)
                                                                 val commentAwardSuffix = System.currentTimeMillis().toString()
+                                                                val previousCommentsWrittenCount = loadSocialCommentsWrittenCount(
+                                                                    prefs,
+                                                                    currentUserId
+                                                                )
+                                                                val currentCommentsWrittenCount = incrementSocialCommentsWrittenCount(
+                                                                    prefs,
+                                                                    currentUserId
+                                                                )
                                                                 val xpPopup = grantSocialXpIfEligible(
                                                                     prefs = prefs,
                                                                     userId = currentUserId,
                                                                     findingOwnerId = feedItem.friendUserId,
                                                                     findingId = feedItem.findingId,
                                                                     actionType = "comment",
-                                                                    uniqueSuffix = commentAwardSuffix
+                                                                    uniqueSuffix = commentAwardSuffix,
+                                                                    animals = allAnimals,
+                                                                    previousSocialQuestProgress = SocialQuestProgress(
+                                                                        friendCount = friends.size,
+                                                                        likesGivenCount = loadSocialLikesGivenCount(prefs, currentUserId.orEmpty()),
+                                                                        commentsWrittenCount = previousCommentsWrittenCount
+                                                                    ),
+                                                                    currentSocialQuestProgress = SocialQuestProgress(
+                                                                        friendCount = friends.size,
+                                                                        likesGivenCount = loadSocialLikesGivenCount(prefs, currentUserId.orEmpty()),
+                                                                        commentsWrittenCount = currentCommentsWrittenCount
+                                                                    )
                                                                 )
                                                                 onSocialXpFeedback(xpPopup)
                                                             } else {
@@ -11330,12 +12098,31 @@ fun AnimalDetailScreen(
                                                                         }
                                                                     }
                                                                     if (isNowLiked) {
+                                                                        val previousLikesGivenCount = loadSocialLikesGivenCount(
+                                                                            prefs,
+                                                                            currentUserId.orEmpty()
+                                                                        )
+                                                                        val currentLikesGivenCount = incrementSocialLikesGivenCount(
+                                                                            prefs,
+                                                                            currentUserId.orEmpty()
+                                                                        )
                                                                         val xpPopup = grantSocialXpIfEligible(
                                                                             prefs = prefs,
                                                                             userId = currentUserId,
                                                                             findingOwnerId = feedItem.friendUserId,
                                                                             findingId = feedItem.findingId,
-                                                                            actionType = "like"
+                                                                            actionType = "like",
+                                                                            animals = listOf(animal),
+                                                                            previousSocialQuestProgress = SocialQuestProgress(
+                                                                                friendCount = availableFriends.size,
+                                                                                likesGivenCount = previousLikesGivenCount,
+                                                                                commentsWrittenCount = loadSocialCommentsWrittenCount(prefs, currentUserId.orEmpty())
+                                                                            ),
+                                                                            currentSocialQuestProgress = SocialQuestProgress(
+                                                                                friendCount = availableFriends.size,
+                                                                                likesGivenCount = currentLikesGivenCount,
+                                                                                commentsWrittenCount = loadSocialCommentsWrittenCount(prefs, currentUserId.orEmpty())
+                                                                            )
                                                                         )
                                                                         onSocialXpFeedback(xpPopup)
                                                                     }
