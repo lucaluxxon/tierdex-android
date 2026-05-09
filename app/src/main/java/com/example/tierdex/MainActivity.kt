@@ -4160,7 +4160,10 @@ fun HomeQuestCompactCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${quest.shownProgress}/${quest.goal}",
+                    text = when (quest.type) {
+                        QuestType.TOTAL_SPECIES_PERCENT -> "${quest.percentLabel} / ${quest.goal}%"
+                        else -> "${quest.shownProgress}/${quest.goal}"
+                    },
                     style = MaterialTheme.typography.bodyMedium,
                     color = TextPrimary
                 )
@@ -4171,14 +4174,12 @@ fun HomeQuestCompactCard(
                 )
             }
             if (!quest.isCompleted) {
-                LinearProgressIndicator(
-                    progress = { quest.progressFraction },
+                QuestProgressBar(
+                    progress = quest.progressFraction,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(6.dp)
-                        .clip(RoundedCornerShape(999.dp)),
-                    color = PrimaryGreen,
-                    trackColor = PrimaryGreenSoft.copy(alpha = 0.45f)
+                        .clip(RoundedCornerShape(999.dp))
                 )
             }
             Text(
@@ -4196,6 +4197,27 @@ fun HomeQuestCompactCard(
 }
 
 @Composable
+private fun QuestProgressBar(
+    progress: Float,
+    modifier: Modifier = Modifier,
+    color: Color = PrimaryGreen,
+    trackColor: Color = PrimaryGreenSoft.copy(alpha = 0.45f)
+) {
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(999.dp))
+            .background(trackColor)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth(progress.coerceIn(0f, 1f))
+                .fillMaxHeight()
+                .background(color)
+        )
+    }
+}
+
+@Composable
 fun QuestSectionCard(
     title: String,
     questCount: Int,
@@ -4203,6 +4225,7 @@ fun QuestSectionCard(
     onToggleExpanded: () -> Unit,
     modifier: Modifier = Modifier,
     emptyMessage: String? = null,
+    supportingMessage: String? = null,
     content: @Composable () -> Unit
 ) {
     Card(
@@ -4252,6 +4275,13 @@ fun QuestSectionCard(
             }
 
             if (expanded) {
+                if (!supportingMessage.isNullOrBlank()) {
+                    Text(
+                        text = supportingMessage,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = TextSecondary
+                    )
+                }
                 if (questCount > 0) {
                     content()
                 } else if (!emptyMessage.isNullOrBlank()) {
@@ -4311,8 +4341,6 @@ fun HomeScreen(
     var collectionQuestsExpanded by rememberSaveable { mutableStateOf(true) }
     var groupQuestsExpanded by rememberSaveable { mutableStateOf(false) }
     var qualityQuestsExpanded by rememberSaveable { mutableStateOf(false) }
-    var dailyQuestsExpanded by rememberSaveable { mutableStateOf(false) }
-    var socialQuestsExpanded by rememberSaveable { mutableStateOf(false) }
     var completedQuestsExpanded by rememberSaveable { mutableStateOf(false) }
 
     fun isQuestSectionExpanded(sectionType: QuestSectionType): Boolean {
@@ -4320,8 +4348,8 @@ fun HomeScreen(
             QuestSectionType.COLLECTION -> collectionQuestsExpanded
             QuestSectionType.GROUPS -> groupQuestsExpanded
             QuestSectionType.QUALITY -> qualityQuestsExpanded
-            QuestSectionType.DAILY -> dailyQuestsExpanded
-            QuestSectionType.SOCIAL -> socialQuestsExpanded
+            QuestSectionType.DAILY -> false
+            QuestSectionType.SOCIAL -> false
             QuestSectionType.COMPLETED -> completedQuestsExpanded
         }
     }
@@ -4331,8 +4359,8 @@ fun HomeScreen(
             QuestSectionType.COLLECTION -> collectionQuestsExpanded = !collectionQuestsExpanded
             QuestSectionType.GROUPS -> groupQuestsExpanded = !groupQuestsExpanded
             QuestSectionType.QUALITY -> qualityQuestsExpanded = !qualityQuestsExpanded
-            QuestSectionType.DAILY -> dailyQuestsExpanded = !dailyQuestsExpanded
-            QuestSectionType.SOCIAL -> socialQuestsExpanded = !socialQuestsExpanded
+            QuestSectionType.DAILY -> Unit
+            QuestSectionType.SOCIAL -> Unit
             QuestSectionType.COMPLETED -> completedQuestsExpanded = !completedQuestsExpanded
         }
     }
@@ -4626,7 +4654,8 @@ fun HomeScreen(
                 questCount = section.quests.size,
                 expanded = isQuestSectionExpanded(section.type),
                 onToggleExpanded = { toggleQuestSection(section.type) },
-                emptyMessage = section.emptyMessage
+                emptyMessage = section.emptyMessage,
+                supportingMessage = section.supportingMessage
             ) {
                 when (section.type) {
                     QuestSectionType.COMPLETED -> {
@@ -5225,7 +5254,8 @@ data class QuestUiModel(
     val progress: Int,
     val goal: Int,
     val isCompleted: Boolean,
-    val xpReward: Int? = null
+    val xpReward: Int? = null,
+    val preciseProgressPercent: Float? = null
 ) {
     val id: String
         get() = stageId
@@ -5236,8 +5266,19 @@ data class QuestUiModel(
     val progressFraction: Float
         get() = if (goal > 0) shownProgress.toFloat() / goal.toFloat() else 0f
 
+    val progressSummaryLabel: String
+        get() = when (type) {
+            QuestType.TOTAL_SPECIES_PERCENT ->
+                "Fortschritt: ${formatQuestPercentLabel(preciseProgressPercent ?: shownProgress.toFloat())} / $goal%"
+
+            else -> "Fortschritt: $shownProgress / $goal"
+        }
+
     val percentLabel: String
-        get() = "${(progressFraction * 100f).toInt()}%"
+        get() = when (type) {
+            QuestType.TOTAL_SPECIES_PERCENT -> formatQuestPercentLabel(preciseProgressPercent ?: shownProgress.toFloat())
+            else -> "${(progressFraction * 100f).toInt()}%"
+        }
 
     val remainingToGoal: Int
         get() = (goal - progress).coerceAtLeast(0)
@@ -5245,6 +5286,8 @@ data class QuestUiModel(
     val nextStageLabel: String
         get() = if (isCompleted) {
             "Stufe gemeistert"
+        } else if (type == QuestType.TOTAL_SPECIES_PERCENT) {
+            "Nächste Stufe: $goal%"
         } else {
             "Nächste Stufe: $goal"
         }
@@ -5276,12 +5319,17 @@ data class QuestUiModel(
         }
 }
 
+private fun formatQuestPercentLabel(value: Float): String {
+    return String.format(Locale.GERMANY, "%.2f%%", value.toDouble())
+}
+
 data class QuestSectionUiModel(
     val id: String,
     val title: String,
     val type: QuestSectionType,
     val quests: List<QuestUiModel> = emptyList(),
-    val emptyMessage: String? = null
+    val emptyMessage: String? = null,
+    val supportingMessage: String? = null
 )
 
 data class CelebrationMessage(
@@ -5380,16 +5428,16 @@ fun QuestCard(quest: QuestUiModel) {
             )
 
             Text(
-                text = "Fortschritt: ${quest.shownProgress} / ${quest.goal}",
+                text = quest.progressSummaryLabel,
                 style = MaterialTheme.typography.bodyMedium,
                 color = TextPrimary
             )
 
-            LinearProgressIndicator(
-                progress = { quest.progressFraction },
-                modifier = Modifier.fillMaxWidth(),
-                color = PrimaryGreen,
-                trackColor = PrimaryGreenSoft
+            QuestProgressBar(
+                progress = quest.progressFraction,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(6.dp)
             )
 
             Text(
@@ -5545,18 +5593,26 @@ fun buildHomeQuests(
     )
 
     val collectionPercent = if (animals.isNotEmpty()) {
-        ((collectedAnimalCount.toFloat() / animals.size.toFloat()) * 100f).toInt()
+        (collectedAnimalCount.toFloat() / animals.size.toFloat()) * 100f
     } else {
-        0
+        0f
     }
-    val collectionQuestStages = buildQuestSeriesStages(
-        questId = "total_species_percent",
-        type = QuestType.TOTAL_SPECIES_PERCENT,
-        title = "Tierdex füllen",
-        description = "Erreiche die nächste Prozentstufe über alle unterschiedlichen Tierarten hinweg.",
-        progress = collectionPercent,
-        goals = listOf(10, 20, 30, 40, 50, 60, 70, 80, 90, 100)
-    )
+    val collectionQuestProgress = collectionPercent.toInt()
+    val collectionQuestStages = listOf(10, 20, 30, 40, 50, 60, 70, 80, 90, 100).map { goal ->
+        QuestUiModel(
+            questId = "total_species_percent",
+            stageId = buildQuestStageId("total_species_percent", goal),
+            awardKey = buildQuestAwardKey("total_species_percent", goal),
+            type = QuestType.TOTAL_SPECIES_PERCENT,
+            title = "Tierdex füllen",
+            description = "Erreiche die nächste Prozentstufe über alle unterschiedlichen Tierarten hinweg.",
+            progress = collectionQuestProgress,
+            goal = goal,
+            isCompleted = collectionQuestProgress >= goal,
+            xpReward = calculateQuestXpReward(QuestType.TOTAL_SPECIES_PERCENT, goal),
+            preciseProgressPercent = collectionPercent
+        )
+    }
 
     val groupQuestConfigs = listOf(
         GroupQuestConfig("Vögel", "group_species_birds", QuestType.BIRDS, listOf("Vogel", "Vögel")),
@@ -5630,7 +5686,8 @@ private fun buildQuestSections(
             id = "collection",
             title = "Sammelfortschritt",
             type = QuestSectionType.COLLECTION,
-            quests = collectionQuests
+            quests = collectionQuests,
+            supportingMessage = "Tier des Tages: Aktuell gibt es hier noch keine eigene dauerhafte Questserie."
         ),
         QuestSectionUiModel(
             id = "groups",
@@ -5645,22 +5702,8 @@ private fun buildQuestSections(
             quests = qualityQuests
         ),
         QuestSectionUiModel(
-            id = "daily",
-            title = "Tages-Tier",
-            type = QuestSectionType.DAILY,
-            quests = emptyList(),
-            emptyMessage = "Noch nicht aktiv: Für diese dauerhafte Quest fehlt aktuell eine verlässliche Zuordnung von Funddatum zu damaligem Tier des Tages."
-        ),
-        QuestSectionUiModel(
-            id = "social",
-            title = "Soziale Quests",
-            type = QuestSectionType.SOCIAL,
-            quests = emptyList(),
-            emptyMessage = "Soziale Quests wie Likes, Kommentare oder Freunde folgen später."
-        ),
-        QuestSectionUiModel(
             id = "completed",
-            title = "Abgeschlossene Quests",
+            title = "✓ Abgeschlossene Quests",
             type = QuestSectionType.COMPLETED,
             quests = completedQuests,
             emptyMessage = "Noch keine Queststufen abgeschlossen."
