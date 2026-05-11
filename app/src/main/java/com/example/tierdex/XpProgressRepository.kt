@@ -56,6 +56,84 @@ object XpProgressRepository {
         60 to "Legende des Tierdex"
     )
 
+    private fun parseTrailingPositiveInt(awardKey: String): Int? {
+        return awardKey.substringAfterLast(':', missingDelimiterValue = "")
+            .trim()
+            .toIntOrNull()
+            ?.takeIf { it > 0 }
+    }
+
+    // Keeps XP mapping centralized so future local/cloud consistency checks can rebuild totals
+    // from the same stable award keys that already prevent double grants today.
+    fun xpForAwardKey(awardKey: String): Int {
+        val cleanAwardKey = awardKey.trim()
+        if (cleanAwardKey.isBlank()) return 0
+
+        return when {
+            cleanAwardKey.startsWith("daily_login:") -> 2
+            cleanAwardKey.startsWith("social_like:") -> 2
+            cleanAwardKey.startsWith("social_comment:") -> 2
+
+            cleanAwardKey.startsWith("finding_base:") -> when (parseTrailingPositiveInt(cleanAwardKey)) {
+                1 -> 10
+                2 -> 5
+                3 -> 3
+                else -> 0
+            }
+
+            cleanAwardKey.startsWith("finding_photo:") ||
+                cleanAwardKey.startsWith("finding_location:") -> when (parseTrailingPositiveInt(cleanAwardKey)) {
+                1, 2, 3 -> 3
+                else -> 0
+            }
+
+            cleanAwardKey.startsWith("total_findings:") ||
+                cleanAwardKey.startsWith("photo_findings:") ||
+                cleanAwardKey.startsWith("location_findings:") ||
+                cleanAwardKey.startsWith("total_species_entries:") ||
+                cleanAwardKey.startsWith("group_species_") ||
+                cleanAwardKey.startsWith("social_friend_tagged_findings:") ->
+                parseTrailingPositiveInt(cleanAwardKey)?.times(10) ?: 0
+
+            cleanAwardKey.startsWith("daily_animal:") ||
+                cleanAwardKey.startsWith("social_friends:") ->
+                parseTrailingPositiveInt(cleanAwardKey)?.times(20) ?: 0
+
+            cleanAwardKey.startsWith("social_likes_given:") ->
+                parseTrailingPositiveInt(cleanAwardKey)?.times(5) ?: 0
+
+            cleanAwardKey.startsWith("social_comments_written:") ->
+                parseTrailingPositiveInt(cleanAwardKey)?.times(10) ?: 0
+
+            cleanAwardKey.startsWith("special_perfect_finding:") ->
+                parseTrailingPositiveInt(cleanAwardKey)?.times(250) ?: 0
+
+            cleanAwardKey.startsWith("special_single_subgroup_species:") ->
+                parseTrailingPositiveInt(cleanAwardKey)?.times(50) ?: 0
+
+            cleanAwardKey == "special_alphabet_species:all" -> 500
+
+            cleanAwardKey.startsWith("special_alphabet_species:") ->
+                parseTrailingPositiveInt(cleanAwardKey)?.times(10) ?: 0
+
+            cleanAwardKey.startsWith("special_photo_upgrade:") ->
+                parseTrailingPositiveInt(cleanAwardKey)?.times(25) ?: 0
+
+            cleanAwardKey == "special_wish_animal_found:1" -> 100
+
+            else -> 0
+        }
+    }
+
+    fun recalculateTotalXpFromAwardedKeys(keys: Collection<String>): Int {
+        return keys
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+            .toSet()
+            .sumOf(::xpForAwardKey)
+            .coerceAtLeast(0)
+    }
+
     fun resolveOwnerId(userId: String?): String {
         return userId?.trim()?.takeIf { it.isNotBlank() } ?: LOCAL_XP_OWNER_ID
     }

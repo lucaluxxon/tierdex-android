@@ -14,24 +14,53 @@ object FirestoreFindingRepository {
         firestore.collection("globalFindingContributions")
             .document("${ownerUid.trim()}_${findingId.trim()}")
 
+    private fun normalizedIdentityText(value: String?): String = value.orEmpty().trim()
+
+    private fun normalizedIdentityCoordinate(value: Double?): String {
+        return value?.let { "%.6f".format(java.util.Locale.US, it) }.orEmpty()
+    }
+
+    private fun normalizedTaggedFriendIds(taggedFriendIds: List<String>): String {
+        return taggedFriendIds
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+            .distinct()
+            .sorted()
+            .joinToString(",")
+    }
+
     private fun findingFingerprint(
+        ownerId: String?,
         animalId: String,
         date: String,
         location: String,
         note: String,
-        photoUri: String
+        latitude: Double?,
+        longitude: Double?,
+        taggedFriendIds: List<String>
     ): String {
-        return listOf(animalId, date, location, note, photoUri)
-            .joinToString("|") { it.trim() }
+        return listOf(
+            normalizedIdentityText(ownerId),
+            normalizedIdentityText(animalId),
+            normalizedIdentityText(date),
+            normalizedIdentityText(location),
+            normalizedIdentityText(note),
+            normalizedIdentityCoordinate(latitude),
+            normalizedIdentityCoordinate(longitude),
+            normalizedTaggedFriendIds(taggedFriendIds)
+        ).joinToString("|")
     }
 
     fun findingFingerprint(finding: AnimalFinding): String {
         return findingFingerprint(
+            ownerId = finding.ownerId,
             animalId = finding.animalId,
             date = finding.date,
             location = finding.location,
             note = finding.note,
-            photoUri = finding.photoUri
+            latitude = finding.latitude,
+            longitude = finding.longitude,
+            taggedFriendIds = finding.taggedFriendIds
         )
     }
 
@@ -46,6 +75,29 @@ object FirestoreFindingRepository {
 
     fun documentIdForFinding(finding: AnimalFinding): String {
         return hashedDocumentIdForFinding(finding)
+    }
+
+    private fun matchesStableFindingIdentity(
+        finding: AnimalFinding,
+        ownerId: String,
+        animalId: String,
+        date: String,
+        location: String,
+        note: String,
+        latitude: Double?,
+        longitude: Double?,
+        taggedFriendIds: List<String>
+    ): Boolean {
+        return findingFingerprint(finding) == findingFingerprint(
+            ownerId = ownerId,
+            animalId = animalId,
+            date = date,
+            location = location,
+            note = note,
+            latitude = latitude,
+            longitude = longitude,
+            taggedFriendIds = taggedFriendIds
+        )
     }
 
     private fun globalFindingCountFromValue(rawValue: Any?): Long {
@@ -131,11 +183,17 @@ object FirestoreFindingRepository {
                     .get()
                     .addOnSuccessListener { snapshot ->
                         val legacyMatches = snapshot.documents.filter { document ->
-                            document.getString("animalId").orEmpty() == finding.animalId &&
-                                    document.getString("date").orEmpty() == finding.date &&
-                                    document.getString("location").orEmpty() == finding.location &&
-                                    document.getString("note").orEmpty() == finding.note &&
-                                    document.getString("photoUri").orEmpty() == finding.photoUri
+                            matchesStableFindingIdentity(
+                                finding = finding,
+                                ownerId = uid,
+                                animalId = document.getString("animalId").orEmpty(),
+                                date = document.getString("date").orEmpty(),
+                                location = document.getString("location").orEmpty(),
+                                note = document.getString("note").orEmpty(),
+                                latitude = document.getDouble("latitude"),
+                                longitude = document.getDouble("longitude"),
+                                taggedFriendIds = document.getTaggedFriendIdsOrEmpty()
+                            )
                         }
 
                         Log.d("CloudSyncDelete", "Legacy cloud matches found: ${legacyMatches.size}")

@@ -20,7 +20,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.compose.animation.animateColorAsState
@@ -208,7 +207,10 @@ import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.clustering.Clustering
 import com.google.maps.android.clustering.ClusterItem
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.SetOptions
 
 
 private const val ANIMALS_JSON_FILE_NAME = "animals.json"
@@ -224,6 +226,7 @@ private const val PROFILE_BIO_KEY_PREFIX = "profileBio_"
 private const val PROFILE_IMAGE_KEY_PREFIX = "profileImage_"
 private const val PROFILE_BACKGROUND_IMAGE_KEY_PREFIX = "profileBackgroundImage_"
 private const val NOTIFICATION_READ_IDS_KEY_PREFIX = "notification_read_ids_"
+private const val NOTIFICATION_READ_STATE_SCHEMA_VERSION = 1
 
 private fun defaultAuthEntryMode(prefs: android.content.SharedPreferences): String =
     if (prefs.getBoolean(HAS_USED_AUTH_BEFORE_KEY, false)) "login" else "register"
@@ -284,6 +287,78 @@ private fun currentAppDateText(): String =
 
 private fun currentDailyDateKey(): String =
     SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+
+private fun globalDailyAnimalDocument(dateKey: String) =
+    FirebaseFirestore.getInstance().collection("dailyAnimals").document(dateKey)
+
+private fun selectDeterministicDailyAnimalId(
+    animals: List<AnimalEntry>,
+    dateKey: String
+): String? {
+    val sortedAnimalIds = animals
+        .map { it.id.trim() }
+        .filter { it.isNotBlank() }
+        .distinct()
+        .sorted()
+    if (sortedAnimalIds.isEmpty()) return null
+
+    val positiveHash = dateKey.hashCode().toLong().let { if (it < 0) -it else it }
+    val index = (positiveHash % sortedAnimalIds.size.toLong()).toInt()
+    return sortedAnimalIds.getOrNull(index)
+}
+
+private fun loadOrCreateGlobalDailyAnimalId(
+    dateKey: String,
+    animals: List<AnimalEntry>,
+    onResult: (String?) -> Unit,
+    onError: (String?) -> Unit = {}
+) {
+    if (dateKey.isBlank() || animals.isEmpty()) {
+        onResult(null)
+        return
+    }
+
+    val fallbackAnimalId = selectDeterministicDailyAnimalId(animals, dateKey)
+    if (fallbackAnimalId.isNullOrBlank()) {
+        onResult(null)
+        return
+    }
+
+    val documentRef = globalDailyAnimalDocument(dateKey)
+    FirebaseFirestore.getInstance().runTransaction { transaction ->
+        val snapshot = transaction.get(documentRef)
+        val existingAnimalId = snapshot.getString("animalId").orEmpty().trim()
+        if (snapshot.exists() && existingAnimalId.isNotBlank()) {
+            existingAnimalId
+        } else {
+            transaction.set(
+                documentRef,
+                hashMapOf(
+                    "animalId" to fallbackAnimalId,
+                    "date" to dateKey,
+                    "createdAt" to Timestamp.now()
+                )
+            )
+            fallbackAnimalId
+        }
+    }.addOnSuccessListener { resolvedAnimalId ->
+        onResult(resolvedAnimalId.trim().ifBlank { null })
+    }.addOnFailureListener { exception ->
+        val errorMessage = if (
+            (exception as? FirebaseFirestoreException)?.code == FirebaseFirestoreException.Code.PERMISSION_DENIED
+        ) {
+            "daily animal read/write permission denied"
+        } else {
+            exception.message
+        }
+        Log.w(
+            "DailyAnimal",
+            "loadOrCreateGlobalDailyAnimalId failed for $dateKey: ${errorMessage ?: "Unbekannter Fehler"}",
+            exception
+        )
+        onError(errorMessage)
+    }
+}
 
 private data class DailyAnimalHistoryEntry(
     val count: Int = 0,
@@ -1001,12 +1076,22 @@ fun effectiveOwnPhotoSources(finding: AnimalFinding): List<String> {
         return localPhotoUris.take(3)
     }
 
-    return effectiveRemotePhotoPaths(finding)
+    val remotePhotoSources = effectiveRemotePhotoPaths(finding)
         .map(::storageUriFromPath)
         .map { it.trim() }
         .filter { it.isNotBlank() }
         .distinct()
         .take(3)
+    if (remotePhotoSources.isNotEmpty()) {
+        return remotePhotoSources
+    }
+
+    return finding.thumbnailRemotePhotoPath
+        .trim()
+        .takeIf { it.isNotBlank() }
+        ?.let(::storageUriFromPath)
+        ?.let(::listOf)
+        .orEmpty()
 }
 
 fun effectiveFriendPhotoSources(
@@ -1575,8 +1660,45 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     var isXpBackfillDone by remember(preferenceOwnerId) {
         mutableStateOf(prefs.getBoolean(xpBackfillV1DoneKey(preferenceOwnerId), false))
     }
+    var xpDailyLoginProcessedOwnerId by rememberSaveable { mutableStateOf<String?>(null) }
+    var xpCloudMergedOwnerId by rememberSaveable { mutableStateOf<String?>(null) }
+    var xpCloudMergeAttemptedOwnerId by rememberSaveable { mutableStateOf<String?>(null) }
+    var isXpCloudMergeRunning by rememberSaveable { mutableStateOf(false) }
+    var xpUiRefreshNonce by rememberSaveable { mutableStateOf(0) }
     var previousOwnerId by rememberSaveable { mutableStateOf(ownerId) }
     var lastSyncedAnimalPreferenceSignature by rememberSaveable { mutableStateOf<String?>(null) }
+    var notificationReadIdsCloudMergedOwnerId by rememberSaveable { mutableStateOf<String?>(null) }
+    var isNotificationReadIdsCloudMergeRunning by rememberSaveable { mutableStateOf(false) }
+    var initialCloudFindingSyncCompletedOwnerId by rememberSaveable { mutableStateOf<String?>(null) }
+
+    fun refreshXpUi() {
+        xpUiRefreshNonce += 1
+    }
+
+    fun syncLocalXpStateToCloud(userId: String?) {
+        val cleanUserId = userId?.trim().orEmpty()
+        if (cleanUserId.isBlank()) return
+
+        XpCloudSyncRepository.saveXpState(
+            uid = cleanUserId,
+            state = XpCloudSyncRepository.buildLocalXpState(
+                uid = cleanUserId,
+                prefs = prefs
+            )
+        ) { success, errorMessage ->
+            if (!success) {
+                Log.w(
+                    "XpCloudSync",
+                    errorMessage ?: "XP-Cloud-Sync fehlgeschlagen."
+                )
+            }
+        }
+    }
+
+    fun handleLocalXpStateChanged(userId: String?) {
+        refreshXpUi()
+        syncLocalXpStateToCloud(userId)
+    }
 
     fun isRepairReadableLocalPhoto(photoUri: String): Boolean {
         val trimmedPhotoUri = photoUri.trim()
@@ -1618,12 +1740,44 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         }
     }
 
+    fun sanitizeOwnFindingPhotoFallbackForThisDevice(finding: AnimalFinding): AnimalFinding {
+        val localPhotoUris = effectiveLocalPhotoUris(finding)
+        if (localPhotoUris.isEmpty()) return finding
+
+        val readableLocalPhotoUris = localPhotoUris.filter(::isRepairReadableLocalPhoto)
+        if (readableLocalPhotoUris.size == localPhotoUris.size) {
+            return finding
+        }
+
+        val hasRemoteFallback =
+            effectiveRemotePhotoPaths(finding).isNotEmpty() ||
+                finding.thumbnailRemotePhotoPath.trim().isNotBlank()
+
+        return when {
+            hasRemoteFallback -> finding.copy(
+                photoUri = "",
+                photoUris = emptyList()
+            )
+
+            readableLocalPhotoUris.isNotEmpty() -> finding.copy(
+                photoUri = readableLocalPhotoUris.first(),
+                photoUris = readableLocalPhotoUris
+            )
+
+            else -> finding
+        }
+    }
+
     suspend fun loadCurrentUserFindingsAwait(): Result<List<AnimalFinding>> {
         return suspendCancellableCoroutine { continuation ->
             FirestoreFindingRepository.loadCurrentUserFindings(
                 onResult = { findings ->
                     if (continuation.isActive) {
-                        continuation.resume(Result.success(findings))
+                        continuation.resume(
+                            Result.success(
+                                findings.map(::sanitizeOwnFindingPhotoFallbackForThisDevice)
+                            )
+                        )
                     }
                 },
                 onError = { error ->
@@ -1632,6 +1786,30 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             Result.failure(
                                 IllegalStateException(
                                     error ?: "Cloud-Funde konnten nicht geladen werden."
+                                )
+                            )
+                        )
+                    }
+                }
+            )
+        }
+    }
+
+    suspend fun loadCurrentUserPublicProfileAwait(userId: String): Result<PublicUserProfile?> {
+        return suspendCancellableCoroutine { continuation ->
+            FriendRepository.loadUserProfile(
+                userId = userId,
+                onResult = { profile ->
+                    if (continuation.isActive) {
+                        continuation.resume(Result.success(profile))
+                    }
+                },
+                onError = { error ->
+                    if (continuation.isActive) {
+                        continuation.resume(
+                            Result.failure(
+                                IllegalStateException(
+                                    error ?: "Profil konnte nicht geladen werden."
                                 )
                             )
                         )
@@ -1824,6 +2002,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     }
 
     LaunchedEffect(ownerId) {
+        if (ownerId == null) {
+            initialCloudFindingSyncCompletedOwnerId = null
+        }
         favoriteAnimalId = prefs.getString(favoriteAnimalKey(preferenceOwnerId), null)
         wishlistAnimalId = prefs.getString(wishlistAnimalKey(preferenceOwnerId), null)
 
@@ -1858,6 +2039,44 @@ fun TierdexApp(database: AnimalFindingDatabase) {
             if (!alreadyMigrated) {
                 dao.assignGlobalFindingsToOwner(ownerId)
                 prefs.edit().putBoolean(migrationKey, true).apply()
+            }
+
+            if (wishlistAnimalId.isNullOrBlank() || favoriteAnimalId.isNullOrBlank()) {
+                val profileResult = loadCurrentUserPublicProfileAwait(ownerId)
+                profileResult.getOrNull()?.let { publicProfile ->
+                    val resolvedWishlistAnimalId = wishlistAnimalId
+                        ?.takeIf { it.isNotBlank() }
+                        ?: publicProfile.wishAnimalId.trim().takeIf { it.isNotBlank() }
+                    val resolvedFavoriteAnimalId = favoriteAnimalId
+                        ?.takeIf { it.isNotBlank() }
+                        ?: publicProfile.favoriteAnimalId.trim().takeIf { it.isNotBlank() }
+
+                    if (resolvedWishlistAnimalId != wishlistAnimalId ||
+                        resolvedFavoriteAnimalId != favoriteAnimalId
+                    ) {
+                        wishlistAnimalId = resolvedWishlistAnimalId
+                        favoriteAnimalId = resolvedFavoriteAnimalId
+                        prefs.edit().apply {
+                            if (resolvedWishlistAnimalId.isNullOrBlank()) {
+                                remove(wishlistAnimalKey(preferenceOwnerId))
+                            } else {
+                                putString(
+                                    wishlistAnimalKey(preferenceOwnerId),
+                                    resolvedWishlistAnimalId
+                                )
+                            }
+                            if (resolvedFavoriteAnimalId.isNullOrBlank()) {
+                                remove(favoriteAnimalKey(preferenceOwnerId))
+                            } else {
+                                putString(
+                                    favoriteAnimalKey(preferenceOwnerId),
+                                    resolvedFavoriteAnimalId
+                                )
+                            }
+                            apply()
+                        }
+                    }
+                }
             }
 
             repairIncompleteFindingPhotoSyncForOwner(ownerId)
@@ -1916,7 +2135,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                     "CloudSync",
                     "Sync result: local=${localFindings.size}, cloud=${cloudFindings.size}, uploaded=$uploadedCount, insertedIntoRoom=$insertedCount, duplicatesSkipped=$skippedDuplicateCount, finalTotal=$finalTotalCount"
                 )
+                initialCloudFindingSyncCompletedOwnerId = ownerId
             } else {
+                initialCloudFindingSyncCompletedOwnerId = null
                 Log.e(
                     "CloudSync",
                     "Cloud load failed: ${cloudFindingsResult.exceptionOrNull()?.message ?: "Unbekannter Fehler"}"
@@ -1964,6 +2185,41 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         isXpBackfillRunning = false
     }
     LaunchedEffect(currentOwnerId) {
+        val safeOwnerId = currentOwnerId?.trim().orEmpty()
+        if (safeOwnerId.isBlank()) {
+            xpDailyLoginProcessedOwnerId = null
+            xpCloudMergedOwnerId = null
+            xpCloudMergeAttemptedOwnerId = null
+            isXpCloudMergeRunning = false
+            return@LaunchedEffect
+        }
+        if (xpDailyLoginProcessedOwnerId != safeOwnerId) return@LaunchedEffect
+        if (xpCloudMergedOwnerId == safeOwnerId || isXpCloudMergeRunning) return@LaunchedEffect
+
+        isXpCloudMergeRunning = true
+        XpCloudSyncRepository.mergeLocalAndCloudXpState(
+            uid = safeOwnerId,
+            prefs = prefs,
+            onResult = {
+                xpCloudMergedOwnerId = safeOwnerId
+                xpCloudMergeAttemptedOwnerId = safeOwnerId
+                isXpBackfillDone = prefs.getBoolean(xpBackfillV1DoneKey(preferenceOwnerId), false)
+                refreshXpUi()
+                isXpCloudMergeRunning = false
+            },
+            onError = { errorMessage ->
+                xpCloudMergeAttemptedOwnerId = safeOwnerId
+                isXpBackfillDone = prefs.getBoolean(xpBackfillV1DoneKey(preferenceOwnerId), false)
+                refreshXpUi()
+                Log.w(
+                    "XpCloudSync",
+                    errorMessage ?: "Initialer XP-Cloud-Merge fehlgeschlagen."
+                )
+                isXpCloudMergeRunning = false
+            }
+        )
+    }
+    LaunchedEffect(currentOwnerId) {
         val safeOwnerId = currentOwnerId ?: return@LaunchedEffect
         val dailyLoginKey = "daily_login:${currentDailyDateKey()}"
         val xpSnapshotBeforeDailyLogin = XpProgressRepository.buildSnapshot(
@@ -1980,6 +2236,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                 prefs = prefs,
                 userId = safeOwnerId
             )
+            handleLocalXpStateChanged(safeOwnerId)
             xpPopupMessage = buildSimpleXpPopupMessage(
                 reason = "Täglicher Login",
                 detail = "",
@@ -1988,6 +2245,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                 currentSnapshot = xpSnapshotAfterDailyLogin
             )
         }
+        xpDailyLoginProcessedOwnerId = safeOwnerId
     }
     LaunchedEffect(ownerId, preferenceOwnerId, wishlistAnimalId, favoriteAnimalId) {
         val safeOwnerId = ownerId ?: return@LaunchedEffect
@@ -2029,8 +2287,81 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     val animals: List<AnimalEntry> = animalLoadResult.animals
     val dailyAnimal = animals.find { it.id == dailyAnimalId }
 
-    LaunchedEffect(preferenceOwnerId, animals) {
-        if (animals.isEmpty()) {
+    fun launchXpBackfill(userId: String?) {
+        if (isXpBackfillDone || isXpBackfillRunning) return
+        isXpBackfillRunning = true
+        scope.launch {
+            val backfillResult = runCatching {
+                val previousSnapshot = XpProgressRepository.buildSnapshot(
+                    prefs = prefs,
+                    userId = userId
+                )
+                val retroactiveAwards = buildList {
+                    addAll(buildRetroactiveFindingXpAwards(findingsFromRoom))
+                    addAll(
+                        buildRetroactiveQuestXpAwards(
+                            findings = findingsFromRoom,
+                            animals = animals,
+                            prefs = prefs,
+                            ownerId = preferenceOwnerId
+                        )
+                    )
+                }
+                val awardResult = XpProgressRepository.grantXpAwardsIfAbsent(
+                    prefs = prefs,
+                    userId = userId,
+                    awards = retroactiveAwards
+                )
+                prefs.edit()
+                    .putBoolean(xpBackfillV1DoneKey(preferenceOwnerId), true)
+                    .apply()
+                isXpBackfillDone = true
+                val currentSnapshot = XpProgressRepository.buildSnapshot(
+                    prefs = prefs,
+                    userId = userId
+                )
+                handleLocalXpStateChanged(currentOwnerId)
+                xpPopupMessage = buildXpBackfillPopupMessage(
+                    awardedXp = awardResult.awardedXp,
+                    previousSnapshot = previousSnapshot,
+                    currentSnapshot = currentSnapshot
+                )
+            }
+
+            if (backfillResult.isFailure) {
+                Toast.makeText(
+                    context,
+                    "Alte Funde konnten nicht angerechnet werden.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            isXpBackfillRunning = false
+        }
+    }
+
+    LaunchedEffect(
+        currentOwnerId,
+        initialCloudFindingSyncCompletedOwnerId,
+        xpCloudMergeAttemptedOwnerId,
+        xpCloudMergedOwnerId,
+        xpDailyLoginProcessedOwnerId,
+        isXpBackfillDone,
+        isXpBackfillRunning
+    ) {
+        val safeOwnerId = currentOwnerId?.trim().orEmpty()
+        if (safeOwnerId.isBlank()) return@LaunchedEffect
+        if (isXpBackfillDone || isXpBackfillRunning) return@LaunchedEffect
+        if (xpDailyLoginProcessedOwnerId != safeOwnerId) return@LaunchedEffect
+        if (initialCloudFindingSyncCompletedOwnerId != safeOwnerId) return@LaunchedEffect
+        if (xpCloudMergeAttemptedOwnerId != safeOwnerId && xpCloudMergedOwnerId != safeOwnerId) {
+            return@LaunchedEffect
+        }
+
+        launchXpBackfill(safeOwnerId)
+    }
+
+    LaunchedEffect(ownerId, preferenceOwnerId, animals) {
+        if (ownerId.isNullOrBlank() || animals.isEmpty()) {
             dailyAnimalId = null
             showDailyAnimalScreen = false
             return@LaunchedEffect
@@ -2040,39 +2371,61 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         val savedDateKey = prefs.getString(dailyAnimalDateKey(preferenceOwnerId), null)
         val savedAnimalId = prefs.getString(dailyAnimalIdKey(preferenceOwnerId), null)
         val savedAnimal = savedAnimalId?.let { id -> animals.find { it.id == id } }
+        val cachedTodayAnimal = if (savedDateKey == todayKey && savedAnimal != null) savedAnimal else null
 
-        val activeAnimal = if (savedDateKey == todayKey && savedAnimal != null) {
-            savedAnimal
-        } else {
-            animals.random()
-        }
-
-        val shouldResetForToday = savedDateKey != todayKey || savedAnimal == null
-        if (shouldResetForToday) {
-            prefs.edit()
-                .putString(dailyAnimalDateKey(preferenceOwnerId), todayKey)
-                .putString(dailyAnimalIdKey(preferenceOwnerId), activeAnimal.id)
-                .putBoolean(dailyAnimalDismissedKey(preferenceOwnerId), false)
-                .apply()
-        }
-
-        recordDailyAnimalHistoryIfNeeded(
-            prefs = prefs,
-            ownerId = preferenceOwnerId,
-            animalId = activeAnimal.id,
-            todayKey = todayKey
-        )
-        recordDailyAnimalAssignmentForDate(
-            prefs = prefs,
-            ownerId = preferenceOwnerId,
+        loadOrCreateGlobalDailyAnimalId(
             dateKey = todayKey,
-            animalId = activeAnimal.id
-        )
+            animals = animals,
+            onResult = { resolvedAnimalId ->
+                val activeAnimal = resolvedAnimalId
+                    ?.let { animalId -> animals.find { it.id == animalId } }
+                    ?: cachedTodayAnimal
 
-        dailyAnimalId = activeAnimal.id
-        isDailyAnimalOpenedFromHomeTile = false
-        val isDismissedToday = prefs.getBoolean(dailyAnimalDismissedKey(preferenceOwnerId), false)
-        showDailyAnimalScreen = !isDismissedToday
+                if (activeAnimal == null) {
+                    dailyAnimalId = null
+                    showDailyAnimalScreen = false
+                    return@loadOrCreateGlobalDailyAnimalId
+                }
+
+                val shouldResetForToday = savedDateKey != todayKey || savedAnimalId != activeAnimal.id
+                if (shouldResetForToday) {
+                    prefs.edit()
+                        .putString(dailyAnimalDateKey(preferenceOwnerId), todayKey)
+                        .putString(dailyAnimalIdKey(preferenceOwnerId), activeAnimal.id)
+                        .putBoolean(dailyAnimalDismissedKey(preferenceOwnerId), false)
+                        .apply()
+                }
+
+                recordDailyAnimalHistoryIfNeeded(
+                    prefs = prefs,
+                    ownerId = preferenceOwnerId,
+                    animalId = activeAnimal.id,
+                    todayKey = todayKey
+                )
+                recordDailyAnimalAssignmentForDate(
+                    prefs = prefs,
+                    ownerId = preferenceOwnerId,
+                    dateKey = todayKey,
+                    animalId = activeAnimal.id
+                )
+
+                dailyAnimalId = activeAnimal.id
+                isDailyAnimalOpenedFromHomeTile = false
+                val isDismissedToday = prefs.getBoolean(dailyAnimalDismissedKey(preferenceOwnerId), false)
+                showDailyAnimalScreen = !isDismissedToday
+            },
+            onError = {
+                if (cachedTodayAnimal != null) {
+                    dailyAnimalId = cachedTodayAnimal.id
+                    isDailyAnimalOpenedFromHomeTile = false
+                    val isDismissedToday = prefs.getBoolean(dailyAnimalDismissedKey(preferenceOwnerId), false)
+                    showDailyAnimalScreen = !isDismissedToday
+                } else {
+                    dailyAnimalId = null
+                    showDailyAnimalScreen = false
+                }
+            }
+        )
     }
 
     LaunchedEffect(currentOwnerId) {
@@ -2174,15 +2527,176 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     val showAuthStartScreen = ownerId == null && authEntryMode == null
     val showAuthEntryScreen = ownerId == null && authEntryMode != null
     val isIntroFromSettings = introLaunchSource == IntroLaunchSource.SETTINGS.name
+    val shouldHideTopBar = showAuthStartScreen ||
+        showAuthEntryScreen ||
+        (showIntroScreen && !isIntroFromSettings)
+
+    fun readNotificationIdsForOwner(ownerId: String): Set<String> {
+        val safeOwnerId = ownerId.trim()
+        if (safeOwnerId.isBlank()) return emptySet()
+        return prefs.getStringSet(notificationReadIdsKey(safeOwnerId), emptySet())?.toSet().orEmpty()
+    }
 
     fun currentReadNotificationIds(): Set<String> {
         val safeOwnerId = currentOwnerId ?: return emptySet()
-        return prefs.getStringSet(notificationReadIdsKey(safeOwnerId), emptySet())?.toSet().orEmpty()
+        return readNotificationIdsForOwner(safeOwnerId)
+    }
+
+    fun storeReadNotificationIdsForOwner(ownerId: String, ids: Set<String>) {
+        val safeOwnerId = ownerId.trim()
+        if (safeOwnerId.isBlank()) return
+        prefs.edit().putStringSet(notificationReadIdsKey(safeOwnerId), ids).apply()
     }
 
     fun storeReadNotificationIds(ids: Set<String>) {
         val safeOwnerId = currentOwnerId ?: return
-        prefs.edit().putStringSet(notificationReadIdsKey(safeOwnerId), ids).apply()
+        storeReadNotificationIdsForOwner(safeOwnerId, ids)
+    }
+
+    fun notificationReadStateDocument(userId: String) = FirebaseFirestore.getInstance()
+        .collection("users")
+        .document(userId)
+        .collection("private")
+        .document("meta")
+        .collection("notificationReadState")
+        .document("state")
+
+    fun loadCloudReadNotificationIds(
+        userId: String,
+        onResult: (Set<String>) -> Unit,
+        onError: (String?) -> Unit = {}
+    ) {
+        val safeUserId = userId.trim()
+        if (safeUserId.isBlank()) {
+            onResult(emptySet())
+            return
+        }
+
+        notificationReadStateDocument(safeUserId)
+            .get()
+            .addOnSuccessListener { document ->
+                val readIds = (document.get("readNotificationIds") as? List<*>)
+                    .orEmpty()
+                    .mapNotNull { value -> (value as? String)?.trim() }
+                    .filter { it.isNotBlank() }
+                    .toSet()
+                onResult(readIds)
+            }
+            .addOnFailureListener { exception ->
+                Log.w(
+                    "NotificationReadState",
+                    "Cloud-Read-IDs konnten nicht geladen werden: ${exception.message ?: "Unbekannter Fehler"}",
+                    exception
+                )
+                onError(exception.message)
+            }
+    }
+
+    fun saveMergedReadNotificationIdsToCloud(
+        userId: String,
+        readIds: Set<String>,
+        onComplete: (Boolean) -> Unit = {}
+    ) {
+        val safeUserId = userId.trim()
+        if (safeUserId.isBlank()) {
+            onComplete(false)
+            return
+        }
+
+        val sanitizedReadIds = readIds
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+            .distinct()
+            .sorted()
+
+        notificationReadStateDocument(safeUserId)
+            .set(
+                mapOf(
+                    "readNotificationIds" to sanitizedReadIds,
+                    "schemaVersion" to NOTIFICATION_READ_STATE_SCHEMA_VERSION,
+                    "updatedAt" to FieldValue.serverTimestamp()
+                ),
+                SetOptions.merge()
+            )
+            .addOnSuccessListener { onComplete(true) }
+            .addOnFailureListener { exception ->
+                Log.w(
+                    "NotificationReadState",
+                    "Cloud-Read-IDs konnten nicht gespeichert werden: ${exception.message ?: "Unbekannter Fehler"}",
+                    exception
+                )
+                onComplete(false)
+            }
+    }
+
+    fun appendReadNotificationIdsToCloud(
+        userId: String,
+        notificationIds: Set<String>,
+        onComplete: (Boolean) -> Unit = {}
+    ) {
+        val safeUserId = userId.trim()
+        val sanitizedNotificationIds = notificationIds
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+            .distinct()
+        if (safeUserId.isBlank() || sanitizedNotificationIds.isEmpty()) {
+            onComplete(false)
+            return
+        }
+
+        notificationReadStateDocument(safeUserId)
+            .set(
+                mapOf(
+                    "readNotificationIds" to FieldValue.arrayUnion(*sanitizedNotificationIds.toTypedArray()),
+                    "schemaVersion" to NOTIFICATION_READ_STATE_SCHEMA_VERSION,
+                    "updatedAt" to FieldValue.serverTimestamp()
+                ),
+                SetOptions.merge()
+            )
+            .addOnSuccessListener { onComplete(true) }
+            .addOnFailureListener { exception ->
+                Log.w(
+                    "NotificationReadState",
+                    "Cloud-Read-IDs konnten nicht erweitert werden: ${exception.message ?: "Unbekannter Fehler"}",
+                    exception
+                )
+                onComplete(false)
+            }
+    }
+
+    fun mergeLocalAndCloudReadNotificationIds(
+        userId: String,
+        onComplete: (Set<String>) -> Unit = {},
+        onError: (String?) -> Unit = {}
+    ) {
+        val safeUserId = userId.trim()
+        if (safeUserId.isBlank()) {
+            onComplete(emptySet())
+            return
+        }
+
+        loadCloudReadNotificationIds(
+            userId = safeUserId,
+            onResult = { cloudReadIds ->
+                val localReadIds = readNotificationIdsForOwner(safeUserId)
+                val mergedReadIds = (localReadIds + cloudReadIds)
+                    .map { it.trim() }
+                    .filter { it.isNotBlank() }
+                    .toSet()
+                storeReadNotificationIdsForOwner(safeUserId, mergedReadIds)
+                saveMergedReadNotificationIdsToCloud(
+                    userId = safeUserId,
+                    readIds = mergedReadIds
+                ) { success ->
+                    if (success) {
+                        onComplete(mergedReadIds)
+                    } else {
+                        onError("Gelesene Benachrichtigungen konnten nicht in die Cloud gespiegelt werden.")
+                    }
+                }
+            },
+            onError = onError
+        )
     }
 
     fun mapFriendRequestsToNotifications(requests: List<FriendRequest>): List<TierdexNotification> {
@@ -2373,7 +2887,14 @@ fun TierdexApp(database: AnimalFindingDatabase) {
 
     fun markAllNotificationsAsRead() {
         if (notifications.isEmpty()) return
-        storeReadNotificationIds(currentReadNotificationIds() + notifications.map { it.id })
+        val newReadIds = notifications.map { it.id.trim() }
+            .filter { it.isNotBlank() }
+            .toSet()
+        val updatedReadIds = currentReadNotificationIds() + newReadIds
+        storeReadNotificationIds(updatedReadIds)
+        currentOwnerId?.let { ownerId ->
+            appendReadNotificationIdsToCloud(ownerId, newReadIds)
+        }
         notifications = notifications.map { it.copy(isRead = true) }
         incomingRequestCount = 0
     }
@@ -2382,6 +2903,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         if (notificationId.isBlank()) return
         val updatedReadIds = currentReadNotificationIds() + notificationId
         storeReadNotificationIds(updatedReadIds)
+        currentOwnerId?.let { ownerId ->
+            appendReadNotificationIdsToCloud(ownerId, setOf(notificationId))
+        }
         notifications = notifications.map { notification ->
             if (notification.id == notificationId) {
                 notification.copy(isRead = true)
@@ -2448,6 +2972,34 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     LaunchedEffect(currentOwnerId) {
         refreshNotifications()
         refreshAnimalGlobalFindingCounts()
+    }
+    LaunchedEffect(currentOwnerId) {
+        val safeOwnerId = currentOwnerId?.trim().orEmpty()
+        if (safeOwnerId.isBlank()) {
+            notificationReadIdsCloudMergedOwnerId = null
+            isNotificationReadIdsCloudMergeRunning = false
+            return@LaunchedEffect
+        }
+        if (notificationReadIdsCloudMergedOwnerId == safeOwnerId || isNotificationReadIdsCloudMergeRunning) {
+            return@LaunchedEffect
+        }
+
+        isNotificationReadIdsCloudMergeRunning = true
+        mergeLocalAndCloudReadNotificationIds(
+            userId = safeOwnerId,
+            onComplete = {
+                notificationReadIdsCloudMergedOwnerId = safeOwnerId
+                isNotificationReadIdsCloudMergeRunning = false
+                refreshNotifications()
+            },
+            onError = { errorMessage ->
+                Log.w(
+                    "NotificationReadState",
+                    errorMessage ?: "Read-ID-Merge für Benachrichtigungen fehlgeschlagen."
+                )
+                isNotificationReadIdsCloudMergeRunning = false
+            }
+        )
     }
     LaunchedEffect(currentOwnerId, findingsFromRoom) {
         val safeOwnerId = currentOwnerId
@@ -2576,45 +3128,47 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     Scaffold(
         containerColor = Color.White,
         topBar = {
-            TierdexTopBar(
-                currentTab = currentTab,
-                showFriendSearchAction = currentTab == AppTab.FRIENDS &&
-                    selectedFriendProfileUserId == null &&
-                    selectedAnimal == null &&
-                    selectedFindingDetail == null &&
-                    !showAnimalPicker &&
-                    !showAuthStartScreen &&
-                    !showAuthEntryScreen &&
-                    !showIntroScreen &&
-                    !showSettingsScreen,
-                isFriendSearchOpen = isFriendSearchOpen,
-                incomingRequestCount = incomingRequestCount,
-                onFriendSearchClick = {
-                    isFriendSearchOpen = !isFriendSearchOpen
-                },
-                onNotificationsClick = {
-                    resetSearchState()
-                    isFriendSearchOpen = false
-                    selectedAnimalId = null
-                    selectedFindingDetail = null
-                    selectedFindingDetailSource = null
-                    selectedFindingToEdit = null
-                    findingEditReturnSource = null
-                    startInFindingEditMode = false
-                    openCreateFindingMode = false
-                    showAnimalPicker = false
-                    showTierdexMapScreen = false
-                    showSettingsScreen = false
-                    showNotificationsScreen = true
-                    refreshNotifications()
-                },
-                onSettingsClick = {
-                    resetSearchState()
-                    isFriendSearchOpen = false
-                    showNotificationsScreen = false
-                    showSettingsScreen = true
-                }
-            )
+            if (!shouldHideTopBar) {
+                TierdexTopBar(
+                    currentTab = currentTab,
+                    showFriendSearchAction = currentTab == AppTab.FRIENDS &&
+                        selectedFriendProfileUserId == null &&
+                        selectedAnimal == null &&
+                        selectedFindingDetail == null &&
+                        !showAnimalPicker &&
+                        !showAuthStartScreen &&
+                        !showAuthEntryScreen &&
+                        !showIntroScreen &&
+                        !showSettingsScreen,
+                    isFriendSearchOpen = isFriendSearchOpen,
+                    incomingRequestCount = incomingRequestCount,
+                    onFriendSearchClick = {
+                        isFriendSearchOpen = !isFriendSearchOpen
+                    },
+                    onNotificationsClick = {
+                        resetSearchState()
+                        isFriendSearchOpen = false
+                        selectedAnimalId = null
+                        selectedFindingDetail = null
+                        selectedFindingDetailSource = null
+                        selectedFindingToEdit = null
+                        findingEditReturnSource = null
+                        startInFindingEditMode = false
+                        openCreateFindingMode = false
+                        showAnimalPicker = false
+                        showTierdexMapScreen = false
+                        showSettingsScreen = false
+                        showNotificationsScreen = true
+                        refreshNotifications()
+                    },
+                    onSettingsClick = {
+                        resetSearchState()
+                        isFriendSearchOpen = false
+                        showNotificationsScreen = false
+                        showSettingsScreen = true
+                    }
+                )
+            }
         },
         bottomBar = {
             if (selectedAnimal == null && selectedFindingDetail == null && !showAnimalPicker && !showAuthStartScreen && !showAuthEntryScreen && !showIntroScreen && !showSettingsScreen && !showNotificationsScreen) {
@@ -2782,57 +3336,6 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         },
                         isXpBackfillDone = isXpBackfillDone,
                         isXpBackfillRunning = isXpBackfillRunning,
-                        onRunXpBackfill = {
-                            if (!isXpBackfillDone && !isXpBackfillRunning) {
-                                isXpBackfillRunning = true
-                                scope.launch {
-                                    val backfillResult = runCatching {
-                                        val previousSnapshot = XpProgressRepository.buildSnapshot(
-                                            prefs = prefs,
-                                            userId = currentOwnerId
-                                        )
-                                        val retroactiveAwards = buildList {
-                                            addAll(buildRetroactiveFindingXpAwards(findingsFromRoom))
-                                            addAll(
-                                                buildRetroactiveQuestXpAwards(
-                                                    findings = findingsFromRoom,
-                                                    animals = animals,
-                                                    prefs = prefs,
-                                                    ownerId = preferenceOwnerId
-                                                )
-                                            )
-                                        }
-                                        val awardResult = XpProgressRepository.grantXpAwardsIfAbsent(
-                                            prefs = prefs,
-                                            userId = currentOwnerId,
-                                            awards = retroactiveAwards
-                                        )
-                                        prefs.edit()
-                                            .putBoolean(xpBackfillV1DoneKey(preferenceOwnerId), true)
-                                            .apply()
-                                        isXpBackfillDone = true
-                                        val currentSnapshot = XpProgressRepository.buildSnapshot(
-                                            prefs = prefs,
-                                            userId = currentOwnerId
-                                        )
-                                        xpPopupMessage = buildXpBackfillPopupMessage(
-                                            awardedXp = awardResult.awardedXp,
-                                            previousSnapshot = previousSnapshot,
-                                            currentSnapshot = currentSnapshot
-                                        )
-                                    }
-
-                                    if (backfillResult.isFailure) {
-                                        Toast.makeText(
-                                            context,
-                                            "Alte Funde konnten nicht angerechnet werden.",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                    isXpBackfillRunning = false
-                                }
-                            }
-                        },
                         extraTopPadding = innerPadding.calculateTopPadding(),
                         extraBottomPadding = innerPadding.calculateBottomPadding()
                     )
@@ -2945,6 +3448,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         dailyAnimalHistoryText = selectedAnimalDailyAnimalHistoryText,
                         onSocialXpFeedback = { popupMessage ->
                             xpPopupMessage = popupMessage
+                            if (popupMessage != null) {
+                                handleLocalXpStateChanged(currentOwnerId)
+                            }
                         },
                         onOpenFindingDetail = { finding ->
                             selectedFindingDetail = finding
@@ -3081,6 +3587,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                     previousSnapshot = xpSnapshotBeforeSave,
                                     currentSnapshot = xpSnapshotAfterSave
                                 )
+                                if (awardedXpResult.grantedKeys.isNotEmpty()) {
+                                    handleLocalXpStateChanged(currentOwnerId)
+                                }
 
                                 if (wishlistAnimalId == localFindingWithRoomId.animalId) {
                                     wishlistAnimalId = null
@@ -3643,6 +4152,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             allAnimals = animals,
                             onSocialXpFeedback = { popupMessage ->
                                 xpPopupMessage = popupMessage
+                                if (popupMessage != null) {
+                                    handleLocalXpStateChanged(currentOwnerId)
+                                }
                             },
                             onBack = {
                                 selectedFriendProfileUserId = null
@@ -3668,6 +4180,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             },
                             onSocialXpFeedback = { popupMessage ->
                                 xpPopupMessage = popupMessage
+                                if (popupMessage != null) {
+                                    handleLocalXpStateChanged(currentOwnerId)
+                                }
                             },
                             extraTopPadding = innerPadding.calculateTopPadding(),
                             extraBottomPadding = innerPadding.calculateBottomPadding()
@@ -3762,7 +4277,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                 currentDisplayName = newDisplayName
                             },
                             collectedAnimalCount = collectedAnimalCount,
-                            totalFindings = allFindings.size,
+                        totalFindings = findingsFromRoom.size,
                             findings = findingsFromRoom,
                             animals = animals,
                             favoriteAnimalId = favoriteAnimalId,
@@ -3792,6 +4307,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             onProfileCollectionDateFilterChange = {
                                 profileCollectionDateFilter = it
                             },
+                            xpUiRefreshNonce = xpUiRefreshNonce,
                             extraTopPadding = innerPadding.calculateTopPadding(),
                             extraBottomPadding = innerPadding.calculateBottomPadding()
                         )
@@ -3821,7 +4337,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                     )
             )
 
-            if (showDailyAnimalScreen && dailyAnimal != null) {
+            if (ownerId != null && !showAuthStartScreen && !showAuthEntryScreen && showDailyAnimalScreen && dailyAnimal != null) {
                 Dialog(
                     onDismissRequest = {
                         prefs.edit()
@@ -4709,7 +5225,7 @@ fun HomeScreen(
             )
         }
     val questSections = remember(quests) { buildQuestSections(quests) }
-    var collectionQuestsExpanded by rememberSaveable { mutableStateOf(true) }
+    var collectionQuestsExpanded by rememberSaveable { mutableStateOf(false) }
     var groupQuestsExpanded by rememberSaveable { mutableStateOf(false) }
     var qualityQuestsExpanded by rememberSaveable { mutableStateOf(false) }
     var socialQuestsExpanded by rememberSaveable { mutableStateOf(false) }
@@ -5299,7 +5815,6 @@ fun SettingsScreen(
     onImportFindings: (List<AnimalFinding>) -> Unit,
     isXpBackfillDone: Boolean,
     isXpBackfillRunning: Boolean,
-    onRunXpBackfill: () -> Unit,
     extraTopPadding: Dp = 0.dp,
     extraBottomPadding: Dp = 0.dp
 ) {
@@ -5434,27 +5949,17 @@ fun SettingsScreen(
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = TextSecondary
                             )
-                            if (!isXpBackfillDone) {
-                                OutlinedButton(
-                                    onClick = onRunXpBackfill,
-                                    enabled = !isXpBackfillRunning,
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Text(
-                                        if (isXpBackfillRunning) {
-                                            "Alte Funde werden angerechnet..."
-                                        } else {
-                                            "Alte Funde für XP anrechnen"
-                                        }
-                                    )
-                                }
-                            } else {
-                                Text(
-                                    text = "Die einmalige XP-Nachtragung für alte Funde ist bereits erledigt.",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = TextSecondary
-                                )
-                            }
+                            Text(
+                                text = if (isXpBackfillDone) {
+                                    "Die einmalige XP-Nachtragung für alte Funde ist bereits erledigt."
+                                } else if (isXpBackfillRunning) {
+                                    "Alte Funde werden automatisch für XP angerechnet."
+                                } else {
+                                    "Alte Funde werden nach dem Login automatisch für XP geprüft."
+                                },
+                                style = MaterialTheme.typography.bodySmall,
+                                color = TextSecondary
+                            )
                         }
                     }
                 }
@@ -9307,6 +9812,7 @@ fun ProfileScreen(
     onProfileCollectionSortOrderChange: (String) -> Unit,
     profileCollectionDateFilter: String,
     onProfileCollectionDateFilterChange: (String) -> Unit,
+    xpUiRefreshNonce: Int,
     extraTopPadding: Dp = 0.dp,
     extraBottomPadding: Dp = 0.dp
 ) {
@@ -9330,6 +9836,7 @@ fun ProfileScreen(
     }
     val xpSnapshot = remember(
         currentUserId,
+        xpUiRefreshNonce,
         totalFindings,
         collectedAnimalCount,
         findings.size
@@ -9406,36 +9913,44 @@ fun ProfileScreen(
         remoteProfilePhotoPath.takeIf { it.isNotBlank() }?.let(::storageUriFromPath).orEmpty()
     }
     val profileBackgroundPicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia()
-    ) { uri ->
-        uri?.let {
-            val storedBackgroundUri = persistPhotoForFinding(context, it.toString())
-            profileBackgroundImageUri = storedBackgroundUri
-            prefs.edit()
-                .putString(profileBackgroundImageKey(preferenceOwnerId), storedBackgroundUri)
-                .apply()
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val pickedBackgroundUri = extractPickedImageUris(result.data).firstOrNull()
+                ?: result.data?.data
+            pickedBackgroundUri?.let {
+                val storedBackgroundUri = persistPhotoForFinding(context, it.toString())
+                profileBackgroundImageUri = storedBackgroundUri
+                prefs.edit()
+                    .putString(profileBackgroundImageKey(preferenceOwnerId), storedBackgroundUri)
+                    .apply()
+            }
         }
     }
     val profileImagePicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia()
-    ) { uri ->
-        uri?.let {
-            val storedPhotoUri = persistPhotoForFinding(context, it.toString())
-            profileImageUri = storedPhotoUri
-            prefs.edit().putString(profileImageKey(preferenceOwnerId), storedPhotoUri).apply()
-            currentUserId?.takeIf { userId -> userId.isNotBlank() }?.let { userId ->
-                scope.launch {
-                    val uploadedPath = FindingPhotoStorageRepository.uploadProfilePhoto(
-                        context = context,
-                        userId = userId,
-                        localPhotoUri = storedPhotoUri,
-                        currentProfilePhotoPath = remoteProfilePhotoPath
-                    )
-                    remoteProfilePhotoPath = uploadedPath
-                    FriendRepository.updatePublicUserProfile(
-                        userId = userId,
-                        profilePhotoPath = uploadedPath
-                    )
+        contract = ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val pickedProfileUri = extractPickedImageUris(result.data).firstOrNull()
+                ?: result.data?.data
+            pickedProfileUri?.let {
+                val storedPhotoUri = persistPhotoForFinding(context, it.toString())
+                profileImageUri = storedPhotoUri
+                prefs.edit().putString(profileImageKey(preferenceOwnerId), storedPhotoUri).apply()
+                currentUserId?.takeIf { userId -> userId.isNotBlank() }?.let { userId ->
+                    scope.launch {
+                        val uploadedPath = FindingPhotoStorageRepository.uploadProfilePhoto(
+                            context = context,
+                            userId = userId,
+                            localPhotoUri = storedPhotoUri,
+                            currentProfilePhotoPath = remoteProfilePhotoPath
+                        )
+                        remoteProfilePhotoPath = uploadedPath
+                        FriendRepository.updatePublicUserProfile(
+                            userId = userId,
+                            profilePhotoPath = uploadedPath
+                        )
+                    }
                 }
             }
         }
@@ -9564,7 +10079,10 @@ fun ProfileScreen(
                         IconButton(
                             onClick = {
                                 profileBackgroundPicker.launch(
-                                    PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                    buildLocalImagePickerIntent(
+                                        context = context,
+                                        allowMultiple = false
+                                    )
                                 )
                             },
                             modifier = Modifier
@@ -9629,7 +10147,10 @@ fun ProfileScreen(
                                 IconButton(
                                     onClick = {
                                         profileImagePicker.launch(
-                                            PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                            buildLocalImagePickerIntent(
+                                                context = context,
+                                                allowMultiple = false
+                                            )
                                         )
                                     },
                                     modifier = Modifier
@@ -14249,7 +14770,10 @@ fun AnimalDetailScreen(
                             remotePhotoPath = remotePhotoPath
                         )
                     } else {
-                        FindingPhotoStorageRepository.loadFindingPhotoBytes(remotePhotoPath)
+                        FindingPhotoStorageRepository.loadFindingPhotoBytesCached(
+                            context = context.applicationContext,
+                            remotePhotoPath = remotePhotoPath
+                        )
                     } ?: return null
                 val bitmap = decodeSampledBitmapFromBytes(imageBytes, maxImageSizePx) ?: return null
                 val orientation = ByteArrayInputStream(imageBytes).use { input ->

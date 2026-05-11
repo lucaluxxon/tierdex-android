@@ -18,6 +18,7 @@ private const val FINDING_PHOTO_MAX_DOWNLOAD_BYTES = 10L * 1024 * 1024
 private const val FINDING_THUMBNAIL_MAX_EDGE_PX = 800
 private const val FINDING_THUMBNAIL_JPEG_QUALITY = 78
 private const val FRIEND_FEED_THUMB_CACHE_DIR = "friend_feed_thumbs"
+private const val REMOTE_FINDING_PHOTO_CACHE_DIR = "remote_finding_photos"
 
 fun storageUriFromPath(path: String): String = "${STORAGE_URI_PREFIX}${path.trim()}"
 
@@ -48,6 +49,14 @@ object FindingPhotoStorageRepository {
             cacheDir.mkdirs()
         }
         return File(cacheDir, "${sha256(remotePhotoPath.trim())}.jpg")
+    }
+
+    private fun localRemoteFindingPhotoCacheFile(context: Context, remotePhotoPath: String): File {
+        val cacheDir = File(context.filesDir, REMOTE_FINDING_PHOTO_CACHE_DIR)
+        if (!cacheDir.exists()) {
+            cacheDir.mkdirs()
+        }
+        return File(cacheDir, "${sha256(remotePhotoPath.trim())}.bin")
     }
 
     fun buildRemotePhotoPath(userId: String, finding: AnimalFinding): String {
@@ -285,6 +294,25 @@ object FindingPhotoStorageRepository {
             )
             null
         }
+    }
+
+    fun loadFindingPhotoBytesCached(context: Context, remotePhotoPath: String): ByteArray? {
+        val trimmedPath = remotePhotoPath.trim()
+        if (trimmedPath.isBlank()) return null
+
+        val cacheFile = localRemoteFindingPhotoCacheFile(context, trimmedPath)
+        if (cacheFile.exists() && cacheFile.isFile) {
+            val cachedBytes = runCatching { cacheFile.readBytes() }.getOrNull()
+            if (cachedBytes != null) {
+                return cachedBytes
+            }
+        }
+
+        val downloadedBytes = loadFindingPhotoBytes(trimmedPath) ?: return null
+        runCatching {
+            cacheFile.writeBytes(downloadedBytes)
+        }
+        return downloadedBytes
     }
 
     fun loadFriendFeedThumbnailBytesCached(context: Context, remotePhotoPath: String): ByteArray? {
