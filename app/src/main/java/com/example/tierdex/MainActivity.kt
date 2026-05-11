@@ -236,6 +236,7 @@ private const val DAILY_ANIMAL_ASSIGNMENTS_KEY_PREFIX = "daily_animal_assignment
 private const val DAILY_ANIMAL_QUEST_HIT_ROOM_IDS_KEY_PREFIX = "daily_animal_quest_hit_room_ids_"
 private const val SOCIAL_LIKES_GIVEN_COUNT_KEY_PREFIX = "social_likes_given_count_"
 private const val SOCIAL_COMMENTS_WRITTEN_COUNT_KEY_PREFIX = "social_comments_written_count_"
+private const val XP_BACKFILL_V1_DONE_KEY_PREFIX = "xp_backfill_v1_done_"
 private const val LOCAL_PREFERENCES_OWNER_ID = "local"
 private val AppGreenBackground = Color(0xFF51734A)
 
@@ -272,6 +273,7 @@ private fun dailyAnimalQuestHitRoomIdsKey(ownerId: String): String =
 private fun socialLikesGivenCountKey(ownerId: String): String = "$SOCIAL_LIKES_GIVEN_COUNT_KEY_PREFIX$ownerId"
 private fun socialCommentsWrittenCountKey(ownerId: String): String =
     "$SOCIAL_COMMENTS_WRITTEN_COUNT_KEY_PREFIX$ownerId"
+private fun xpBackfillV1DoneKey(ownerId: String): String = "$XP_BACKFILL_V1_DONE_KEY_PREFIX$ownerId"
 
 private fun introPendingKey(ownerId: String): String = "$INTRO_PENDING_KEY_PREFIX$ownerId"
 
@@ -434,6 +436,28 @@ private fun countDailyAnimalQuestHits(
     prefs: android.content.SharedPreferences,
     ownerId: String
 ): Int = loadDailyAnimalQuestHitRoomIds(prefs, ownerId).size
+
+private fun collectSecureDailyAnimalHitRoomIds(
+    findings: List<AnimalFinding>,
+    prefs: SharedPreferences,
+    ownerId: String
+): Set<Int> {
+    val assignmentsByDate = loadDailyAnimalAssignments(prefs, ownerId)
+    val secureHitRoomIds = loadDailyAnimalQuestHitRoomIds(prefs, ownerId).toMutableSet()
+    if (assignmentsByDate.isEmpty()) return secureHitRoomIds
+
+    findings.forEach { finding ->
+        val roomId = finding.roomId ?: return@forEach
+        val animalId = finding.animalId.trim()
+        val findingDateKey = normalizeFindingDateKey(finding.date) ?: return@forEach
+        val expectedAnimalId = assignmentsByDate[findingDateKey]?.trim().orEmpty()
+        if (animalId.isNotBlank() && animalId == expectedAnimalId) {
+            secureHitRoomIds += roomId
+        }
+    }
+
+    return secureHitRoomIds
+}
 
 private fun loadSocialLikesGivenCount(
     prefs: android.content.SharedPreferences,
@@ -1547,6 +1571,10 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     var wishlistCelebrationMessage by rememberSaveable { mutableStateOf<CelebrationMessage?>(null) }
     var xpPopupMessage by remember { mutableStateOf<XpPopupMessage?>(null) }
     var socialFriendQuestProgress by remember(currentOwnerId) { mutableStateOf(0) }
+    var isXpBackfillRunning by remember(preferenceOwnerId) { mutableStateOf(false) }
+    var isXpBackfillDone by remember(preferenceOwnerId) {
+        mutableStateOf(prefs.getBoolean(xpBackfillV1DoneKey(preferenceOwnerId), false))
+    }
     var previousOwnerId by rememberSaveable { mutableStateOf(ownerId) }
     var lastSyncedAnimalPreferenceSignature by rememberSaveable { mutableStateOf<String?>(null) }
 
@@ -1930,6 +1958,10 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                 }
             }
         }
+    }
+    LaunchedEffect(preferenceOwnerId) {
+        isXpBackfillDone = prefs.getBoolean(xpBackfillV1DoneKey(preferenceOwnerId), false)
+        isXpBackfillRunning = false
     }
     LaunchedEffect(currentOwnerId) {
         val safeOwnerId = currentOwnerId ?: return@LaunchedEffect
@@ -2745,6 +2777,59 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                             }
                                         }
                                     }
+                                }
+                            }
+                        },
+                        isXpBackfillDone = isXpBackfillDone,
+                        isXpBackfillRunning = isXpBackfillRunning,
+                        onRunXpBackfill = {
+                            if (!isXpBackfillDone && !isXpBackfillRunning) {
+                                isXpBackfillRunning = true
+                                scope.launch {
+                                    val backfillResult = runCatching {
+                                        val previousSnapshot = XpProgressRepository.buildSnapshot(
+                                            prefs = prefs,
+                                            userId = currentOwnerId
+                                        )
+                                        val retroactiveAwards = buildList {
+                                            addAll(buildRetroactiveFindingXpAwards(findingsFromRoom))
+                                            addAll(
+                                                buildRetroactiveQuestXpAwards(
+                                                    findings = findingsFromRoom,
+                                                    animals = animals,
+                                                    prefs = prefs,
+                                                    ownerId = preferenceOwnerId
+                                                )
+                                            )
+                                        }
+                                        val awardResult = XpProgressRepository.grantXpAwardsIfAbsent(
+                                            prefs = prefs,
+                                            userId = currentOwnerId,
+                                            awards = retroactiveAwards
+                                        )
+                                        prefs.edit()
+                                            .putBoolean(xpBackfillV1DoneKey(preferenceOwnerId), true)
+                                            .apply()
+                                        isXpBackfillDone = true
+                                        val currentSnapshot = XpProgressRepository.buildSnapshot(
+                                            prefs = prefs,
+                                            userId = currentOwnerId
+                                        )
+                                        xpPopupMessage = buildXpBackfillPopupMessage(
+                                            awardedXp = awardResult.awardedXp,
+                                            previousSnapshot = previousSnapshot,
+                                            currentSnapshot = currentSnapshot
+                                        )
+                                    }
+
+                                    if (backfillResult.isFailure) {
+                                        Toast.makeText(
+                                            context,
+                                            "Alte Funde konnten nicht angerechnet werden.",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                    isXpBackfillRunning = false
                                 }
                             }
                         },
@@ -5212,6 +5297,9 @@ fun SettingsScreen(
     onShowIntro: () -> Unit,
     allFindings: List<AnimalFinding>,
     onImportFindings: (List<AnimalFinding>) -> Unit,
+    isXpBackfillDone: Boolean,
+    isXpBackfillRunning: Boolean,
+    onRunXpBackfill: () -> Unit,
     extraTopPadding: Dp = 0.dp,
     extraBottomPadding: Dp = 0.dp
 ) {
@@ -5346,6 +5434,27 @@ fun SettingsScreen(
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = TextSecondary
                             )
+                            if (!isXpBackfillDone) {
+                                OutlinedButton(
+                                    onClick = onRunXpBackfill,
+                                    enabled = !isXpBackfillRunning,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    Text(
+                                        if (isXpBackfillRunning) {
+                                            "Alte Funde werden angerechnet..."
+                                        } else {
+                                            "Alte Funde für XP anrechnen"
+                                        }
+                                    )
+                                }
+                            } else {
+                                Text(
+                                    text = "Die einmalige XP-Nachtragung für alte Funde ist bereits erledigt.",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = TextSecondary
+                                )
+                            }
                         }
                     }
                 }
@@ -6244,6 +6353,13 @@ private fun countPerfectFindingQuestProgress(
     ownerId: String
 ): Int {
     val secureDailyHitRoomIds = loadDailyAnimalQuestHitRoomIds(prefs, ownerId)
+    return countPerfectFindingQuestProgressForSecureHits(findings, secureDailyHitRoomIds)
+}
+
+private fun countPerfectFindingQuestProgressForSecureHits(
+    findings: List<AnimalFinding>,
+    secureDailyHitRoomIds: Set<Int>
+): Int {
     if (secureDailyHitRoomIds.isEmpty()) return 0
 
     val discoveredSpecies = mutableSetOf<String>()
@@ -6266,6 +6382,93 @@ private fun countPerfectFindingQuestProgress(
         }
     }
     return count
+}
+
+private fun buildRetroactiveFindingXpAwards(
+    findings: List<AnimalFinding>
+): List<Pair<String, Int>> {
+    val orderedFindings = orderedFindingsForQuestProgress(findings)
+    val previousFindings = mutableListOf<AnimalFinding>()
+    val awards = mutableListOf<Pair<String, Int>>()
+
+    orderedFindings.forEach { finding ->
+        awards += buildBaseFindingXpAwards(previousFindings, finding)
+        previousFindings += finding
+    }
+
+    return awards
+}
+
+private fun buildRetroactiveQuestXpAwards(
+    findings: List<AnimalFinding>,
+    animals: List<AnimalEntry>,
+    prefs: SharedPreferences,
+    ownerId: String
+): List<Pair<String, Int>> {
+    val secureDailyHitRoomIds = collectSecureDailyAnimalHitRoomIds(
+        findings = findings,
+        prefs = prefs,
+        ownerId = ownerId
+    )
+    val completedQuestTypesForBackfill = setOf(
+        QuestType.TOTAL_FINDINGS,
+        QuestType.PHOTO_FINDINGS,
+        QuestType.LOCATION_FINDINGS,
+        QuestType.TOTAL_SPECIES_ENTRIES,
+        QuestType.BIRDS,
+        QuestType.FISH,
+        QuestType.MAMMALS,
+        QuestType.AMPHIBIANS,
+        QuestType.REPTILES,
+        QuestType.DAILY_ANIMAL,
+        QuestType.SOCIAL_FRIEND_TAGGED_FINDINGS,
+        QuestType.SPECIAL_PERFECT_FINDING,
+        QuestType.SPECIAL_SINGLE_SUBGROUP_SPECIES,
+        QuestType.SPECIAL_ALPHABET_SPECIES,
+        QuestType.SPECIAL_PHOTO_UPGRADE
+    )
+    val quests = buildHomeQuests(
+        findings = findings,
+        animals = animals,
+        dailyAnimal = null,
+        collectedAnimalCount = collectedAnimalCountForQuestProgress(findings),
+        totalFindings = findings.size,
+        photoFindingCount = photoFindingCountForQuestProgress(findings),
+        dailyAnimalQuestProgress = secureDailyHitRoomIds.size,
+        perfectFindingQuestProgress = countPerfectFindingQuestProgressForSecureHits(
+            findings = findings,
+            secureDailyHitRoomIds = secureDailyHitRoomIds
+        ),
+        wishlistAnimalId = null
+    )
+
+    return quests
+        .filter { quest ->
+            quest.isCompleted &&
+                quest.type in completedQuestTypesForBackfill &&
+                quest.xpReward != null
+        }
+        .map { quest -> quest.awardKey to (quest.xpReward ?: 0) }
+}
+
+private fun buildXpBackfillPopupMessage(
+    awardedXp: Int,
+    previousSnapshot: XpProgressSnapshot,
+    currentSnapshot: XpProgressSnapshot
+): XpPopupMessage {
+    return XpPopupMessage(
+        reason = "Alte Funde angerechnet",
+        xpLabel = "Gesamt +$awardedXp XP",
+        detail = "",
+        beforeSnapshot = previousSnapshot,
+        afterSnapshot = currentSnapshot,
+        levelUpTitle = if (currentSnapshot.level > previousSnapshot.level) "Levelaufstieg!" else null,
+        levelUpSubtitle = if (currentSnapshot.level > previousSnapshot.level) {
+            "Level ${currentSnapshot.level} • ${currentSnapshot.title}"
+        } else {
+            null
+        }
+    )
 }
 
 private fun countSingleSubgroupSpeciesProgress(
