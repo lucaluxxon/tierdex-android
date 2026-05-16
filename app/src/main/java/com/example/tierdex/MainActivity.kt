@@ -278,6 +278,121 @@ private fun socialCommentsWrittenCountKey(ownerId: String): String =
     "$SOCIAL_COMMENTS_WRITTEN_COUNT_KEY_PREFIX$ownerId"
 private fun xpBackfillV1DoneKey(ownerId: String): String = "$XP_BACKFILL_V1_DONE_KEY_PREFIX$ownerId"
 
+private fun isReadableLocalProfileImageUri(
+    context: Context,
+    photoUri: String
+): Boolean {
+    val trimmedPhotoUri = photoUri.trim()
+    if (trimmedPhotoUri.isBlank() || trimmedPhotoUri.startsWith(STORAGE_URI_PREFIX)) {
+        return false
+    }
+
+    return runCatching {
+        when {
+            trimmedPhotoUri.startsWith("internal://") -> {
+                val fileName = trimmedPhotoUri.removePrefix("internal://").trim()
+                if (fileName.isBlank()) {
+                    false
+                } else {
+                    val sourceFile = File(
+                        File(context.applicationContext.filesDir, FINDING_IMAGES_DIR),
+                        fileName
+                    )
+                    sourceFile.exists() && sourceFile.isFile
+                }
+            }
+
+            else -> {
+                context.applicationContext.contentResolver.openInputStream(Uri.parse(trimmedPhotoUri))?.use { input ->
+                    input.read() >= -1
+                } ?: false
+            }
+        }
+    }.getOrDefault(false)
+}
+
+private suspend fun uploadProfileBackgroundPhotoAndPersist(
+    context: Context,
+    userId: String,
+    localPhotoUri: String,
+    currentProfileBackgroundPhotoPath: String = ""
+): String {
+    val safeUserId = userId.trim()
+    val safeLocalPhotoUri = localPhotoUri.trim()
+    val currentPath = currentProfileBackgroundPhotoPath.trim()
+    if (safeUserId.isBlank() || safeLocalPhotoUri.isBlank()) {
+        Log.d(
+            "ProfileBackgroundUpload",
+            "Upload übersprungen: userIdBlank=${safeUserId.isBlank()} localUriBlank=${safeLocalPhotoUri.isBlank()}"
+        )
+        return currentPath
+    }
+
+    val isReadable = isReadableLocalProfileImageUri(context, safeLocalPhotoUri)
+    Log.d(
+        "ProfileBackgroundUpload",
+        "Lokales Bild lesbar=$isReadable userId=$safeUserId"
+    )
+    if (!isReadable) {
+        return currentPath
+    }
+
+    return try {
+        Log.d(
+            "ProfileBackgroundUpload",
+            "Upload gestartet userId=$safeUserId storagePath=${FindingPhotoStorageRepository.buildProfileBackgroundPhotoPath(safeUserId)}"
+        )
+        val uploadedPath = FindingPhotoStorageRepository.uploadProfileBackgroundPhoto(
+            context = context,
+            userId = safeUserId,
+            localPhotoUri = safeLocalPhotoUri,
+            currentProfileBackgroundPhotoPath = currentPath
+        ).trim()
+        if (uploadedPath.isBlank()) {
+            Log.e(
+                "ProfileBackgroundUpload",
+                "Upload fehlgeschlagen oder leerer Pfad userId=$safeUserId"
+            )
+            currentPath
+        } else {
+            Log.d(
+                "ProfileBackgroundUpload",
+                "Upload erfolgreich userId=$safeUserId path=$uploadedPath"
+            )
+            val writeResult = suspendCancellableCoroutine<Pair<Boolean, String?>> { continuation ->
+                FriendRepository.updatePublicUserProfile(
+                    userId = safeUserId,
+                    profileBackgroundPhotoPath = uploadedPath
+                ) { success, error ->
+                    if (continuation.isActive) {
+                        continuation.resume(success to error)
+                    }
+                }
+            }
+            if (writeResult.first) {
+                Log.d(
+                    "ProfileBackgroundUpload",
+                    "Firestore-Feld geschrieben userId=$safeUserId field=profileBackgroundPhotoPath"
+                )
+                uploadedPath
+            } else {
+                Log.e(
+                    "ProfileBackgroundUpload",
+                    "Firestore-Feld schreiben fehlgeschlagen userId=$safeUserId error=${writeResult.second ?: "Unbekannter Fehler"}"
+                )
+                currentPath
+            }
+        }
+    } catch (exception: Exception) {
+        Log.e(
+            "ProfileBackgroundUpload",
+            "Fehler beim Hintergrundbild-Upload userId=$safeUserId error=${exception.message ?: "Unbekannter Fehler"}",
+            exception
+        )
+        currentPath
+    }
+}
+
 private fun introPendingKey(ownerId: String): String = "$INTRO_PENDING_KEY_PREFIX$ownerId"
 
 private fun introSeenKey(ownerId: String): String = "$INTRO_SEEN_KEY_PREFIX$ownerId"
@@ -933,14 +1048,90 @@ data class TierdexNotification(
     val createdAtText: String,
     val createdAt: Timestamp? = null,
     val isRead: Boolean,
+    val readAliases: Set<String> = emptySet(),
     val relatedUserId: String? = null,
     val relatedOwnerUserId: String? = null,
     val relatedFindingId: String? = null,
     val relatedAnimalId: String? = null
 )
 
+data class FindingDuplicateDiagnosisSummary(
+    val localDuplicateGroups: Int = 0,
+    val cloudDuplicateGroups: Int = 0,
+    val mixedDuplicateGroups: Int = 0,
+    val totalDuplicateGroups: Int = 0
+)
+
 private fun friendRequestNotificationId(request: FriendRequest): String =
     "friend_request_${request.fromUserId}_${request.toUserId}"
+
+private fun TierdexNotification.allReadIds(): Set<String> {
+    return (setOf(id) + readAliases)
+        .map { it.trim() }
+        .filter { it.isNotBlank() }
+        .toSet()
+}
+
+private fun TierdexNotification.matchesReadState(readIds: Set<String>): Boolean {
+    return allReadIds().any { it in readIds }
+}
+
+private fun notificationTaggedFriendIds(rawValue: Any?): List<String> {
+    return (rawValue as? List<*>)
+        .orEmpty()
+        .mapNotNull { (it as? String)?.trim() }
+        .filter { it.isNotBlank() }
+}
+
+private fun stableNotificationFindingId(
+    ownerUserId: String,
+    animalId: String,
+    date: String,
+    location: String,
+    note: String,
+    latitude: Double?,
+    longitude: Double?,
+    taggedFriendIds: List<String>
+): String {
+    return FirestoreFindingRepository.documentIdForFinding(
+        AnimalFinding(
+            animalId = animalId,
+            date = date,
+            location = location,
+            note = note,
+            latitude = latitude,
+            longitude = longitude,
+            ownerId = ownerUserId,
+            taggedFriendIds = taggedFriendIds
+        )
+    )
+}
+
+private fun likeNotificationId(
+    ownerUserId: String,
+    stableFindingId: String,
+    likerUid: String,
+    fallbackLikeId: String
+): String {
+    val stableActorId = likerUid.trim().ifBlank { fallbackLikeId.trim() }
+    return "like_${ownerUserId.trim()}_${stableFindingId.trim()}_${stableActorId}"
+}
+
+private fun legacyLikeNotificationId(
+    findingId: String,
+    likeDocumentId: String
+): String = "like_${findingId.trim()}_${likeDocumentId.trim()}"
+
+private fun commentNotificationId(
+    ownerUserId: String,
+    stableFindingId: String,
+    commentDocumentId: String
+): String = "comment_${ownerUserId.trim()}_${stableFindingId.trim()}_${commentDocumentId.trim()}"
+
+private fun legacyCommentNotificationId(
+    findingId: String,
+    commentDocumentId: String
+): String = "comment_${findingId.trim()}_${commentDocumentId.trim()}"
 
 private fun formatNotificationTimestamp(timestamp: Timestamp?): String {
     return timestamp?.toDate()?.let {
@@ -1092,6 +1283,15 @@ fun effectiveOwnPhotoSources(finding: AnimalFinding): List<String> {
         ?.let(::storageUriFromPath)
         ?.let(::listOf)
         .orEmpty()
+}
+
+private fun ownedFindingPhotoSourceKind(finding: AnimalFinding): String {
+    return when {
+        effectiveLocalPhotoUris(finding).isNotEmpty() -> "local"
+        effectiveRemotePhotoPaths(finding).isNotEmpty() -> "remote"
+        finding.thumbnailRemotePhotoPath.trim().isNotBlank() -> "thumbnail"
+        else -> "none"
+    }
 }
 
 fun effectiveFriendPhotoSources(
@@ -1625,6 +1825,8 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         mutableStateOf(ProfileCollectionDateFilter.ALL.name)
     }
     var incomingRequestCount by rememberSaveable { mutableStateOf(0) }
+    var latestCreatedFindingRoomId by rememberSaveable { mutableStateOf<Int?>(null) }
+    var latestCreatedFindingOwnerId by rememberSaveable { mutableStateOf<String?>(null) }
     var animalGlobalFindingCounts by remember { mutableStateOf<Map<String, Int>>(emptyMap()) }
     var animalGlobalFindingCountsLoaded by remember { mutableStateOf(false) }
     var animalGlobalFindingCountsLoadAttempted by remember { mutableStateOf(false) }
@@ -1668,8 +1870,13 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     var previousOwnerId by rememberSaveable { mutableStateOf(ownerId) }
     var lastSyncedAnimalPreferenceSignature by rememberSaveable { mutableStateOf<String?>(null) }
     var notificationReadIdsCloudMergedOwnerId by rememberSaveable { mutableStateOf<String?>(null) }
+    var notificationReadIdsCloudMergeAttemptedOwnerId by rememberSaveable { mutableStateOf<String?>(null) }
     var isNotificationReadIdsCloudMergeRunning by rememberSaveable { mutableStateOf(false) }
     var initialCloudFindingSyncCompletedOwnerId by rememberSaveable { mutableStateOf<String?>(null) }
+    var isFindingDuplicateDiagnosisRunning by rememberSaveable { mutableStateOf(false) }
+    var findingDuplicateDiagnosisSummary by remember {
+        mutableStateOf<FindingDuplicateDiagnosisSummary?>(null)
+    }
 
     fun refreshXpUi() {
         xpUiRefreshNonce += 1
@@ -1768,6 +1975,61 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         }
     }
 
+    fun enrichLocalFindingFromCloudPhotoFields(
+        localFinding: AnimalFinding,
+        cloudFinding: AnimalFinding
+    ): Pair<AnimalFinding, List<String>> {
+        val localRemotePhotoPaths = effectiveRemotePhotoPaths(localFinding)
+        val cloudRemotePhotoPaths = effectiveRemotePhotoPaths(cloudFinding)
+        val localThumbnailPath = localFinding.thumbnailRemotePhotoPath.trim()
+        val cloudThumbnailPath = cloudFinding.thumbnailRemotePhotoPath.trim()
+
+        val mergedRemotePhotoPaths = if (localRemotePhotoPaths.isNotEmpty()) {
+            localRemotePhotoPaths
+        } else {
+            cloudRemotePhotoPaths
+        }
+        val mergedRemotePhotoPath = if (localFinding.remotePhotoPath.trim().isNotBlank()) {
+            localFinding.remotePhotoPath.trim()
+        } else {
+            mergedRemotePhotoPaths.firstOrNull().orEmpty()
+        }
+        val mergedThumbnailPath = if (localThumbnailPath.isNotBlank()) {
+            localThumbnailPath
+        } else {
+            cloudThumbnailPath
+        }
+
+        val changedFields = mutableListOf<String>()
+        if (localRemotePhotoPaths.isEmpty() && cloudRemotePhotoPaths.isNotEmpty()) {
+            changedFields += "remotePhotoPaths"
+        }
+        if (localFinding.remotePhotoPath.trim().isBlank() && mergedRemotePhotoPath.isNotBlank()) {
+            changedFields += "remotePhotoPath"
+        }
+        if (localThumbnailPath.isBlank() && mergedThumbnailPath.isNotBlank()) {
+            changedFields += "thumbnailRemotePhotoPath"
+        }
+
+        val mergedFinding = localFinding.copy(
+            remotePhotoPath = mergedRemotePhotoPath,
+            remotePhotoPaths = mergedRemotePhotoPaths,
+            thumbnailRemotePhotoPath = mergedThumbnailPath
+        )
+        val sanitizedMergedFinding = sanitizeOwnFindingPhotoFallbackForThisDevice(mergedFinding)
+
+        if (
+            effectiveLocalPhotoUris(localFinding).isNotEmpty() &&
+            effectiveLocalPhotoUris(sanitizedMergedFinding).isEmpty() &&
+            (effectiveRemotePhotoPaths(sanitizedMergedFinding).isNotEmpty() ||
+                sanitizedMergedFinding.thumbnailRemotePhotoPath.trim().isNotBlank())
+        ) {
+            changedFields += "localPhotoFallbackToRemote"
+        }
+
+        return sanitizedMergedFinding to changedFields.distinct()
+    }
+
     suspend fun loadCurrentUserFindingsAwait(): Result<List<AnimalFinding>> {
         return suspendCancellableCoroutine { continuation ->
             FirestoreFindingRepository.loadCurrentUserFindings(
@@ -1795,6 +2057,93 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         }
     }
 
+    suspend fun loadCurrentUserFindingDocumentsAwait(): Result<List<Pair<String, AnimalFinding>>> {
+        val safeOwnerId = currentOwnerId?.trim().orEmpty()
+        if (safeOwnerId.isBlank()) {
+            return Result.success(emptyList())
+        }
+
+        return suspendCancellableCoroutine { continuation ->
+            FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(safeOwnerId)
+                .collection("findings")
+                .get()
+                .addOnSuccessListener { snapshot ->
+                    val findings = snapshot.documents.map { document ->
+                        document.id to AnimalFinding(
+                            animalId = document.getString("animalId").orEmpty(),
+                            date = document.getString("date").orEmpty(),
+                            location = document.getString("location").orEmpty(),
+                            note = document.getString("note").orEmpty(),
+                            photoUri = document.getString("photoUri").orEmpty(),
+                            remotePhotoPath = document.getString("remotePhotoPath").orEmpty(),
+                            thumbnailRemotePhotoPath = document.getString("thumbnailRemotePhotoPath").orEmpty(),
+                            photoUris = document.getPhotoValuesOrEmpty("photoUris"),
+                            remotePhotoPaths = document.getPhotoValuesOrEmpty("remotePhotoPaths"),
+                            latitude = document.getDouble("latitude"),
+                            longitude = document.getDouble("longitude"),
+                            locationSource = document.getString("locationSource"),
+                            ownerId = safeOwnerId,
+                            taggedFriendIds = document.getTaggedFriendIdsOrEmpty()
+                        )
+                    }
+                    if (continuation.isActive) {
+                        continuation.resume(Result.success(findings))
+                    }
+                }
+                .addOnFailureListener { exception ->
+                    if (continuation.isActive) {
+                        continuation.resume(
+                            Result.failure(
+                                IllegalStateException(
+                                    exception.message ?: "Cloud-Funddokumente konnten nicht geladen werden."
+                                )
+                            )
+                        )
+                    }
+                }
+        }
+    }
+
+    suspend fun loadFindingInteractionPresenceAwait(
+        ownerUserId: String,
+        findingId: String
+    ): Pair<Boolean, Boolean> {
+        val safeOwnerUserId = ownerUserId.trim()
+        val safeFindingId = findingId.trim()
+        if (safeOwnerUserId.isBlank() || safeFindingId.isBlank()) {
+            return false to false
+        }
+
+        suspend fun collectionHasDocuments(path: String): Boolean {
+            return suspendCancellableCoroutine { continuation ->
+                FirebaseFirestore.getInstance()
+                    .collection("users")
+                    .document(safeOwnerUserId)
+                    .collection("findings")
+                    .document(safeFindingId)
+                    .collection(path)
+                    .limit(1)
+                    .get()
+                    .addOnSuccessListener { snapshot ->
+                        if (continuation.isActive) {
+                            continuation.resume(!snapshot.isEmpty)
+                        }
+                    }
+                    .addOnFailureListener {
+                        if (continuation.isActive) {
+                            continuation.resume(false)
+                        }
+                    }
+            }
+        }
+
+        val hasLikes = collectionHasDocuments("likes")
+        val hasComments = collectionHasDocuments("comments")
+        return hasLikes to hasComments
+    }
+
     suspend fun loadCurrentUserPublicProfileAwait(userId: String): Result<PublicUserProfile?> {
         return suspendCancellableCoroutine { continuation ->
             FriendRepository.loadUserProfile(
@@ -1819,6 +2168,63 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         }
     }
 
+    suspend fun repairProfileMediaSyncForOwner(ownerId: String) {
+        val safeOwnerId = ownerId.trim()
+        if (safeOwnerId.isBlank()) return
+
+        val publicProfile = loadCurrentUserPublicProfileAwait(safeOwnerId).getOrNull()
+        val localProfileImageUri = prefs.getString(profileImageKey(safeOwnerId), "").orEmpty().trim()
+        val localProfileBackgroundImageUri =
+            prefs.getString(profileBackgroundImageKey(safeOwnerId), "").orEmpty().trim()
+
+        val profileImageReadable =
+            localProfileImageUri.isNotBlank() && isReadableLocalProfileImageUri(context, localProfileImageUri)
+        val backgroundImageReadable =
+            localProfileBackgroundImageUri.isNotBlank() &&
+                isReadableLocalProfileImageUri(context, localProfileBackgroundImageUri)
+
+        var profileImageRepaired = false
+        var backgroundImageRepaired = false
+
+        if (profileImageReadable && publicProfile?.profilePhotoPath.isNullOrBlank()) {
+            val uploadedPath = FindingPhotoStorageRepository.uploadProfilePhoto(
+                context = context.applicationContext,
+                userId = safeOwnerId,
+                localPhotoUri = localProfileImageUri
+            ).trim()
+            if (uploadedPath.isNotBlank()) {
+                val profileWriteSuccess = suspendCancellableCoroutine<Boolean> { continuation ->
+                    FriendRepository.updatePublicUserProfile(
+                        userId = safeOwnerId,
+                        profilePhotoPath = uploadedPath
+                    ) { success, _ ->
+                        if (continuation.isActive) {
+                            continuation.resume(success)
+                        }
+                    }
+                }
+                profileImageRepaired = profileWriteSuccess
+            }
+        }
+
+        if (backgroundImageReadable && publicProfile?.profileBackgroundPhotoPath.isNullOrBlank()) {
+            val uploadedPath = uploadProfileBackgroundPhotoAndPersist(
+                context = context.applicationContext,
+                userId = safeOwnerId,
+                localPhotoUri = localProfileBackgroundImageUri,
+                currentProfileBackgroundPhotoPath = publicProfile?.profileBackgroundPhotoPath.orEmpty()
+            ).trim()
+            if (uploadedPath.isNotBlank()) {
+                backgroundImageRepaired = true
+            }
+        }
+
+        Log.d(
+            "CloudMediaRepair",
+            "profileMedia ownerId=$safeOwnerId profileImageRepaired=$profileImageRepaired backgroundImageRepaired=$backgroundImageRepaired skippedUnreadableProfile=${localProfileImageUri.isNotBlank() && !profileImageReadable} skippedUnreadableBackground=${localProfileBackgroundImageUri.isNotBlank() && !backgroundImageReadable}"
+        )
+    }
+
     suspend fun repairIncompleteFindingPhotoSyncForOwner(ownerId: String) {
         val repairStartedAt = SystemClock.elapsedRealtime()
         val localRoomFindings = dao.getAllFindingsByOwnerOnce(ownerId)
@@ -1835,6 +2241,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
             val needsThumbnailUploadFromRemote: Boolean
         )
 
+        var skippedUnreadableLocalFiles = 0
         val candidates = localFindings.mapNotNull { finding ->
             val localPhotoUris = effectiveLocalPhotoUris(finding)
             if (finding.ownerId != ownerId) {
@@ -1859,6 +2266,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                 else -> emptyList()
             }
             if (!requiredLocalUris.all(::isRepairReadableLocalPhoto)) {
+                skippedUnreadableLocalFiles += 1
                 return@mapNotNull null
             }
 
@@ -1879,10 +2287,16 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         }
 
         Log.d(
+            "CloudMediaRepair",
+            "fundPhotoRepair start ownerId=$ownerId checkedFindings=${localFindings.size} candidateCount=${candidates.size} skippedUnreadableLocalFiles=$skippedUnreadableLocalFiles"
+        )
+
+        Log.d(
             "FindingPhotoRepair",
             "repair scan start ownerId=$ownerId localFindingCount=${localFindings.size} candidateCount=${candidates.size} remoteThumbnailRepairCandidateCount=$remoteThumbnailRepairCandidateCount"
         )
 
+        var repairedFindingCount = 0
         candidates.forEach { candidate ->
             val candidateStartedAt = SystemClock.elapsedRealtime()
             Log.d(
@@ -1976,6 +2390,20 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                     roomIdOverride = roomId
                 )
             )
+            repairedFindingCount += 1
+            val repairedFields = buildList {
+                if (candidate.needsOriginalUpload) {
+                    add("remotePhotoPath")
+                    add("remotePhotoPaths")
+                }
+                if (candidate.needsThumbnailUploadFromLocal || candidate.needsThumbnailUploadFromRemote) {
+                    add("thumbnailRemotePhotoPath")
+                }
+            }.distinct()
+            Log.d(
+                "CloudMediaRepair",
+                "fundPhotoRepair repaired roomId=$roomId animalId=${candidate.finding.animalId} added=${repairedFields.joinToString(",")}"
+            )
             Log.d(
                 "FindingPhotoRepair",
                 "candidate room update animalId=${candidate.finding.animalId} roomUpdated=true"
@@ -1994,6 +2422,11 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                 )
             }
         }
+
+        Log.d(
+            "CloudMediaRepair",
+            "fundPhotoRepair end ownerId=$ownerId checkedFindings=${localFindings.size} repairedFindings=$repairedFindingCount skippedUnreadableLocalFiles=$skippedUnreadableLocalFiles"
+        )
 
         Log.d(
             "FindingPhotoRepair",
@@ -2079,6 +2512,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                 }
             }
 
+            repairProfileMediaSyncForOwner(ownerId)
             repairIncompleteFindingPhotoSyncForOwner(ownerId)
 
             val cloudFindingsResult = loadCurrentUserFindingsAwait()
@@ -2086,6 +2520,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                 val cloudFindings = cloudFindingsResult.getOrNull().orEmpty()
                 val localRoomFindings = dao.getAllFindingsByOwnerOnce(ownerId)
                 val localFindings = localRoomFindings.map { entity -> entity.toDomainFinding() }
+                val localFindingsByFingerprint = localRoomFindings.associateBy { entity ->
+                    FirestoreFindingRepository.findingFingerprint(entity.toDomainFinding())
+                }
 
                 val localFingerprints = localFindings
                     .map { FirestoreFindingRepository.findingFingerprint(it) }
@@ -2095,8 +2532,8 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                     .toMutableSet()
 
                 Log.d(
-                    "CloudSync",
-                    "Sync start: found ${localFindings.size} local findings and ${cloudFindings.size} cloud findings for user $ownerId"
+                    "FindingCloudHydration",
+                    "Sync start: local=${localFindings.size} cloud=${cloudFindings.size} ownerId=$ownerId"
                 )
 
                 var uploadedCount = 0
@@ -2118,6 +2555,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                 }
 
                 var insertedCount = 0
+                var enrichedCount = 0
                 cloudFindings.forEach { cloudFinding ->
                     val fingerprint =
                         FirestoreFindingRepository.findingFingerprint(cloudFinding)
@@ -2127,13 +2565,34 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         localFingerprints.add(fingerprint)
                     } else {
                         skippedDuplicateCount += 1
+                        val localEntity = localFindingsByFingerprint[fingerprint]
+                        if (localEntity != null) {
+                            val localFinding = localEntity.toDomainFinding()
+                            val (enrichedFinding, changedFields) = enrichLocalFindingFromCloudPhotoFields(
+                                localFinding = localFinding,
+                                cloudFinding = cloudFinding
+                            )
+                            if (changedFields.isNotEmpty() && enrichedFinding != localFinding) {
+                                dao.updateFinding(
+                                    enrichedFinding.toEntity(
+                                        ownerIdOverride = ownerId,
+                                        roomIdOverride = localEntity.id
+                                    )
+                                )
+                                enrichedCount += 1
+                                Log.d(
+                                    "FindingCloudHydration",
+                                    "enriched roomId=${localEntity.id} animalId=${localEntity.animalId} added=${changedFields.joinToString(",")}"
+                                )
+                            }
+                        }
                     }
                 }
 
                 val finalTotalCount = localFingerprints.size
                 Log.d(
-                    "CloudSync",
-                    "Sync result: local=${localFindings.size}, cloud=${cloudFindings.size}, uploaded=$uploadedCount, insertedIntoRoom=$insertedCount, duplicatesSkipped=$skippedDuplicateCount, finalTotal=$finalTotalCount"
+                    "FindingCloudHydration",
+                    "Sync result: cloudLoaded=${cloudFindings.size} inserted=$insertedCount enriched=$enrichedCount uploaded=$uploadedCount duplicatesSkipped=$skippedDuplicateCount finalTotal=$finalTotalCount"
                 )
                 initialCloudFindingSyncCompletedOwnerId = ownerId
             } else {
@@ -2336,6 +2795,159 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                 ).show()
             }
             isXpBackfillRunning = false
+        }
+    }
+
+    fun launchFindingDuplicateDiagnosis() {
+        val safeOwnerId = currentOwnerId?.trim().orEmpty()
+        if (safeOwnerId.isBlank() || isFindingDuplicateDiagnosisRunning) return
+
+        data class LocalFindingRecord(
+            val roomId: Int?,
+            val finding: AnimalFinding
+        )
+
+        data class CloudFindingRecord(
+            val documentId: String,
+            val finding: AnimalFinding
+        )
+
+        data class DuplicateGroupLogModel(
+            val fingerprint: String,
+            val animalId: String,
+            val date: String,
+            val localRecords: List<LocalFindingRecord>,
+            val cloudRecords: List<CloudFindingRecord>,
+            val hasRemotePhotos: Boolean,
+            val hasLocalPhotos: Boolean,
+            val hasLikes: Boolean,
+            val hasComments: Boolean,
+            val ownerIds: Set<String?>
+        )
+
+        isFindingDuplicateDiagnosisRunning = true
+        findingDuplicateDiagnosisSummary = null
+
+        scope.launch {
+            val diagnosisResult = runCatching {
+                val localRecords = allFindings.map { entity ->
+                    val finding = entity.toDomainFinding()
+                    LocalFindingRecord(
+                        roomId = entity.id,
+                        finding = finding
+                    )
+                }
+
+                val cloudFindingsResult = loadCurrentUserFindingDocumentsAwait()
+                val cloudRecords = cloudFindingsResult.getOrThrow().map { (documentId, finding) ->
+                    CloudFindingRecord(
+                        documentId = documentId,
+                        finding = finding
+                    )
+                }
+
+                val localGroups = localRecords.groupBy { record ->
+                    FirestoreFindingRepository.findingFingerprint(record.finding)
+                }
+                val cloudGroups = cloudRecords.groupBy { record ->
+                    FirestoreFindingRepository.findingFingerprint(record.finding)
+                }
+
+                val duplicateFingerprints = (localGroups.keys + cloudGroups.keys).filter { fingerprint ->
+                    val localCount = localGroups[fingerprint]?.size ?: 0
+                    val cloudCount = cloudGroups[fingerprint]?.size ?: 0
+                    localCount > 1 || cloudCount > 1
+                }
+
+                val interactionPresenceByDocumentId = mutableMapOf<String, Pair<Boolean, Boolean>>()
+                duplicateFingerprints.forEach { fingerprint ->
+                    cloudGroups[fingerprint].orEmpty().forEach { cloudRecord ->
+                        interactionPresenceByDocumentId[cloudRecord.documentId] =
+                            loadFindingInteractionPresenceAwait(
+                                ownerUserId = safeOwnerId,
+                                findingId = cloudRecord.documentId
+                            )
+                    }
+                }
+
+                val duplicateGroups = duplicateFingerprints.map { fingerprint ->
+                    val localRecordsForFingerprint = localGroups[fingerprint].orEmpty()
+                    val cloudRecordsForFingerprint = cloudGroups[fingerprint].orEmpty()
+                    val sampleFinding = localRecordsForFingerprint.firstOrNull()?.finding
+                        ?: cloudRecordsForFingerprint.firstOrNull()?.finding
+                        ?: AnimalFinding(
+                            animalId = "",
+                            date = "",
+                            location = "",
+                            note = ""
+                        )
+
+                    DuplicateGroupLogModel(
+                        fingerprint = fingerprint,
+                        animalId = sampleFinding.animalId,
+                        date = sampleFinding.date,
+                        localRecords = localRecordsForFingerprint,
+                        cloudRecords = cloudRecordsForFingerprint,
+                        hasRemotePhotos = (localRecordsForFingerprint.map { it.finding } + cloudRecordsForFingerprint.map { it.finding })
+                            .any { effectiveRemotePhotoPaths(it).isNotEmpty() || it.thumbnailRemotePhotoPath.trim().isNotBlank() },
+                        hasLocalPhotos = (localRecordsForFingerprint.map { it.finding } + cloudRecordsForFingerprint.map { it.finding })
+                            .any { effectiveLocalPhotoUris(it).isNotEmpty() },
+                        hasLikes = cloudRecordsForFingerprint.any { cloudRecord ->
+                            interactionPresenceByDocumentId[cloudRecord.documentId]?.first == true
+                        },
+                        hasComments = cloudRecordsForFingerprint.any { cloudRecord ->
+                            interactionPresenceByDocumentId[cloudRecord.documentId]?.second == true
+                        },
+                        ownerIds = (localRecordsForFingerprint.map { it.finding.ownerId } + cloudRecordsForFingerprint.map { it.finding.ownerId }).toSet()
+                    )
+                }.sortedWith(
+                    compareBy<DuplicateGroupLogModel> { it.animalId.ifBlank { "~" } }
+                        .thenBy { it.date.ifBlank { "~" } }
+                )
+
+                duplicateGroups.forEachIndexed { index, group ->
+                    Log.d(
+                        "FindingDuplicateDiagnosis",
+                        "group=${index + 1}/${duplicateGroups.size} fingerprint=${group.fingerprint.take(16)} animalId=${group.animalId} date=${group.date} localCount=${group.localRecords.size} localRoomIds=${group.localRecords.mapNotNull { it.roomId }} cloudCount=${group.cloudRecords.size} cloudDocumentIds=${group.cloudRecords.map { it.documentId }} hasRemotePhotos=${group.hasRemotePhotos} hasLocalPhotos=${group.hasLocalPhotos} hasLikes=${group.hasLikes} hasComments=${group.hasComments} ownerIds=${group.ownerIds.map { it ?: "<null>" }}"
+                    )
+                }
+
+                val localDuplicateGroups = duplicateGroups.count { it.localRecords.size > 1 && it.cloudRecords.isEmpty() }
+                val cloudDuplicateGroups = duplicateGroups.count { it.cloudRecords.size > 1 && it.localRecords.isEmpty() }
+                val mixedDuplicateGroups = duplicateGroups.count {
+                    it.localRecords.isNotEmpty() &&
+                        it.cloudRecords.isNotEmpty() &&
+                        (it.localRecords.size > 1 || it.cloudRecords.size > 1)
+                }
+
+                FindingDuplicateDiagnosisSummary(
+                    localDuplicateGroups = localDuplicateGroups,
+                    cloudDuplicateGroups = cloudDuplicateGroups,
+                    mixedDuplicateGroups = mixedDuplicateGroups,
+                    totalDuplicateGroups = duplicateGroups.size
+                )
+            }
+
+            if (diagnosisResult.isSuccess) {
+                findingDuplicateDiagnosisSummary = diagnosisResult.getOrNull()
+                Log.d(
+                    "FindingDuplicateDiagnosis",
+                    "summary local=${findingDuplicateDiagnosisSummary?.localDuplicateGroups ?: 0} cloud=${findingDuplicateDiagnosisSummary?.cloudDuplicateGroups ?: 0} mixed=${findingDuplicateDiagnosisSummary?.mixedDuplicateGroups ?: 0} total=${findingDuplicateDiagnosisSummary?.totalDuplicateGroups ?: 0}"
+                )
+            } else {
+                Log.e(
+                    "FindingDuplicateDiagnosis",
+                    "Diagnose fehlgeschlagen: ${diagnosisResult.exceptionOrNull()?.message ?: "Unbekannter Fehler"}",
+                    diagnosisResult.exceptionOrNull()
+                )
+                Toast.makeText(
+                    context,
+                    "Fund-Duplikate konnten nicht geprüft werden.",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+
+            isFindingDuplicateDiagnosisRunning = false
         }
     }
 
@@ -2542,6 +3154,46 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         return readNotificationIdsForOwner(safeOwnerId)
     }
 
+    fun logNotificationReadDiagnostics(
+        stage: String,
+        notificationsToInspect: List<TierdexNotification> = notifications,
+        localReadIdsCount: Int? = null,
+        cloudReadIdsCount: Int? = null,
+        mergedReadIdsCount: Int? = null
+    ) {
+        val readIds = currentReadNotificationIds()
+        Log.d(
+            "NotificationReadState",
+            "stage=$stage localReadIds=${localReadIdsCount ?: readIds.size} cloudReadIds=${cloudReadIdsCount ?: -1} mergedReadIds=${mergedReadIdsCount ?: readIds.size} notifications=${notificationsToInspect.size}"
+        )
+        notificationsToInspect
+            .filter { !it.matchesReadState(readIds) }
+            .take(5)
+            .forEachIndexed { index, notification ->
+                val aliases = notification.readAliases.toList().sorted()
+                val aliasHits = aliases.filter { it in readIds }
+                Log.d(
+                    "NotificationReadState",
+                    "unread[$index] type=${notification.type} stableId=${notification.id} aliases=${aliases.joinToString(",")} isRead=${notification.isRead} stableHit=${notification.id in readIds} aliasHit=${aliasHits.isNotEmpty()} aliasMatches=${aliasHits.joinToString(",")}"
+                )
+            }
+    }
+
+    fun applyCurrentReadState(
+        notificationItems: List<TierdexNotification>,
+        stage: String
+    ): List<TierdexNotification> {
+        val readIds = currentReadNotificationIds()
+        val updatedNotifications = notificationItems.map { notification ->
+            notification.copy(isRead = notification.matchesReadState(readIds))
+        }
+        logNotificationReadDiagnostics(
+            stage = stage,
+            notificationsToInspect = updatedNotifications
+        )
+        return updatedNotifications
+    }
+
     fun storeReadNotificationIdsForOwner(ownerId: String, ids: Set<String>) {
         val safeOwnerId = ownerId.trim()
         if (safeOwnerId.isBlank()) return
@@ -2580,6 +3232,10 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                     .mapNotNull { value -> (value as? String)?.trim() }
                     .filter { it.isNotBlank() }
                     .toSet()
+                Log.d(
+                    "NotificationReadState",
+                    "Cloud-Read-IDs geladen: userId=$safeUserId count=${readIds.size}"
+                )
                 onResult(readIds)
             }
             .addOnFailureListener { exception ->
@@ -2683,6 +3339,10 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                     .map { it.trim() }
                     .filter { it.isNotBlank() }
                     .toSet()
+                Log.d(
+                    "NotificationReadState",
+                    "Read-ID-Merge: userId=$safeUserId local=${localReadIds.size} cloud=${cloudReadIds.size} merged=${mergedReadIds.size}"
+                )
                 storeReadNotificationIdsForOwner(safeUserId, mergedReadIds)
                 saveMergedReadNotificationIdsToCloud(
                     userId = safeUserId,
@@ -2700,7 +3360,6 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     }
 
     fun mapFriendRequestsToNotifications(requests: List<FriendRequest>): List<TierdexNotification> {
-        val readIds = currentReadNotificationIds()
         return requests
             .sortedByDescending { it.createdAt?.toDate()?.time ?: 0L }
             .map { request ->
@@ -2712,7 +3371,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                     message = "${request.displayName.ifBlank { "Jemand" }} möchte dich als Freund hinzufügen.",
                     createdAtText = formatNotificationTimestamp(request.createdAt),
                     createdAt = request.createdAt,
-                    isRead = notificationId in readIds,
+                    isRead = false,
                     relatedUserId = request.fromUserId
                 )
             }
@@ -2723,7 +3382,6 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         onResult: (List<TierdexNotification>) -> Unit,
         onError: (String?) -> Unit
     ) {
-        val readIds = currentReadNotificationIds()
         val firestore = FirebaseFirestore.getInstance()
 
         firestore.collection("users")
@@ -2753,6 +3411,18 @@ fun TierdexApp(database: AnimalFindingDatabase) {
 
                 findingsSnapshot.documents.forEach { findingDocument ->
                     val findingId = findingDocument.id
+                    val stableFindingId = stableNotificationFindingId(
+                        ownerUserId = currentUserId,
+                        animalId = findingDocument.getString("animalId").orEmpty(),
+                        date = findingDocument.getString("date").orEmpty(),
+                        location = findingDocument.getString("location").orEmpty(),
+                        note = findingDocument.getString("note").orEmpty(),
+                        latitude = findingDocument.getDouble("latitude"),
+                        longitude = findingDocument.getDouble("longitude"),
+                        taggedFriendIds = notificationTaggedFriendIds(
+                            findingDocument.get("taggedFriendIds")
+                        )
+                    )
 
                     findingDocument.reference.collection("likes")
                         .get()
@@ -2763,7 +3433,16 @@ fun TierdexApp(database: AnimalFindingDatabase) {
 
                                 val createdAt = likeDocument.getTimestamp("createdAt")
                                 val likerDisplayName = likeDocument.getString("likerDisplayName").orEmpty()
-                                val notificationId = "like_${findingId}_${likeDocument.id}"
+                                val notificationId = likeNotificationId(
+                                    ownerUserId = currentUserId,
+                                    stableFindingId = stableFindingId,
+                                    likerUid = likerUid,
+                                    fallbackLikeId = likeDocument.id
+                                )
+                                val legacyNotificationId = legacyLikeNotificationId(
+                                    findingId = findingId,
+                                    likeDocumentId = likeDocument.id
+                                )
                                 interactionNotifications += TierdexNotification(
                                     id = notificationId,
                                     type = "like",
@@ -2771,10 +3450,11 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                     message = "${likerDisplayName.ifBlank { "Jemand" }} gefällt dein Fund.",
                                     createdAtText = formatNotificationTimestamp(createdAt),
                                     createdAt = createdAt,
-                                    isRead = notificationId in readIds,
+                                    isRead = false,
+                                    readAliases = setOf(legacyNotificationId),
                                     relatedUserId = likerUid,
                                     relatedOwnerUserId = currentUserId,
-                                    relatedFindingId = findingId,
+                                    relatedFindingId = stableFindingId,
                                     relatedAnimalId = findingDocument.getString("animalId")
                                 )
                             }
@@ -2798,7 +3478,15 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                 val commenterDisplayName =
                                     commentDocument.getString("commenterDisplayName").orEmpty()
                                 val commentText = commentDocument.getString("text").orEmpty().trim()
-                                val notificationId = "comment_${findingId}_${commentDocument.id}"
+                                val notificationId = commentNotificationId(
+                                    ownerUserId = currentUserId,
+                                    stableFindingId = stableFindingId,
+                                    commentDocumentId = commentDocument.id
+                                )
+                                val legacyNotificationId = legacyCommentNotificationId(
+                                    findingId = findingId,
+                                    commentDocumentId = commentDocument.id
+                                )
                                 interactionNotifications += TierdexNotification(
                                     id = notificationId,
                                     type = "comment",
@@ -2806,10 +3494,11 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                     message = "${commenterDisplayName.ifBlank { "Jemand" }}: $commentText",
                                     createdAtText = formatNotificationTimestamp(createdAt),
                                     createdAt = createdAt,
-                                    isRead = notificationId in readIds,
+                                    isRead = false,
+                                    readAliases = setOf(legacyNotificationId),
                                     relatedUserId = commenterUid,
                                     relatedOwnerUserId = currentUserId,
-                                    relatedFindingId = findingId,
+                                    relatedFindingId = stableFindingId,
                                     relatedAnimalId = findingDocument.getString("animalId")
                                 )
                             }
@@ -2832,15 +3521,29 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         requests: List<FriendRequest>,
         interactionNotifications: List<TierdexNotification>
     ) {
-        notifications = (mapFriendRequestsToNotifications(requests) + interactionNotifications)
+        val combinedNotifications = (mapFriendRequestsToNotifications(requests) + interactionNotifications)
             .distinctBy { it.id }
             .sortedByDescending { it.createdAt?.toDate()?.time ?: Long.MIN_VALUE }
+        notifications = applyCurrentReadState(
+            notificationItems = combinedNotifications,
+            stage = "updateNotificationState"
+        )
         incomingRequestCount = notifications.count { !it.isRead }
+        Log.d(
+            "NotificationReadState",
+            "Badge berechnet: unread=$incomingRequestCount total=${notifications.size}"
+        )
     }
 
     fun refreshNotifications() {
         val safeUserId = currentOwnerId
         if (safeUserId.isNullOrBlank()) {
+            incomingRequestCount = 0
+            notifications = emptyList()
+            notificationsErrorMessage = null
+            return
+        }
+        if (notificationReadIdsCloudMergeAttemptedOwnerId != safeUserId) {
             incomingRequestCount = 0
             notifications = emptyList()
             notificationsErrorMessage = null
@@ -2855,6 +3558,10 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         fun finishRefresh() {
             pendingLoads -= 1
             if (pendingLoads <= 0) {
+                Log.d(
+                    "NotificationReadState",
+                    "Notifications geladen: friendRequests=${friendRequests.size} interactions=${interactionNotifications.size}"
+                )
                 updateNotificationState(friendRequests, interactionNotifications)
                 notificationsErrorMessage = firstError
             }
@@ -2887,11 +3594,16 @@ fun TierdexApp(database: AnimalFindingDatabase) {
 
     fun markAllNotificationsAsRead() {
         if (notifications.isEmpty()) return
-        val newReadIds = notifications.map { it.id.trim() }
-            .filter { it.isNotBlank() }
+        val newReadIds = notifications
+            .flatMap { it.allReadIds() }
             .toSet()
         val updatedReadIds = currentReadNotificationIds() + newReadIds
         storeReadNotificationIds(updatedReadIds)
+        logNotificationReadDiagnostics(
+            stage = "markAllNotificationsAsRead",
+            notificationsToInspect = notifications,
+            mergedReadIdsCount = updatedReadIds.size
+        )
         currentOwnerId?.let { ownerId ->
             appendReadNotificationIdsToCloud(ownerId, newReadIds)
         }
@@ -2901,10 +3613,17 @@ fun TierdexApp(database: AnimalFindingDatabase) {
 
     fun markNotificationAsRead(notificationId: String) {
         if (notificationId.isBlank()) return
-        val updatedReadIds = currentReadNotificationIds() + notificationId
+        val targetNotification = notifications.firstOrNull { it.id == notificationId }
+        val newReadIds = targetNotification?.allReadIds() ?: setOf(notificationId)
+        val updatedReadIds = currentReadNotificationIds() + newReadIds
         storeReadNotificationIds(updatedReadIds)
+        logNotificationReadDiagnostics(
+            stage = "markNotificationAsRead",
+            notificationsToInspect = notifications,
+            mergedReadIdsCount = updatedReadIds.size
+        )
         currentOwnerId?.let { ownerId ->
-            appendReadNotificationIdsToCloud(ownerId, setOf(notificationId))
+            appendReadNotificationIdsToCloud(ownerId, newReadIds)
         }
         notifications = notifications.map { notification ->
             if (notification.id == notificationId) {
@@ -2970,15 +3689,25 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     }
 
     LaunchedEffect(currentOwnerId) {
-        refreshNotifications()
         refreshAnimalGlobalFindingCounts()
     }
     LaunchedEffect(currentOwnerId) {
         val safeOwnerId = currentOwnerId?.trim().orEmpty()
         if (safeOwnerId.isBlank()) {
+            latestCreatedFindingRoomId = null
+            latestCreatedFindingOwnerId = null
             notificationReadIdsCloudMergedOwnerId = null
+            notificationReadIdsCloudMergeAttemptedOwnerId = null
             isNotificationReadIdsCloudMergeRunning = false
+            incomingRequestCount = 0
+            notifications = emptyList()
+            notificationsErrorMessage = null
             return@LaunchedEffect
+        }
+        if (notificationReadIdsCloudMergeAttemptedOwnerId != safeOwnerId) {
+            incomingRequestCount = 0
+            notifications = emptyList()
+            notificationsErrorMessage = null
         }
         if (notificationReadIdsCloudMergedOwnerId == safeOwnerId || isNotificationReadIdsCloudMergeRunning) {
             return@LaunchedEffect
@@ -2987,9 +3716,19 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         isNotificationReadIdsCloudMergeRunning = true
         mergeLocalAndCloudReadNotificationIds(
             userId = safeOwnerId,
-            onComplete = {
+            onComplete = { mergedReadIds ->
                 notificationReadIdsCloudMergedOwnerId = safeOwnerId
+                notificationReadIdsCloudMergeAttemptedOwnerId = safeOwnerId
                 isNotificationReadIdsCloudMergeRunning = false
+                logNotificationReadDiagnostics(
+                    stage = "mergeComplete",
+                    mergedReadIdsCount = mergedReadIds.size
+                )
+                notifications = applyCurrentReadState(
+                    notificationItems = notifications,
+                    stage = "postMergeExistingNotifications"
+                )
+                incomingRequestCount = notifications.count { !it.isRead }
                 refreshNotifications()
             },
             onError = { errorMessage ->
@@ -2997,7 +3736,14 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                     "NotificationReadState",
                     errorMessage ?: "Read-ID-Merge für Benachrichtigungen fehlgeschlagen."
                 )
+                notificationReadIdsCloudMergeAttemptedOwnerId = safeOwnerId
                 isNotificationReadIdsCloudMergeRunning = false
+                notifications = applyCurrentReadState(
+                    notificationItems = notifications,
+                    stage = "postMergeErrorExistingNotifications"
+                )
+                incomingRequestCount = notifications.count { !it.isRead }
+                refreshNotifications()
             }
         )
     }
@@ -3035,10 +3781,18 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     }
 
     LaunchedEffect(currentTab, currentOwnerId, showNotificationsScreen) {
-        if (currentTab == AppTab.FRIENDS && !currentOwnerId.isNullOrBlank()) {
+        if (
+            currentTab == AppTab.FRIENDS &&
+            !currentOwnerId.isNullOrBlank() &&
+            notificationReadIdsCloudMergeAttemptedOwnerId == currentOwnerId
+        ) {
             refreshNotifications()
         }
-        if (showNotificationsScreen && !currentOwnerId.isNullOrBlank()) {
+        if (
+            showNotificationsScreen &&
+            !currentOwnerId.isNullOrBlank() &&
+            notificationReadIdsCloudMergeAttemptedOwnerId == currentOwnerId
+        ) {
             refreshNotifications()
         }
     }
@@ -3336,6 +4090,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         },
                         isXpBackfillDone = isXpBackfillDone,
                         isXpBackfillRunning = isXpBackfillRunning,
+                        isFindingDuplicateDiagnosisRunning = isFindingDuplicateDiagnosisRunning,
+                        findingDuplicateDiagnosisSummary = findingDuplicateDiagnosisSummary,
+                        onRunFindingDuplicateDiagnosis = { launchFindingDuplicateDiagnosis() },
                         extraTopPadding = innerPadding.calculateTopPadding(),
                         extraBottomPadding = innerPadding.calculateBottomPadding()
                     )
@@ -3534,6 +4291,12 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                 Log.d(
                                     "FindingSaveTiming",
                                     "dao.insertFinding end animalId=${localFinding.animalId} durationMs=${SystemClock.elapsedRealtime() - roomInsertStartedAt} rowId=$insertedRowId"
+                                )
+                                latestCreatedFindingRoomId = insertedRowId.toInt()
+                                latestCreatedFindingOwnerId = currentOwnerId
+                                Log.d(
+                                    "FindingUiState",
+                                    "localInsert roomId=${insertedRowId.toInt()} animalId=${localFinding.animalId}"
                                 )
                                 val localFindingWithRoomId = localFinding.copy(roomId = insertedRowId.toInt())
                                 recordDailyAnimalQuestHitIfEligible(
@@ -4122,6 +4885,11 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         socialCommentsWrittenCount = loadSocialCommentsWrittenCount(prefs, preferenceOwnerId),
                         favoriteAnimalId = favoriteAnimalId,
                         wishlistAnimalId = wishlistAnimalId,
+                        preferredLatestFindingRoomId = if (latestCreatedFindingOwnerId == currentOwnerId) {
+                            latestCreatedFindingRoomId
+                        } else {
+                            null
+                        },
                         roomFindingsCount = allFindings.size,
                         onOpenDailyAnimal = {
                             if (dailyAnimal != null) {
@@ -5176,14 +5944,26 @@ fun HomeScreen(
     wishlistAnimalId: String?,
     onOpenDailyAnimal: () -> Unit,
     onEditFinding: (AnimalFinding) -> Unit,
+    preferredLatestFindingRoomId: Int? = null,
     roomFindingsCount: Int,
     extraTopPadding: Dp = 0.dp,
     extraBottomPadding: Dp = 0.dp
 ) {
-    val latestFinding = findings.firstOrNull()
+    val latestFinding = remember(findings, preferredLatestFindingRoomId) {
+        preferredLatestFindingRoomId?.let { preferredRoomId ->
+            findings.firstOrNull { it.roomId == preferredRoomId }
+        } ?: findings.maxByOrNull { it.roomId ?: Int.MIN_VALUE } ?: findings.firstOrNull()
+    }
     val animalById = remember(animals) { animals.associateBy { it.id } }
     val latestAnimal = latestFinding?.animalId?.let { animalById[it] }
     val wishlistAnimal = wishlistAnimalId?.let { animalById[it] }
+
+    LaunchedEffect(findings.size, latestFinding?.roomId, latestFinding?.animalId, latestFinding?.date) {
+        Log.d(
+            "FindingUiState",
+            "homeLatest findings=${findings.size} roomId=${latestFinding?.roomId ?: -1} animalId=${latestFinding?.animalId.orEmpty()} date=${latestFinding?.date.orEmpty()}"
+        )
+    }
 
     val photoFindingCount = findings.count(::hasXpEligiblePhoto)
     val findingsWithLocationCount = findings.count { it.latitude != null && it.longitude != null }
@@ -5466,6 +6246,12 @@ fun HomeScreen(
         latestFinding?.let { finding ->
             item {
                 val ownPhotoSources = effectiveOwnPhotoSources(latestFinding)
+                LaunchedEffect(latestFinding.roomId, ownPhotoSources.firstOrNull()) {
+                    Log.d(
+                        "FindingUiState",
+                        "homeLatestPhoto roomId=${latestFinding.roomId ?: -1} animalId=${latestFinding.animalId} source=${ownedFindingPhotoSourceKind(latestFinding)} sourceCount=${ownPhotoSources.size}"
+                    )
+                }
                 var currentPhotoPage by remember(latestFinding.roomId, latestFinding.photoUri, latestFinding.photoUris) {
                     mutableStateOf(0)
                 }
@@ -5815,6 +6601,9 @@ fun SettingsScreen(
     onImportFindings: (List<AnimalFinding>) -> Unit,
     isXpBackfillDone: Boolean,
     isXpBackfillRunning: Boolean,
+    isFindingDuplicateDiagnosisRunning: Boolean,
+    findingDuplicateDiagnosisSummary: FindingDuplicateDiagnosisSummary?,
+    onRunFindingDuplicateDiagnosis: () -> Unit,
     extraTopPadding: Dp = 0.dp,
     extraBottomPadding: Dp = 0.dp
 ) {
@@ -5960,6 +6749,36 @@ fun SettingsScreen(
                                 style = MaterialTheme.typography.bodySmall,
                                 color = TextSecondary
                             )
+                            OutlinedButton(
+                                onClick = onRunFindingDuplicateDiagnosis,
+                                enabled = !isFindingDuplicateDiagnosisRunning,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    if (isFindingDuplicateDiagnosisRunning) {
+                                        "Fund-Duplikate werden geprüft..."
+                                    } else {
+                                        "Fund-Duplikate prüfen"
+                                    }
+                                )
+                            }
+                            findingDuplicateDiagnosisSummary?.let { summary ->
+                                Text(
+                                    text = "Lokale Duplikatgruppen: ${summary.localDuplicateGroups}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = TextSecondary
+                                )
+                                Text(
+                                    text = "Cloud-Duplikatgruppen: ${summary.cloudDuplicateGroups}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = TextSecondary
+                                )
+                                Text(
+                                    text = "Gemischte Duplikatgruppen: ${summary.mixedDuplicateGroups}",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = TextSecondary
+                                )
+                            }
                         }
                     }
                 }
@@ -9872,6 +10691,13 @@ fun ProfileScreen(
             }
         }
     }
+
+    LaunchedEffect(filteredAndSortedProfileFindings.size) {
+        Log.d(
+            "FindingUiState",
+            "profileFindings count=${filteredAndSortedProfileFindings.size}"
+        )
+    }
     val visibleProfilePhotoPreviewFindings = remember(profilePhotoPreviewFindings) {
         profilePhotoPreviewFindings.take(5)
     }
@@ -9907,24 +10733,63 @@ fun ProfileScreen(
         mutableStateOf(prefs.getString(profileBackgroundImageKey(preferenceOwnerId), "").orEmpty())
     }
     var remoteProfilePhotoPath by rememberSaveable(preferenceOwnerId) { mutableStateOf("") }
+    var remoteProfileBackgroundPhotoPath by rememberSaveable(preferenceOwnerId) { mutableStateOf("") }
     var showBioEditor by rememberSaveable(preferenceOwnerId) { mutableStateOf(false) }
     var bioDraft by rememberSaveable(preferenceOwnerId) { mutableStateOf(profileBio) }
-    val displayedProfileImageUri = profileImageUri.ifBlank {
+    val displayedProfileImageUri = profileImageUri
+        .takeIf { isReadableLocalProfileImageUri(context, it) }
+        .orEmpty()
+        .ifBlank {
         remoteProfilePhotoPath.takeIf { it.isNotBlank() }?.let(::storageUriFromPath).orEmpty()
     }
+    val displayedProfileBackgroundImageUri = profileBackgroundImageUri
+        .takeIf { isReadableLocalProfileImageUri(context, it) }
+        .orEmpty()
+        .ifBlank {
+            remoteProfileBackgroundPhotoPath.takeIf { it.isNotBlank() }?.let(::storageUriFromPath).orEmpty()
+        }
     val profileBackgroundPicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
+        val pickedBackgroundUri = extractPickedImageUris(result.data).firstOrNull()
+            ?: result.data?.data
+        Log.d(
+            "ProfileBackgroundUpload",
+            "Hintergrundbild-Picker Ergebnis erhalten resultCode=${result.resultCode} uri=${pickedBackgroundUri?.toString().orEmpty()}"
+        )
         if (result.resultCode == Activity.RESULT_OK) {
-            val pickedBackgroundUri = extractPickedImageUris(result.data).firstOrNull()
-                ?: result.data?.data
             pickedBackgroundUri?.let {
+                Log.d("ProfileBackgroundUpload", "Hintergrundbild-Auswahl verarbeitet")
                 val storedBackgroundUri = persistPhotoForFinding(context, it.toString())
                 profileBackgroundImageUri = storedBackgroundUri
                 prefs.edit()
                     .putString(profileBackgroundImageKey(preferenceOwnerId), storedBackgroundUri)
                     .apply()
-            }
+                currentUserId?.takeIf { userId -> userId.isNotBlank() }?.let { userId ->
+                    scope.launch {
+                        val uploadedPath = uploadProfileBackgroundPhotoAndPersist(
+                            context = context,
+                            userId = userId,
+                            localPhotoUri = storedBackgroundUri,
+                            currentProfileBackgroundPhotoPath = remoteProfileBackgroundPhotoPath
+                        )
+                        if (uploadedPath.isNotBlank()) {
+                            remoteProfileBackgroundPhotoPath = uploadedPath
+                        }
+                    }
+                } ?: Log.d(
+                    "ProfileBackgroundUpload",
+                    "Upload übersprungen: currentUserId leer nach Hintergrundbild-Auswahl"
+                )
+            } ?: Log.d(
+                "ProfileBackgroundUpload",
+                "Kein URI aus Hintergrundbild-Picker extrahierbar"
+            )
+        } else {
+            Log.d(
+                "ProfileBackgroundUpload",
+                "Hintergrundbild-Picker ohne erfolgreiche Auswahl beendet"
+            )
         }
     }
     val profileImagePicker = rememberLauncherForActivityResult(
@@ -9962,15 +10827,24 @@ fun ProfileScreen(
                 userId = currentUserId,
                 onResult = { publicProfile ->
                     remoteProfilePhotoPath = publicProfile?.profilePhotoPath.orEmpty()
+                    remoteProfileBackgroundPhotoPath = publicProfile?.profileBackgroundPhotoPath.orEmpty()
                     val remoteBio = publicProfile?.bio.orEmpty()
                     val localBio = profileBio.trim().take(300)
+                    if (localBio.isBlank() && remoteBio.isNotBlank()) {
+                        profileBio = remoteBio
+                        bioDraft = remoteBio
+                        prefs.edit().putString(profileBioKey(preferenceOwnerId), remoteBio).apply()
+                    }
                     if (localBio.isNotBlank() && localBio != remoteBio) {
                         FriendRepository.updatePublicUserProfile(
                             userId = currentUserId,
                             bio = localBio
                         )
                     }
-                    if (profileImageUri.isNotBlank() && publicProfile?.profilePhotoPath.isNullOrBlank()) {
+                    if (
+                        isReadableLocalProfileImageUri(context, profileImageUri) &&
+                        publicProfile?.profilePhotoPath.isNullOrBlank()
+                    ) {
                         scope.launch {
                             val uploadedPath = FindingPhotoStorageRepository.uploadProfilePhoto(
                                 context = context,
@@ -9983,6 +10857,22 @@ fun ProfileScreen(
                                 userId = currentUserId,
                                 profilePhotoPath = uploadedPath
                             )
+                        }
+                    }
+                    if (
+                        isReadableLocalProfileImageUri(context, profileBackgroundImageUri) &&
+                        publicProfile?.profileBackgroundPhotoPath.isNullOrBlank()
+                    ) {
+                        scope.launch {
+                            val uploadedPath = uploadProfileBackgroundPhotoAndPersist(
+                                context = context,
+                                userId = currentUserId,
+                                localPhotoUri = profileBackgroundImageUri,
+                                currentProfileBackgroundPhotoPath = remoteProfileBackgroundPhotoPath
+                            )
+                            if (uploadedPath.isNotBlank()) {
+                                remoteProfileBackgroundPhotoPath = uploadedPath
+                            }
                         }
                     }
                 }
@@ -10060,9 +10950,9 @@ fun ProfileScreen(
                             shape = RoundedCornerShape(20.dp),
                             color = PrimaryGreenSoft.copy(alpha = 0.6f)
                         ) {
-                            if (profileBackgroundImageUri.isNotBlank()) {
+                            if (displayedProfileBackgroundImageUri.isNotBlank()) {
                                 UriImage(
-                                    uriString = profileBackgroundImageUri,
+                                    uriString = displayedProfileBackgroundImageUri,
                                     maxImageSizePx = 1400,
                                     modifier = Modifier.fillMaxSize()
                                 )
@@ -10071,13 +10961,17 @@ fun ProfileScreen(
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .background(
-                                        Color.White.copy(alpha = if (profileBackgroundImageUri.isNotBlank()) 0.12f else 0f)
+                                        Color.White.copy(alpha = if (displayedProfileBackgroundImageUri.isNotBlank()) 0.12f else 0f)
                                     )
                             )
                         }
 
                         IconButton(
                             onClick = {
+                                Log.d(
+                                    "ProfileBackgroundUpload",
+                                    "Hintergrundbild-Picker wird gestartet"
+                                )
                                 profileBackgroundPicker.launch(
                                     buildLocalImagePickerIntent(
                                         context = context,
@@ -10763,6 +11657,12 @@ fun ProfileScreen(
             ) { finding ->
                 val animal = animalById[finding.animalId]
                 val ownPhotoSources = effectiveOwnPhotoSources(finding)
+                LaunchedEffect(finding.roomId, ownPhotoSources.firstOrNull()) {
+                    Log.d(
+                        "FindingUiState",
+                        "profilePhotoSource roomId=${finding.roomId ?: -1} animalId=${finding.animalId} source=${ownedFindingPhotoSourceKind(finding)} sourceCount=${ownPhotoSources.size}"
+                    )
+                }
                 val findingDocumentId = remember(finding) {
                     FirestoreFindingRepository.documentIdForFinding(finding).trim()
                 }
@@ -10842,7 +11742,7 @@ fun ProfileScreen(
                                 photoSources = ownPhotoSources,
                                 imageModifier = Modifier
                                     .fillMaxWidth()
-                                    .heightIn(max = 220.dp)
+                                    .height(220.dp)
                                     .clip(RoundedCornerShape(12.dp)),
                                 onPageChanged = { currentPhotoPage = it }
                             )

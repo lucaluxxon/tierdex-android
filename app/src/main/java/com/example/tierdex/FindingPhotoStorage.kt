@@ -78,6 +78,10 @@ object FindingPhotoStorageRepository {
         return "users/$userId/profile/photo.jpg"
     }
 
+    fun buildProfileBackgroundPhotoPath(userId: String): String {
+        return "users/$userId/profile/background.jpg"
+    }
+
     suspend fun uploadFindingPhoto(
         context: Context,
         userId: String,
@@ -257,6 +261,37 @@ object FindingPhotoStorageRepository {
                     exception
                 )
                 currentProfilePhotoPath.trim()
+            }
+        }
+    }
+
+    suspend fun uploadProfileBackgroundPhoto(
+        context: Context,
+        userId: String,
+        localPhotoUri: String,
+        currentProfileBackgroundPhotoPath: String = ""
+    ): String {
+        val trimmedPhotoUri = localPhotoUri.trim()
+        if (userId.isBlank() || trimmedPhotoUri.isBlank()) {
+            return currentProfileBackgroundPhotoPath.trim()
+        }
+
+        val remotePhotoPath = buildProfileBackgroundPhotoPath(userId)
+        val photoBytes = withContext(Dispatchers.IO) {
+            readLocalPhotoBytes(context, trimmedPhotoUri)
+        } ?: return currentProfileBackgroundPhotoPath.trim()
+
+        return withContext(Dispatchers.IO) {
+            runCatching {
+                Tasks.await(storage.reference.child(remotePhotoPath).putBytes(photoBytes))
+                remotePhotoPath
+            }.getOrElse { exception ->
+                Log.e(
+                    FINDING_PHOTO_STORAGE_TAG,
+                    "Failed to upload profile background photo to Storage: ${exception.message ?: "Unbekannter Fehler"}",
+                    exception
+                )
+                currentProfileBackgroundPhotoPath.trim()
             }
         }
     }

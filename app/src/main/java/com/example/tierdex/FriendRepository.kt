@@ -15,6 +15,7 @@ data class PublicUserProfile(
     val searchDisplayName: String,
     val bio: String = "",
     val profilePhotoPath: String = "",
+    val profileBackgroundPhotoPath: String = "",
     val wishAnimalId: String = "",
     val favoriteAnimalId: String = "",
     val updatedAt: Timestamp? = null
@@ -25,6 +26,7 @@ data class FriendUser(
     val displayName: String,
     val searchDisplayName: String,
     val profilePhotoPath: String = "",
+    val profileBackgroundPhotoPath: String = "",
     val wishAnimalId: String = "",
     val favoriteAnimalId: String = "",
     val connectedAt: Timestamp? = null
@@ -523,6 +525,7 @@ object FriendRepository {
         displayName: String? = null,
         bio: String? = null,
         profilePhotoPath: String? = null,
+        profileBackgroundPhotoPath: String? = null,
         onResult: (Boolean, String?) -> Unit = { _, _ -> }
     ) {
         if (userId.isBlank()) {
@@ -542,6 +545,21 @@ object FriendRepository {
 
         profilePhotoPath?.let { rawProfilePhotoPath ->
             profileData["profilePhotoPath"] = rawProfilePhotoPath.trim()
+        }
+
+        profileBackgroundPhotoPath?.let { rawProfileBackgroundPhotoPath ->
+            profileData["profileBackgroundPhotoPath"] = rawProfileBackgroundPhotoPath.trim()
+        }
+
+        Log.d(
+            "ProfileBackgroundUpload",
+            "updatePublicUserProfile keys=${profileData.keys.sorted()} userId=$userId"
+        )
+        profileData.toSortedMap().forEach { (key, value) ->
+            Log.d(
+                "ProfileBackgroundUpload",
+                "updatePublicUserProfile field=$key type=${value::class.java.simpleName} value=$value"
+            )
         }
 
         firestore.collection("users")
@@ -623,6 +641,7 @@ object FriendRepository {
                         searchDisplayName = document.getString("searchDisplayName").orEmpty(),
                         bio = document.getString("bio").orEmpty(),
                         profilePhotoPath = document.getString("profilePhotoPath").orEmpty(),
+                        profileBackgroundPhotoPath = document.getString("profileBackgroundPhotoPath").orEmpty(),
                         wishAnimalId = document.getString("wishAnimalId").orEmpty(),
                         favoriteAnimalId = document.getString("favoriteAnimalId").orEmpty(),
                         updatedAt = document.getTimestamp("updatedAt")
@@ -674,6 +693,7 @@ object FriendRepository {
                             searchDisplayName = document.getString("searchDisplayName").orEmpty(),
                             bio = document.getString("bio").orEmpty(),
                             profilePhotoPath = document.getString("profilePhotoPath").orEmpty(),
+                            profileBackgroundPhotoPath = document.getString("profileBackgroundPhotoPath").orEmpty(),
                             wishAnimalId = document.getString("wishAnimalId").orEmpty(),
                             favoriteAnimalId = document.getString("favoriteAnimalId").orEmpty(),
                             updatedAt = document.getTimestamp("updatedAt")

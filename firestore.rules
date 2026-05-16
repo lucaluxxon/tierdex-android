@@ -10,27 +10,43 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    function isValidPublicProfileWrite() {
-      return request.resource.data.keys().hasOnly([
+    function allowedPublicProfileKeys() {
+      return [
         'displayName',
         'searchDisplayName',
         'updatedAt',
         'bio',
         'profilePhotoPath',
+        'profileBackgroundPhotoPath',
         'wishAnimalId',
         'favoriteAnimalId'
-      ])
-        && request.resource.data.displayName is string
+      ];
+    }
+
+    function isValidPublicProfileShape() {
+      return request.resource.data.displayName is string
         && request.resource.data.searchDisplayName is string
         && (!('bio' in request.resource.data) ||
           (request.resource.data.bio is string &&
             request.resource.data.bio.size() <= 300))
         && (!('profilePhotoPath' in request.resource.data) ||
           request.resource.data.profilePhotoPath is string)
+        && (!('profileBackgroundPhotoPath' in request.resource.data) ||
+          request.resource.data.profileBackgroundPhotoPath is string)
         && (!('wishAnimalId' in request.resource.data) ||
           request.resource.data.wishAnimalId is string)
         && (!('favoriteAnimalId' in request.resource.data) ||
           request.resource.data.favoriteAnimalId is string);
+    }
+
+    function isValidPublicProfileCreate() {
+      return request.resource.data.keys().hasOnly(allowedPublicProfileKeys())
+        && isValidPublicProfileShape();
+    }
+
+    function isValidPublicProfileUpdate() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(allowedPublicProfileKeys())
+        && isValidPublicProfileShape();
     }
 
     function isValidAnimalStatsWrite(animalId) {
@@ -65,7 +81,8 @@ service cloud.firestore {
 
     match /users/{userId} {
       allow read: if isSignedIn();
-      allow create, update: if isOwner(userId) && isValidPublicProfileWrite();
+      allow create: if isOwner(userId) && isValidPublicProfileCreate();
+      allow update: if isOwner(userId) && isValidPublicProfileUpdate();
       allow delete: if false;
 
       match /private/{document=**} {
