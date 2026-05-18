@@ -10,6 +10,20 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
+    function friendDocPath(ownerUid, friendUid) {
+      return /databases/$(database)/documents/users/$(ownerUid)/friends/$(friendUid);
+    }
+
+    function isConfirmedFriend(ownerUid) {
+      return isSignedIn()
+        && exists(friendDocPath(ownerUid, request.auth.uid))
+        && get(friendDocPath(ownerUid, request.auth.uid)).data.status == 'accepted';
+    }
+
+    function canReadFinding(ownerUid) {
+      return isOwner(ownerUid) || isConfirmedFriend(ownerUid);
+    }
+
     function allowedPublicProfileKeys() {
       return [
         'displayName',
@@ -79,11 +93,212 @@ service cloud.firestore {
         && request.resource.data.animalId.size() > 0;
     }
 
+    function allowedFindingKeys() {
+      return [
+        'ownerId',
+        'animalId',
+        'date',
+        'location',
+        'note',
+        'latitude',
+        'longitude',
+        'locationSource',
+        'photoUri',
+        'photoUris',
+        'remotePhotoPath',
+        'remotePhotoPaths',
+        'thumbnailRemotePhotoPath',
+        'taggedFriendIds',
+        'createdAt',
+        'updatedAt'
+      ];
+    }
+
+    function isValidFindingShape(ownerUid) {
+      return (!('ownerId' in request.resource.data) ||
+          (request.resource.data.ownerId is string &&
+            request.resource.data.ownerId == ownerUid))
+        && request.resource.data.animalId is string
+        && request.resource.data.date is string
+        && request.resource.data.location is string
+        && request.resource.data.note is string
+        && (!('latitude' in request.resource.data) ||
+          request.resource.data.latitude is number)
+        && (!('longitude' in request.resource.data) ||
+          request.resource.data.longitude is number)
+        && (!('locationSource' in request.resource.data) ||
+          request.resource.data.locationSource is string)
+        && (!('photoUri' in request.resource.data) ||
+          request.resource.data.photoUri is string)
+        && (!('photoUris' in request.resource.data) ||
+          request.resource.data.photoUris is list)
+        && (!('remotePhotoPath' in request.resource.data) ||
+          request.resource.data.remotePhotoPath is string)
+        && (!('remotePhotoPaths' in request.resource.data) ||
+          request.resource.data.remotePhotoPaths is list)
+        && (!('thumbnailRemotePhotoPath' in request.resource.data) ||
+          request.resource.data.thumbnailRemotePhotoPath is string)
+        && (!('taggedFriendIds' in request.resource.data) ||
+          request.resource.data.taggedFriendIds is list)
+        && (!('createdAt' in request.resource.data) ||
+          request.resource.data.createdAt is timestamp)
+        && (!('updatedAt' in request.resource.data) ||
+          request.resource.data.updatedAt is timestamp);
+    }
+
+    function isValidFindingCreate(ownerUid) {
+      return request.resource.data.keys().hasOnly(allowedFindingKeys())
+        && isValidFindingShape(ownerUid);
+    }
+
+    function isValidFindingUpdate(ownerUid) {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(allowedFindingKeys())
+        && isValidFindingShape(ownerUid);
+    }
+
+    function allowedLikeKeys() {
+      return [
+        'likerUid',
+        'likerDisplayName',
+        'createdAt'
+      ];
+    }
+
+    function isValidLikeWrite(likerUid) {
+      return request.resource.data.keys().hasOnly(allowedLikeKeys())
+        && request.resource.data.likerUid is string
+        && request.resource.data.likerUid == likerUid
+        && (!('likerDisplayName' in request.resource.data) ||
+          request.resource.data.likerDisplayName is string)
+        && (!('createdAt' in request.resource.data) ||
+          request.resource.data.createdAt is timestamp);
+    }
+
+    function allowedCommentKeys() {
+      return [
+        'commenterUid',
+        'commenterDisplayName',
+        'text',
+        'createdAt'
+      ];
+    }
+
+    function isValidCommentWrite(commenterUid) {
+      return request.resource.data.keys().hasOnly(allowedCommentKeys())
+        && request.resource.data.commenterUid is string
+        && request.resource.data.commenterUid == commenterUid
+        && request.resource.data.text is string
+        && request.resource.data.text.size() > 0
+        && request.resource.data.text.size() <= 500
+        && (!('commenterDisplayName' in request.resource.data) ||
+          request.resource.data.commenterDisplayName is string)
+        && (!('createdAt' in request.resource.data) ||
+          request.resource.data.createdAt is timestamp);
+    }
+
+    function isValidFriendEntry(userId, friendUid) {
+      return request.resource.data.keys().hasOnly([
+        'friendUserId',
+        'status',
+        'createdAt'
+      ])
+        && request.resource.data.friendUserId is string
+        && request.resource.data.friendUserId == friendUid
+        && request.resource.data.status is string
+        && request.resource.data.status == 'accepted'
+        && (!('createdAt' in request.resource.data) ||
+          request.resource.data.createdAt is timestamp);
+    }
+
+    function isValidIncomingRequest(userId, fromUid) {
+      return request.resource.data.keys().hasOnly([
+        'fromUserId',
+        'toUserId',
+        'status',
+        'createdAt'
+      ])
+        && request.resource.data.fromUserId is string
+        && request.resource.data.fromUserId == fromUid
+        && request.resource.data.toUserId is string
+        && request.resource.data.toUserId == userId
+        && request.resource.data.status is string
+        && request.resource.data.status == 'pending'
+        && (!('createdAt' in request.resource.data) ||
+          request.resource.data.createdAt is timestamp);
+    }
+
+    function isValidOutgoingRequest(userId, toUid) {
+      return request.resource.data.keys().hasOnly([
+        'fromUserId',
+        'toUserId',
+        'status',
+        'createdAt'
+      ])
+        && request.resource.data.fromUserId is string
+        && request.resource.data.fromUserId == userId
+        && request.resource.data.toUserId is string
+        && request.resource.data.toUserId == toUid
+        && request.resource.data.status is string
+        && request.resource.data.status == 'pending'
+        && (!('createdAt' in request.resource.data) ||
+          request.resource.data.createdAt is timestamp);
+    }
+
     match /users/{userId} {
       allow read: if isSignedIn();
       allow create: if isOwner(userId) && isValidPublicProfileCreate();
       allow update: if isOwner(userId) && isValidPublicProfileUpdate();
       allow delete: if false;
+
+      match /findings/{findingId} {
+        allow read: if canReadFinding(userId);
+        allow create: if isOwner(userId) && isValidFindingCreate(userId);
+        allow update: if isOwner(userId) && isValidFindingUpdate(userId);
+        allow delete: if isOwner(userId);
+
+        match /likes/{likerUid} {
+          allow read: if canReadFinding(userId);
+          allow create, update: if request.auth != null
+            && request.auth.uid == likerUid
+            && canReadFinding(userId)
+            && isValidLikeWrite(likerUid);
+          allow delete: if request.auth != null && request.auth.uid == likerUid;
+        }
+
+        match /comments/{commentId} {
+          allow read: if canReadFinding(userId);
+          allow create: if request.auth != null
+            && canReadFinding(userId)
+            && isValidCommentWrite(request.auth.uid);
+          allow update: if request.auth != null
+            && (isOwner(userId) || request.auth.uid == resource.data.commenterUid)
+            && isValidCommentWrite(resource.data.commenterUid);
+          allow delete: if request.auth != null
+            && (isOwner(userId) || request.auth.uid == resource.data.commenterUid);
+        }
+      }
+
+      match /friends/{friendUid} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidFriendEntry(userId, friendUid);
+        allow delete: if isOwner(userId);
+      }
+
+      match /friendRequestsIncoming/{fromUid} {
+        allow read: if isOwner(userId);
+        allow create: if request.auth != null
+          && request.auth.uid == fromUid
+          && isValidIncomingRequest(userId, fromUid);
+        allow delete: if isOwner(userId) || (request.auth != null && request.auth.uid == fromUid);
+        allow update: if false;
+      }
+
+      match /friendRequestsOutgoing/{toUid} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && isValidOutgoingRequest(userId, toUid);
+        allow delete: if isOwner(userId) || (request.auth != null && request.auth.uid == toUid);
+        allow update: if false;
+      }
 
       match /private/{document=**} {
         allow read, write: if isOwner(userId);
@@ -91,7 +306,9 @@ service cloud.firestore {
     }
 
     match /animalStats/{animalId} {
-      allow read, write: if request.auth != null;
+      allow read: if isSignedIn();
+      allow create, update: if false;
+      allow delete: if false;
     }
 
     match /dailyAnimals/{dateKey} {
@@ -112,7 +329,9 @@ service cloud.firestore {
     }
 
     match /globalFindingContributions/{contributionId} {
-      allow read, write: if request.auth != null;
+      allow read: if false;
+      allow create, update: if false;
+      allow delete: if false;
     }
   }
 }

@@ -219,6 +219,7 @@ private const val FINDING_IMAGES_DIR = "finding_images"
 private const val STARTUP_HINT_SHOWN_KEY_PREFIX = "startup_hint_shown_"
 private const val INTRO_PENDING_KEY_PREFIX = "intro_pending_"
 private const val INTRO_SEEN_KEY_PREFIX = "intro_seen_"
+private const val RULES_ACCEPTED_KEY_PREFIX = "rules_accepted_"
 private const val HAS_USED_AUTH_BEFORE_KEY = "has_used_auth_before"
 private const val WISHLIST_ANIMAL_KEY_PREFIX = "wishAnimalId_"
 private const val FAVORITE_ANIMAL_KEY_PREFIX = "favoriteAnimalId_"
@@ -396,6 +397,8 @@ private suspend fun uploadProfileBackgroundPhotoAndPersist(
 private fun introPendingKey(ownerId: String): String = "$INTRO_PENDING_KEY_PREFIX$ownerId"
 
 private fun introSeenKey(ownerId: String): String = "$INTRO_SEEN_KEY_PREFIX$ownerId"
+
+private fun rulesAcceptedKey(ownerId: String): String = "$RULES_ACCEPTED_KEY_PREFIX$ownerId"
 
 private fun currentAppDateText(): String =
     SimpleDateFormat("dd.MM.yyyy", Locale.getDefault()).format(Date())
@@ -1840,6 +1843,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     var findingEditReturnSource by rememberSaveable { mutableStateOf<String?>(null) }
     var showSettingsScreen by rememberSaveable { mutableStateOf(false) }
     var showIntroScreen by rememberSaveable { mutableStateOf(false) }
+    var showRulesScreen by rememberSaveable { mutableStateOf(false) }
     var showDailyAnimalScreen by rememberSaveable { mutableStateOf(false) }
     var dailyAnimalId by rememberSaveable { mutableStateOf<String?>(null) }
     var isDailyAnimalOpenedFromHomeTile by rememberSaveable { mutableStateOf(false) }
@@ -1866,9 +1870,17 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     var xpCloudMergedOwnerId by rememberSaveable { mutableStateOf<String?>(null) }
     var xpCloudMergeAttemptedOwnerId by rememberSaveable { mutableStateOf<String?>(null) }
     var isXpCloudMergeRunning by rememberSaveable { mutableStateOf(false) }
+    var questCloudMergedOwnerId by rememberSaveable { mutableStateOf<String?>(null) }
+    var questCloudMergeAttemptedOwnerId by rememberSaveable { mutableStateOf<String?>(null) }
+    var isQuestCloudMergeRunning by rememberSaveable { mutableStateOf(false) }
+    var questCloudHydratedHitFindingIds by remember(currentOwnerId) { mutableStateOf<Set<String>>(emptySet()) }
+    var isXpQuestConsistencyRunning by rememberSaveable { mutableStateOf(false) }
+    var lastXpQuestConsistencySignature by rememberSaveable { mutableStateOf<String?>(null) }
     var xpUiRefreshNonce by rememberSaveable { mutableStateOf(0) }
     var previousOwnerId by rememberSaveable { mutableStateOf(ownerId) }
     var lastSyncedAnimalPreferenceSignature by rememberSaveable { mutableStateOf<String?>(null) }
+    var publicProfileHydratedOwnerId by rememberSaveable { mutableStateOf<String?>(null) }
+    var isPublicProfileHydrationRunning by rememberSaveable { mutableStateOf(false) }
     var notificationReadIdsCloudMergedOwnerId by rememberSaveable { mutableStateOf<String?>(null) }
     var notificationReadIdsCloudMergeAttemptedOwnerId by rememberSaveable { mutableStateOf<String?>(null) }
     var isNotificationReadIdsCloudMergeRunning by rememberSaveable { mutableStateOf(false) }
@@ -1877,23 +1889,194 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     var findingDuplicateDiagnosisSummary by remember {
         mutableStateOf<FindingDuplicateDiagnosisSummary?>(null)
     }
+    var currentPublicProfile by remember(currentOwnerId) { mutableStateOf<PublicUserProfile?>(null) }
 
     fun refreshXpUi() {
         xpUiRefreshNonce += 1
     }
 
-    fun syncLocalXpStateToCloud(userId: String?) {
+    fun collectDailyAnimalQuestHitFindingIds(
+        ownerId: String,
+        findings: List<AnimalFinding>
+    ): Set<String> {
+        val recordedRoomIds = loadDailyAnimalQuestHitRoomIds(prefs, ownerId)
+        if (recordedRoomIds.isEmpty()) return emptySet()
+
+        val findingsByRoomId = findings
+            .mapNotNull { finding -> finding.roomId?.let { roomId -> roomId to finding } }
+            .toMap()
+
+        return recordedRoomIds.mapNotNull { roomId ->
+            findingsByRoomId[roomId]?.let { finding ->
+                FirestoreFindingRepository.documentIdForFinding(finding)
+                    .trim()
+                    .ifBlank { null }
+            }
+        }.toSet()
+    }
+
+    fun restoreDailyAnimalQuestHitRoomIdsFromFindingIds(
+        ownerId: String,
+        findingIds: Set<String>,
+        findings: List<AnimalFinding>
+    ): Set<Int> {
+        if (findingIds.isEmpty()) {
+            saveDailyAnimalQuestHitRoomIds(prefs, ownerId, emptySet())
+            return emptySet()
+        }
+
+        val roomIds = findings.mapNotNull { finding ->
+            val documentId = FirestoreFindingRepository.documentIdForFinding(finding).trim()
+            val roomId = finding.roomId
+            if (roomId != null && documentId.isNotBlank() && documentId in findingIds) {
+                roomId
+            } else {
+                null
+            }
+        }.toSet()
+
+        saveDailyAnimalQuestHitRoomIds(prefs, ownerId, roomIds)
+        return roomIds
+    }
+
+    fun buildLocalQuestCloudState(
+        ownerId: String,
+        findings: List<AnimalFinding>
+    ): QuestCloudState {
+        return QuestCloudState(
+            socialLikesGivenCount = loadSocialLikesGivenCount(prefs, ownerId),
+            socialCommentsWrittenCount = loadSocialCommentsWrittenCount(prefs, ownerId),
+            dailyAnimalQuestHitFindingIds = collectDailyAnimalQuestHitFindingIds(ownerId, findings)
+        )
+    }
+
+    fun applyHydratedQuestState(
+        ownerId: String,
+        questState: QuestCloudState,
+        findings: List<AnimalFinding>
+    ) {
+        val safeOwnerId = ownerId.trim()
+        prefs.edit()
+            .putInt(
+                socialLikesGivenCountKey(safeOwnerId),
+                questState.socialLikesGivenCount.coerceAtLeast(0)
+            )
+            .putInt(
+                socialCommentsWrittenCountKey(safeOwnerId),
+                questState.socialCommentsWrittenCount.coerceAtLeast(0)
+            )
+            .apply()
+        questCloudHydratedHitFindingIds = questState.dailyAnimalQuestHitFindingIds
+        restoreDailyAnimalQuestHitRoomIdsFromFindingIds(
+            ownerId = safeOwnerId,
+            findingIds = questState.dailyAnimalQuestHitFindingIds,
+            findings = findings
+        )
+    }
+
+    fun handleLocalQuestStateChanged(
+        userId: String?,
+        findings: List<AnimalFinding> = findingsFromRoom
+    ) {
         val cleanUserId = userId?.trim().orEmpty()
         if (cleanUserId.isBlank()) return
 
+        val localQuestState = buildLocalQuestCloudState(cleanUserId, findings)
+        questCloudHydratedHitFindingIds = localQuestState.dailyAnimalQuestHitFindingIds
+        Log.d(
+            "QuestCloudSync",
+            "syncLocalQuestStateToCloud start userId=$cleanUserId localLikes=${localQuestState.socialLikesGivenCount} localComments=${localQuestState.socialCommentsWrittenCount} localHitFindingIdCount=${localQuestState.dailyAnimalQuestHitFindingIds.size} path=users/$cleanUserId/private/meta/questState/state"
+        )
+        scope.launch {
+            QuestCloudSyncRepository.saveQuestState(
+                uid = cleanUserId,
+                state = localQuestState
+            ) { success, errorMessage ->
+                if (success) {
+                    Log.d(
+                        "QuestCloudSync",
+                        "syncLocalQuestStateToCloud success userId=$cleanUserId localLikes=${localQuestState.socialLikesGivenCount} localComments=${localQuestState.socialCommentsWrittenCount} localHitFindingIdCount=${localQuestState.dailyAnimalQuestHitFindingIds.size}"
+                    )
+                } else {
+                    Log.w(
+                        "QuestCloudSync",
+                        errorMessage ?: "Lokaler Quest-State konnte nicht in die Cloud geschrieben werden."
+                    )
+                }
+            }
+        }
+    }
+
+    fun applyHydratedPublicProfile(
+        ownerId: String,
+        publicProfile: PublicUserProfile?
+    ) {
+        val safeOwnerId = ownerId.trim()
+        val remoteBio = publicProfile?.bio.orEmpty().trim()
+        val remoteProfilePhotoPath = publicProfile?.profilePhotoPath.orEmpty().trim()
+        val remoteProfileBackgroundPhotoPath =
+            publicProfile?.profileBackgroundPhotoPath.orEmpty().trim()
+        val remoteFavoriteAnimalId = publicProfile?.favoriteAnimalId.orEmpty().trim()
+        val remoteWishAnimalId = publicProfile?.wishAnimalId.orEmpty().trim()
+
+        val localBio = prefs.getString(profileBioKey(safeOwnerId), "").orEmpty().trim()
+        val localFavoriteAnimalId = favoriteAnimalId?.trim().orEmpty()
+            .ifBlank { prefs.getString(favoriteAnimalKey(safeOwnerId), "").orEmpty().trim() }
+        val localWishAnimalId = wishlistAnimalId?.trim().orEmpty()
+            .ifBlank { prefs.getString(wishlistAnimalKey(safeOwnerId), "").orEmpty().trim() }
+
+        val adoptedFields = mutableListOf<String>()
+
+        if (localBio.isBlank() && remoteBio.isNotBlank()) {
+            prefs.edit().putString(profileBioKey(safeOwnerId), remoteBio).apply()
+            adoptedFields += "bio"
+        }
+
+        if (localFavoriteAnimalId.isBlank() && remoteFavoriteAnimalId.isNotBlank()) {
+            favoriteAnimalId = remoteFavoriteAnimalId
+            prefs.edit().putString(favoriteAnimalKey(safeOwnerId), remoteFavoriteAnimalId).apply()
+            adoptedFields += "favoriteAnimalId"
+        }
+
+        if (localWishAnimalId.isBlank() && remoteWishAnimalId.isNotBlank()) {
+            wishlistAnimalId = remoteWishAnimalId
+            prefs.edit().putString(wishlistAnimalKey(safeOwnerId), remoteWishAnimalId).apply()
+            adoptedFields += "wishAnimalId"
+        }
+
+        currentPublicProfile = publicProfile
+        Log.d(
+            "ProfileCloudHydration",
+            "userId=$safeOwnerId remoteBioPresent=${remoteBio.isNotBlank()} remoteProfilePhotoPathPresent=${remoteProfilePhotoPath.isNotBlank()} remoteProfileBackgroundPhotoPathPresent=${remoteProfileBackgroundPhotoPath.isNotBlank()} remoteFavoriteAnimalId=${remoteFavoriteAnimalId.ifBlank { "-" }} remoteWishAnimalId=${remoteWishAnimalId.ifBlank { "-" }} adopted=${if (adoptedFields.isEmpty()) "none" else adoptedFields.joinToString(",")}"
+        )
+    }
+
+    fun syncLocalXpStateToCloud(userId: String?) {
+        val cleanUserId = userId?.trim().orEmpty()
+        if (cleanUserId.isBlank()) {
+            Log.d("XpCloudSync", "syncLocalXpStateToCloud übersprungen: leere userId")
+            return
+        }
+
+        val localXpState = XpCloudSyncRepository.buildLocalXpState(
+            uid = cleanUserId,
+            prefs = prefs
+        )
+        Log.d(
+            "XpCloudSync",
+            "syncLocalXpStateToCloud start userId=$cleanUserId localAwardedKeyCount=${localXpState.awardedXpKeys.size} localTotalXp=${localXpState.totalXp} path=users/$cleanUserId/private/meta/xpState/state"
+        )
+
         XpCloudSyncRepository.saveXpState(
             uid = cleanUserId,
-            state = XpCloudSyncRepository.buildLocalXpState(
-                uid = cleanUserId,
-                prefs = prefs
-            )
+            state = localXpState
         ) { success, errorMessage ->
-            if (!success) {
+            if (success) {
+                Log.d(
+                    "XpCloudSync",
+                    "syncLocalXpStateToCloud success userId=$cleanUserId localAwardedKeyCount=${localXpState.awardedXpKeys.size} localTotalXp=${localXpState.totalXp}"
+                )
+            } else {
                 Log.w(
                     "XpCloudSync",
                     errorMessage ?: "XP-Cloud-Sync fehlgeschlagen."
@@ -2437,6 +2620,16 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     LaunchedEffect(ownerId) {
         if (ownerId == null) {
             initialCloudFindingSyncCompletedOwnerId = null
+            currentPublicProfile = null
+            publicProfileHydratedOwnerId = null
+            isPublicProfileHydrationRunning = false
+            showRulesScreen = false
+            questCloudMergedOwnerId = null
+            questCloudMergeAttemptedOwnerId = null
+            isQuestCloudMergeRunning = false
+            questCloudHydratedHitFindingIds = emptySet()
+            isXpQuestConsistencyRunning = false
+            lastXpQuestConsistencySignature = null
         }
         favoriteAnimalId = prefs.getString(favoriteAnimalKey(preferenceOwnerId), null)
         wishlistAnimalId = prefs.getString(wishlistAnimalKey(preferenceOwnerId), null)
@@ -2446,23 +2639,33 @@ fun TierdexApp(database: AnimalFindingDatabase) {
             val seen = prefs.getBoolean(introSeenKey(it), false)
             pending && !seen
         } ?: false
+        val hasAcceptedRules = ownerId?.let {
+            prefs.getBoolean(rulesAcceptedKey(it), false)
+        } ?: false
 
         if (previousOwnerId == null && ownerId != null) {
             if (hasPendingIntro) {
                 showIntroScreen = true
+                showRulesScreen = false
                 introLaunchSource = IntroLaunchSource.AUTOMATIC.name
             } else {
                 val startupHintKey = "$STARTUP_HINT_SHOWN_KEY_PREFIX$ownerId"
                 val alreadyShown = prefs.getBoolean(startupHintKey, false)
                 if (!alreadyShown) {
                     showIntroScreen = true
+                    showRulesScreen = false
                     introLaunchSource = IntroLaunchSource.AUTOMATIC.name
                     prefs.edit().putBoolean(startupHintKey, true).apply()
+                } else if (!hasAcceptedRules) {
+                    showRulesScreen = true
                 }
             }
         } else if (ownerId != null && hasPendingIntro) {
             showIntroScreen = true
+            showRulesScreen = false
             introLaunchSource = IntroLaunchSource.AUTOMATIC.name
+        } else if (ownerId != null && !hasAcceptedRules) {
+            showRulesScreen = true
         }
         previousOwnerId = ownerId
 
@@ -2474,42 +2677,23 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                 prefs.edit().putBoolean(migrationKey, true).apply()
             }
 
-            if (wishlistAnimalId.isNullOrBlank() || favoriteAnimalId.isNullOrBlank()) {
+            if (publicProfileHydratedOwnerId != ownerId && !isPublicProfileHydrationRunning) {
+                isPublicProfileHydrationRunning = true
                 val profileResult = loadCurrentUserPublicProfileAwait(ownerId)
-                profileResult.getOrNull()?.let { publicProfile ->
-                    val resolvedWishlistAnimalId = wishlistAnimalId
-                        ?.takeIf { it.isNotBlank() }
-                        ?: publicProfile.wishAnimalId.trim().takeIf { it.isNotBlank() }
-                    val resolvedFavoriteAnimalId = favoriteAnimalId
-                        ?.takeIf { it.isNotBlank() }
-                        ?: publicProfile.favoriteAnimalId.trim().takeIf { it.isNotBlank() }
-
-                    if (resolvedWishlistAnimalId != wishlistAnimalId ||
-                        resolvedFavoriteAnimalId != favoriteAnimalId
-                    ) {
-                        wishlistAnimalId = resolvedWishlistAnimalId
-                        favoriteAnimalId = resolvedFavoriteAnimalId
-                        prefs.edit().apply {
-                            if (resolvedWishlistAnimalId.isNullOrBlank()) {
-                                remove(wishlistAnimalKey(preferenceOwnerId))
-                            } else {
-                                putString(
-                                    wishlistAnimalKey(preferenceOwnerId),
-                                    resolvedWishlistAnimalId
-                                )
-                            }
-                            if (resolvedFavoriteAnimalId.isNullOrBlank()) {
-                                remove(favoriteAnimalKey(preferenceOwnerId))
-                            } else {
-                                putString(
-                                    favoriteAnimalKey(preferenceOwnerId),
-                                    resolvedFavoriteAnimalId
-                                )
-                            }
-                            apply()
-                        }
+                profileResult
+                    .onSuccess { publicProfile ->
+                        applyHydratedPublicProfile(ownerId = ownerId, publicProfile = publicProfile)
+                        publicProfileHydratedOwnerId = ownerId
                     }
-                }
+                    .onFailure { exception ->
+                        Log.w(
+                            "ProfileCloudHydration",
+                            "userId=$ownerId public profile hydration failed error=${exception.message ?: "Unbekannter Fehler"}",
+                            exception
+                        )
+                        currentPublicProfile = null
+                    }
+                isPublicProfileHydrationRunning = false
             }
 
             repairProfileMediaSyncForOwner(ownerId)
@@ -2645,31 +2829,49 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     }
     LaunchedEffect(currentOwnerId) {
         val safeOwnerId = currentOwnerId?.trim().orEmpty()
+        Log.d(
+            "XpCloudSync",
+            "initial merge check currentOwnerId=${currentOwnerId ?: "-"} xpDailyLoginProcessedOwnerId=${xpDailyLoginProcessedOwnerId ?: "-"} xpCloudMergedOwnerId=${xpCloudMergedOwnerId ?: "-"} isRunning=$isXpCloudMergeRunning path=users/$safeOwnerId/private/meta/xpState/state"
+        )
         if (safeOwnerId.isBlank()) {
+            Log.d("XpCloudSync", "initial merge übersprungen: leere ownerId")
             xpDailyLoginProcessedOwnerId = null
             xpCloudMergedOwnerId = null
             xpCloudMergeAttemptedOwnerId = null
             isXpCloudMergeRunning = false
             return@LaunchedEffect
         }
-        if (xpDailyLoginProcessedOwnerId != safeOwnerId) return@LaunchedEffect
-        if (xpCloudMergedOwnerId == safeOwnerId || isXpCloudMergeRunning) return@LaunchedEffect
+        if (xpCloudMergedOwnerId == safeOwnerId) {
+            Log.d("XpCloudSync", "initial merge übersprungen: bereits gemerged userId=$safeOwnerId")
+            return@LaunchedEffect
+        }
+        if (isXpCloudMergeRunning) {
+            Log.d("XpCloudSync", "initial merge übersprungen: Merge läuft bereits userId=$safeOwnerId")
+            return@LaunchedEffect
+        }
 
         isXpCloudMergeRunning = true
+        Log.d("XpCloudSync", "initial merge gestartet userId=$safeOwnerId repository=XpCloudSyncRepository")
         XpCloudSyncRepository.mergeLocalAndCloudXpState(
             uid = safeOwnerId,
             prefs = prefs,
-            onResult = {
+            onResult = { mergedState ->
                 xpCloudMergedOwnerId = safeOwnerId
                 xpCloudMergeAttemptedOwnerId = safeOwnerId
                 isXpBackfillDone = prefs.getBoolean(xpBackfillV1DoneKey(preferenceOwnerId), false)
+                Log.d(
+                    "XpCloudSync",
+                    "initial merge success userId=$safeOwnerId mergedAwardedKeyCount=${mergedState?.awardedXpKeys?.size ?: 0} mergedTotalXp=${mergedState?.totalXp ?: 0}"
+                )
                 refreshXpUi()
+                Log.d("XpCloudSync", "refreshXpUi executed after merge userId=$safeOwnerId")
                 isXpCloudMergeRunning = false
             },
             onError = { errorMessage ->
                 xpCloudMergeAttemptedOwnerId = safeOwnerId
                 isXpBackfillDone = prefs.getBoolean(xpBackfillV1DoneKey(preferenceOwnerId), false)
                 refreshXpUi()
+                Log.d("XpCloudSync", "refreshXpUi executed after merge error userId=$safeOwnerId")
                 Log.w(
                     "XpCloudSync",
                     errorMessage ?: "Initialer XP-Cloud-Merge fehlgeschlagen."
@@ -2677,6 +2879,249 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                 isXpCloudMergeRunning = false
             }
         )
+    }
+    LaunchedEffect(currentOwnerId, findingsFromRoom) {
+        val safeOwnerId = currentOwnerId?.trim().orEmpty()
+        val localRecordedHitRoomIds = loadDailyAnimalQuestHitRoomIds(prefs, safeOwnerId)
+        val availableRoomIds = findingsFromRoom.mapNotNull { it.roomId }.toSet()
+        val unresolvedLocalHitRoomIds = if (safeOwnerId.isBlank()) {
+            emptySet()
+        } else {
+            localRecordedHitRoomIds - availableRoomIds
+        }
+        Log.d(
+            "QuestCloudSync",
+            "initial merge check currentOwnerId=${currentOwnerId ?: "-"} questCloudMergedOwnerId=${questCloudMergedOwnerId ?: "-"} isRunning=$isQuestCloudMergeRunning localLikes=${if (safeOwnerId.isBlank()) 0 else loadSocialLikesGivenCount(prefs, safeOwnerId)} localComments=${if (safeOwnerId.isBlank()) 0 else loadSocialCommentsWrittenCount(prefs, safeOwnerId)} localHitRoomIdCount=${localRecordedHitRoomIds.size} unresolvedLocalHitRoomIdCount=${unresolvedLocalHitRoomIds.size} path=users/$safeOwnerId/private/meta/questState/state"
+        )
+        if (safeOwnerId.isBlank()) {
+            Log.d("QuestCloudSync", "initial merge übersprungen: leere ownerId")
+            questCloudMergedOwnerId = null
+            questCloudMergeAttemptedOwnerId = null
+            isQuestCloudMergeRunning = false
+            questCloudHydratedHitFindingIds = emptySet()
+            return@LaunchedEffect
+        }
+        if (questCloudMergedOwnerId == safeOwnerId) {
+            Log.d("QuestCloudSync", "initial merge übersprungen: bereits gemerged userId=$safeOwnerId")
+            return@LaunchedEffect
+        }
+        if (isQuestCloudMergeRunning) {
+            Log.d("QuestCloudSync", "initial merge übersprungen: Merge läuft bereits userId=$safeOwnerId")
+            return@LaunchedEffect
+        }
+        if (unresolvedLocalHitRoomIds.isNotEmpty()) {
+            Log.d(
+                "QuestCloudSync",
+                "initial merge verschoben: lokale Daily-Hit-RoomIds noch nicht auflösbar userId=$safeOwnerId unresolvedCount=${unresolvedLocalHitRoomIds.size}"
+            )
+            return@LaunchedEffect
+        }
+
+        isQuestCloudMergeRunning = true
+        Log.d("QuestCloudSync", "initial merge gestartet userId=$safeOwnerId repository=QuestCloudSyncRepository")
+        QuestCloudSyncRepository.loadQuestState(
+            uid = safeOwnerId,
+            onResult = { cloudState ->
+                val localState = buildLocalQuestCloudState(safeOwnerId, findingsFromRoom)
+                Log.d(
+                    "QuestCloudSync",
+                    "initial merge loaded userId=$safeOwnerId cloudExists=${cloudState != null} localLikes=${localState.socialLikesGivenCount} localComments=${localState.socialCommentsWrittenCount} localHitFindingIdCount=${localState.dailyAnimalQuestHitFindingIds.size} cloudLikes=${cloudState?.socialLikesGivenCount ?: 0} cloudComments=${cloudState?.socialCommentsWrittenCount ?: 0} cloudHitFindingIdCount=${cloudState?.dailyAnimalQuestHitFindingIds?.size ?: 0}"
+                )
+                val mergedState = QuestCloudState(
+                    socialLikesGivenCount = max(
+                        localState.socialLikesGivenCount,
+                        cloudState?.socialLikesGivenCount ?: 0
+                    ),
+                    socialCommentsWrittenCount = max(
+                        localState.socialCommentsWrittenCount,
+                        cloudState?.socialCommentsWrittenCount ?: 0
+                    ),
+                    dailyAnimalQuestHitFindingIds =
+                        localState.dailyAnimalQuestHitFindingIds + (cloudState?.dailyAnimalQuestHitFindingIds ?: emptySet()),
+                    updatedAt = cloudState?.updatedAt
+                )
+                Log.d(
+                    "QuestCloudSync",
+                    "initial merge result userId=$safeOwnerId mergedLikes=${mergedState.socialLikesGivenCount} mergedComments=${mergedState.socialCommentsWrittenCount} mergedHitFindingIdCount=${mergedState.dailyAnimalQuestHitFindingIds.size}"
+                )
+                applyHydratedQuestState(
+                    ownerId = safeOwnerId,
+                    questState = mergedState,
+                    findings = findingsFromRoom
+                )
+                QuestCloudSyncRepository.saveQuestState(
+                    uid = safeOwnerId,
+                    state = mergedState
+                ) { success, errorMessage ->
+                    questCloudMergeAttemptedOwnerId = safeOwnerId
+                    isQuestCloudMergeRunning = false
+                    if (success) {
+                        questCloudMergedOwnerId = safeOwnerId
+                        Log.d(
+                            "QuestCloudSync",
+                            "initial merge success userId=$safeOwnerId mergedLikes=${mergedState.socialLikesGivenCount} mergedComments=${mergedState.socialCommentsWrittenCount} mergedHitFindingIdCount=${mergedState.dailyAnimalQuestHitFindingIds.size}"
+                        )
+                    } else {
+                        Log.w(
+                            "QuestCloudSync",
+                            errorMessage ?: "Initialer Quest-Cloud-Merge fehlgeschlagen."
+                        )
+                    }
+                }
+            },
+            onError = { errorMessage ->
+                questCloudMergeAttemptedOwnerId = safeOwnerId
+                isQuestCloudMergeRunning = false
+                Log.w(
+                    "QuestCloudSync",
+                    errorMessage ?: "Quest-State konnte nicht aus der Cloud geladen werden."
+                )
+            }
+        )
+    }
+    LaunchedEffect(currentOwnerId, findingsFromRoom, questCloudHydratedHitFindingIds) {
+        val safeOwnerId = currentOwnerId?.trim().orEmpty()
+        if (safeOwnerId.isBlank()) return@LaunchedEffect
+        if (questCloudHydratedHitFindingIds.isEmpty()) return@LaunchedEffect
+        val restoredRoomIds = restoreDailyAnimalQuestHitRoomIdsFromFindingIds(
+            ownerId = safeOwnerId,
+            findingIds = questCloudHydratedHitFindingIds,
+            findings = findingsFromRoom
+        )
+        Log.d(
+            "QuestCloudSync",
+            "restore local daily hit roomIds userId=$safeOwnerId hitFindingIdCount=${questCloudHydratedHitFindingIds.size} restoredRoomIdCount=${restoredRoomIds.size}"
+        )
+    }
+    val animalLoadResult: CsvLoadResult = remember(context) {
+        loadAnimalsFromJsonWithDebug(
+            context = context,
+            jsonFileName = ANIMALS_JSON_FILE_NAME,
+            csvFallbackFileName = ANIMALS_CSV_FILE_NAME
+        )
+    }
+
+    val animals: List<AnimalEntry> = animalLoadResult.animals
+    val dailyAnimal = animals.find { it.id == dailyAnimalId }
+    val runQuestXpConsistencyCheck: (String) -> Unit = consistencyCheck@{ userId ->
+        val cleanUserId = userId.trim()
+        if (cleanUserId.isBlank()) return@consistencyCheck
+
+        val xpSnapshotBefore = XpProgressRepository.buildSnapshot(
+            prefs = prefs,
+            userId = cleanUserId
+        )
+        val socialLikesGivenCount = loadSocialLikesGivenCount(prefs, cleanUserId)
+        val socialCommentsWrittenCount = loadSocialCommentsWrittenCount(prefs, cleanUserId)
+        val dailyAnimalQuestHitFindingIds = collectDailyAnimalQuestHitFindingIds(
+            ownerId = cleanUserId,
+            findings = findingsFromRoom
+        )
+        val dailyAnimalQuestProgress = countDailyAnimalQuestHits(
+            prefs = prefs,
+            ownerId = cleanUserId
+        )
+        val perfectFindingQuestProgress = countPerfectFindingQuestProgress(
+            findings = findingsFromRoom,
+            prefs = prefs,
+            ownerId = cleanUserId
+        )
+        val currentQuests = buildHomeQuests(
+            findings = findingsFromRoom,
+            animals = animals,
+            dailyAnimal = dailyAnimal,
+            collectedAnimalCount = collectedAnimalCountForQuestProgress(findingsFromRoom),
+            totalFindings = findingsFromRoom.size,
+            photoFindingCount = photoFindingCountForQuestProgress(findingsFromRoom),
+            dailyAnimalQuestProgress = dailyAnimalQuestProgress,
+            perfectFindingQuestProgress = perfectFindingQuestProgress,
+            socialFriendCount = socialFriendQuestProgress,
+            socialLikesGivenCount = socialLikesGivenCount,
+            socialCommentsWrittenCount = socialCommentsWrittenCount,
+            wishlistAnimalId = wishlistAnimalId
+        )
+        val completedQuestStages = currentQuests.filter { quest ->
+            quest.isCompleted && quest.xpReward != null
+        }
+        val missingQuestAwardStages = completedQuestStages.filter { quest ->
+            quest.awardKey !in xpSnapshotBefore.awardedXpKeys
+        }
+
+        Log.d(
+            "XpQuestConsistency",
+            "before userId=$cleanUserId totalXp=${xpSnapshotBefore.totalXp} awardedKeyCount=${xpSnapshotBefore.awardedXpKeys.size} socialLikesGivenCount=$socialLikesGivenCount socialCommentsWrittenCount=$socialCommentsWrittenCount dailyAnimalQuestHitFindingIdsCount=${dailyAnimalQuestHitFindingIds.size} completedQuestAwardCount=${completedQuestStages.size} missingQuestAwardCount=${missingQuestAwardStages.size}"
+        )
+
+        val awardResult = XpProgressRepository.grantXpAwardsIfAbsent(
+            prefs = prefs,
+            userId = cleanUserId,
+            awards = missingQuestAwardStages.mapNotNull { quest ->
+                quest.xpReward?.let { xpReward -> quest.awardKey to xpReward }
+            }
+        )
+        val newlyGrantedQuestStages = missingQuestAwardStages.filter { quest ->
+            quest.awardKey in awardResult.grantedKeys
+        }
+        val xpSnapshotAfter = XpProgressRepository.buildSnapshot(
+            prefs = prefs,
+            userId = cleanUserId
+        )
+
+        Log.d(
+            "XpQuestConsistency",
+            "after userId=$cleanUserId reachableQuestAwards=${completedQuestStages.size} newlyGrantedQuestAwards=${newlyGrantedQuestStages.size} grantedAwardedKeyCount=${awardResult.grantedKeys.size} totalXp=${xpSnapshotAfter.totalXp} awardedKeyCount=${xpSnapshotAfter.awardedXpKeys.size}"
+        )
+
+        if (newlyGrantedQuestStages.isNotEmpty()) {
+            handleLocalXpStateChanged(cleanUserId)
+            Log.d(
+                "XpQuestConsistency",
+                "cloud xp sync triggered after consistency userId=$cleanUserId newlyGrantedQuestAwards=${newlyGrantedQuestStages.size}"
+            )
+        }
+    }
+    LaunchedEffect(
+        currentOwnerId,
+        initialCloudFindingSyncCompletedOwnerId,
+        xpCloudMergeAttemptedOwnerId,
+        questCloudMergeAttemptedOwnerId,
+        xpUiRefreshNonce,
+        findingsFromRoom,
+        socialFriendQuestProgress,
+        wishlistAnimalId,
+        dailyAnimalId,
+        questCloudHydratedHitFindingIds
+    ) {
+        val safeOwnerId = currentOwnerId?.trim().orEmpty()
+        if (safeOwnerId.isBlank()) return@LaunchedEffect
+        if (initialCloudFindingSyncCompletedOwnerId != safeOwnerId) return@LaunchedEffect
+        if (xpCloudMergeAttemptedOwnerId != safeOwnerId) return@LaunchedEffect
+        if (questCloudMergeAttemptedOwnerId != safeOwnerId) return@LaunchedEffect
+        if (isXpQuestConsistencyRunning) return@LaunchedEffect
+
+        val consistencySignature = listOf(
+            safeOwnerId,
+            XpProgressRepository.buildSnapshot(prefs, safeOwnerId).awardedXpKeys.size.toString(),
+            findingsFromRoom.size.toString(),
+            socialFriendQuestProgress.toString(),
+            loadSocialLikesGivenCount(prefs, safeOwnerId).toString(),
+            loadSocialCommentsWrittenCount(prefs, safeOwnerId).toString(),
+            collectDailyAnimalQuestHitFindingIds(safeOwnerId, findingsFromRoom).size.toString(),
+            wishlistAnimalId.orEmpty().trim(),
+            dailyAnimalId.orEmpty().trim()
+        ).joinToString("|")
+
+        if (lastXpQuestConsistencySignature == consistencySignature) {
+            return@LaunchedEffect
+        }
+
+        lastXpQuestConsistencySignature = consistencySignature
+        isXpQuestConsistencyRunning = true
+        try {
+            runQuestXpConsistencyCheck(safeOwnerId)
+        } finally {
+            isXpQuestConsistencyRunning = false
+        }
     }
     LaunchedEffect(currentOwnerId) {
         val safeOwnerId = currentOwnerId ?: return@LaunchedEffect
@@ -2708,6 +3153,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     }
     LaunchedEffect(ownerId, preferenceOwnerId, wishlistAnimalId, favoriteAnimalId) {
         val safeOwnerId = ownerId ?: return@LaunchedEffect
+        if (publicProfileHydratedOwnerId != safeOwnerId) {
+            return@LaunchedEffect
+        }
         val preferenceSignature = listOf(
             safeOwnerId,
             wishlistAnimalId.orEmpty().trim(),
@@ -2733,19 +3181,6 @@ fun TierdexApp(database: AnimalFindingDatabase) {
             }
         }
     }
-
-
-    val animalLoadResult: CsvLoadResult = remember(context) {
-        loadAnimalsFromJsonWithDebug(
-            context = context,
-            jsonFileName = ANIMALS_JSON_FILE_NAME,
-            csvFallbackFileName = ANIMALS_CSV_FILE_NAME
-        )
-    }
-
-    val animals: List<AnimalEntry> = animalLoadResult.animals
-    val dailyAnimal = animals.find { it.id == dailyAnimalId }
-
     fun launchXpBackfill(userId: String?) {
         if (isXpBackfillDone || isXpBackfillRunning) return
         isXpBackfillRunning = true
@@ -3141,7 +3576,23 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     val isIntroFromSettings = introLaunchSource == IntroLaunchSource.SETTINGS.name
     val shouldHideTopBar = showAuthStartScreen ||
         showAuthEntryScreen ||
-        (showIntroScreen && !isIntroFromSettings)
+        (showIntroScreen && !isIntroFromSettings) ||
+        showRulesScreen
+    val isMainAppContentVisibleForDailyAnimal =
+        ownerId != null &&
+            selectedAnimal == null &&
+            selectedFindingDetail == null &&
+            selectedFriendProfileUserId == null &&
+            !showAnimalPicker &&
+            !showAuthStartScreen &&
+            !showAuthEntryScreen &&
+            !showIntroScreen &&
+            !showRulesScreen &&
+            !showSettingsScreen &&
+            !showNotificationsScreen &&
+            !showProfileFriendsScreen &&
+            !showProfilePhotoGalleryScreen &&
+            !showTierdexMapScreen
 
     fun readNotificationIdsForOwner(ownerId: String): Set<String> {
         val safeOwnerId = ownerId.trim()
@@ -3659,32 +4110,11 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         )
     }
 
-    fun updateAnimalGlobalFindingCountLocally(animalId: String, delta: Int) {
-        val normalizedAnimalId = animalId.trim()
-        if (normalizedAnimalId.isBlank()) return
-
-        animalGlobalFindingCounts = animalGlobalFindingCounts.toMutableMap().apply {
-            val currentCount = this[normalizedAnimalId] ?: 0
-            this[normalizedAnimalId] = (currentCount + delta).coerceAtLeast(0)
-        }
-    }
-
-    fun updateAnimalGlobalFindingCountLocallyForChange(oldAnimalId: String, newAnimalId: String) {
-        val normalizedOldAnimalId = oldAnimalId.trim()
-        val normalizedNewAnimalId = newAnimalId.trim()
-        if (
-            normalizedOldAnimalId.isBlank() ||
-            normalizedNewAnimalId.isBlank() ||
-            normalizedOldAnimalId == normalizedNewAnimalId
-        ) {
-            return
-        }
-
-        animalGlobalFindingCounts = animalGlobalFindingCounts.toMutableMap().apply {
-            val oldCount = this[normalizedOldAnimalId] ?: 0
-            val newCount = this[normalizedNewAnimalId] ?: 0
-            this[normalizedOldAnimalId] = (oldCount - 1).coerceAtLeast(0)
-            this[normalizedNewAnimalId] = newCount + 1
+    fun scheduleGlobalFindingCountRefresh(delayMs: Long = 1500L) {
+        refreshAnimalGlobalFindingCounts()
+        scope.launch {
+            delay(delayMs)
+            refreshAnimalGlobalFindingCounts()
         }
     }
 
@@ -3747,13 +4177,13 @@ fun TierdexApp(database: AnimalFindingDatabase) {
             }
         )
     }
-    LaunchedEffect(currentOwnerId, findingsFromRoom) {
+    LaunchedEffect(currentOwnerId, initialCloudFindingSyncCompletedOwnerId) {
         val safeOwnerId = currentOwnerId
         if (safeOwnerId.isNullOrBlank()) {
             globalFindingBackfillStartedForOwnerId = null
             return@LaunchedEffect
         }
-        if (findingsFromRoom.isEmpty()) {
+        if (initialCloudFindingSyncCompletedOwnerId != safeOwnerId) {
             return@LaunchedEffect
         }
         if (globalFindingBackfillStartedForOwnerId == safeOwnerId) {
@@ -3761,23 +4191,11 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         }
 
         globalFindingBackfillStartedForOwnerId = safeOwnerId
-        FirestoreFindingRepository.backfillGlobalFindingCountsForCurrentUser(
-            ownerUid = safeOwnerId,
-            findings = findingsFromRoom,
-            onResult = { success ->
-                if (success) {
-                    refreshAnimalGlobalFindingCounts()
-                } else {
-                    globalFindingBackfillStartedForOwnerId = null
-                }
-            },
-            onError = { error ->
-                Log.e(
-                    "GlobalStats",
-                    "backfill error ownerId=$safeOwnerId error=${error ?: "Unbekannter Fehler"}"
-                )
-            }
+        Log.d(
+            "GlobalFindingStats",
+            "post-sync refresh scheduled ownerId=$safeOwnerId syncCompletedOwnerId=${initialCloudFindingSyncCompletedOwnerId ?: "-"}"
         )
+        scheduleGlobalFindingCountRefresh()
     }
 
     LaunchedEffect(currentTab, currentOwnerId, showNotificationsScreen) {
@@ -3867,6 +4285,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                     .apply()
             }
             showIntroScreen = false
+            ownerId?.takeIf { !prefs.getBoolean(rulesAcceptedKey(it), false) }?.let {
+                showRulesScreen = true
+            }
             currentTab = AppTab.PROFILE
         }
     }
@@ -3885,15 +4306,16 @@ fun TierdexApp(database: AnimalFindingDatabase) {
             if (!shouldHideTopBar) {
                 TierdexTopBar(
                     currentTab = currentTab,
-                    showFriendSearchAction = currentTab == AppTab.FRIENDS &&
-                        selectedFriendProfileUserId == null &&
-                        selectedAnimal == null &&
-                        selectedFindingDetail == null &&
-                        !showAnimalPicker &&
-                        !showAuthStartScreen &&
-                        !showAuthEntryScreen &&
-                        !showIntroScreen &&
-                        !showSettingsScreen,
+                        showFriendSearchAction = currentTab == AppTab.FRIENDS &&
+                            selectedFriendProfileUserId == null &&
+                            selectedAnimal == null &&
+                            selectedFindingDetail == null &&
+                            !showAnimalPicker &&
+                            !showAuthStartScreen &&
+                            !showAuthEntryScreen &&
+                            !showIntroScreen &&
+                            !showRulesScreen &&
+                            !showSettingsScreen,
                     isFriendSearchOpen = isFriendSearchOpen,
                     incomingRequestCount = incomingRequestCount,
                     onFriendSearchClick = {
@@ -3925,7 +4347,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
             }
         },
         bottomBar = {
-            if (selectedAnimal == null && selectedFindingDetail == null && !showAnimalPicker && !showAuthStartScreen && !showAuthEntryScreen && !showIntroScreen && !showSettingsScreen && !showNotificationsScreen) {
+            if (selectedAnimal == null && selectedFindingDetail == null && !showAnimalPicker && !showAuthStartScreen && !showAuthEntryScreen && !showIntroScreen && !showRulesScreen && !showSettingsScreen && !showNotificationsScreen) {
                 MainBottomBar(
                     currentTab = currentTab,
                     onTabSelected = {
@@ -3950,7 +4372,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
             }
         },
         floatingActionButton = {
-            if (selectedAnimal == null && selectedFindingDetail == null && !showAnimalPicker && !showAuthStartScreen && !showAuthEntryScreen && !showIntroScreen && !showSettingsScreen && !showNotificationsScreen) {
+            if (selectedAnimal == null && selectedFindingDetail == null && !showAnimalPicker && !showAuthStartScreen && !showAuthEntryScreen && !showIntroScreen && !showRulesScreen && !showSettingsScreen && !showNotificationsScreen) {
                 FloatingActionButton(
                     onClick = {
                         resetSearchState()
@@ -4012,6 +4434,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             currentOwnerId = userId
                             currentDisplayName = AuthSession.getCurrentDisplayName()
                             authEntryMode = null
+                            showRulesScreen = false
                             currentTab = AppTab.PROFILE
                             if (fromRegistration && userId != null) {
                                 prefs.edit()
@@ -4029,6 +4452,8 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                     AboutTierdexScreen(
                         extraTopPadding = innerPadding.calculateTopPadding(),
                         extraBottomPadding = innerPadding.calculateBottomPadding(),
+                        showRulesSection = isIntroFromSettings,
+                        showConfirmButton = !isIntroFromSettings,
                         onClose = {
                             if (isIntroFromSettings) {
                                 showIntroScreen = false
@@ -4040,8 +4465,27 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                         .apply()
                                 }
                                 showIntroScreen = false
+                                ownerId?.takeIf { !prefs.getBoolean(rulesAcceptedKey(it), false) }?.let {
+                                    showRulesScreen = true
+                                }
                                 currentTab = AppTab.PROFILE
                             }
+                        }
+                    )
+                }
+
+                showRulesScreen -> {
+                    TierdexRulesScreen(
+                        extraTopPadding = innerPadding.calculateTopPadding(),
+                        extraBottomPadding = innerPadding.calculateBottomPadding(),
+                        onConfirm = {
+                            ownerId?.let {
+                                prefs.edit()
+                                    .putBoolean(rulesAcceptedKey(it), true)
+                                    .apply()
+                            }
+                            showRulesScreen = false
+                            currentTab = AppTab.PROFILE
                         }
                     )
                 }
@@ -4057,6 +4501,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             currentOwnerId = null
                             currentDisplayName = null
                             authEntryMode = defaultAuthEntryMode(prefs)
+                            showRulesScreen = false
                             showSettingsScreen = false
                             currentTab = AppTab.PROFILE
                         },
@@ -4203,6 +4648,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         startInCreateMode = openCreateFindingMode && selectedFindingToEdit == null,
                         startInFindingEditMode = startInFindingEditMode,
                         dailyAnimalHistoryText = selectedAnimalDailyAnimalHistoryText,
+                        onQuestStateChanged = { handleLocalQuestStateChanged(currentOwnerId) },
                         onSocialXpFeedback = { popupMessage ->
                             xpPopupMessage = popupMessage
                             if (popupMessage != null) {
@@ -4299,16 +4745,22 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                     "localInsert roomId=${insertedRowId.toInt()} animalId=${localFinding.animalId}"
                                 )
                                 val localFindingWithRoomId = localFinding.copy(roomId = insertedRowId.toInt())
-                                recordDailyAnimalQuestHitIfEligible(
+                                val dailyAnimalQuestHitRecorded = recordDailyAnimalQuestHitIfEligible(
                                     prefs = prefs,
                                     ownerId = preferenceOwnerId,
                                     finding = localFindingWithRoomId
                                 )
+                                val currentFindingsForQuestCheck = previousFindings + localFindingWithRoomId
+                                if (dailyAnimalQuestHitRecorded) {
+                                    handleLocalQuestStateChanged(
+                                        userId = currentOwnerId,
+                                        findings = currentFindingsForQuestCheck
+                                    )
+                                }
                                 val currentDailyAnimalQuestProgress = countDailyAnimalQuestHits(
                                     prefs = prefs,
                                     ownerId = preferenceOwnerId
                                 )
-                                val currentFindingsForQuestCheck = previousFindings + localFindingWithRoomId
                                 val currentPerfectFindingQuestProgress = countPerfectFindingQuestProgress(
                                     findings = currentFindingsForQuestCheck,
                                     prefs = prefs,
@@ -4464,38 +4916,15 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                                 "cloud sync total end animalId=${cloudReadyFinding.animalId} durationMs=${SystemClock.elapsedRealtime() - cloudSyncStartedAt} firestoreSaveFailed=true"
                                             )
                                         } else {
-                                            val contributionStartedAt = SystemClock.elapsedRealtime()
+                                            Log.d(
+                                                "GlobalFindingStats",
+                                                "create queued for server sync findingId=${FirestoreFindingRepository.documentIdForFinding(cloudReadyFinding)} animalId=${cloudReadyFinding.animalId}"
+                                            )
+                                            scheduleGlobalFindingCountRefresh()
                                             Log.d(
                                                 "FindingSaveTiming",
-                                                "Contribution update start animalId=${cloudReadyFinding.animalId}"
+                                                "cloud sync total end animalId=${cloudReadyFinding.animalId} durationMs=${SystemClock.elapsedRealtime() - cloudSyncStartedAt}"
                                             )
-                                            FirestoreFindingRepository.recordGlobalFindingContributionIfNeeded(
-                                                ownerUid = currentOwnerId.orEmpty(),
-                                                finding = cloudReadyFinding
-                                            ) { counterSuccess, counterResult ->
-                                                Log.d(
-                                                    "FindingSaveTiming",
-                                                    "Contribution update end animalId=${cloudReadyFinding.animalId} success=$counterSuccess result=$counterResult durationMs=${SystemClock.elapsedRealtime() - contributionStartedAt}"
-                                                )
-                                                if (!counterSuccess) {
-                                                    Log.e(
-                                                        "CloudWrite",
-                                                        "global finding contribution on create failed: $counterResult"
-                                                    )
-                                                } else {
-                                                    if (counterResult == "created") {
-                                                        updateAnimalGlobalFindingCountLocally(
-                                                            animalId = cloudReadyFinding.animalId,
-                                                            delta = 1
-                                                        )
-                                                    }
-                                                }
-                                                refreshAnimalGlobalFindingCounts()
-                                                Log.d(
-                                                    "FindingSaveTiming",
-                                                    "cloud sync total end animalId=${cloudReadyFinding.animalId} durationMs=${SystemClock.elapsedRealtime() - cloudSyncStartedAt}"
-                                                )
-                                            }
                                         }
                                     }
                                 } else {
@@ -4554,25 +4983,11 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                                     "CloudSyncDelete",
                                                     "Deleted Firestore finding: documentId=$result"
                                                 )
-                                                FirestoreFindingRepository.removeGlobalFindingContributionIfExists(
-                                                    ownerUid = currentOwnerId.orEmpty(),
-                                                    finding = finding
-                                                ) { counterSuccess, counterResult ->
-                                                    if (!counterSuccess) {
-                                                        Log.e(
-                                                            "CloudSyncDelete",
-                                                            "global finding contribution removal on delete failed: $counterResult"
-                                                        )
-                                                    } else {
-                                                        if (counterResult == "removed") {
-                                                            updateAnimalGlobalFindingCountLocally(
-                                                                animalId = finding.animalId,
-                                                                delta = -1
-                                                            )
-                                                        }
-                                                    }
-                                                    refreshAnimalGlobalFindingCounts()
-                                                }
+                                                Log.d(
+                                                    "GlobalFindingStats",
+                                                    "delete queued for server sync findingId=${FirestoreFindingRepository.documentIdForFinding(finding)} animalId=${finding.animalId}"
+                                                )
+                                                scheduleGlobalFindingCountRefresh()
                                             } else {
                                                 Log.e(
                                                     "CloudSyncDelete",
@@ -4760,23 +5175,11 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                                     "Firestore update on edit failed: $result"
                                                 )
                                             } else {
-                                                FirestoreFindingRepository.updateGlobalFindingContributionForChange(
-                                                    ownerUid = currentOwnerId.orEmpty(),
-                                                    oldFinding = oldFinding,
-                                                    newFinding = preparedNewFinding
-                                                ) { counterSuccess, counterResult ->
-                                                    Log.d(
-                                                        "FindingUpdateTiming",
-                                                        "Contribution update end oldAnimalId=${oldFinding.animalId} newAnimalId=${preparedNewFinding.animalId} success=$counterSuccess result=$counterResult totalDurationMs=${SystemClock.elapsedRealtime() - updateStartedAt}"
-                                                    )
-                                                    if (!counterSuccess) {
-                                                        Log.e(
-                                                            "CloudWrite",
-                                                            "global finding contribution update on edit failed: $counterResult"
-                                                        )
-                                                    }
-                                                    refreshAnimalGlobalFindingCounts()
-                                                }
+                                                Log.d(
+                                                    "GlobalFindingStats",
+                                                    "update queued for server sync oldFindingId=${FirestoreFindingRepository.documentIdForFinding(oldFinding)} newFindingId=${FirestoreFindingRepository.documentIdForFinding(preparedNewFinding)} oldAnimalId=${oldFinding.animalId} newAnimalId=${preparedNewFinding.animalId}"
+                                                )
+                                                scheduleGlobalFindingCountRefresh()
                                             }
                                         }
                                     } else {
@@ -4918,6 +5321,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             friendUserId = selectedFriendUserId,
                             initialDisplayName = selectedFriendProfileDisplayName,
                             allAnimals = animals,
+                            onQuestStateChanged = { handleLocalQuestStateChanged(currentOwnerId) },
                             onSocialXpFeedback = { popupMessage ->
                                 xpPopupMessage = popupMessage
                                 if (popupMessage != null) {
@@ -4946,6 +5350,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                 selectedFriendProfileDisplayName = friendDisplayName
                                 isFriendSearchOpen = false
                             },
+                            onQuestStateChanged = { handleLocalQuestStateChanged(currentOwnerId) },
                             onSocialXpFeedback = { popupMessage ->
                                 xpPopupMessage = popupMessage
                                 if (popupMessage != null) {
@@ -5041,6 +5446,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         ProfileScreen(
                             currentUserId = currentOwnerId,
                             currentDisplayName = currentDisplayName,
+                            hydratedPublicProfile = currentPublicProfile,
                             onDisplayNameSaved = { newDisplayName ->
                                 currentDisplayName = newDisplayName
                             },
@@ -5105,16 +5511,14 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                     )
             )
 
-            if (ownerId != null && !showAuthStartScreen && !showAuthEntryScreen && showDailyAnimalScreen && dailyAnimal != null) {
+            if (isMainAppContentVisibleForDailyAnimal && showDailyAnimalScreen && dailyAnimal != null) {
                 Dialog(
-                    onDismissRequest = {
-                        prefs.edit()
-                            .putBoolean(dailyAnimalDismissedKey(preferenceOwnerId), true)
-                            .apply()
-                        isDailyAnimalOpenedFromHomeTile = false
-                        showDailyAnimalScreen = false
-                    },
-                    properties = DialogProperties(usePlatformDefaultWidth = false)
+                    onDismissRequest = {},
+                    properties = DialogProperties(
+                        usePlatformDefaultWidth = false,
+                        dismissOnBackPress = false,
+                        dismissOnClickOutside = false
+                    )
                 ) {
                     Surface(
                         modifier = Modifier
@@ -5126,7 +5530,8 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             animal = dailyAnimal,
                             currentUserId = currentOwnerId,
                             dailyAnimalHistoryText = dailyAnimalHistoryText,
-                            showCloseButton = !isDailyAnimalOpenedFromHomeTile,
+                            showCloseButton = false,
+                            onQuestStateChanged = { handleLocalQuestStateChanged(currentOwnerId) },
                             onClose = {
                                 prefs.edit()
                                     .putBoolean(dailyAnimalDismissedKey(preferenceOwnerId), true)
@@ -8248,6 +8653,7 @@ fun FriendProfileScreen(
     friendUserId: String,
     initialDisplayName: String?,
     allAnimals: List<AnimalEntry>,
+    onQuestStateChanged: () -> Unit = {},
     onSocialXpFeedback: (XpPopupMessage?) -> Unit,
     onBack: () -> Unit,
     extraTopPadding: Dp = 0.dp,
@@ -8627,6 +9033,7 @@ fun FriendsScreen(
     onIncomingRequestsChanged: () -> Unit,
     onConfirmedFriendsChanged: (Int) -> Unit,
     onOpenFriendProfile: (String, String) -> Unit,
+    onQuestStateChanged: () -> Unit = {},
     onSocialXpFeedback: (XpPopupMessage?) -> Unit,
     extraTopPadding: Dp = 0.dp,
     extraBottomPadding: Dp = 0.dp
@@ -9541,6 +9948,7 @@ fun FriendsScreen(
                                                                 prefs,
                                                                 currentUserId.orEmpty()
                                                             )
+                                                            onQuestStateChanged()
                                                             val xpPopup = grantSocialXpIfEligible(
                                                                 prefs = prefs,
                                                                 userId = currentUserId,
@@ -9710,6 +10118,7 @@ fun FriendsScreen(
                                                                     prefs,
                                                                     currentUserId
                                                                 )
+                                                                onQuestStateChanged()
                                                                 val xpPopup = grantSocialXpIfEligible(
                                                                     prefs = prefs,
                                                                     userId = currentUserId,
@@ -9910,6 +10319,8 @@ fun FriendsScreen(
 private fun AboutTierdexScreen(
     extraTopPadding: Dp = 0.dp,
     extraBottomPadding: Dp = 0.dp,
+    showRulesSection: Boolean = true,
+    showConfirmButton: Boolean = false,
     onClose: () -> Unit
 ) {
     BackHandler(onBack = onClose)
@@ -9979,46 +10390,86 @@ private fun AboutTierdexScreen(
             }
         }
 
-        item {
-            Card(
-                colors = CardDefaults.cardColors(
-                    containerColor = PrimaryGreen.copy(alpha = 0.08f)
-                ),
-                shape = RoundedCornerShape(16.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Filled.CheckCircle,
-                            contentDescription = null,
-                            tint = PrimaryGreen
-                        )
-                        Text(
-                            text = "Regeln",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = TextPrimary
-                        )
-                    }
+        if (showRulesSection) {
+            item {
+                TierdexRulesContentCard()
+            }
+        }
 
+        if (showConfirmButton) {
+            item {
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Button(
+                        onClick = onClose,
+                        modifier = Modifier.fillMaxWidth(0.72f),
+                        colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
+                    ) {
+                        Text("Verstanden!")
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TierdexRulesScreen(
+    extraTopPadding: Dp = 0.dp,
+    extraBottomPadding: Dp = 0.dp,
+    onConfirm: () -> Unit
+) {
+    BackHandler(onBack = onConfirm)
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .padding(
+                start = 16.dp,
+                top = 16.dp + extraTopPadding,
+                end = 16.dp
+            ),
+        contentPadding = PaddingValues(
+            top = 0.dp,
+            bottom = extraBottomPadding + 24.dp
+        ),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        item {
+            SettingsContentCard {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(
-                        text = "Damit Funde fair, respektvoll und nachvollziehbar bleiben, beachte bitte diese Punkte:",
+                        text = "Regeln",
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = TextPrimary
+                    )
+                    Text(
+                        text = "Bitte bestätige diese Hinweise, bevor du die App normal nutzt.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = TextSecondary
                     )
+                }
+            }
+        }
 
-                    Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                        AboutTierdexRuleItem("Als gefunden gilt ein Tier nur, wenn es nicht in Gefangenschaft lebt.")
-                        AboutTierdexRuleItem("Bitte lade keine toten oder stark verletzten Tiere hoch.")
-                        AboutTierdexRuleItem("Halte immer ausreichend Abstand zu Wildtieren.")
-                        AboutTierdexRuleItem("Beachte Regeln zu Privatgrundstücken, Straßenverkehr, Naturschutzgebieten und ähnlichen Bereichen.")
-                    }
+        item {
+            TierdexRulesContentCard()
+        }
+
+        item {
+            Box(
+                modifier = Modifier.fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Button(
+                    onClick = onConfirm,
+                    modifier = Modifier.fillMaxWidth(0.72f),
+                    colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen)
+                ) {
+                    Text("Verstanden!")
                 }
             }
         }
@@ -10077,11 +10528,57 @@ private fun AboutTierdexRuleItem(text: String) {
 }
 
 @Composable
+private fun TierdexRulesContentCard() {
+    Card(
+        colors = CardDefaults.cardColors(
+            containerColor = PrimaryGreen.copy(alpha = 0.08f)
+        ),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.CheckCircle,
+                    contentDescription = null,
+                    tint = PrimaryGreen
+                )
+                Text(
+                    text = "Regeln",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = TextPrimary
+                )
+            }
+
+            Text(
+                text = "Damit Funde fair, respektvoll und nachvollziehbar bleiben, beachte bitte diese Punkte:",
+                style = MaterialTheme.typography.bodyMedium,
+                color = TextSecondary
+            )
+
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                AboutTierdexRuleItem("Als gefunden gilt ein Tier nur, wenn es nicht in Gefangenschaft lebt.")
+                AboutTierdexRuleItem("Bitte lade keine toten oder stark verletzten Tiere hoch.")
+                AboutTierdexRuleItem("Halte immer ausreichend Abstand zu Wildtieren.")
+                AboutTierdexRuleItem("Beachte Regeln zu Privatgrundstücken, Straßenverkehr, Naturschutzgebieten und ähnlichen Bereichen.")
+            }
+        }
+    }
+}
+
+@Composable
 private fun DailyAnimalScreen(
     animal: AnimalEntry,
     currentUserId: String?,
     dailyAnimalHistoryText: String? = null,
     showCloseButton: Boolean = true,
+    onQuestStateChanged: () -> Unit = {},
     onClose: () -> Unit
 ) {
     BackHandler(onBack = onClose)
@@ -10616,6 +11113,7 @@ fun AuthEntryScreen(
 fun ProfileScreen(
     currentUserId: String?,
     currentDisplayName: String?,
+    hydratedPublicProfile: PublicUserProfile? = null,
     onDisplayNameSaved: (String?) -> Unit,
     collectedAnimalCount: Int,
     totalFindings: Int,
@@ -10821,15 +11319,45 @@ fun ProfileScreen(
         }
     }
 
-    LaunchedEffect(currentUserId) {
+    fun applyProfileCloudHydrationState(
+        publicProfile: PublicUserProfile?,
+        source: String
+    ) {
+        if (publicProfile == null) return
+
+        remoteProfilePhotoPath = publicProfile.profilePhotoPath.orEmpty()
+        remoteProfileBackgroundPhotoPath = publicProfile.profileBackgroundPhotoPath.orEmpty()
+        val remoteBio = publicProfile.bio.orEmpty().trim()
+        val adoptedFields = mutableListOf<String>()
+        if (profileBio.trim().isBlank() && remoteBio.isNotBlank()) {
+            profileBio = remoteBio
+            bioDraft = remoteBio
+            prefs.edit().putString(profileBioKey(preferenceOwnerId), remoteBio).apply()
+            adoptedFields += "bio"
+        }
+        Log.d(
+            "ProfileCloudHydration",
+            "source=$source userId=${publicProfile.userId} remoteBioPresent=${remoteBio.isNotBlank()} remoteProfilePhotoPathPresent=${publicProfile.profilePhotoPath.isNotBlank()} remoteProfileBackgroundPhotoPathPresent=${publicProfile.profileBackgroundPhotoPath.isNotBlank()} remoteFavoriteAnimalId=${publicProfile.favoriteAnimalId.ifBlank { "-" }} remoteWishAnimalId=${publicProfile.wishAnimalId.ifBlank { "-" }} adopted=${if (adoptedFields.isEmpty()) "none" else adoptedFields.joinToString(",")}"
+        )
+    }
+
+    LaunchedEffect(
+        currentUserId,
+        hydratedPublicProfile?.userId,
+        hydratedPublicProfile?.bio,
+        hydratedPublicProfile?.profilePhotoPath,
+        hydratedPublicProfile?.profileBackgroundPhotoPath
+    ) {
         if (currentUserId != null) {
+            hydratedPublicProfile
+                ?.takeIf { it.userId == currentUserId }
+                ?.let { applyProfileCloudHydrationState(it, source = "appState") }
             FriendRepository.loadUserProfile(
                 userId = currentUserId,
                 onResult = { publicProfile ->
-                    remoteProfilePhotoPath = publicProfile?.profilePhotoPath.orEmpty()
-                    remoteProfileBackgroundPhotoPath = publicProfile?.profileBackgroundPhotoPath.orEmpty()
-                    val remoteBio = publicProfile?.bio.orEmpty()
+                    applyProfileCloudHydrationState(publicProfile, source = "firestore")
                     val localBio = profileBio.trim().take(300)
+                    val remoteBio = publicProfile?.bio.orEmpty().trim()
                     if (localBio.isBlank() && remoteBio.isNotBlank()) {
                         profileBio = remoteBio
                         bioDraft = remoteBio
@@ -12694,6 +13222,7 @@ fun AnimalDetailScreen(
     startInCreateMode: Boolean = false,
     startInFindingEditMode: Boolean = false,
     dailyAnimalHistoryText: String?,
+    onQuestStateChanged: () -> Unit = {},
     onSocialXpFeedback: (XpPopupMessage?) -> Unit,
     onOpenFindingDetail: (AnimalFinding) -> Unit,
     onReturnToFindingDetail: (AnimalFinding) -> Unit,
@@ -13764,6 +14293,7 @@ fun AnimalDetailScreen(
                                                                             prefs,
                                                                             currentUserId.orEmpty()
                                                                         )
+                                                                        onQuestStateChanged()
                                                                         val xpPopup = grantSocialXpIfEligible(
                                                                             prefs = prefs,
                                                                             userId = currentUserId,

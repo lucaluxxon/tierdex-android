@@ -110,6 +110,35 @@ object FirestoreFindingRepository {
         }.coerceAtLeast(0L)
     }
 
+    data class GlobalFindingReconcileAnimalLog(
+        val animalId: String,
+        val expectedOwnContributions: Int,
+        val statsBefore: Int?,
+        val statsAfter: Int?
+    )
+
+    data class GlobalFindingReconcileResult(
+        val ownFindingCount: Int,
+        val existingContributionCount: Int,
+        val createdContributionCount: Int,
+        val skippedContributionCount: Int,
+        val animalLogs: List<GlobalFindingReconcileAnimalLog>
+    )
+
+    data class GlobalFindingStatsRebuildAnimalLog(
+        val animalId: String,
+        val previousStatsCount: Int?,
+        val rebuiltStatsCount: Int
+    )
+
+    data class GlobalFindingStatsRebuildResult(
+        val contributionCount: Int,
+        val affectedAnimalCount: Int,
+        val updatedStatsDocumentCount: Int,
+        val animalLogs: List<GlobalFindingStatsRebuildAnimalLog>,
+        val staleAnimalIdsWithoutContributions: List<String>
+    )
+
     fun saveCurrentUserFinding(
         finding: AnimalFinding,
         onResult: (Boolean, String?) -> Unit
@@ -553,6 +582,296 @@ object FirestoreFindingRepository {
         }
 
         processNext()
+    }
+
+    fun reconcileGlobalFindingContributionsForOwner(
+        ownerUid: String,
+        findings: List<AnimalFinding>,
+        onResult: (Boolean, GlobalFindingReconcileResult?, String?) -> Unit
+    ) {
+        val normalizedOwnerUid = ownerUid.trim()
+        if (normalizedOwnerUid.isBlank()) {
+            onResult(false, null, "Leere ownerUid")
+            return
+        }
+
+        val uniqueFindings = findings
+            .filter { it.animalId.trim().isNotBlank() }
+            .distinctBy { documentIdForFinding(it) }
+
+        val expectedOwnContributionCounts = uniqueFindings
+            .groupingBy { it.animalId.trim() }
+            .eachCount()
+
+        if (uniqueFindings.isEmpty()) {
+            onResult(
+                true,
+                GlobalFindingReconcileResult(
+                    ownFindingCount = 0,
+                    existingContributionCount = 0,
+                    createdContributionCount = 0,
+                    skippedContributionCount = 0,
+                    animalLogs = emptyList()
+                ),
+                null
+            )
+            return
+        }
+
+        firestore.collection("globalFindingContributions")
+            .whereEqualTo("ownerUid", normalizedOwnerUid)
+            .get()
+            .addOnSuccessListener { contributionSnapshot ->
+                val existingContributionFindingIds = contributionSnapshot.documents
+                    .mapNotNull { document -> document.getString("findingId")?.trim() }
+                    .filter { it.isNotBlank() }
+                    .toSet()
+
+                firestore.collection("animalStats")
+                    .get()
+                    .addOnSuccessListener { statsBeforeSnapshot ->
+                        val statsBeforeByAnimalId = statsBeforeSnapshot.documents.associateNotNull { document ->
+                            val animalId = document.getString("animalId").orEmpty().trim()
+                            if (animalId.isBlank()) {
+                                null
+                            } else {
+                                animalId to globalFindingCountFromValue(document.get("globalFindingCount")).toInt()
+                            }
+                        }
+
+                        val missingFindings = uniqueFindings.filter { finding ->
+                            documentIdForFinding(finding).trim() !in existingContributionFindingIds
+                        }
+
+                        var createdContributionCount = 0
+                        var skippedContributionCount = uniqueFindings.size - missingFindings.size
+                        var currentIndex = 0
+
+                        fun finishWithFreshStats() {
+                            firestore.collection("animalStats")
+                                .get()
+                                .addOnSuccessListener { statsAfterSnapshot ->
+                                    val statsAfterByAnimalId = statsAfterSnapshot.documents.associateNotNull { document ->
+                                        val animalId = document.getString("animalId").orEmpty().trim()
+                                        if (animalId.isBlank()) {
+                                            null
+                                        } else {
+                                            animalId to globalFindingCountFromValue(document.get("globalFindingCount")).toInt()
+                                        }
+                                    }
+
+                                    val animalLogs = expectedOwnContributionCounts.entries
+                                        .sortedBy { it.key }
+                                        .map { (animalId, expectedOwnContributions) ->
+                                            GlobalFindingReconcileAnimalLog(
+                                                animalId = animalId,
+                                                expectedOwnContributions = expectedOwnContributions,
+                                                statsBefore = statsBeforeByAnimalId[animalId],
+                                                statsAfter = statsAfterByAnimalId[animalId]
+                                            )
+                                        }
+
+                                    onResult(
+                                        true,
+                                        GlobalFindingReconcileResult(
+                                            ownFindingCount = uniqueFindings.size,
+                                            existingContributionCount = existingContributionFindingIds.size,
+                                            createdContributionCount = createdContributionCount,
+                                            skippedContributionCount = skippedContributionCount,
+                                            animalLogs = animalLogs
+                                        ),
+                                        null
+                                    )
+                                }
+                                .addOnFailureListener { exception ->
+                                    Log.e(
+                                        TAG,
+                                        "Failed to load animalStats after reconcile: ${exception.message ?: "Unbekannter Fehler"}",
+                                        exception
+                                    )
+                                    onResult(false, null, exception.message)
+                                }
+                        }
+
+                        fun processNextMissing() {
+                            if (currentIndex >= missingFindings.size) {
+                                finishWithFreshStats()
+                                return
+                            }
+
+                            val finding = missingFindings[currentIndex]
+                            currentIndex += 1
+
+                            recordGlobalFindingContributionIfNeeded(
+                                ownerUid = normalizedOwnerUid,
+                                finding = finding
+                            ) { success, result ->
+                                if (!success) {
+                                    onResult(false, null, result)
+                                    return@recordGlobalFindingContributionIfNeeded
+                                }
+
+                                if (result == "created") {
+                                    createdContributionCount += 1
+                                } else {
+                                    skippedContributionCount += 1
+                                }
+
+                                processNextMissing()
+                            }
+                        }
+
+                        processNextMissing()
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.e(
+                            TAG,
+                            "Failed to load animalStats before reconcile: ${exception.message ?: "Unbekannter Fehler"}",
+                            exception
+                        )
+                        onResult(false, null, exception.message)
+                    }
+            }
+            .addOnFailureListener { exception ->
+                Log.e(
+                    TAG,
+                    "Failed to load globalFindingContributions for owner $normalizedOwnerUid: ${exception.message ?: "Unbekannter Fehler"}",
+                    exception
+                )
+                onResult(false, null, exception.message)
+            }
+    }
+
+    fun rebuildAnimalStatsFromContributions(
+        onResult: (Boolean, GlobalFindingStatsRebuildResult?, String?) -> Unit
+    ) {
+        firestore.collection("globalFindingContributions")
+            .get()
+            .addOnSuccessListener { contributionSnapshot ->
+                val contributionCountByAnimalId = contributionSnapshot.documents
+                    .mapNotNull { document ->
+                        document.getString("animalId")?.trim()?.takeIf { it.isNotBlank() }
+                    }
+                    .groupingBy { it }
+                    .eachCount()
+
+                Log.d(
+                    "GlobalFindingStatsRebuild",
+                    "loadedContributions=${contributionSnapshot.size()} affectedAnimalIds=${contributionCountByAnimalId.size}"
+                )
+
+                firestore.collection("animalStats")
+                    .get()
+                    .addOnSuccessListener { statsSnapshot ->
+                        val previousStatsByAnimalId = statsSnapshot.documents.associateNotNull { document ->
+                            val animalId = document.getString("animalId").orEmpty().trim()
+                            if (animalId.isBlank()) {
+                                null
+                            } else {
+                                animalId to globalFindingCountFromValue(document.get("globalFindingCount")).toInt()
+                            }
+                        }
+
+                        val staleAnimalIdsWithoutContributions = previousStatsByAnimalId.keys
+                            .filter { animalId -> animalId !in contributionCountByAnimalId.keys }
+                            .sorted()
+
+                        staleAnimalIdsWithoutContributions.forEach { animalId ->
+                            Log.d(
+                                "GlobalFindingStatsRebuild",
+                                "staleAnimalStatsEntry animalId=$animalId oldAnimalStatsValue=${previousStatsByAnimalId[animalId]?.toString() ?: "unknown"}"
+                            )
+                        }
+
+                        if (contributionCountByAnimalId.isEmpty()) {
+                            onResult(
+                                true,
+                                GlobalFindingStatsRebuildResult(
+                                    contributionCount = 0,
+                                    affectedAnimalCount = 0,
+                                    updatedStatsDocumentCount = 0,
+                                    animalLogs = emptyList(),
+                                    staleAnimalIdsWithoutContributions = staleAnimalIdsWithoutContributions
+                                ),
+                                null
+                            )
+                            return@addOnSuccessListener
+                        }
+
+                        val animalEntries = contributionCountByAnimalId.entries.sortedBy { it.key }
+                        val animalLogs = mutableListOf<GlobalFindingStatsRebuildAnimalLog>()
+                        var updatedStatsDocumentCount = 0
+                        var currentIndex = 0
+
+                        fun processNextAnimal() {
+                            if (currentIndex >= animalEntries.size) {
+                                onResult(
+                                    true,
+                                    GlobalFindingStatsRebuildResult(
+                                        contributionCount = contributionSnapshot.size(),
+                                        affectedAnimalCount = animalEntries.size,
+                                        updatedStatsDocumentCount = updatedStatsDocumentCount,
+                                        animalLogs = animalLogs.toList(),
+                                        staleAnimalIdsWithoutContributions = staleAnimalIdsWithoutContributions
+                                    ),
+                                    null
+                                )
+                                return
+                            }
+
+                            val (animalId, rebuiltCount) = animalEntries[currentIndex]
+                            currentIndex += 1
+
+                            animalStatsDocument(animalId)
+                                .set(
+                                    hashMapOf(
+                                        "animalId" to animalId,
+                                        "globalFindingCount" to rebuiltCount,
+                                        "updatedAt" to FieldValue.serverTimestamp()
+                                    )
+                                )
+                                .addOnSuccessListener {
+                                    updatedStatsDocumentCount += 1
+                                    Log.d(
+                                        "GlobalFindingStatsRebuild",
+                                        "write animalId=$animalId oldAnimalStatsValue=${previousStatsByAnimalId[animalId]?.toString() ?: "unknown"} newAnimalStatsValue=$rebuiltCount"
+                                    )
+                                    animalLogs += GlobalFindingStatsRebuildAnimalLog(
+                                        animalId = animalId,
+                                        previousStatsCount = previousStatsByAnimalId[animalId],
+                                        rebuiltStatsCount = rebuiltCount
+                                    )
+                                    processNextAnimal()
+                                }
+                                .addOnFailureListener { exception ->
+                                    Log.e(
+                                        TAG,
+                                        "Failed to rebuild animalStats for $animalId: ${exception.message ?: "Unbekannter Fehler"}",
+                                        exception
+                                    )
+                                    onResult(false, null, exception.message)
+                                }
+                        }
+
+                        processNextAnimal()
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.e(
+                            TAG,
+                            "Failed to load animalStats before rebuild: ${exception.message ?: "Unbekannter Fehler"}",
+                            exception
+                        )
+                        onResult(false, null, exception.message)
+                    }
+            }
+            .addOnFailureListener { exception ->
+                Log.e(
+                    TAG,
+                    "Failed to load globalFindingContributions for rebuild: ${exception.message ?: "Unbekannter Fehler"}",
+                    exception
+                )
+                onResult(false, null, exception.message)
+            }
     }
 }
 
