@@ -63,6 +63,7 @@ object FriendRepository {
     private const val TAG = "FriendRepository"
     private const val STATUS_PENDING = "pending"
     private const val STATUS_ACCEPTED = "accepted"
+    private const val MAX_COMMENT_LENGTH = 500
     private val firestore: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
     private val blockedStoredDisplayNames = setOf(
         "unbenannter nutzer",
@@ -433,6 +434,10 @@ object FriendRepository {
             onResult(false)
             return
         }
+        if (trimmedText.length > MAX_COMMENT_LENGTH) {
+            onResult(false)
+            return
+        }
 
         val commentData = hashMapOf<String, Any>(
             "commenterUid" to currentUserId,
@@ -739,6 +744,9 @@ object FriendRepository {
         val incomingRef = userDocument(targetUserId)
             .collection("friendRequestsIncoming")
             .document(currentUserId)
+        val reverseIncomingRef = userDocument(currentUserId)
+            .collection("friendRequestsIncoming")
+            .document(targetUserId)
         val currentUserFriendRef = userDocument(currentUserId)
             .collection("friends")
             .document(targetUserId)
@@ -757,24 +765,43 @@ object FriendRepository {
                             return@addOnSuccessListener
                         }
 
-                        val requestData = hashMapOf(
-                            "fromUserId" to currentUserId,
-                            "toUserId" to targetUserId,
-                            "status" to STATUS_PENDING,
-                            "createdAt" to FieldValue.serverTimestamp()
-                        )
+                        reverseIncomingRef.get()
+                            .addOnSuccessListener { reverseIncomingDocument ->
+                                if (reverseIncomingDocument.exists()) {
+                                    onResult(
+                                        false,
+                                        "Dieser Nutzer hat dir bereits eine Anfrage gesendet."
+                                    )
+                                    return@addOnSuccessListener
+                                }
 
-                        val batch = firestore.batch()
-                        batch.set(outgoingRef, requestData)
-                        batch.set(incomingRef, requestData)
-                        batch.commit()
-                            .addOnSuccessListener {
-                                onResult(true, null)
+                                val requestData = hashMapOf(
+                                    "fromUserId" to currentUserId,
+                                    "toUserId" to targetUserId,
+                                    "status" to STATUS_PENDING,
+                                    "createdAt" to FieldValue.serverTimestamp()
+                                )
+
+                                val batch = firestore.batch()
+                                batch.set(outgoingRef, requestData)
+                                batch.set(incomingRef, requestData)
+                                batch.commit()
+                                    .addOnSuccessListener {
+                                        onResult(true, null)
+                                    }
+                                    .addOnFailureListener { exception ->
+                                        Log.e(
+                                            TAG,
+                                            "Failed to send friend request: ${exception.message ?: "Unbekannter Fehler"}",
+                                            exception
+                                        )
+                                        onResult(false, exception.message)
+                                    }
                             }
                             .addOnFailureListener { exception ->
                                 Log.e(
                                     TAG,
-                                    "Failed to send friend request: ${exception.message ?: "Unbekannter Fehler"}",
+                                    "Failed to check reverse incoming request: ${exception.message ?: "Unbekannter Fehler"}",
                                     exception
                                 )
                                 onResult(false, exception.message)

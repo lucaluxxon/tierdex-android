@@ -9596,6 +9596,7 @@ fun FriendsScreen(
                                                 } else {
                                                     infoMessage = when (result) {
                                                         "Anfrage wurde bereits gesendet" -> "Die Anfrage wurde bereits gesendet."
+                                                        "Dieser Nutzer hat dir bereits eine Anfrage gesendet." -> "Dieser Nutzer hat dir bereits eine Anfrage gesendet."
                                                         "Ihr seid bereits befreundet" -> "Ihr seid bereits befreundet."
                                                         else -> null
                                                     }
@@ -10112,6 +10113,10 @@ fun FriendsScreen(
                                                     val trimmedComment = commentInput.trim()
                                                     if (trimmedComment.isBlank()) {
                                                         errorMessage = "Bitte gib einen Kommentar ein."
+                                                        return@Button
+                                                    }
+                                                    if (trimmedComment.length > 500) {
+                                                        errorMessage = "Kommentar darf höchstens 500 Zeichen lang sein."
                                                         return@Button
                                                     }
                                                     errorMessage = null
