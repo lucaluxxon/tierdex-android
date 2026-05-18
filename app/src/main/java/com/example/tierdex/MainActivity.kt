@@ -4274,22 +4274,8 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         resetSearchState()
         authEntryMode = null
     }
-    BackHandler(enabled = showIntroScreen) {
-        if (isIntroFromSettings) {
-            showIntroScreen = false
-        } else {
-            ownerId?.let {
-                prefs.edit()
-                    .putBoolean(introSeenKey(it), true)
-                    .putBoolean(introPendingKey(it), false)
-                    .apply()
-            }
-            showIntroScreen = false
-            ownerId?.takeIf { !prefs.getBoolean(rulesAcceptedKey(it), false) }?.let {
-                showRulesScreen = true
-            }
-            currentTab = AppTab.PROFILE
-        }
+    BackHandler(enabled = showIntroScreen && isIntroFromSettings) {
+        showIntroScreen = false
     }
 
     LaunchedEffect(currentTab) {
@@ -4347,7 +4333,21 @@ fun TierdexApp(database: AnimalFindingDatabase) {
             }
         },
         bottomBar = {
-            if (selectedAnimal == null && selectedFindingDetail == null && !showAnimalPicker && !showAuthStartScreen && !showAuthEntryScreen && !showIntroScreen && !showRulesScreen && !showSettingsScreen && !showNotificationsScreen) {
+            if (
+                selectedAnimal == null &&
+                selectedFindingDetail == null &&
+                selectedFriendProfileUserId == null &&
+                !showAnimalPicker &&
+                !showAuthStartScreen &&
+                !showAuthEntryScreen &&
+                !showIntroScreen &&
+                !showRulesScreen &&
+                !showSettingsScreen &&
+                !showNotificationsScreen &&
+                !showProfileFriendsScreen &&
+                !showProfilePhotoGalleryScreen &&
+                !showTierdexMapScreen
+            ) {
                 MainBottomBar(
                     currentTab = currentTab,
                     onTabSelected = {
@@ -4372,7 +4372,21 @@ fun TierdexApp(database: AnimalFindingDatabase) {
             }
         },
         floatingActionButton = {
-            if (selectedAnimal == null && selectedFindingDetail == null && !showAnimalPicker && !showAuthStartScreen && !showAuthEntryScreen && !showIntroScreen && !showRulesScreen && !showSettingsScreen && !showNotificationsScreen) {
+            if (
+                selectedAnimal == null &&
+                selectedFindingDetail == null &&
+                selectedFriendProfileUserId == null &&
+                !showAnimalPicker &&
+                !showAuthStartScreen &&
+                !showAuthEntryScreen &&
+                !showIntroScreen &&
+                !showRulesScreen &&
+                !showSettingsScreen &&
+                !showNotificationsScreen &&
+                !showProfileFriendsScreen &&
+                !showProfilePhotoGalleryScreen &&
+                !showTierdexMapScreen
+            ) {
                 FloatingActionButton(
                     onClick = {
                         resetSearchState()
@@ -4454,6 +4468,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         extraBottomPadding = innerPadding.calculateBottomPadding(),
                         showRulesSection = isIntroFromSettings,
                         showConfirmButton = !isIntroFromSettings,
+                        allowBackNavigation = isIntroFromSettings,
                         onClose = {
                             if (isIntroFromSettings) {
                                 showIntroScreen = false
@@ -4478,6 +4493,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                     TierdexRulesScreen(
                         extraTopPadding = innerPadding.calculateTopPadding(),
                         extraBottomPadding = innerPadding.calculateBottomPadding(),
+                        allowBackNavigation = false,
                         onConfirm = {
                             ownerId?.let {
                                 prefs.edit()
@@ -10321,9 +10337,14 @@ private fun AboutTierdexScreen(
     extraBottomPadding: Dp = 0.dp,
     showRulesSection: Boolean = true,
     showConfirmButton: Boolean = false,
+    allowBackNavigation: Boolean = true,
     onClose: () -> Unit
 ) {
-    BackHandler(onBack = onClose)
+    if (allowBackNavigation) {
+        BackHandler(onBack = onClose)
+    } else {
+        BackHandler {}
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -10419,9 +10440,14 @@ private fun AboutTierdexScreen(
 private fun TierdexRulesScreen(
     extraTopPadding: Dp = 0.dp,
     extraBottomPadding: Dp = 0.dp,
+    allowBackNavigation: Boolean = true,
     onConfirm: () -> Unit
 ) {
-    BackHandler(onBack = onConfirm)
+    if (allowBackNavigation) {
+        BackHandler(onBack = onConfirm)
+    } else {
+        BackHandler {}
+    }
 
     LazyColumn(
         modifier = Modifier
