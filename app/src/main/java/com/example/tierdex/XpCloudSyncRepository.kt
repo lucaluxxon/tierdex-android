@@ -83,6 +83,7 @@ object XpCloudSyncRepository {
             .get()
             .addOnSuccessListener { document ->
                 if (!document.exists()) {
+                    Log.d(TAG, "loadXpState userId=$cleanUid exists=false")
                     onResult(null)
                     return@addOnSuccessListener
                 }
@@ -95,6 +96,11 @@ object XpCloudSyncRepository {
                     .toSet()
                 val backfillV1Done = document.getBoolean("backfillV1Done") ?: false
                 val schemaVersion = document.getLong("schemaVersion")?.toInt() ?: XP_CLOUD_SCHEMA_VERSION
+
+                Log.d(
+                    TAG,
+                    "loadXpState userId=$cleanUid exists=true totalXp=$totalXp awardedKeyCount=${awardedXpKeys.size} backfillV1Done=$backfillV1Done schemaVersion=$schemaVersion"
+                )
 
                 onResult(
                     XpCloudState(
@@ -144,6 +150,10 @@ object XpCloudSyncRepository {
         xpStateDocument(cleanUid)
             .set(data, SetOptions.merge())
             .addOnSuccessListener {
+                Log.d(
+                    TAG,
+                    "saveXpState success userId=$cleanUid totalXp=${state.totalXp} awardedKeyCount=${state.awardedXpKeys.size} backfillV1Done=${state.backfillV1Done} path=users/$cleanUid/private/meta/xpState/state"
+                )
                 onResult(true, null)
             }
             .addOnFailureListener { exception ->
@@ -176,6 +186,10 @@ object XpCloudSyncRepository {
             uid = cleanUid,
             onResult = { cloudState ->
                 val localState = buildLocalXpState(cleanUid, prefs)
+                Log.d(
+                    TAG,
+                    "merge start userId=$cleanUid localTotalXp=${localState.totalXp} localAwardedKeyCount=${localState.awardedXpKeys.size} localBackfillV1Done=${localState.backfillV1Done} cloudTotalXp=${cloudState?.totalXp ?: 0} cloudAwardedKeyCount=${cloudState?.awardedXpKeys?.size ?: 0} cloudBackfillV1Done=${cloudState?.backfillV1Done ?: false}"
+                )
                 val mergedAwardedKeys = (localState.awardedXpKeys + (cloudState?.awardedXpKeys ?: emptySet()))
                     .map { it.trim() }
                     .filter { it.isNotBlank() }
@@ -188,6 +202,10 @@ object XpCloudSyncRepository {
                     backfillV1Done = mergedBackfillV1Done,
                     updatedAt = cloudState?.updatedAt,
                     schemaVersion = XP_CLOUD_SCHEMA_VERSION
+                )
+                Log.d(
+                    TAG,
+                    "merge result userId=$cleanUid mergedTotalXp=${mergedState.totalXp} mergedAwardedKeyCount=${mergedState.awardedXpKeys.size} mergedBackfillV1Done=${mergedState.backfillV1Done}"
                 )
 
                 XpProgressRepository.storeAwardedXpKeys(
