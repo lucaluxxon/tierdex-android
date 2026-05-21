@@ -2,8 +2,11 @@ const admin = require("firebase-admin");
 const logger = require("firebase-functions/logger");
 const { onDocumentWritten } = require("firebase-functions/v2/firestore");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
+const { onSchedule } = require("firebase-functions/v2/scheduler");
 const { FieldValue } = require("firebase-admin/firestore");
 const crypto = require("crypto");
+const fs = require("fs");
+const path = require("path");
 
 if (!admin.apps.length) {
   admin.initializeApp();
@@ -11,9 +14,17 @@ if (!admin.apps.length) {
 
 const db = admin.firestore();
 const NOTIFICATION_SCHEMA_VERSION = 1;
+const DAILY_ANIMAL_SCHEMA_VERSION = 1;
+const DAILY_ANIMAL_TIME_ZONE = "Europe/Berlin";
+const DAILY_ANIMAL_SCHEDULE = "5 0 * * *";
+const DAILY_ANIMAL_SOURCE = "scheduled-function";
 
 function normalizeString(value) {
   return typeof value === "string" ? value.trim() : "";
+}
+
+function dailyAnimalDocument(dateKey) {
+  return db.collection("dailyAnimals").doc(dateKey);
 }
 
 function animalStatsDocument(animalId) {
@@ -32,6 +43,76 @@ function contributionPayload(ownerUid, findingId, animalId) {
     animalId,
     updatedAt: FieldValue.serverTimestamp(),
   };
+}
+
+function formatDateKeyInTimeZone(date, timeZone) {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  const parts = formatter.formatToParts(date);
+  const values = Object.create(null);
+  parts.forEach((part) => {
+    if (part.type !== "literal") {
+      values[part.type] = part.value;
+    }
+  });
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+function loadDailyAnimalIds() {
+  const candidatePaths = [
+    path.join(__dirname, "animal_ids.json"),
+    path.join(__dirname, "..", "app", "src", "main", "assets", "animals.json"),
+  ];
+
+  for (const candidatePath of candidatePaths) {
+    try {
+      if (!fs.existsSync(candidatePath)) {
+        continue;
+      }
+      const raw = fs.readFileSync(candidatePath, "utf8");
+      const parsed = JSON.parse(raw);
+      const ids = Array.isArray(parsed)
+        ? parsed
+          .map((entry) => {
+            if (typeof entry === "string") {
+              return normalizeString(entry);
+            }
+            if (entry && typeof entry === "object") {
+              return normalizeString(entry.id);
+            }
+            return "";
+          })
+          .filter(Boolean)
+        : [];
+      const uniqueSortedIds = Array.from(new Set(ids)).sort();
+      if (uniqueSortedIds.length > 0) {
+        return uniqueSortedIds;
+      }
+    } catch (error) {
+      logger.warn("DailyAnimal failed to load candidate animal ids", {
+        candidatePath,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  return [];
+}
+
+function selectDeterministicDailyAnimalId(animalIds, dateKey) {
+  if (!Array.isArray(animalIds) || animalIds.length === 0) {
+    return "";
+  }
+
+  const digest = crypto.createHash("sha256")
+    .update(`daily-animal|${normalizeString(dateKey)}`)
+    .digest();
+  const index = digest.readUInt32BE(0) % animalIds.length;
+  return normalizeString(animalIds[index]);
 }
 
 function notificationDocument(recipientUid, notificationId) {
@@ -472,6 +553,68 @@ exports.rebuildGlobalFindingStats = onCall(async (request) => {
     throw new HttpsError("internal", "GlobalStats-Rebuild fehlgeschlagen.");
   }
 });
+
+exports.ensureDailyAnimal = onSchedule(
+  {
+    schedule: DAILY_ANIMAL_SCHEDULE,
+    timeZone: DAILY_ANIMAL_TIME_ZONE,
+  },
+  async () => {
+    const dateKey = formatDateKeyInTimeZone(new Date(), DAILY_ANIMAL_TIME_ZONE);
+    const animalIds = loadDailyAnimalIds();
+
+    if (animalIds.length === 0) {
+      logger.error("DailyAnimal skipped because no valid animal ids are available", {
+        dateKey,
+        timeZone: DAILY_ANIMAL_TIME_ZONE,
+      });
+      return;
+    }
+
+    const animalId = selectDeterministicDailyAnimalId(animalIds, dateKey);
+    if (!animalId) {
+      logger.error("DailyAnimal skipped because deterministic selection returned no animalId", {
+        dateKey,
+        animalIdCount: animalIds.length,
+      });
+      return;
+    }
+
+    const documentRef = dailyAnimalDocument(dateKey);
+    try {
+      await documentRef.create({
+        animalId,
+        date: dateKey,
+        createdAt: FieldValue.serverTimestamp(),
+        schemaVersion: DAILY_ANIMAL_SCHEMA_VERSION,
+        source: DAILY_ANIMAL_SOURCE,
+      });
+      logger.info("DailyAnimal created", {
+        dateKey,
+        animalId,
+        path: documentRef.path,
+        schemaVersion: DAILY_ANIMAL_SCHEMA_VERSION,
+        source: DAILY_ANIMAL_SOURCE,
+      });
+    } catch (error) {
+      const errorCode = error && typeof error === "object" ? error.code : undefined;
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      if (errorCode === 6 || /already exists/i.test(errorMessage)) {
+        logger.info("DailyAnimal already existed", {
+          dateKey,
+          path: documentRef.path,
+        });
+        return;
+      }
+      logger.error("DailyAnimal creation failed", {
+        dateKey,
+        path: documentRef.path,
+        error: errorMessage,
+      });
+      throw error;
+    }
+  }
+);
 
 exports.syncFriendRequestNotification = onDocumentWritten(
   "users/{recipientUid}/friendRequestsIncoming/{fromUid}",
