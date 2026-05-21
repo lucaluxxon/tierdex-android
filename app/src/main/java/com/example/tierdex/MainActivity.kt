@@ -5238,6 +5238,12 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                     "onUpdateFinding start animalId=${oldFinding.animalId} oldLocalPhotoCount=$oldLocalPhotoCount newLocalPhotoCount=$newLocalPhotoCount oldRemotePhotoCount=$oldRemotePhotoCount"
                                 )
                                 val ownerIdForUpload = currentOwnerId
+                                val oldOwnedRemotePhotoPaths = ownerIdForUpload?.let { ownerId ->
+                                    FindingPhotoStorageRepository.collectOwnedFindingRemoteStoragePaths(
+                                        userId = ownerId,
+                                        finding = oldFinding
+                                    )
+                                }.orEmpty()
                                 val preparedNewFinding = if (
                                     !ownerIdForUpload.isNullOrBlank() &&
                                     effectiveLocalPhotoUris(newFinding).isNotEmpty()
@@ -5374,6 +5380,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                     )
 
                                     if (currentOwnerId != null) {
+                                        val safeOwnerIdForUpload = ownerIdForUpload
                                         val firestoreUpdateStartedAt = SystemClock.elapsedRealtime()
                                         Log.d(
                                             "FindingUpdateTiming",
@@ -5393,6 +5400,23 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                                     "Firestore update on edit failed: $result"
                                                 )
                                             } else {
+                                                if (!safeOwnerIdForUpload.isNullOrBlank()) {
+                                                    val newOwnedRemotePhotoPaths =
+                                                        FindingPhotoStorageRepository.collectOwnedFindingRemoteStoragePaths(
+                                                            userId = safeOwnerIdForUpload,
+                                                            finding = preparedNewFinding
+                                                        )
+                                                    val obsoleteRemotePhotoPaths =
+                                                        oldOwnedRemotePhotoPaths - newOwnedRemotePhotoPaths
+                                                    if (obsoleteRemotePhotoPaths.isNotEmpty()) {
+                                                        scope.launch {
+                                                            FindingPhotoStorageRepository.deleteRemoteStoragePathsBestEffort(
+                                                                userId = safeOwnerIdForUpload,
+                                                                remotePaths = obsoleteRemotePhotoPaths
+                                                            )
+                                                        }
+                                                    }
+                                                }
                                                 Log.d(
                                                     "GlobalFindingStats",
                                                     "update queued for server sync oldFindingId=${FirestoreFindingRepository.documentIdForFinding(oldFinding)} newFindingId=${FirestoreFindingRepository.documentIdForFinding(preparedNewFinding)} oldAnimalId=${oldFinding.animalId} newAnimalId=${preparedNewFinding.animalId}"

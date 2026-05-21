@@ -71,6 +71,30 @@ object FindingPhotoStorageRepository {
             .distinct()
     }
 
+    private fun normalizeOwnedFindingStoragePath(
+        userId: String,
+        rawPath: String
+    ): String? {
+        val trimmedUserId = userId.trim()
+        if (trimmedUserId.isBlank()) return null
+
+        val normalizedPath = when {
+            rawPath.startsWith(STORAGE_URI_PREFIX, ignoreCase = true) ->
+                storagePathFromUri(rawPath)
+
+            rawPath.startsWith("internal://", ignoreCase = true) -> null
+            rawPath.startsWith("content://", ignoreCase = true) -> null
+            rawPath.startsWith("file://", ignoreCase = true) -> null
+            rawPath.startsWith("http://", ignoreCase = true) -> null
+            rawPath.startsWith("https://", ignoreCase = true) -> null
+            rawPath.startsWith("android.resource://", ignoreCase = true) -> null
+            else -> rawPath.trim()
+        }?.trim()?.takeIf { it.isNotBlank() } ?: return null
+
+        val requiredPrefix = "users/$trimmedUserId/findings/"
+        return normalizedPath.takeIf { it.startsWith(requiredPrefix) }
+    }
+
     private fun isFriendFeedThumbnailStoragePath(remotePhotoPath: String): Boolean {
         return remotePhotoPath.contains("thumb_photo", ignoreCase = true)
     }
@@ -176,6 +200,58 @@ object FindingPhotoStorageRepository {
             "FindingPhotoCleanup",
             "cleanup completed roomId=${finding.roomId?.toString() ?: "-"} animalId=${finding.animalId} remotePathCount=${remotePaths.size}"
         )
+    }
+
+    fun collectOwnedFindingRemoteStoragePaths(
+        userId: String,
+        finding: AnimalFinding
+    ): Set<String> {
+        return collectRemoteFindingStoragePaths(finding)
+            .mapNotNull { rawPath -> normalizeOwnedFindingStoragePath(userId, rawPath) }
+            .toSet()
+    }
+
+    suspend fun deleteRemoteStoragePathsBestEffort(
+        userId: String,
+        remotePaths: Collection<String>
+    ) {
+        val trimmedUserId = userId.trim()
+        if (trimmedUserId.isBlank()) {
+            Log.d("FindingPhotoCleanup", "deleteRemotePaths skipped reason=blankUserId")
+            return
+        }
+
+        val normalizedPaths = remotePaths
+            .mapNotNull { rawPath -> normalizeOwnedFindingStoragePath(trimmedUserId, rawPath) }
+            .distinct()
+        if (normalizedPaths.isEmpty()) {
+            Log.d("FindingPhotoCleanup", "deleteRemotePaths skipped reason=noOwnedFindingPaths")
+            return
+        }
+
+        withContext(Dispatchers.IO) {
+            normalizedPaths.forEach { remotePath ->
+                runCatching {
+                    Tasks.await(storage.reference.child(remotePath).delete())
+                    Log.d("FindingPhotoCleanup", "deleteRemotePaths success path=$remotePath")
+                }.getOrElse { exception ->
+                    val lowerMessage = exception.message.orEmpty().lowercase()
+                    val fileMissing =
+                        lowerMessage.contains("object does not exist") ||
+                            lowerMessage.contains("not found") ||
+                            lowerMessage.contains("no object exists")
+                    if (fileMissing) {
+                        Log.d("FindingPhotoCleanup", "deleteRemotePaths missing path=$remotePath")
+                    } else {
+                        Log.w(
+                            "FindingPhotoCleanup",
+                            "deleteRemotePaths error path=$remotePath error=${exception.message ?: "Unbekannter Fehler"}",
+                            exception
+                        )
+                    }
+                }
+            }
+        }
     }
 
     suspend fun uploadFindingPhoto(
