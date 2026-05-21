@@ -9207,6 +9207,10 @@ fun FriendsScreen(
             onResult = {
                 val sortedFeed = FriendRepository.sortFriendFeedItems(it)
                 Log.d(
+                    "FriendFeedPerformance",
+                    "path=cloud friendCount=${friends.size} loadedCloudFindings=${sortedFeed.size} feedItemCount=${sortedFeed.size} sortField=updatedAt fallbackUsed=false"
+                )
+                Log.d(
                     "FriendFeedCache",
                     "cloud refresh end cacheOwnerUserId=$safeUserId itemCount=${sortedFeed.size}"
                 )
@@ -9295,6 +9299,10 @@ fun FriendsScreen(
                 "cache load detail cacheOwnerUserId=$safeUserId itemCount=${cachedFeed.size} thumbnailPathCount=${cachedFeed.count { it.finding.thumbnailRemotePhotoPath.isNotBlank() }} remotePhotoPathCount=${cachedFeed.sumOf { effectiveRemotePhotoPaths(it.finding).size }}"
             )
             if (cachedFeed.isNotEmpty()) {
+                Log.d(
+                    "FriendFeedPerformance",
+                    "path=cache friendCount=${friends.size} loadedCloudFindings=0 feedItemCount=${cachedFeed.size} sortField=cache fallbackUsed=false"
+                )
                 friendFeed = cachedFeed
                 isShowingCachedFeed = true
                 feedStatusMessage = "Aktualisiere…"

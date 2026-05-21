@@ -1,6 +1,7 @@
 package com.example.tierdex
 
 import android.util.Log
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import java.security.MessageDigest
 
@@ -114,38 +115,58 @@ object FirestoreFindingRepository {
             return
         }
 
-        val findingData = hashMapOf(
-            "animalId" to finding.animalId,
-            "date" to finding.date,
-            "location" to finding.location,
-            "note" to finding.note,
-            "photoUri" to finding.photoUri,
-            "remotePhotoPath" to finding.remotePhotoPath,
-            "thumbnailRemotePhotoPath" to finding.thumbnailRemotePhotoPath,
-            "photoUris" to effectiveLocalPhotoUris(finding),
-            "remotePhotoPaths" to effectiveRemotePhotoPaths(finding),
-            "latitude" to finding.latitude,
-            "longitude" to finding.longitude,
-            "locationSource" to finding.locationSource,
-            "taggedFriendIds" to finding.taggedFriendIds
-        )
-
         val documentId = hashedDocumentIdForFinding(finding)
-        Log.d(TAG, "Generated hashed Firestore documentId for finding: $documentId")
-
-        firestore.collection("users")
+        val documentRef = firestore.collection("users")
             .document(uid)
             .collection("findings")
             .document(documentId)
-            .set(findingData)
-            .addOnSuccessListener {
-                Log.d(TAG, "Saved finding $documentId for user $uid")
-                onResult(true, documentId)
+        Log.d(TAG, "Generated hashed Firestore documentId for finding: $documentId")
+
+        documentRef
+            .get()
+            .addOnSuccessListener { existingDocument ->
+                val findingData = hashMapOf<String, Any?>(
+                    "animalId" to finding.animalId,
+                    "date" to finding.date,
+                    "location" to finding.location,
+                    "note" to finding.note,
+                    "photoUri" to finding.photoUri,
+                    "remotePhotoPath" to finding.remotePhotoPath,
+                    "thumbnailRemotePhotoPath" to finding.thumbnailRemotePhotoPath,
+                    "photoUris" to effectiveLocalPhotoUris(finding),
+                    "remotePhotoPaths" to effectiveRemotePhotoPaths(finding),
+                    "latitude" to finding.latitude,
+                    "longitude" to finding.longitude,
+                    "locationSource" to finding.locationSource,
+                    "taggedFriendIds" to finding.taggedFriendIds,
+                    "updatedAt" to FieldValue.serverTimestamp()
+                )
+
+                existingDocument.getTimestamp("createdAt")?.let { existingCreatedAt ->
+                    findingData["createdAt"] = existingCreatedAt
+                } ?: run {
+                    findingData["createdAt"] = FieldValue.serverTimestamp()
+                }
+
+                documentRef
+                    .set(findingData)
+                    .addOnSuccessListener {
+                        Log.d(TAG, "Saved finding $documentId for user $uid")
+                        onResult(true, documentId)
+                    }
+                    .addOnFailureListener { exception ->
+                        Log.e(
+                            TAG,
+                            "Failed to save finding to Firestore: ${exception.message ?: "Unbekannter Fehler"}",
+                            exception
+                        )
+                        onResult(false, exception.message)
+                    }
             }
             .addOnFailureListener { exception ->
                 Log.e(
                     TAG,
-                    "Failed to save finding to Firestore: ${exception.message ?: "Unbekannter Fehler"}",
+                    "Failed to prepare finding save for Firestore: ${exception.message ?: "Unbekannter Fehler"}",
                     exception
                 )
                 onResult(false, exception.message)

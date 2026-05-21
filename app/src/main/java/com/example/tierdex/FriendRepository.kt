@@ -3,9 +3,11 @@ package com.example.tierdex
 import android.util.Log
 import android.os.SystemClock
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.AggregateSource
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -64,6 +66,8 @@ object FriendRepository {
     private const val STATUS_PENDING = "pending"
     private const val STATUS_ACCEPTED = "accepted"
     private const val MAX_COMMENT_LENGTH = 500
+    private const val FRIEND_FEED_FINDINGS_LIMIT_PER_FRIEND = 20L
+    private const val FRIEND_FEED_SORT_FIELD = "updatedAt"
     private val firestore: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
     private val blockedStoredDisplayNames = setOf(
         "unbenannter nutzer",
@@ -262,26 +266,60 @@ object FriendRepository {
             return
         }
 
-        findingLikesCollection(ownerUserId, findingId)
-            .get()
+        val likesCollection = findingLikesCollection(ownerUserId, findingId)
+        var aggregateCount: Int? = null
+        var likedByCurrentUser: Boolean? = null
+        var fallbackTriggered = false
+        var remainingCallbacks = 2
+
+        fun maybeDispatchAggregateResult() {
+            remainingCallbacks -= 1
+            if (remainingCallbacks == 0 && !fallbackTriggered) {
+                val finalCount = aggregateCount ?: 0
+                val finalLiked = likedByCurrentUser ?: false
+                Log.d(
+                    "SocialCountsPerformance",
+                    "likeCount source=findingLikesAggregate ownerUserId=$ownerUserId findingId=$findingId likeCount=$finalCount likedByCurrentUser=$finalLiked"
+                )
+                onResult(finalCount, finalLiked)
+            }
+        }
+
+        fun triggerLegacyFallback(exception: Exception) {
+            if (fallbackTriggered) return
+            fallbackTriggered = true
+            Log.w(
+                "SocialCountsPerformance",
+                "likeCount source=legacyFallback ownerUserId=$ownerUserId findingId=$findingId reason=${exception.message}",
+                exception
+            )
+            loadLikeInfoForFindingLegacy(
+                ownerUserId = ownerUserId,
+                findingId = findingId,
+                currentUserId = currentUserId,
+                onResult = onResult,
+                onError = onError
+            )
+        }
+
+        likesCollection.count()
+            .get(AggregateSource.SERVER)
             .addOnSuccessListener { snapshot ->
-                val likeCount = snapshot.size()
-                val likedByCurrentUser = snapshot.documents.any { it.id == currentUserId }
-                onResult(likeCount, likedByCurrentUser)
+                aggregateCount = snapshot.count.toInt()
+                maybeDispatchAggregateResult()
             }
             .addOnFailureListener { exception ->
-                val wrappedException = toFirestoreException(
-                    functionName = "loadLikeInfoForFinding",
-                    operation = "READ",
-                    path = "users/$ownerUserId/findings/$findingId/likes",
-                    exception = exception
-                )
-                Log.e(
-                    TAG,
-                    wrappedException.message ?: "Failed to load like info",
-                    wrappedException
-                )
-                onError(wrappedException)
+                triggerLegacyFallback(exception)
+            }
+
+        likesCollection.document(currentUserId)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                likedByCurrentUser = snapshot.exists()
+                maybeDispatchAggregateResult()
+            }
+            .addOnFailureListener { exception ->
+                triggerLegacyFallback(exception)
             }
     }
 
@@ -302,7 +340,13 @@ object FriendRepository {
         val likeDocument = findingLikesCollection(ownerUserId, findingId).document(currentUserId)
         if (currentlyLiked) {
             likeDocument.delete()
-                .addOnSuccessListener { onResult(false) }
+                .addOnSuccessListener {
+                    Log.d(
+                        "SocialCountsPerformance",
+                        "likeToggle action=unlike ownerUserId=$ownerUserId findingId=$findingId countBefore=unknown countAfter=unknown"
+                    )
+                    onResult(false)
+                }
                 .addOnFailureListener { exception ->
                     val wrappedException = toFirestoreException(
                         functionName = "toggleLikeForFinding",
@@ -324,7 +368,13 @@ object FriendRepository {
             )
             putActorDisplayName(likeData, "likerDisplayName", currentDisplayName)
             likeDocument.set(likeData)
-                .addOnSuccessListener { onResult(true) }
+                .addOnSuccessListener {
+                    Log.d(
+                        "SocialCountsPerformance",
+                        "likeToggle action=like ownerUserId=$ownerUserId findingId=$findingId countBefore=unknown countAfter=unknown"
+                    )
+                    onResult(true)
+                }
                 .addOnFailureListener { exception ->
                     val wrappedException = toFirestoreException(
                         functionName = "toggleLikeForFinding",
@@ -396,23 +446,28 @@ object FriendRepository {
         }
 
         findingCommentsCollection(ownerUserId, findingId)
-            .get()
+            .count()
+            .get(AggregateSource.SERVER)
             .addOnSuccessListener { snapshot ->
-                onResult(snapshot.documents.count { !it.getString("text").isNullOrBlank() })
+                val commentCount = snapshot.count.toInt()
+                Log.d(
+                    "SocialCountsPerformance",
+                    "commentCount source=findingCommentsAggregate ownerUserId=$ownerUserId findingId=$findingId commentCount=$commentCount"
+                )
+                onResult(commentCount)
             }
             .addOnFailureListener { exception ->
-                val wrappedException = toFirestoreException(
-                    functionName = "loadCommentCountForFinding",
-                    operation = "READ",
-                    path = "users/$ownerUserId/findings/$findingId/comments",
-                    exception = exception
+                Log.w(
+                    "SocialCountsPerformance",
+                    "commentCount source=legacyFallback ownerUserId=$ownerUserId findingId=$findingId reason=${exception.message}",
+                    exception
                 )
-                Log.e(
-                    TAG,
-                    wrappedException.message ?: "Failed to load comment count",
-                    wrappedException
+                loadCommentCountForFindingLegacy(
+                    ownerUserId = ownerUserId,
+                    findingId = findingId,
+                    onResult = onResult,
+                    onError = onError
                 )
-                onError(wrappedException)
             }
     }
 
@@ -449,7 +504,13 @@ object FriendRepository {
         findingCommentsCollection(ownerUserId, findingId)
             .document()
             .set(commentData)
-            .addOnSuccessListener { onResult(true) }
+            .addOnSuccessListener {
+                Log.d(
+                    "SocialCountsPerformance",
+                    "commentCreate ownerUserId=$ownerUserId findingId=$findingId countBefore=unknown countAfter=unknown"
+                )
+                onResult(true)
+            }
             .addOnFailureListener { exception ->
                 val wrappedException = toFirestoreException(
                     functionName = "addCommentToFinding",
@@ -460,6 +521,72 @@ object FriendRepository {
                 Log.e(
                     TAG,
                     wrappedException.message ?: "Failed to add comment",
+                    wrappedException
+                )
+                onError(wrappedException)
+            }
+    }
+
+    private fun loadLikeInfoForFindingLegacy(
+        ownerUserId: String,
+        findingId: String,
+        currentUserId: String,
+        onResult: (likeCount: Int, likedByCurrentUser: Boolean) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        findingLikesCollection(ownerUserId, findingId)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val likeCount = snapshot.size()
+                val likedByCurrentUser = snapshot.documents.any { it.id == currentUserId }
+                Log.d(
+                    "SocialCountsPerformance",
+                    "likeCount source=legacyFullRead ownerUserId=$ownerUserId findingId=$findingId likeCount=$likeCount likedByCurrentUser=$likedByCurrentUser"
+                )
+                onResult(likeCount, likedByCurrentUser)
+            }
+            .addOnFailureListener { exception ->
+                val wrappedException = toFirestoreException(
+                    functionName = "loadLikeInfoForFinding",
+                    operation = "READ",
+                    path = "users/$ownerUserId/findings/$findingId/likes",
+                    exception = exception
+                )
+                Log.e(
+                    TAG,
+                    wrappedException.message ?: "Failed to load like info",
+                    wrappedException
+                )
+                onError(wrappedException)
+            }
+    }
+
+    private fun loadCommentCountForFindingLegacy(
+        ownerUserId: String,
+        findingId: String,
+        onResult: (Int) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        findingCommentsCollection(ownerUserId, findingId)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val commentCount = snapshot.documents.count { !it.getString("text").isNullOrBlank() }
+                Log.d(
+                    "SocialCountsPerformance",
+                    "commentCount source=legacyFullRead ownerUserId=$ownerUserId findingId=$findingId commentCount=$commentCount"
+                )
+                onResult(commentCount)
+            }
+            .addOnFailureListener { exception ->
+                val wrappedException = toFirestoreException(
+                    functionName = "loadCommentCountForFinding",
+                    operation = "READ",
+                    path = "users/$ownerUserId/findings/$findingId/comments",
+                    exception = exception
+                )
+                Log.e(
+                    TAG,
+                    wrappedException.message ?: "Failed to load comment count",
                     wrappedException
                 )
                 onError(wrappedException)
@@ -1231,11 +1358,17 @@ object FriendRepository {
                 val feedItems = mutableListOf<FriendFeedItem>()
                 var remaining = snapshot.documents.size
                 var firstError: Exception? = null
+                var loadedCloudFindingCount = 0
+                var fallbackFriendCount = 0
 
                 fun finishIfReady() {
                     remaining -= 1
                     if (remaining == 0) {
                         val sortedFeedItems = sortFriendFeedItems(feedItems)
+                        Log.d(
+                            "FriendFeedPerformance",
+                            "path=cloud friendCount=${snapshot.documents.size} loadedCloudFindings=$loadedCloudFindingCount feedItemCount=${sortedFeedItems.size} sortField=$FRIEND_FEED_SORT_FIELD fallbackLegacyFriendCount=$fallbackFriendCount"
+                        )
                         Log.d(
                             "FriendFeedTiming",
                             "loadFriendsFeed end friendCount=${snapshot.documents.size} itemCount=${sortedFeedItems.size} totalDurationMs=${SystemClock.elapsedRealtime() - feedStartedAt}"
@@ -1261,150 +1394,101 @@ object FriendRepository {
                             val friendDisplayName = profile?.displayName.orEmpty()
                             val friendProfilePhotoPath = profile?.profilePhotoPath.orEmpty()
                             val findingsLoadStartedAt = SystemClock.elapsedRealtime()
-                            userDocument(friendUserId)
+                            val findingsCollection = userDocument(friendUserId)
                                 .collection("findings")
+                            findingsCollection
+                                .orderBy(FRIEND_FEED_SORT_FIELD, Query.Direction.DESCENDING)
+                                .limit(FRIEND_FEED_FINDINGS_LIMIT_PER_FRIEND)
                                 .get()
                                 .addOnSuccessListener { findingsSnapshot ->
-                                    Log.d(
-                                        "FriendFeedTiming",
-                                        "friend findings loaded friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - findingsLoadStartedAt} findingCount=${findingsSnapshot.documents.size}"
-                                    )
-                                    if (findingsSnapshot.isEmpty) {
-                                        finishIfReady()
-                                        return@addOnSuccessListener
-                                    }
-
-                                    var pendingFindingLikes = findingsSnapshot.documents.size
-                                    fun finishFriendLoad() {
-                                        pendingFindingLikes -= 1
-                                        if (pendingFindingLikes == 0) {
-                                            finishIfReady()
-                                        }
-                                    }
-
-                                    findingsSnapshot.documents.forEach { findingDocument ->
-                                        val thumbnailRemotePhotoPath =
-                                            findingDocument.getString("thumbnailRemotePhotoPath").orEmpty()
-                                        val hasRemotePhotoPaths =
-                                            findingDocument.getPhotoValuesOrEmpty("remotePhotoPaths").isNotEmpty() ||
-                                                !findingDocument.getString("remotePhotoPath").isNullOrBlank()
-                                        val finding = AnimalFinding(
-                                            animalId = findingDocument.getString("animalId").orEmpty(),
-                                            date = findingDocument.getString("date").orEmpty(),
-                                            location = findingDocument.getString("location").orEmpty(),
-                                            note = findingDocument.getString("note").orEmpty(),
-                                            photoUri = findingDocument.getString("photoUri").orEmpty(),
-                                            remotePhotoPath = findingDocument.getString("remotePhotoPath").orEmpty(),
-                                            thumbnailRemotePhotoPath = thumbnailRemotePhotoPath,
-                                            photoUris = findingDocument.getPhotoValuesOrEmpty("photoUris"),
-                                            remotePhotoPaths = findingDocument.getPhotoValuesOrEmpty("remotePhotoPaths"),
-                                            latitude = findingDocument.getDouble("latitude"),
-                                            longitude = findingDocument.getDouble("longitude"),
-                                            locationSource = findingDocument.getString("locationSource"),
-                                            ownerId = friendUserId,
-                                            taggedFriendIds = findingDocument.getTaggedFriendIdsOrEmpty()
+                                    val orderedDocuments = findingsSnapshot.documents
+                                    if (orderedDocuments.isNotEmpty()) {
+                                        loadedCloudFindingCount += orderedDocuments.size
+                                        Log.d(
+                                            "FriendFeedPerformance",
+                                            "friend=*${safeFriendId} path=cloud sortField=$FRIEND_FEED_SORT_FIELD fallbackUsed=false loadedFindings=${orderedDocuments.size}"
                                         )
                                         Log.d(
                                             "FriendFeedTiming",
-                                            "finding meta friend=*${safeFriendId} hasThumbnailRemotePhotoPath=${thumbnailRemotePhotoPath.isNotBlank()} hasRemotePhotoPaths=$hasRemotePhotoPaths remotePhotoPathCount=${effectiveRemotePhotoPaths(finding).size}"
+                                            "friend findings loaded friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - findingsLoadStartedAt} findingCount=${orderedDocuments.size}"
                                         )
-                                        val likeLoadStartedAt = SystemClock.elapsedRealtime()
-                                        loadLikeInfoForFinding(
-                                            ownerUserId = friendUserId,
-                                            findingId = findingDocument.id,
+                                        processFriendFeedFindingDocuments(
+                                            findingDocuments = orderedDocuments,
+                                            friendUserId = friendUserId,
+                                            safeFriendId = safeFriendId,
+                                            friendDisplayName = friendDisplayName,
+                                            friendProfilePhotoPath = friendProfilePhotoPath,
                                             currentUserId = currentUserId,
-                                            onResult = { likeCount, likedByCurrentUser ->
-                                                Log.d(
-                                                    "FriendFeedTiming",
-                                                    "like info loaded friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - likeLoadStartedAt}"
-                                                )
-                                                val commentCountStartedAt = SystemClock.elapsedRealtime()
-                                                loadCommentCountForFinding(
-                                                    ownerUserId = friendUserId,
-                                                    findingId = findingDocument.id,
-                                                    onResult = { commentCount ->
-                                                        Log.d(
-                                                            "FriendFeedTiming",
-                                                            "comment count loaded friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - commentCountStartedAt}"
-                                                        )
-                                                        feedItems += FriendFeedItem(
-                                                            friendUserId = friendUserId,
-                                                            friendDisplayName = friendDisplayName,
-                                                            friendProfilePhotoPath = friendProfilePhotoPath,
-                                                            findingId = findingDocument.id,
-                                                            finding = finding,
-                                                            likeCount = likeCount,
-                                                            likedByCurrentUser = likedByCurrentUser,
-                                                            commentCount = commentCount
-                                                        )
-                                                        finishFriendLoad()
-                                                    },
-                                                    onError = { exception ->
-                                                        Log.w(
-                                                            "FriendFeedTiming",
-                                                            "comment count failed friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - commentCountStartedAt} error=${exception.message ?: "Unbekannter Fehler"}"
-                                                        )
-                                                        if (firstError == null) {
-                                                            firstError = exception
-                                                        }
-                                                        feedItems += FriendFeedItem(
-                                                            friendUserId = friendUserId,
-                                                            friendDisplayName = friendDisplayName,
-                                                            friendProfilePhotoPath = friendProfilePhotoPath,
-                                                            findingId = findingDocument.id,
-                                                            finding = finding,
-                                                            likeCount = likeCount,
-                                                            likedByCurrentUser = likedByCurrentUser
-                                                        )
-                                                        finishFriendLoad()
-                                                    }
-                                                )
-                                            },
-                                            onError = { exception ->
-                                                Log.w(
-                                                    "FriendFeedTiming",
-                                                    "like info failed friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - likeLoadStartedAt} error=${exception.message ?: "Unbekannter Fehler"}"
-                                                )
+                                            feedItems = feedItems,
+                                            onFirstError = { exception ->
                                                 if (firstError == null) {
                                                     firstError = exception
                                                 }
-                                                val commentCountStartedAt = SystemClock.elapsedRealtime()
-                                                loadCommentCountForFinding(
-                                                    ownerUserId = friendUserId,
-                                                    findingId = findingDocument.id,
-                                                    onResult = { commentCount ->
-                                                        Log.d(
-                                                            "FriendFeedTiming",
-                                                            "comment count loaded after like failure friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - commentCountStartedAt}"
-                                                        )
-                                                        feedItems += FriendFeedItem(
-                                                            friendUserId = friendUserId,
-                                                            friendDisplayName = friendDisplayName,
-                                                            friendProfilePhotoPath = friendProfilePhotoPath,
-                                                            findingId = findingDocument.id,
-                                                            finding = finding,
-                                                            commentCount = commentCount
-                                                        )
-                                                        finishFriendLoad()
-                                                    },
-                                                    onError = {
-                                                        Log.w(
-                                                            "FriendFeedTiming",
-                                                            "comment count failed after like failure friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - commentCountStartedAt}"
-                                                        )
-                                                        feedItems += FriendFeedItem(
-                                                            friendUserId = friendUserId,
-                                                            friendDisplayName = friendDisplayName,
-                                                            friendProfilePhotoPath = friendProfilePhotoPath,
-                                                            findingId = findingDocument.id,
-                                                            finding = finding
-                                                        )
-                                                        finishFriendLoad()
+                                            },
+                                            onFinished = { finishIfReady() }
+                                        )
+                                        return@addOnSuccessListener
+                                    }
+
+                                    findingsCollection
+                                        .get()
+                                        .addOnSuccessListener { legacySnapshot ->
+                                            val fallbackDocuments = legacySnapshot.documents
+                                                .sortedByDescending { legacyFindingDocument ->
+                                                    parseFindingDateMillis(
+                                                        legacyFindingDocument.getString("date").orEmpty()
+                                                    )
+                                                }
+                                                .take(FRIEND_FEED_FINDINGS_LIMIT_PER_FRIEND.toInt())
+                                            loadedCloudFindingCount += fallbackDocuments.size
+                                            if (fallbackDocuments.isNotEmpty()) {
+                                                fallbackFriendCount += 1
+                                            }
+                                            Log.d(
+                                                "FriendFeedPerformance",
+                                                "friend=*${safeFriendId} path=cloud sortField=$FRIEND_FEED_SORT_FIELD fallbackUsed=${fallbackDocuments.isNotEmpty()} loadedFindings=${fallbackDocuments.size}"
+                                            )
+                                            Log.d(
+                                                "FriendFeedTiming",
+                                                "friend findings loaded friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - findingsLoadStartedAt} findingCount=${fallbackDocuments.size}"
+                                            )
+                                            if (fallbackDocuments.isEmpty()) {
+                                                finishIfReady()
+                                                return@addOnSuccessListener
+                                            }
+
+                                            processFriendFeedFindingDocuments(
+                                                findingDocuments = fallbackDocuments,
+                                                friendUserId = friendUserId,
+                                                safeFriendId = safeFriendId,
+                                                friendDisplayName = friendDisplayName,
+                                                friendProfilePhotoPath = friendProfilePhotoPath,
+                                                currentUserId = currentUserId,
+                                                feedItems = feedItems,
+                                                onFirstError = { exception ->
+                                                    if (firstError == null) {
+                                                        firstError = exception
                                                     }
+                                                },
+                                                onFinished = { finishIfReady() }
+                                            )
+                                        }
+                                        .addOnFailureListener { exception ->
+                                            Log.e(
+                                                TAG,
+                                                "Failed to load legacy friend findings: ${exception.message ?: "Unbekannter Fehler"}",
+                                                exception
+                                            )
+                                            if (firstError == null) {
+                                                firstError = toFirestoreException(
+                                                    functionName = "loadFriendsFeed",
+                                                    operation = "READ",
+                                                    path = "users/$friendUserId/findings",
+                                                    exception = exception
                                                 )
                                             }
-                                        )
-                                    }
+                                            finishIfReady()
+                                        }
                                 }
                                 .addOnFailureListener { exception ->
                                     Log.e(
@@ -1454,6 +1538,151 @@ object FriendRepository {
                 )
                 onError(wrappedException)
             }
+    }
+
+    private fun processFriendFeedFindingDocuments(
+        findingDocuments: List<com.google.firebase.firestore.DocumentSnapshot>,
+        friendUserId: String,
+        safeFriendId: String,
+        friendDisplayName: String,
+        friendProfilePhotoPath: String,
+        currentUserId: String,
+        feedItems: MutableList<FriendFeedItem>,
+        onFirstError: (Exception) -> Unit,
+        onFinished: () -> Unit
+    ) {
+        if (findingDocuments.isEmpty()) {
+            onFinished()
+            return
+        }
+
+        var pendingFindingLikes = findingDocuments.size
+        fun finishFriendLoad() {
+            pendingFindingLikes -= 1
+            if (pendingFindingLikes == 0) {
+                onFinished()
+            }
+        }
+
+        findingDocuments.forEach { findingDocument ->
+            val thumbnailRemotePhotoPath =
+                findingDocument.getString("thumbnailRemotePhotoPath").orEmpty()
+            val hasRemotePhotoPaths =
+                findingDocument.getPhotoValuesOrEmpty("remotePhotoPaths").isNotEmpty() ||
+                    !findingDocument.getString("remotePhotoPath").isNullOrBlank()
+            val finding = AnimalFinding(
+                animalId = findingDocument.getString("animalId").orEmpty(),
+                date = findingDocument.getString("date").orEmpty(),
+                location = findingDocument.getString("location").orEmpty(),
+                note = findingDocument.getString("note").orEmpty(),
+                photoUri = findingDocument.getString("photoUri").orEmpty(),
+                remotePhotoPath = findingDocument.getString("remotePhotoPath").orEmpty(),
+                thumbnailRemotePhotoPath = thumbnailRemotePhotoPath,
+                photoUris = findingDocument.getPhotoValuesOrEmpty("photoUris"),
+                remotePhotoPaths = findingDocument.getPhotoValuesOrEmpty("remotePhotoPaths"),
+                latitude = findingDocument.getDouble("latitude"),
+                longitude = findingDocument.getDouble("longitude"),
+                locationSource = findingDocument.getString("locationSource"),
+                ownerId = friendUserId,
+                taggedFriendIds = findingDocument.getTaggedFriendIdsOrEmpty()
+            )
+            Log.d(
+                "FriendFeedTiming",
+                "finding meta friend=*${safeFriendId} hasThumbnailRemotePhotoPath=${thumbnailRemotePhotoPath.isNotBlank()} hasRemotePhotoPaths=$hasRemotePhotoPaths remotePhotoPathCount=${effectiveRemotePhotoPaths(finding).size}"
+            )
+            val likeLoadStartedAt = SystemClock.elapsedRealtime()
+            loadLikeInfoForFinding(
+                ownerUserId = friendUserId,
+                findingId = findingDocument.id,
+                currentUserId = currentUserId,
+                onResult = { likeCount, likedByCurrentUser ->
+                    Log.d(
+                        "FriendFeedTiming",
+                        "like info loaded friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - likeLoadStartedAt}"
+                    )
+                    val commentCountStartedAt = SystemClock.elapsedRealtime()
+                    loadCommentCountForFinding(
+                        ownerUserId = friendUserId,
+                        findingId = findingDocument.id,
+                        onResult = { commentCount ->
+                            Log.d(
+                                "FriendFeedTiming",
+                                "comment count loaded friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - commentCountStartedAt}"
+                            )
+                            feedItems += FriendFeedItem(
+                                friendUserId = friendUserId,
+                                friendDisplayName = friendDisplayName,
+                                friendProfilePhotoPath = friendProfilePhotoPath,
+                                findingId = findingDocument.id,
+                                finding = finding,
+                                likeCount = likeCount,
+                                likedByCurrentUser = likedByCurrentUser,
+                                commentCount = commentCount
+                            )
+                            finishFriendLoad()
+                        },
+                        onError = { exception ->
+                            Log.w(
+                                "FriendFeedTiming",
+                                "comment count failed friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - commentCountStartedAt} error=${exception.message ?: "Unbekannter Fehler"}"
+                            )
+                            onFirstError(exception)
+                            feedItems += FriendFeedItem(
+                                friendUserId = friendUserId,
+                                friendDisplayName = friendDisplayName,
+                                friendProfilePhotoPath = friendProfilePhotoPath,
+                                findingId = findingDocument.id,
+                                finding = finding,
+                                likeCount = likeCount,
+                                likedByCurrentUser = likedByCurrentUser
+                            )
+                            finishFriendLoad()
+                        }
+                    )
+                },
+                onError = { exception ->
+                    Log.w(
+                        "FriendFeedTiming",
+                        "like info failed friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - likeLoadStartedAt} error=${exception.message ?: "Unbekannter Fehler"}"
+                    )
+                    onFirstError(exception)
+                    val commentCountStartedAt = SystemClock.elapsedRealtime()
+                    loadCommentCountForFinding(
+                        ownerUserId = friendUserId,
+                        findingId = findingDocument.id,
+                        onResult = { commentCount ->
+                            Log.d(
+                                "FriendFeedTiming",
+                                "comment count loaded after like failure friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - commentCountStartedAt}"
+                            )
+                            feedItems += FriendFeedItem(
+                                friendUserId = friendUserId,
+                                friendDisplayName = friendDisplayName,
+                                friendProfilePhotoPath = friendProfilePhotoPath,
+                                findingId = findingDocument.id,
+                                finding = finding,
+                                commentCount = commentCount
+                            )
+                            finishFriendLoad()
+                        },
+                        onError = {
+                            Log.w(
+                                "FriendFeedTiming",
+                                "comment count failed after like failure friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - commentCountStartedAt}"
+                            )
+                            feedItems += FriendFeedItem(
+                                friendUserId = friendUserId,
+                                friendDisplayName = friendDisplayName,
+                                friendProfilePhotoPath = friendProfilePhotoPath,
+                                findingId = findingDocument.id,
+                                finding = finding
+                            )
+                            finishFriendLoad()
+                        }
+                    )
+                }
+            )
+        }
     }
 
     fun loadFriendFindingsForAnimal(
