@@ -7,6 +7,7 @@ import android.os.SystemClock
 import android.util.Log
 import com.google.android.gms.tasks.Tasks
 import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.StorageMetadata
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -15,10 +16,17 @@ import java.security.MessageDigest
 const val STORAGE_URI_PREFIX = "storage://"
 private const val FINDING_PHOTO_STORAGE_TAG = "FindingPhotoStorage"
 private const val FINDING_PHOTO_MAX_DOWNLOAD_BYTES = 10L * 1024 * 1024
+private const val FINDING_PHOTO_MAX_UPLOAD_BYTES = 5 * 1024 * 1024
+private const val FINDING_PHOTO_MAX_EDGE_PX = 2560
+private const val FINDING_PHOTO_JPEG_QUALITY = 88
 private const val FINDING_THUMBNAIL_MAX_EDGE_PX = 800
 private const val FINDING_THUMBNAIL_JPEG_QUALITY = 78
+private const val FINDING_THUMBNAIL_MAX_UPLOAD_BYTES = 1024 * 1024
+private const val PROFILE_PHOTO_MAX_EDGE_PX = 1600
+private const val PROFILE_PHOTO_JPEG_QUALITY = 85
 private const val FRIEND_FEED_THUMB_CACHE_DIR = "friend_feed_thumbs"
 private const val REMOTE_FINDING_PHOTO_CACHE_DIR = "remote_finding_photos"
+private const val JPEG_CONTENT_TYPE = "image/jpeg"
 
 fun storageUriFromPath(path: String): String = "${STORAGE_URI_PREFIX}${path.trim()}"
 
@@ -33,6 +41,11 @@ fun storagePathFromUri(uriString: String): String? {
 
 object FindingPhotoStorageRepository {
     private val storage: FirebaseStorage by lazy { FirebaseStorage.getInstance() }
+    private val jpegMetadata: StorageMetadata by lazy {
+        StorageMetadata.Builder()
+            .setContentType(JPEG_CONTENT_TYPE)
+            .build()
+    }
 
     private fun collectRemoteFindingStoragePaths(finding: AnimalFinding): List<String> {
         return buildList {
@@ -191,10 +204,19 @@ object FindingPhotoStorageRepository {
                 } else {
                     buildRemotePhotoPath(userId, finding, index)
                 }
-                val photoBytes = readLocalPhotoBytes(context, localPhotoUri) ?: return@mapIndexedNotNull null
+                val photoBytes = prepareUploadJpegBytes(
+                    context = context,
+                    localPhotoUri = localPhotoUri,
+                    maxEdgePx = FINDING_PHOTO_MAX_EDGE_PX,
+                    jpegQuality = FINDING_PHOTO_JPEG_QUALITY,
+                    maxBytes = FINDING_PHOTO_MAX_UPLOAD_BYTES
+                ) ?: return@mapIndexedNotNull null
 
                 runCatching {
-                    Tasks.await(storage.reference.child(remotePhotoPath).putBytes(photoBytes))
+                    Tasks.await(
+                        storage.reference.child(remotePhotoPath)
+                            .putBytes(photoBytes, jpegMetadata)
+                    )
                     remotePhotoPath
                 }.getOrElse { exception ->
                     Log.e(
@@ -222,12 +244,13 @@ object FindingPhotoStorageRepository {
         val remoteThumbnailPath = buildRemoteThumbnailPath(userId, finding)
         val thumbnailBytes = withContext(Dispatchers.IO) {
             runCatching {
-                val bitmap = loadCorrectlyOrientedBitmapFromUriString(
+                prepareUploadJpegBytes(
                     context = context,
-                    uriString = localPhotoUri,
-                    maxImageSizePx = FINDING_THUMBNAIL_MAX_EDGE_PX
-                ) ?: return@runCatching null
-                createThumbnailBytes(bitmap)
+                    localPhotoUri = localPhotoUri,
+                    maxEdgePx = FINDING_THUMBNAIL_MAX_EDGE_PX,
+                    jpegQuality = FINDING_THUMBNAIL_JPEG_QUALITY,
+                    maxBytes = FINDING_THUMBNAIL_MAX_UPLOAD_BYTES
+                )
             }.getOrElse { exception ->
                 Log.w(
                     FINDING_PHOTO_STORAGE_TAG,
@@ -242,7 +265,10 @@ object FindingPhotoStorageRepository {
 
         return withContext(Dispatchers.IO) {
             runCatching {
-                Tasks.await(storage.reference.child(remoteThumbnailPath).putBytes(thumbnailBytes))
+                Tasks.await(
+                    storage.reference.child(remoteThumbnailPath)
+                        .putBytes(thumbnailBytes, jpegMetadata)
+                )
                 remoteThumbnailPath
             }.getOrElse { exception ->
                 Log.w(
@@ -300,7 +326,10 @@ object FindingPhotoStorageRepository {
         return withContext(Dispatchers.IO) {
             runCatching {
                 val thumbnailUploadStartedAt = SystemClock.elapsedRealtime()
-                Tasks.await(storage.reference.child(remoteThumbnailPath).putBytes(thumbnailBytes))
+                Tasks.await(
+                    storage.reference.child(remoteThumbnailPath)
+                        .putBytes(thumbnailBytes, jpegMetadata)
+                )
                 Log.d(
                     "FindingPhotoRepair",
                     "remoteThumbnailRepair thumbnail upload durationMs=${SystemClock.elapsedRealtime() - thumbnailUploadStartedAt}"
@@ -330,12 +359,21 @@ object FindingPhotoStorageRepository {
 
         val remotePhotoPath = buildProfilePhotoPath(userId)
         val photoBytes = withContext(Dispatchers.IO) {
-            readLocalPhotoBytes(context, trimmedPhotoUri)
+            prepareUploadJpegBytes(
+                context = context,
+                localPhotoUri = trimmedPhotoUri,
+                maxEdgePx = PROFILE_PHOTO_MAX_EDGE_PX,
+                jpegQuality = PROFILE_PHOTO_JPEG_QUALITY,
+                maxBytes = FINDING_PHOTO_MAX_UPLOAD_BYTES
+            )
         } ?: return currentProfilePhotoPath.trim()
 
         return withContext(Dispatchers.IO) {
             runCatching {
-                Tasks.await(storage.reference.child(remotePhotoPath).putBytes(photoBytes))
+                Tasks.await(
+                    storage.reference.child(remotePhotoPath)
+                        .putBytes(photoBytes, jpegMetadata)
+                )
                 remotePhotoPath
             }.getOrElse { exception ->
                 Log.e(
@@ -361,12 +399,21 @@ object FindingPhotoStorageRepository {
 
         val remotePhotoPath = buildProfileBackgroundPhotoPath(userId)
         val photoBytes = withContext(Dispatchers.IO) {
-            readLocalPhotoBytes(context, trimmedPhotoUri)
+            prepareUploadJpegBytes(
+                context = context,
+                localPhotoUri = trimmedPhotoUri,
+                maxEdgePx = PROFILE_PHOTO_MAX_EDGE_PX,
+                jpegQuality = PROFILE_PHOTO_JPEG_QUALITY,
+                maxBytes = FINDING_PHOTO_MAX_UPLOAD_BYTES
+            )
         } ?: return currentProfileBackgroundPhotoPath.trim()
 
         return withContext(Dispatchers.IO) {
             runCatching {
-                Tasks.await(storage.reference.child(remotePhotoPath).putBytes(photoBytes))
+                Tasks.await(
+                    storage.reference.child(remotePhotoPath)
+                        .putBytes(photoBytes, jpegMetadata)
+                )
                 remotePhotoPath
             }.getOrElse { exception ->
                 Log.e(
@@ -519,13 +566,55 @@ object FindingPhotoStorageRepository {
         }
     }
 
+    private fun prepareUploadJpegBytes(
+        context: Context,
+        localPhotoUri: String,
+        maxEdgePx: Int,
+        jpegQuality: Int,
+        maxBytes: Int
+    ): ByteArray? {
+        val bitmap = loadCorrectlyOrientedBitmapFromUriString(
+            context = context,
+            uriString = localPhotoUri,
+            maxImageSizePx = maxEdgePx
+        ) ?: return null
+
+        val uploadBytes = createJpegBytes(
+            sourceBitmap = bitmap,
+            maxEdgePx = maxEdgePx,
+            jpegQuality = jpegQuality
+        ) ?: return null
+
+        if (uploadBytes.size > maxBytes) {
+            Log.w(
+                FINDING_PHOTO_STORAGE_TAG,
+                "Prepared JPEG exceeds upload limit: size=${uploadBytes.size} maxBytes=$maxBytes uri=$localPhotoUri"
+            )
+            return null
+        }
+
+        return uploadBytes
+    }
+
     private fun createThumbnailBytes(sourceBitmap: Bitmap): ByteArray? {
-        val scaledBitmap = scaleBitmapToMaxEdge(sourceBitmap, FINDING_THUMBNAIL_MAX_EDGE_PX)
+        return createJpegBytes(
+            sourceBitmap = sourceBitmap,
+            maxEdgePx = FINDING_THUMBNAIL_MAX_EDGE_PX,
+            jpegQuality = FINDING_THUMBNAIL_JPEG_QUALITY
+        )
+    }
+
+    private fun createJpegBytes(
+        sourceBitmap: Bitmap,
+        maxEdgePx: Int,
+        jpegQuality: Int
+    ): ByteArray? {
+        val scaledBitmap = scaleBitmapToMaxEdge(sourceBitmap, maxEdgePx)
         return runCatching {
             java.io.ByteArrayOutputStream().use { output ->
                 scaledBitmap.compress(
                     Bitmap.CompressFormat.JPEG,
-                    FINDING_THUMBNAIL_JPEG_QUALITY,
+                    jpegQuality,
                     output
                 )
                 output.toByteArray()

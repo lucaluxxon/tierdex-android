@@ -2,6 +2,33 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
+    function isImageContentType() {
+      return request.resource.contentType == 'image/jpeg';
+    }
+
+    function isAllowedFindingFileName(fileName) {
+      return fileName.matches('^(photo\\.jpg|photo_2\\.jpg|photo_3\\.jpg|thumb_photo\\.jpg)$');
+    }
+
+    function isAllowedProfileFileName(fileName) {
+      return fileName == 'photo.jpg' || fileName == 'background.jpg';
+    }
+
+    function isAllowedFindingWrite(fileName) {
+      return isAllowedFindingFileName(fileName)
+        && isImageContentType()
+        && (
+          (fileName == 'thumb_photo.jpg' && request.resource.size <= 1024 * 1024) ||
+          (fileName != 'thumb_photo.jpg' && request.resource.size <= 5 * 1024 * 1024)
+        );
+    }
+
+    function isAllowedProfileWrite(fileName) {
+      return isAllowedProfileFileName(fileName)
+        && isImageContentType()
+        && request.resource.size <= 5 * 1024 * 1024;
+    }
+
     function isSignedIn() {
       return request.auth != null;
     }
@@ -22,13 +49,13 @@ service firebase.storage {
 
     match /users/{ownerUserId}/findings/{findingId}/{fileName} {
       allow read: if isOwner(ownerUserId) || isAcceptedFriend(ownerUserId, request.auth.uid);
-      allow write: if isOwner(ownerUserId);
+      allow write: if isOwner(ownerUserId) && isAllowedFindingWrite(fileName);
       allow delete: if isOwner(ownerUserId);
     }
 
     match /users/{ownerUserId}/profile/{fileName} {
       allow read: if isSignedIn();
-      allow write: if isOwner(ownerUserId);
+      allow write: if isOwner(ownerUserId) && isAllowedProfileWrite(fileName);
       allow delete: if isOwner(ownerUserId);
     }
   }
