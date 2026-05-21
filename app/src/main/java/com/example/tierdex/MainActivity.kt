@@ -210,6 +210,7 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.FirebaseFirestoreException
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.SetOptions
 
 
@@ -228,6 +229,8 @@ private const val PROFILE_IMAGE_KEY_PREFIX = "profileImage_"
 private const val PROFILE_BACKGROUND_IMAGE_KEY_PREFIX = "profileBackgroundImage_"
 private const val NOTIFICATION_READ_IDS_KEY_PREFIX = "notification_read_ids_"
 private const val NOTIFICATION_READ_STATE_SCHEMA_VERSION = 1
+private const val NOTIFICATION_DOCUMENT_SCHEMA_VERSION = 1
+private const val NOTIFICATION_DOCUMENTS_LIMIT = 100L
 
 private fun defaultAuthEntryMode(prefs: android.content.SharedPreferences): String =
     if (prefs.getBoolean(HAS_USED_AUTH_BEFORE_KEY, false)) "login" else "register"
@@ -1052,6 +1055,7 @@ data class TierdexNotification(
     val createdAt: Timestamp? = null,
     val isRead: Boolean,
     val readAliases: Set<String> = emptySet(),
+    val isDocumentBacked: Boolean = false,
     val relatedUserId: String? = null,
     val relatedOwnerUserId: String? = null,
     val relatedFindingId: String? = null,
@@ -3636,7 +3640,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     ): List<TierdexNotification> {
         val readIds = currentReadNotificationIds()
         val updatedNotifications = notificationItems.map { notification ->
-            notification.copy(isRead = notification.matchesReadState(readIds))
+            notification.copy(isRead = notification.isRead || notification.matchesReadState(readIds))
         }
         logNotificationReadDiagnostics(
             stage = stage,
@@ -3663,6 +3667,73 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         .document("meta")
         .collection("notificationReadState")
         .document("state")
+
+    fun notificationDocumentsCollection(userId: String) = FirebaseFirestore.getInstance()
+        .collection("users")
+        .document(userId)
+        .collection("notifications")
+
+    fun loadNotificationDocuments(
+        userId: String,
+        onResult: (List<TierdexNotification>) -> Unit,
+        onError: (String?) -> Unit = {}
+    ) {
+        val safeUserId = userId.trim()
+        if (safeUserId.isBlank()) {
+            onResult(emptyList())
+            return
+        }
+
+        notificationDocumentsCollection(safeUserId)
+            .orderBy("createdAt", Query.Direction.DESCENDING)
+            .limit(NOTIFICATION_DOCUMENTS_LIMIT)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val loadedNotifications = snapshot.documents.mapNotNull { document ->
+                    val id = document.id.trim()
+                    val type = document.getString("type").orEmpty().trim()
+                    if (id.isBlank() || type.isBlank()) {
+                        return@mapNotNull null
+                    }
+
+                    val legacyIds = (document.get("legacyIds") as? List<*>)
+                        .orEmpty()
+                        .mapNotNull { (it as? String)?.trim() }
+                        .filter { it.isNotBlank() }
+                        .toSet()
+
+                    TierdexNotification(
+                        id = id,
+                        type = type,
+                        title = document.getString("title").orEmpty(),
+                        message = document.getString("message").orEmpty(),
+                        createdAtText = formatNotificationTimestamp(document.getTimestamp("createdAt")),
+                        createdAt = document.getTimestamp("createdAt"),
+                        isRead = document.getBoolean("isRead") == true,
+                        readAliases = legacyIds,
+                        isDocumentBacked = true,
+                        relatedUserId = document.getString("actorUid"),
+                        relatedOwnerUserId = document.getString("relatedOwnerUserId"),
+                        relatedFindingId = document.getString("relatedFindingId"),
+                        relatedAnimalId = document.getString("relatedAnimalId")
+                    )
+                }
+                    .sortedByDescending { it.createdAt?.toDate()?.time ?: Long.MIN_VALUE }
+                Log.d(
+                    "NotificationDocuments",
+                    "Dokument-Notifications geladen: userId=$safeUserId count=${loadedNotifications.size} limit=$NOTIFICATION_DOCUMENTS_LIMIT schemaVersion=$NOTIFICATION_DOCUMENT_SCHEMA_VERSION"
+                )
+                onResult(loadedNotifications)
+            }
+            .addOnFailureListener { exception ->
+                Log.w(
+                    "NotificationDocuments",
+                    "Dokument-Notifications konnten nicht geladen werden: userId=$safeUserId error=${exception.message ?: "Unbekannter Fehler"}",
+                    exception
+                )
+                onError(exception.message)
+            }
+    }
 
     fun loadCloudReadNotificationIds(
         userId: String,
@@ -3968,11 +4039,61 @@ fun TierdexApp(database: AnimalFindingDatabase) {
             }
     }
 
+    fun updateDocumentBackedNotificationsAsRead(
+        ownerId: String,
+        notificationIds: Set<String>,
+        onComplete: (Boolean) -> Unit = {}
+    ) {
+        val safeOwnerId = ownerId.trim()
+        val sanitizedNotificationIds = notificationIds
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+            .toSet()
+        if (safeOwnerId.isBlank() || sanitizedNotificationIds.isEmpty()) {
+            onComplete(false)
+            return
+        }
+
+        val batch = FirebaseFirestore.getInstance().batch()
+        sanitizedNotificationIds.forEach { notificationId ->
+            batch.set(
+                notificationDocumentsCollection(safeOwnerId).document(notificationId),
+                mapOf(
+                    "isRead" to true,
+                    "readAt" to FieldValue.serverTimestamp()
+                ),
+                SetOptions.merge()
+            )
+        }
+        batch.commit()
+            .addOnSuccessListener {
+                Log.d(
+                    "NotificationDocuments",
+                    "Dokument-Notifications als gelesen markiert: ownerId=$safeOwnerId count=${sanitizedNotificationIds.size}"
+                )
+                onComplete(true)
+            }
+            .addOnFailureListener { exception ->
+                Log.w(
+                    "NotificationDocuments",
+                    "Dokument-Notifications konnten nicht als gelesen markiert werden: ownerId=$safeOwnerId count=${sanitizedNotificationIds.size} error=${exception.message ?: "Unbekannter Fehler"}",
+                    exception
+                )
+                onComplete(false)
+            }
+    }
+
     fun updateNotificationState(
         requests: List<FriendRequest>,
+        documentNotifications: List<TierdexNotification>,
         interactionNotifications: List<TierdexNotification>
     ) {
-        val combinedNotifications = (mapFriendRequestsToNotifications(requests) + interactionNotifications)
+        val legacyRequestNotifications = mapFriendRequestsToNotifications(requests)
+        val combinedNotifications = (
+            documentNotifications +
+                legacyRequestNotifications +
+                interactionNotifications
+            )
             .distinctBy { it.id }
             .sortedByDescending { it.createdAt?.toDate()?.time ?: Long.MIN_VALUE }
         notifications = applyCurrentReadState(
@@ -3981,8 +4102,8 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         )
         incomingRequestCount = notifications.count { !it.isRead }
         Log.d(
-            "NotificationReadState",
-            "Badge berechnet: unread=$incomingRequestCount total=${notifications.size}"
+            "NotificationDocuments",
+            "state friendRequests=${legacyRequestNotifications.size} documents=${documentNotifications.size} legacyFallback=${interactionNotifications.size} deduped=${notifications.size} unread=$incomingRequestCount badgeFromDocuments=${documentNotifications.isNotEmpty()}"
         )
     }
 
@@ -4002,6 +4123,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         }
 
         var friendRequests: List<FriendRequest> = emptyList()
+        var documentNotifications: List<TierdexNotification> = emptyList()
         var interactionNotifications: List<TierdexNotification> = emptyList()
         var pendingLoads = 2
         var firstError: String? = null
@@ -4010,10 +4132,10 @@ fun TierdexApp(database: AnimalFindingDatabase) {
             pendingLoads -= 1
             if (pendingLoads <= 0) {
                 Log.d(
-                    "NotificationReadState",
-                    "Notifications geladen: friendRequests=${friendRequests.size} interactions=${interactionNotifications.size}"
+                    "NotificationDocuments",
+                    "Notifications geladen: documents=${documentNotifications.size} friendRequests=${friendRequests.size} legacyFallback=${interactionNotifications.size}"
                 )
-                updateNotificationState(friendRequests, interactionNotifications)
+                updateNotificationState(friendRequests, documentNotifications, interactionNotifications)
                 notificationsErrorMessage = firstError
             }
         }
@@ -4030,14 +4152,63 @@ fun TierdexApp(database: AnimalFindingDatabase) {
             }
         )
 
-        loadInteractionNotifications(
-            currentUserId = safeUserId,
+        loadNotificationDocuments(
+            userId = safeUserId,
             onResult = { loadedNotifications ->
-                interactionNotifications = loadedNotifications
+                documentNotifications = loadedNotifications
+                if (loadedNotifications.isNotEmpty()) {
+                    Log.d(
+                        "NotificationDocuments",
+                        "Legacy-Interaction-Scan übersprungen: userId=$safeUserId documentCount=${loadedNotifications.size}"
+                    )
+                    finishRefresh()
+                    return@loadNotificationDocuments
+                }
+
+                pendingLoads += 1
+                loadInteractionNotifications(
+                    currentUserId = safeUserId,
+                    onResult = { loadedLegacyNotifications ->
+                        interactionNotifications = loadedLegacyNotifications
+                        Log.d(
+                            "NotificationDocuments",
+                            "Legacy-Interaction-Scan verwendet: userId=$safeUserId legacyCount=${loadedLegacyNotifications.size}"
+                        )
+                        finishRefresh()
+                    },
+                    onError = { error ->
+                        firstError = firstError ?: error ?: "Interaktionen konnten nicht geladen werden"
+                        Log.w(
+                            "NotificationDocuments",
+                            "Legacy-Interaction-Scan fehlgeschlagen: userId=$safeUserId error=${error ?: "Unbekannter Fehler"}"
+                        )
+                        finishRefresh()
+                    }
+                )
                 finishRefresh()
             },
             onError = { error ->
-                firstError = firstError ?: error ?: "Interaktionen konnten nicht geladen werden"
+                firstError = firstError ?: error ?: "Dokument-Benachrichtigungen konnten nicht geladen werden"
+                pendingLoads += 1
+                loadInteractionNotifications(
+                    currentUserId = safeUserId,
+                    onResult = { loadedLegacyNotifications ->
+                        interactionNotifications = loadedLegacyNotifications
+                        Log.d(
+                            "NotificationDocuments",
+                            "Legacy-Interaction-Scan nach Dokument-Fehler verwendet: userId=$safeUserId legacyCount=${loadedLegacyNotifications.size}"
+                        )
+                        finishRefresh()
+                    },
+                    onError = { legacyError ->
+                        firstError = firstError ?: legacyError ?: "Interaktionen konnten nicht geladen werden"
+                        Log.w(
+                            "NotificationDocuments",
+                            "Legacy-Interaction-Scan nach Dokument-Fehler fehlgeschlagen: userId=$safeUserId error=${legacyError ?: "Unbekannter Fehler"}"
+                        )
+                        finishRefresh()
+                    }
+                )
                 finishRefresh()
             }
         )
@@ -4048,6 +4219,10 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         val newReadIds = notifications
             .flatMap { it.allReadIds() }
             .toSet()
+        val documentNotificationIds = notifications
+            .filter { it.isDocumentBacked && !it.isRead }
+            .map { it.id }
+            .toSet()
         val updatedReadIds = currentReadNotificationIds() + newReadIds
         storeReadNotificationIds(updatedReadIds)
         logNotificationReadDiagnostics(
@@ -4057,6 +4232,17 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         )
         currentOwnerId?.let { ownerId ->
             appendReadNotificationIdsToCloud(ownerId, newReadIds)
+            if (documentNotificationIds.isNotEmpty()) {
+                updateDocumentBackedNotificationsAsRead(
+                    ownerId = ownerId,
+                    notificationIds = documentNotificationIds
+                ) { success ->
+                    Log.d(
+                        "NotificationDocuments",
+                        "markAll result ownerId=$ownerId success=$success count=${documentNotificationIds.size}"
+                    )
+                }
+            }
         }
         notifications = notifications.map { it.copy(isRead = true) }
         incomingRequestCount = 0
@@ -4075,6 +4261,17 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         )
         currentOwnerId?.let { ownerId ->
             appendReadNotificationIdsToCloud(ownerId, newReadIds)
+            if (targetNotification?.isDocumentBacked == true) {
+                updateDocumentBackedNotificationsAsRead(
+                    ownerId = ownerId,
+                    notificationIds = setOf(notificationId)
+                ) { success ->
+                    Log.d(
+                        "NotificationDocuments",
+                        "markSingle result ownerId=$ownerId notificationId=$notificationId success=$success"
+                    )
+                }
+            }
         }
         notifications = notifications.map { notification ->
             if (notification.id == notificationId) {

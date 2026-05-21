@@ -244,6 +244,41 @@ service cloud.firestore {
           request.resource.data.createdAt is timestamp);
     }
 
+    function allowedNotificationKeys() {
+      return [
+        'type',
+        'title',
+        'message',
+        'createdAt',
+        'updatedAt',
+        'actorUid',
+        'actorDisplayName',
+        'recipientUid',
+        'relatedOwnerUserId',
+        'relatedFindingId',
+        'relatedAnimalId',
+        'relatedRequestUserId',
+        'sourcePath',
+        'legacyIds',
+        'isRead',
+        'readAt',
+        'schemaVersion'
+      ];
+    }
+
+    function isValidNotificationReadUpdate(userId) {
+      return request.resource.data.keys().hasOnly(allowedNotificationKeys())
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'isRead',
+          'readAt'
+        ])
+        && request.resource.data.recipientUid is string
+        && request.resource.data.recipientUid == userId
+        && request.resource.data.isRead is bool
+        && (!('readAt' in request.resource.data) ||
+          request.resource.data.readAt is timestamp);
+    }
+
     match /users/{userId} {
       allow read: if isSignedIn();
       allow create: if isOwner(userId) && isValidPublicProfileCreate();
@@ -298,6 +333,13 @@ service cloud.firestore {
         allow create: if isOwner(userId) && isValidOutgoingRequest(userId, toUid);
         allow delete: if isOwner(userId) || (request.auth != null && request.auth.uid == toUid);
         allow update: if false;
+      }
+
+      match /notifications/{notificationId} {
+        allow read: if isOwner(userId);
+        allow create: if false;
+        allow update: if isOwner(userId) && isValidNotificationReadUpdate(userId);
+        allow delete: if false;
       }
 
       match /private/{document=**} {

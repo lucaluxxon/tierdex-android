@@ -3,12 +3,14 @@ const logger = require("firebase-functions/logger");
 const { onDocumentWritten } = require("firebase-functions/v2/firestore");
 const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { FieldValue } = require("firebase-admin/firestore");
+const crypto = require("crypto");
 
 if (!admin.apps.length) {
   admin.initializeApp();
 }
 
 const db = admin.firestore();
+const NOTIFICATION_SCHEMA_VERSION = 1;
 
 function normalizeString(value) {
   return typeof value === "string" ? value.trim() : "";
@@ -30,6 +32,144 @@ function contributionPayload(ownerUid, findingId, animalId) {
     animalId,
     updatedAt: FieldValue.serverTimestamp(),
   };
+}
+
+function notificationDocument(recipientUid, notificationId) {
+  return db.collection("users")
+    .doc(recipientUid)
+    .collection("notifications")
+    .doc(notificationId);
+}
+
+function normalizeCoordinate(value) {
+  return typeof value === "number" && Number.isFinite(value)
+    ? value.toFixed(6)
+    : "";
+}
+
+function normalizeTaggedFriendIds(value) {
+  if (!Array.isArray(value)) return "";
+  return value
+    .map((entry) => normalizeString(entry))
+    .filter(Boolean)
+    .sort()
+    .filter((entry, index, array) => index === 0 || array[index - 1] !== entry)
+    .join(",");
+}
+
+function findingFingerprintFromData(ownerUid, findingId, findingData) {
+  if (!findingData || typeof findingData !== "object") {
+    return normalizeString(findingId);
+  }
+  const parts = [
+    normalizeString(ownerUid),
+    normalizeString(findingData.animalId),
+    normalizeString(findingData.date),
+    normalizeString(findingData.location),
+    normalizeString(findingData.note),
+    normalizeCoordinate(findingData.latitude),
+    normalizeCoordinate(findingData.longitude),
+    normalizeTaggedFriendIds(findingData.taggedFriendIds),
+  ];
+  return crypto.createHash("sha256")
+    .update(parts.join("|"))
+    .digest("hex");
+}
+
+function friendRequestNotificationId(recipientUid, requesterUid) {
+  return `friend_request_${normalizeString(requesterUid)}_${normalizeString(recipientUid)}`;
+}
+
+function likeNotificationId(ownerUid, stableFindingId, likerUid, fallbackLikeId) {
+  const stableActorId = normalizeString(likerUid) || normalizeString(fallbackLikeId);
+  return `like_${normalizeString(ownerUid)}_${normalizeString(stableFindingId)}_${stableActorId}`;
+}
+
+function legacyLikeNotificationId(findingId, likeDocumentId) {
+  return `like_${normalizeString(findingId)}_${normalizeString(likeDocumentId)}`;
+}
+
+function commentNotificationId(ownerUid, stableFindingId, commentDocumentId) {
+  return `comment_${normalizeString(ownerUid)}_${normalizeString(stableFindingId)}_${normalizeString(commentDocumentId)}`;
+}
+
+function legacyCommentNotificationId(findingId, commentDocumentId) {
+  return `comment_${normalizeString(findingId)}_${normalizeString(commentDocumentId)}`;
+}
+
+async function loadPublicDisplayName(userId) {
+  const normalizedUserId = normalizeString(userId);
+  if (!normalizedUserId) return "";
+  try {
+    const snapshot = await db.collection("users").doc(normalizedUserId).get();
+    return normalizeString(snapshot.get("displayName"));
+  } catch (error) {
+    logger.warn("NotificationFunction displayName lookup failed", {
+      userId: normalizedUserId,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return "";
+  }
+}
+
+async function loadFindingContext(ownerUid, findingId) {
+  const normalizedOwnerUid = normalizeString(ownerUid);
+  const normalizedFindingId = normalizeString(findingId);
+  if (!normalizedOwnerUid || !normalizedFindingId) {
+    return {
+      stableFindingId: normalizedFindingId,
+      relatedAnimalId: "",
+      sourcePath: "",
+      exists: false,
+    };
+  }
+
+  const findingRef = db.collection("users")
+    .doc(normalizedOwnerUid)
+    .collection("findings")
+    .doc(normalizedFindingId);
+
+  try {
+    const findingSnapshot = await findingRef.get();
+    const findingData = findingSnapshot.exists ? findingSnapshot.data() || {} : null;
+    return {
+      stableFindingId: findingFingerprintFromData(
+        normalizedOwnerUid,
+        normalizedFindingId,
+        findingData
+      ),
+      relatedAnimalId: normalizeString(findingData?.animalId),
+      sourcePath: findingRef.path,
+      exists: findingSnapshot.exists,
+    };
+  } catch (error) {
+    logger.warn("NotificationFunction finding context lookup failed", {
+      ownerUid: normalizedOwnerUid,
+      findingId: normalizedFindingId,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return {
+      stableFindingId: normalizedFindingId,
+      relatedAnimalId: "",
+      sourcePath: findingRef.path,
+      exists: false,
+    };
+  }
+}
+
+async function upsertNotificationDocument(recipientUid, notificationId, payload) {
+  await notificationDocument(recipientUid, notificationId).set(
+    {
+      ...payload,
+      schemaVersion: NOTIFICATION_SCHEMA_VERSION,
+      updatedAt: FieldValue.serverTimestamp(),
+    },
+    { merge: true }
+  );
+}
+
+async function deleteNotificationDocument(recipientUid, notificationId) {
+  await notificationDocument(recipientUid, notificationId).delete();
 }
 
 async function adjustAnimalStatsCount(transaction, animalId, delta) {
@@ -332,3 +472,253 @@ exports.rebuildGlobalFindingStats = onCall(async (request) => {
     throw new HttpsError("internal", "GlobalStats-Rebuild fehlgeschlagen.");
   }
 });
+
+exports.syncFriendRequestNotification = onDocumentWritten(
+  "users/{recipientUid}/friendRequestsIncoming/{fromUid}",
+  async (event) => {
+    const recipientUid = normalizeString(event.params.recipientUid);
+    const fromUid = normalizeString(event.params.fromUid);
+    const beforeData = event.data?.before?.exists ? event.data.before.data() : null;
+    const afterData = event.data?.after?.exists ? event.data.after.data() : null;
+    const notificationId = friendRequestNotificationId(recipientUid, fromUid);
+
+    try {
+      if (!recipientUid || !fromUid) {
+        logger.warn("NotificationFunction friend_request skipped invalid params", {
+          recipientUid,
+          actorUid: fromUid,
+          notificationId,
+        });
+        return;
+      }
+
+      if (!afterData || normalizeString(afterData.status) !== "pending") {
+        await deleteNotificationDocument(recipientUid, notificationId);
+        logger.info("NotificationFunction friend_request removed", {
+          type: "friend_request",
+          recipientUid,
+          actorUid: fromUid,
+          notificationId,
+        });
+        return;
+      }
+
+      const actorDisplayName = await loadPublicDisplayName(fromUid);
+      await upsertNotificationDocument(recipientUid, notificationId, {
+        type: "friend_request",
+        title: "Neue Freundschaftsanfrage",
+        message: `${actorDisplayName || "Jemand"} möchte dich als Freund hinzufügen.`,
+        createdAt: afterData.createdAt || beforeData?.createdAt || FieldValue.serverTimestamp(),
+        actorUid: fromUid,
+        actorDisplayName,
+        recipientUid,
+        relatedRequestUserId: fromUid,
+        sourcePath: event.data?.after?.ref?.path || event.data?.before?.ref?.path || "",
+        legacyIds: [],
+        isRead: false,
+      });
+      logger.info("NotificationFunction friend_request upserted", {
+        type: "friend_request",
+        recipientUid,
+        actorUid: fromUid,
+        notificationId,
+      });
+    } catch (error) {
+      logger.error("NotificationFunction friend_request failed", {
+        type: "friend_request",
+        recipientUid,
+        actorUid: fromUid,
+        notificationId,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      throw error;
+    }
+  }
+);
+
+exports.syncLikeNotification = onDocumentWritten(
+  "users/{ownerUid}/findings/{findingId}/likes/{likerUid}",
+  async (event) => {
+    const ownerUid = normalizeString(event.params.ownerUid);
+    const findingId = normalizeString(event.params.findingId);
+    const likerUid = normalizeString(event.params.likerUid);
+    const beforeData = event.data?.before?.exists ? event.data.before.data() : null;
+    const afterData = event.data?.after?.exists ? event.data.after.data() : null;
+    const findingContext = await loadFindingContext(ownerUid, findingId);
+    const notificationId = likeNotificationId(
+      ownerUid,
+      findingContext.stableFindingId,
+      likerUid,
+      likerUid
+    );
+
+    try {
+      if (!ownerUid || !findingId || !likerUid) {
+        logger.warn("NotificationFunction like skipped invalid params", {
+          type: "like",
+          recipientUid: ownerUid,
+          actorUid: likerUid,
+          notificationId,
+          relatedFindingId: findingContext.stableFindingId,
+        });
+        return;
+      }
+
+      if (ownerUid === likerUid) {
+        await deleteNotificationDocument(ownerUid, notificationId);
+        logger.info("NotificationFunction like skipped self action", {
+          type: "like",
+          recipientUid: ownerUid,
+          actorUid: likerUid,
+          notificationId,
+          relatedFindingId: findingContext.stableFindingId,
+        });
+        return;
+      }
+
+      if (!afterData) {
+        await deleteNotificationDocument(ownerUid, notificationId);
+        logger.info("NotificationFunction like removed", {
+          type: "like",
+          recipientUid: ownerUid,
+          actorUid: likerUid,
+          notificationId,
+          relatedFindingId: findingContext.stableFindingId,
+          relatedAnimalId: findingContext.relatedAnimalId,
+        });
+        return;
+      }
+
+      const actorDisplayName = normalizeString(afterData.likerDisplayName) ||
+        await loadPublicDisplayName(likerUid);
+      await upsertNotificationDocument(ownerUid, notificationId, {
+        type: "like",
+        title: "Neuer Like",
+        message: `${actorDisplayName || "Jemand"} gefällt dein Fund.`,
+        createdAt: afterData.createdAt || beforeData?.createdAt || FieldValue.serverTimestamp(),
+        actorUid: likerUid,
+        actorDisplayName,
+        recipientUid: ownerUid,
+        relatedOwnerUserId: ownerUid,
+        relatedFindingId: findingContext.stableFindingId,
+        relatedAnimalId: findingContext.relatedAnimalId,
+        sourcePath: event.data?.after?.ref?.path || event.data?.before?.ref?.path || findingContext.sourcePath,
+        legacyIds: [legacyLikeNotificationId(findingId, likerUid)],
+        isRead: false,
+      });
+      logger.info("NotificationFunction like upserted", {
+        type: "like",
+        recipientUid: ownerUid,
+        actorUid: likerUid,
+        notificationId,
+        relatedFindingId: findingContext.stableFindingId,
+        relatedAnimalId: findingContext.relatedAnimalId,
+      });
+    } catch (error) {
+      logger.error("NotificationFunction like failed", {
+        type: "like",
+        recipientUid: ownerUid,
+        actorUid: likerUid,
+        notificationId,
+        relatedFindingId: findingContext.stableFindingId,
+        relatedAnimalId: findingContext.relatedAnimalId,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      throw error;
+    }
+  }
+);
+
+exports.syncCommentNotification = onDocumentWritten(
+  "users/{ownerUid}/findings/{findingId}/comments/{commentId}",
+  async (event) => {
+    const ownerUid = normalizeString(event.params.ownerUid);
+    const findingId = normalizeString(event.params.findingId);
+    const commentId = normalizeString(event.params.commentId);
+    const beforeData = event.data?.before?.exists ? event.data.before.data() : null;
+    const afterData = event.data?.after?.exists ? event.data.after.data() : null;
+    const commentActorUid = normalizeString(afterData?.commenterUid || beforeData?.commenterUid);
+    const findingContext = await loadFindingContext(ownerUid, findingId);
+    const notificationId = commentNotificationId(
+      ownerUid,
+      findingContext.stableFindingId,
+      commentId
+    );
+
+    try {
+      if (!ownerUid || !findingId || !commentId || !commentActorUid) {
+        logger.warn("NotificationFunction comment skipped invalid params", {
+          type: "comment",
+          recipientUid: ownerUid,
+          actorUid: commentActorUid,
+          notificationId,
+          relatedFindingId: findingContext.stableFindingId,
+        });
+        return;
+      }
+
+      if (ownerUid === commentActorUid) {
+        await deleteNotificationDocument(ownerUid, notificationId);
+        logger.info("NotificationFunction comment skipped self action", {
+          type: "comment",
+          recipientUid: ownerUid,
+          actorUid: commentActorUid,
+          notificationId,
+          relatedFindingId: findingContext.stableFindingId,
+        });
+        return;
+      }
+
+      if (!afterData) {
+        await deleteNotificationDocument(ownerUid, notificationId);
+        logger.info("NotificationFunction comment removed", {
+          type: "comment",
+          recipientUid: ownerUid,
+          actorUid: commentActorUid,
+          notificationId,
+          relatedFindingId: findingContext.stableFindingId,
+          relatedAnimalId: findingContext.relatedAnimalId,
+        });
+        return;
+      }
+
+      const actorDisplayName = normalizeString(afterData.commenterDisplayName) ||
+        await loadPublicDisplayName(commentActorUid);
+      const commentText = normalizeString(afterData.text);
+      await upsertNotificationDocument(ownerUid, notificationId, {
+        type: "comment",
+        title: "Neuer Kommentar",
+        message: `${actorDisplayName || "Jemand"}: ${commentText}`,
+        createdAt: afterData.createdAt || beforeData?.createdAt || FieldValue.serverTimestamp(),
+        actorUid: commentActorUid,
+        actorDisplayName,
+        recipientUid: ownerUid,
+        relatedOwnerUserId: ownerUid,
+        relatedFindingId: findingContext.stableFindingId,
+        relatedAnimalId: findingContext.relatedAnimalId,
+        sourcePath: event.data?.after?.ref?.path || event.data?.before?.ref?.path || findingContext.sourcePath,
+        legacyIds: [legacyCommentNotificationId(findingId, commentId)],
+        isRead: false,
+      });
+      logger.info("NotificationFunction comment upserted", {
+        type: "comment",
+        recipientUid: ownerUid,
+        actorUid: commentActorUid,
+        notificationId,
+        relatedFindingId: findingContext.stableFindingId,
+        relatedAnimalId: findingContext.relatedAnimalId,
+      });
+    } catch (error) {
+      logger.error("NotificationFunction comment failed", {
+        type: "comment",
+        recipientUid: ownerUid,
+        actorUid: commentActorUid,
+        notificationId,
+        relatedFindingId: findingContext.stableFindingId,
+        relatedAnimalId: findingContext.relatedAnimalId,
+        error: error instanceof Error ? error.message : String(error),
+      });
+      throw error;
+    }
+  }
+);
