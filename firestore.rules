@@ -355,19 +355,7 @@ service cloud.firestore {
 
     match /dailyAnimals/{dateKey} {
       allow read: if isSignedIn();
-      allow create: if isSignedIn()
-        && !exists(/databases/$(database)/documents/dailyAnimals/$(dateKey))
-        && request.resource.data.keys().hasOnly([
-          'animalId',
-          'date',
-          'createdAt'
-        ])
-        && request.resource.data.animalId is string
-        && request.resource.data.animalId.size() > 0
-        && request.resource.data.date is string
-        && request.resource.data.date == dateKey
-        && request.resource.data.createdAt is timestamp;
-      allow update, delete: if false;
+      allow create, update, delete: if false;
     }
 
     match /globalFindingContributions/{contributionId} {

@@ -412,23 +412,7 @@ private fun currentDailyDateKey(): String =
 private fun globalDailyAnimalDocument(dateKey: String) =
     FirebaseFirestore.getInstance().collection("dailyAnimals").document(dateKey)
 
-private fun selectDeterministicDailyAnimalId(
-    animals: List<AnimalEntry>,
-    dateKey: String
-): String? {
-    val sortedAnimalIds = animals
-        .map { it.id.trim() }
-        .filter { it.isNotBlank() }
-        .distinct()
-        .sorted()
-    if (sortedAnimalIds.isEmpty()) return null
-
-    val positiveHash = dateKey.hashCode().toLong().let { if (it < 0) -it else it }
-    val index = (positiveHash % sortedAnimalIds.size.toLong()).toInt()
-    return sortedAnimalIds.getOrNull(index)
-}
-
-private fun loadOrCreateGlobalDailyAnimalId(
+private fun loadGlobalDailyAnimalId(
     dateKey: String,
     animals: List<AnimalEntry>,
     onResult: (String?) -> Unit,
@@ -439,46 +423,53 @@ private fun loadOrCreateGlobalDailyAnimalId(
         return
     }
 
-    val fallbackAnimalId = selectDeterministicDailyAnimalId(animals, dateKey)
-    if (fallbackAnimalId.isNullOrBlank()) {
+    val validAnimalIds = animals
+        .map { it.id.trim() }
+        .filter { it.isNotBlank() }
+        .toSet()
+    if (validAnimalIds.isEmpty()) {
         onResult(null)
         return
     }
 
-    val documentRef = globalDailyAnimalDocument(dateKey)
-    FirebaseFirestore.getInstance().runTransaction { transaction ->
-        val snapshot = transaction.get(documentRef)
+    globalDailyAnimalDocument(dateKey)
+        .get()
+        .addOnSuccessListener { snapshot ->
         val existingAnimalId = snapshot.getString("animalId").orEmpty().trim()
-        if (snapshot.exists() && existingAnimalId.isNotBlank()) {
-            existingAnimalId
-        } else {
-            transaction.set(
-                documentRef,
-                hashMapOf(
-                    "animalId" to fallbackAnimalId,
-                    "date" to dateKey,
-                    "createdAt" to Timestamp.now()
-                )
+        val resolvedAnimalId = existingAnimalId.takeIf { it in validAnimalIds }
+
+        if (snapshot.exists() && existingAnimalId.isNotBlank() && resolvedAnimalId == null) {
+            Log.w(
+                "DailyAnimal",
+                "Ignoring invalid daily animal id '$existingAnimalId' for $dateKey"
             )
-            fallbackAnimalId
         }
-    }.addOnSuccessListener { resolvedAnimalId ->
-        onResult(resolvedAnimalId.trim().ifBlank { null })
-    }.addOnFailureListener { exception ->
-        val errorMessage = if (
-            (exception as? FirebaseFirestoreException)?.code == FirebaseFirestoreException.Code.PERMISSION_DENIED
-        ) {
-            "daily animal read/write permission denied"
+
+        if (snapshot.exists()) {
+            onResult(resolvedAnimalId)
         } else {
-            exception.message
+            Log.i(
+                "DailyAnimal",
+                "No global daily animal document for $dateKey; skipping daily animal dialog"
+            )
+            onResult(null)
         }
-        Log.w(
-            "DailyAnimal",
-            "loadOrCreateGlobalDailyAnimalId failed for $dateKey: ${errorMessage ?: "Unbekannter Fehler"}",
-            exception
-        )
-        onError(errorMessage)
     }
+        .addOnFailureListener { exception ->
+            val errorMessage = if (
+                (exception as? FirebaseFirestoreException)?.code == FirebaseFirestoreException.Code.PERMISSION_DENIED
+            ) {
+                "daily animal read permission denied"
+            } else {
+                exception.message
+            }
+            Log.w(
+                "DailyAnimal",
+                "loadGlobalDailyAnimalId failed for $dateKey: ${errorMessage ?: "Unbekannter Fehler"}",
+                exception
+            )
+            onError(errorMessage)
+        }
 }
 
 private data class DailyAnimalHistoryEntry(
@@ -3424,7 +3415,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         val savedAnimal = savedAnimalId?.let { id -> animals.find { it.id == id } }
         val cachedTodayAnimal = if (savedDateKey == todayKey && savedAnimal != null) savedAnimal else null
 
-        loadOrCreateGlobalDailyAnimalId(
+        loadGlobalDailyAnimalId(
             dateKey = todayKey,
             animals = animals,
             onResult = { resolvedAnimalId ->
@@ -3435,7 +3426,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                 if (activeAnimal == null) {
                     dailyAnimalId = null
                     showDailyAnimalScreen = false
-                    return@loadOrCreateGlobalDailyAnimalId
+                    return@loadGlobalDailyAnimalId
                 }
 
                 val shouldResetForToday = savedDateKey != todayKey || savedAnimalId != activeAnimal.id
