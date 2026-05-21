@@ -279,6 +279,46 @@ service cloud.firestore {
           request.resource.data.readAt is timestamp);
     }
 
+    function isValidXpStateWrite() {
+      return request.resource.data.keys().hasOnly([
+          'totalXp',
+          'awardedXpKeys',
+          'backfillV1Done',
+          'schemaVersion',
+          'updatedAt'
+        ])
+        && request.resource.data.totalXp is int
+        && request.resource.data.totalXp >= 0
+        && request.resource.data.totalXp <= 10000000
+        && request.resource.data.awardedXpKeys is list
+        && request.resource.data.awardedXpKeys.size() <= 5000
+        && request.resource.data.backfillV1Done is bool
+        && request.resource.data.schemaVersion is int
+        && request.resource.data.schemaVersion == 1
+        && request.resource.data.updatedAt is timestamp;
+    }
+
+    function isValidQuestStateWrite() {
+      return request.resource.data.keys().hasOnly([
+          'socialLikesGivenCount',
+          'socialCommentsWrittenCount',
+          'dailyAnimalQuestHitFindingIds',
+          'schemaVersion',
+          'updatedAt'
+        ])
+        && request.resource.data.socialLikesGivenCount is int
+        && request.resource.data.socialLikesGivenCount >= 0
+        && request.resource.data.socialLikesGivenCount <= 100000
+        && request.resource.data.socialCommentsWrittenCount is int
+        && request.resource.data.socialCommentsWrittenCount >= 0
+        && request.resource.data.socialCommentsWrittenCount <= 100000
+        && request.resource.data.dailyAnimalQuestHitFindingIds is list
+        && request.resource.data.dailyAnimalQuestHitFindingIds.size() <= 5000
+        && request.resource.data.schemaVersion is int
+        && request.resource.data.schemaVersion == 1
+        && request.resource.data.updatedAt is timestamp;
+    }
+
     match /users/{userId} {
       allow read: if isSignedIn();
       allow create: if isOwner(userId) && isValidPublicProfileCreate();
@@ -342,8 +382,22 @@ service cloud.firestore {
         allow delete: if false;
       }
 
-      match /private/{document=**} {
-        allow read, write: if isOwner(userId);
+      match /private/meta/xpState/state {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidXpStateWrite();
+        allow delete: if false;
+      }
+
+      match /private/meta/questState/state {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidQuestStateWrite();
+        allow delete: if false;
+      }
+
+      match /private/{privatePath=**} {
+        allow read, write: if isOwner(userId)
+          && privatePath != "meta/xpState/state"
+          && privatePath != "meta/questState/state";
       }
     }
 
