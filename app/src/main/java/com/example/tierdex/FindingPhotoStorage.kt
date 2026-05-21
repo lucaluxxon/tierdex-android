@@ -34,6 +34,30 @@ fun storagePathFromUri(uriString: String): String? {
 object FindingPhotoStorageRepository {
     private val storage: FirebaseStorage by lazy { FirebaseStorage.getInstance() }
 
+    private fun collectRemoteFindingStoragePaths(finding: AnimalFinding): List<String> {
+        return buildList {
+            add(finding.remotePhotoPath)
+            addAll(finding.remotePhotoPaths)
+            add(finding.thumbnailRemotePhotoPath)
+        }.mapNotNull { rawValue ->
+            val trimmedValue = rawValue.trim()
+            when {
+                trimmedValue.isBlank() -> null
+                trimmedValue.startsWith("internal://", ignoreCase = true) -> null
+                trimmedValue.startsWith("content://", ignoreCase = true) -> null
+                trimmedValue.startsWith("file://", ignoreCase = true) -> null
+                trimmedValue.startsWith("http://", ignoreCase = true) -> null
+                trimmedValue.startsWith("https://", ignoreCase = true) -> null
+                trimmedValue.startsWith("android.resource://", ignoreCase = true) -> null
+                trimmedValue.startsWith(STORAGE_URI_PREFIX, ignoreCase = true) ->
+                    storagePathFromUri(trimmedValue)
+                else -> trimmedValue
+            }
+        }.map { it.trim() }
+            .filter { it.isNotBlank() }
+            .distinct()
+    }
+
     private fun isFriendFeedThumbnailStoragePath(remotePhotoPath: String): Boolean {
         return remotePhotoPath.contains("thumb_photo", ignoreCase = true)
     }
@@ -80,6 +104,65 @@ object FindingPhotoStorageRepository {
 
     fun buildProfileBackgroundPhotoPath(userId: String): String {
         return "users/$userId/profile/background.jpg"
+    }
+
+    suspend fun deleteFindingRemotePhotosBestEffort(
+        userId: String,
+        finding: AnimalFinding
+    ) {
+        val trimmedUserId = userId.trim()
+        val remotePaths = collectRemoteFindingStoragePaths(finding)
+        Log.d(
+            "FindingPhotoCleanup",
+            "cleanup start userIdPresent=${trimmedUserId.isNotBlank()} roomId=${finding.roomId?.toString() ?: "-"} animalId=${finding.animalId} remotePathCount=${remotePaths.size}"
+        )
+
+        if (trimmedUserId.isBlank() || remotePaths.isEmpty()) {
+            Log.d(
+                "FindingPhotoCleanup",
+                "cleanup completed roomId=${finding.roomId?.toString() ?: "-"} animalId=${finding.animalId} deleted=0 skipped=${remotePaths.size}"
+            )
+            return
+        }
+
+        withContext(Dispatchers.IO) {
+            remotePaths.forEach { remotePath ->
+                Log.d(
+                    "FindingPhotoCleanup",
+                    "delete start roomId=${finding.roomId?.toString() ?: "-"} animalId=${finding.animalId} path=$remotePath"
+                )
+                runCatching {
+                    Tasks.await(storage.reference.child(remotePath).delete())
+                    Log.d(
+                        "FindingPhotoCleanup",
+                        "delete success roomId=${finding.roomId?.toString() ?: "-"} animalId=${finding.animalId} path=$remotePath"
+                    )
+                }.getOrElse { exception ->
+                    val lowerMessage = exception.message.orEmpty().lowercase()
+                    val fileMissing =
+                        lowerMessage.contains("object does not exist") ||
+                            lowerMessage.contains("not found") ||
+                            lowerMessage.contains("no object exists")
+                    if (fileMissing) {
+                        Log.d(
+                            "FindingPhotoCleanup",
+                            "delete missing roomId=${finding.roomId?.toString() ?: "-"} animalId=${finding.animalId} path=$remotePath"
+                        )
+                    } else {
+                        Log.w(
+                            "FindingPhotoCleanup",
+                            "delete error roomId=${finding.roomId?.toString() ?: "-"} animalId=${finding.animalId} path=$remotePath error=${exception.message ?: "Unbekannter Fehler"}",
+                            exception
+                        )
+                    }
+                }
+            }
+        }
+
+        Log.d(
+            "FindingPhotoCleanup",
+            "cleanup completed roomId=${finding.roomId?.toString() ?: "-"} animalId=${finding.animalId} remotePathCount=${remotePaths.size}"
+        )
     }
 
     suspend fun uploadFindingPhoto(

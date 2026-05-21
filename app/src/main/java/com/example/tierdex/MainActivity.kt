@@ -5190,6 +5190,11 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                     findingEditReturnSource = null
 
                                     if (currentOwnerId != null) {
+                                        val ownerIdForCleanup = currentOwnerId.orEmpty()
+                                        FindingPhotoStorageRepository.deleteFindingRemotePhotosBestEffort(
+                                            userId = ownerIdForCleanup,
+                                            finding = finding
+                                        )
                                         FirestoreFindingRepository.deleteCurrentUserFinding(finding) { success, result ->
                                             if (success) {
                                                 Log.d(
