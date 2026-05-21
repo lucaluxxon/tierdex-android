@@ -135,13 +135,23 @@ object XpCloudSyncRepository {
             return
         }
 
+        val normalizedAwardedXpKeys = state.awardedXpKeys
+            .map { it.trim() }
+            .filter { it.isNotBlank() }
+            .distinct()
+            .sorted()
+        val authoritativeTotalXp =
+            XpProgressRepository.recalculateTotalXpFromAwardedKeys(normalizedAwardedXpKeys)
+        if (state.totalXp != authoritativeTotalXp) {
+            Log.w(
+                TAG,
+                "saveXpState totalXp mismatch userId=$cleanUid providedTotalXp=${state.totalXp} authoritativeTotalXp=$authoritativeTotalXp"
+            )
+        }
+
         val data = hashMapOf<String, Any>(
-            "totalXp" to state.totalXp.coerceAtLeast(0),
-            "awardedXpKeys" to state.awardedXpKeys
-                .map { it.trim() }
-                .filter { it.isNotBlank() }
-                .distinct()
-                .sorted(),
+            "totalXp" to authoritativeTotalXp,
+            "awardedXpKeys" to normalizedAwardedXpKeys,
             "backfillV1Done" to state.backfillV1Done,
             "schemaVersion" to XP_CLOUD_SCHEMA_VERSION,
             "updatedAt" to FieldValue.serverTimestamp()
@@ -152,7 +162,7 @@ object XpCloudSyncRepository {
             .addOnSuccessListener {
                 Log.d(
                     TAG,
-                    "saveXpState success userId=$cleanUid totalXp=${state.totalXp} awardedKeyCount=${state.awardedXpKeys.size} backfillV1Done=${state.backfillV1Done} path=users/$cleanUid/private/meta/xpState/state"
+                    "saveXpState success userId=$cleanUid totalXp=$authoritativeTotalXp awardedKeyCount=${normalizedAwardedXpKeys.size} backfillV1Done=${state.backfillV1Done} path=users/$cleanUid/private/meta/xpState/state"
                 )
                 onResult(true, null)
             }

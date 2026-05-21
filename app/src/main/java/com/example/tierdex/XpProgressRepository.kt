@@ -1,6 +1,7 @@
 package com.example.tierdex
 
 import android.content.SharedPreferences
+import android.util.Log
 import kotlin.math.roundToInt
 
 private const val XP_TOTAL_KEY_PREFIX = "xp_total_"
@@ -28,6 +29,7 @@ data class XpAwardGrantResult(
 )
 
 object XpProgressRepository {
+    private const val TAG = "XpProgressRepository"
     private val xpStepAnchors = sortedMapOf(
         1 to 50,
         2 to 75,
@@ -214,10 +216,29 @@ object XpProgressRepository {
         val cleanAwards = awards
             .mapNotNull { (awardKey, xpValue) ->
                 val cleanAwardKey = awardKey.trim()
-                if (cleanAwardKey.isBlank() || xpValue <= 0) {
+                if (cleanAwardKey.isBlank()) {
                     null
                 } else {
-                    cleanAwardKey to xpValue
+                    val authoritativeXp = xpForAwardKey(cleanAwardKey)
+                    when {
+                        authoritativeXp > 0 -> {
+                            if (xpValue != authoritativeXp) {
+                                Log.w(
+                                    TAG,
+                                    "grantXpAwardsIfAbsent xp mismatch awardKey=$cleanAwardKey providedXp=$xpValue authoritativeXp=$authoritativeXp"
+                                )
+                            }
+                            cleanAwardKey to authoritativeXp
+                        }
+
+                        else -> {
+                            Log.w(
+                                TAG,
+                                "grantXpAwardsIfAbsent skipped unknown or zero-xp awardKey=$cleanAwardKey providedXp=$xpValue"
+                            )
+                            null
+                        }
+                    }
                 }
             }
             .distinctBy { it.first }
@@ -226,20 +247,20 @@ object XpProgressRepository {
             return XpAwardGrantResult(
                 awardedXp = 0,
                 grantedKeys = emptySet(),
-                totalXpAfterGrant = loadTotalXp(prefs, userId)
+                totalXpAfterGrant = reconcileStoredTotalXp(prefs, userId)
             )
         }
 
-        var updatedTotalXp = loadTotalXp(prefs, userId)
         val grantedKeys = mutableSetOf<String>()
 
-        cleanAwards.forEach { (awardKey, xpValue) ->
+        cleanAwards.forEach { (awardKey, _) ->
             if (awardKey !in existingAwardedKeys) {
                 existingAwardedKeys += awardKey
                 grantedKeys += awardKey
-                updatedTotalXp += xpValue
             }
         }
+
+        val updatedTotalXp = recalculateTotalXpFromAwardedKeys(existingAwardedKeys)
 
         if (grantedKeys.isNotEmpty()) {
             prefs.edit()
@@ -262,7 +283,12 @@ object XpProgressRepository {
         userId: String?
     ): XpProgressSnapshot {
         val resolvedOwnerId = resolveOwnerId(userId)
-        val totalXp = loadTotalXp(prefs, userId)
+        val awardedXpKeys = loadAwardedXpKeys(prefs, userId)
+        val totalXp = reconcileStoredTotalXp(
+            prefs = prefs,
+            userId = userId,
+            awardedXpKeys = awardedXpKeys
+        )
         val level = calculateLevelFromXp(totalXp)
         val currentLevelStartXp = xpRequiredToReachLevel(level)
         val nextLevelStartXp = nextLevelStartXp(totalXp)
@@ -277,7 +303,7 @@ object XpProgressRepository {
         return XpProgressSnapshot(
             ownerId = resolvedOwnerId,
             totalXp = totalXp,
-            awardedXpKeys = loadAwardedXpKeys(prefs, userId),
+            awardedXpKeys = awardedXpKeys,
             level = level,
             title = titleForLevel(level),
             currentLevelStartXp = currentLevelStartXp,
@@ -286,6 +312,27 @@ object XpProgressRepository {
             xpNeededForNextLevel = xpNeededForNextLevel,
             progressWithinLevel = progressWithinLevel
         )
+    }
+
+    private fun reconcileStoredTotalXp(
+        prefs: SharedPreferences,
+        userId: String?,
+        awardedXpKeys: Set<String> = loadAwardedXpKeys(prefs, userId)
+    ): Int {
+        val authoritativeTotalXp = recalculateTotalXpFromAwardedKeys(awardedXpKeys)
+        val storedTotalXp = loadTotalXp(prefs, userId)
+        if (storedTotalXp != authoritativeTotalXp) {
+            Log.w(
+                TAG,
+                "Reconciled stored totalXp for ownerId=${resolveOwnerId(userId)} stored=$storedTotalXp authoritative=$authoritativeTotalXp"
+            )
+            storeTotalXp(
+                prefs = prefs,
+                userId = userId,
+                totalXp = authoritativeTotalXp
+            )
+        }
+        return authoritativeTotalXp
     }
 
     fun calculateLevelFromXp(totalXp: Int): Int {
