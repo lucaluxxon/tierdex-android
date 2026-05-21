@@ -14,6 +14,14 @@ service cloud.firestore {
       return /databases/$(database)/documents/users/$(ownerUid)/friends/$(friendUid);
     }
 
+    function incomingRequestDocPath(userId, fromUid) {
+      return /databases/$(database)/documents/users/$(userId)/friendRequestsIncoming/$(fromUid);
+    }
+
+    function outgoingRequestDocPath(userId, toUid) {
+      return /databases/$(database)/documents/users/$(userId)/friendRequestsOutgoing/$(toUid);
+    }
+
     function isConfirmedFriend(ownerUid) {
       return isSignedIn()
         && exists(friendDocPath(ownerUid, request.auth.uid))
@@ -210,6 +218,53 @@ service cloud.firestore {
           request.resource.data.createdAt is timestamp);
     }
 
+    function isValidAcceptedFriendDataAfter(userId, friendUid) {
+      return existsAfter(friendDocPath(userId, friendUid))
+        && getAfter(friendDocPath(userId, friendUid)).data.keys().hasOnly([
+          'friendUserId',
+          'status',
+          'createdAt'
+        ])
+        && getAfter(friendDocPath(userId, friendUid)).data.friendUserId is string
+        && getAfter(friendDocPath(userId, friendUid)).data.friendUserId == friendUid
+        && getAfter(friendDocPath(userId, friendUid)).data.status is string
+        && getAfter(friendDocPath(userId, friendUid)).data.status == 'accepted'
+        && (!('createdAt' in getAfter(friendDocPath(userId, friendUid)).data) ||
+          getAfter(friendDocPath(userId, friendUid)).data.createdAt is timestamp);
+    }
+
+    function hasPendingFriendRequest(recipientUid, requesterUid) {
+      return exists(incomingRequestDocPath(recipientUid, requesterUid))
+        && exists(outgoingRequestDocPath(requesterUid, recipientUid))
+        && get(incomingRequestDocPath(recipientUid, requesterUid)).data.status == 'pending'
+        && get(outgoingRequestDocPath(requesterUid, recipientUid)).data.status == 'pending';
+    }
+
+    function isAllowedSymmetricFriendAcceptWrite(userId, friendUid) {
+      return isSignedIn()
+        && (request.auth.uid == userId || request.auth.uid == friendUid)
+        && isValidFriendEntry(userId, friendUid)
+        && (
+          (request.auth.uid == userId && hasPendingFriendRequest(userId, friendUid)) ||
+          (request.auth.uid == friendUid && hasPendingFriendRequest(friendUid, userId))
+        )
+        && isValidAcceptedFriendDataAfter(userId, friendUid)
+        && isValidAcceptedFriendDataAfter(friendUid, userId);
+    }
+
+    function isAllowedSymmetricFriendRemove(userId, friendUid) {
+      return isSignedIn()
+        && (request.auth.uid == userId || request.auth.uid == friendUid)
+        && exists(friendDocPath(userId, friendUid))
+        && exists(friendDocPath(friendUid, userId))
+        && get(friendDocPath(userId, friendUid)).data.friendUserId == friendUid
+        && get(friendDocPath(userId, friendUid)).data.status == 'accepted'
+        && get(friendDocPath(friendUid, userId)).data.friendUserId == userId
+        && get(friendDocPath(friendUid, userId)).data.status == 'accepted'
+        && !existsAfter(friendDocPath(userId, friendUid))
+        && !existsAfter(friendDocPath(friendUid, userId));
+    }
+
     function isValidIncomingRequest(userId, fromUid) {
       return request.resource.data.keys().hasOnly([
         'fromUserId',
@@ -355,8 +410,8 @@ service cloud.firestore {
 
       match /friends/{friendUid} {
         allow read: if isOwner(userId);
-        allow create, update: if isOwner(userId) && isValidFriendEntry(userId, friendUid);
-        allow delete: if isOwner(userId);
+        allow create, update: if isAllowedSymmetricFriendAcceptWrite(userId, friendUid);
+        allow delete: if isAllowedSymmetricFriendRemove(userId, friendUid);
       }
 
       match /friendRequestsIncoming/{fromUid} {
