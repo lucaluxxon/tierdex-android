@@ -5630,15 +5630,6 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                             .ifEmpty { effectiveRemotePhotoPaths(oldFinding) }
                                     )
                                 }
-                                if (startInFindingEditMode) {
-                                    selectedFindingDetail = preparedNewFinding
-                                    selectedAnimalId = null
-                                    selectedFindingToEdit = null
-                                    startInFindingEditMode = false
-                                    openCreateFindingMode = false
-                                } else {
-                                    selectedFindingToEdit = preparedNewFinding
-                                }
                                 val roomMatch = if (oldFinding.roomId != null) {
                                     allFindings.lastOrNull { it.id == oldFinding.roomId }
                                 } else {
@@ -5781,6 +5772,17 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                     }
                             }
                             findingEditReturnSource = null
+                        },
+                        onUpdateFindingCompleted = { updatedFinding ->
+                            if (startInFindingEditMode) {
+                                selectedFindingDetail = updatedFinding
+                                selectedAnimalId = null
+                                selectedFindingToEdit = null
+                                startInFindingEditMode = false
+                                openCreateFindingMode = false
+                            } else {
+                                selectedFindingToEdit = updatedFinding
+                            }
                         },
                     )
                 }
@@ -14147,6 +14149,7 @@ fun AnimalDetailScreen(
     currentWishlistAnimalId: String?,
     onShowFindingSuccessAnimation: (Boolean) -> Unit,
     onDeleteFindingCompleted: (AnimalFinding) -> Unit,
+    onUpdateFindingCompleted: (AnimalFinding) -> Unit,
     extraTopPadding: Dp = 0.dp,
     extraBottomPadding: Dp = 0.dp
 ) {
@@ -15769,7 +15772,6 @@ fun AnimalDetailScreen(
                                                         newFinding
                                                     )
                                                     enforceFindingButtonMinimumDuration(actionStartedAt)
-                                                    activeFindingButtonAction = null
                                                     if (updateSucceeded) {
                                                         editingFinding = newFinding
                                                         selectedPhotoUris = storedPhotoUris
@@ -15778,10 +15780,12 @@ fun AnimalDetailScreen(
                                                         cropPhotoUri = null
                                                         draggingPhotoUri = null
                                                         draggingPhotoOffsetX = 0f
+                                                        onUpdateFindingCompleted(newFinding)
                                                         if (!startInFindingEditMode) {
                                                             isEditMode = false
                                                         }
                                                     }
+                                                    activeFindingButtonAction = null
                                                 }
                                             } catch (exception: Exception) {
                                                 Log.e(
