@@ -242,9 +242,11 @@ private const val DAILY_ANIMAL_HISTORY_RECORDED_DATE_KEY_PREFIX = "daily_animal_
 private const val DAILY_ANIMAL_ASSIGNMENTS_KEY_PREFIX = "daily_animal_assignments_"
 private const val DAILY_ANIMAL_QUEST_HIT_ROOM_IDS_KEY_PREFIX = "daily_animal_quest_hit_room_ids_"
 private const val SOCIAL_LIKES_GIVEN_COUNT_KEY_PREFIX = "social_likes_given_count_"
+private const val SOCIAL_LIKE_QUEST_FINDING_KEYS_KEY_PREFIX = "social_like_quest_finding_keys_"
 private const val SOCIAL_COMMENTS_WRITTEN_COUNT_KEY_PREFIX = "social_comments_written_count_"
 private const val XP_BACKFILL_V1_DONE_KEY_PREFIX = "xp_backfill_v1_done_"
 private const val LOCAL_PREFERENCES_OWNER_ID = "local"
+private const val MAX_SOCIAL_LIKE_QUEST_FINDING_KEYS = 5000
 private val AppGreenBackground = Color(0xFF51734A)
 
 private enum class ProfileCollectionSortOrder {
@@ -278,6 +280,8 @@ private fun dailyAnimalAssignmentsKey(ownerId: String): String = "$DAILY_ANIMAL_
 private fun dailyAnimalQuestHitRoomIdsKey(ownerId: String): String =
     "$DAILY_ANIMAL_QUEST_HIT_ROOM_IDS_KEY_PREFIX$ownerId"
 private fun socialLikesGivenCountKey(ownerId: String): String = "$SOCIAL_LIKES_GIVEN_COUNT_KEY_PREFIX$ownerId"
+private fun socialLikeQuestFindingKeysKey(ownerId: String): String =
+    "$SOCIAL_LIKE_QUEST_FINDING_KEYS_KEY_PREFIX$ownerId"
 private fun socialCommentsWrittenCountKey(ownerId: String): String =
     "$SOCIAL_COMMENTS_WRITTEN_COUNT_KEY_PREFIX$ownerId"
 private fun xpBackfillV1DoneKey(ownerId: String): String = "$XP_BACKFILL_V1_DONE_KEY_PREFIX$ownerId"
@@ -649,7 +653,84 @@ private fun collectSecureDailyAnimalHitRoomIds(
 private fun loadSocialLikesGivenCount(
     prefs: android.content.SharedPreferences,
     ownerId: String
-): Int = prefs.getInt(socialLikesGivenCountKey(ownerId), 0).coerceAtLeast(0)
+): Int = max(
+    prefs.getInt(socialLikesGivenCountKey(ownerId), 0).coerceAtLeast(0),
+    loadSocialLikeQuestFindingKeys(prefs, ownerId).size
+)
+
+private fun normalizeSocialLikeQuestFindingKeys(keys: Collection<String>): Set<String> =
+    keys.map { it.trim() }
+        .filter { it.isNotBlank() }
+        .distinct()
+        .sorted()
+        .take(MAX_SOCIAL_LIKE_QUEST_FINDING_KEYS)
+        .toSet()
+
+private fun buildSocialLikeQuestFindingKey(
+    findingOwnerId: String,
+    findingId: String
+): String? {
+    val cleanFindingOwnerId = findingOwnerId.trim()
+    val cleanFindingId = findingId.trim()
+    if (cleanFindingOwnerId.isBlank() || cleanFindingId.isBlank()) return null
+    return "$cleanFindingOwnerId:$cleanFindingId"
+}
+
+private fun loadSocialLikeQuestFindingKeys(
+    prefs: android.content.SharedPreferences,
+    ownerId: String
+): Set<String> = normalizeSocialLikeQuestFindingKeys(
+    prefs.getStringSet(socialLikeQuestFindingKeysKey(ownerId), emptySet()).orEmpty()
+)
+
+private fun saveSocialLikeQuestFindingKeys(
+    prefs: android.content.SharedPreferences,
+    ownerId: String,
+    findingKeys: Set<String>
+) {
+    val normalizedKeys = normalizeSocialLikeQuestFindingKeys(findingKeys)
+    prefs.edit()
+        .putStringSet(socialLikeQuestFindingKeysKey(ownerId), normalizedKeys)
+        .apply()
+}
+
+private data class SocialLikeQuestCountUpdate(
+    val counted: Boolean,
+    val count: Int
+)
+
+private fun recordSocialLikeQuestFindingIfNeeded(
+    prefs: android.content.SharedPreferences,
+    ownerId: String,
+    findingOwnerId: String,
+    findingId: String
+): SocialLikeQuestCountUpdate {
+    val findingKey = buildSocialLikeQuestFindingKey(
+        findingOwnerId = findingOwnerId,
+        findingId = findingId
+    ) ?: return SocialLikeQuestCountUpdate(
+        counted = false,
+        count = loadSocialLikesGivenCount(prefs, ownerId)
+    )
+
+    val existingKeys = loadSocialLikeQuestFindingKeys(prefs, ownerId)
+    val baselineCount = max(
+        prefs.getInt(socialLikesGivenCountKey(ownerId), 0).coerceAtLeast(0),
+        existingKeys.size
+    )
+    if (findingKey in existingKeys) {
+        if (prefs.getInt(socialLikesGivenCountKey(ownerId), 0).coerceAtLeast(0) != baselineCount) {
+            prefs.edit().putInt(socialLikesGivenCountKey(ownerId), baselineCount).apply()
+        }
+        return SocialLikeQuestCountUpdate(counted = false, count = baselineCount)
+    }
+
+    val updatedKeys = normalizeSocialLikeQuestFindingKeys(existingKeys + findingKey)
+    saveSocialLikeQuestFindingKeys(prefs, ownerId, updatedKeys)
+    val updatedCount = max(baselineCount + 1, updatedKeys.size)
+    prefs.edit().putInt(socialLikesGivenCountKey(ownerId), updatedCount).apply()
+    return SocialLikeQuestCountUpdate(counted = true, count = updatedCount)
+}
 
 private fun loadSocialCommentsWrittenCount(
     prefs: android.content.SharedPreferences,
@@ -1941,6 +2022,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         return QuestCloudState(
             socialLikesGivenCount = loadSocialLikesGivenCount(prefs, ownerId),
             socialCommentsWrittenCount = loadSocialCommentsWrittenCount(prefs, ownerId),
+            socialLikeQuestFindingKeys = loadSocialLikeQuestFindingKeys(prefs, ownerId),
             dailyAnimalQuestHitFindingIds = collectDailyAnimalQuestHitFindingIds(ownerId, findings)
         )
     }
@@ -1961,6 +2043,11 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                 questState.socialCommentsWrittenCount.coerceAtLeast(0)
             )
             .apply()
+        saveSocialLikeQuestFindingKeys(
+            prefs = prefs,
+            ownerId = safeOwnerId,
+            findingKeys = questState.socialLikeQuestFindingKeys
+        )
         questCloudHydratedHitFindingIds = questState.dailyAnimalQuestHitFindingIds
         restoreDailyAnimalQuestHitRoomIdsFromFindingIds(
             ownerId = safeOwnerId,
@@ -2923,21 +3010,26 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                     "initial merge loaded userId=$safeOwnerId cloudExists=${cloudState != null} localLikes=${localState.socialLikesGivenCount} localComments=${localState.socialCommentsWrittenCount} localHitFindingIdCount=${localState.dailyAnimalQuestHitFindingIds.size} cloudLikes=${cloudState?.socialLikesGivenCount ?: 0} cloudComments=${cloudState?.socialCommentsWrittenCount ?: 0} cloudHitFindingIdCount=${cloudState?.dailyAnimalQuestHitFindingIds?.size ?: 0}"
                 )
                 val mergedState = QuestCloudState(
-                    socialLikesGivenCount = max(
+                    socialLikesGivenCount = maxOf(
                         localState.socialLikesGivenCount,
-                        cloudState?.socialLikesGivenCount ?: 0
+                        cloudState?.socialLikesGivenCount ?: 0,
+                        (localState.socialLikeQuestFindingKeys +
+                            (cloudState?.socialLikeQuestFindingKeys ?: emptySet())).size
                     ),
                     socialCommentsWrittenCount = max(
                         localState.socialCommentsWrittenCount,
                         cloudState?.socialCommentsWrittenCount ?: 0
                     ),
+                    socialLikeQuestFindingKeys =
+                        localState.socialLikeQuestFindingKeys +
+                            (cloudState?.socialLikeQuestFindingKeys ?: emptySet()),
                     dailyAnimalQuestHitFindingIds =
                         localState.dailyAnimalQuestHitFindingIds + (cloudState?.dailyAnimalQuestHitFindingIds ?: emptySet()),
                     updatedAt = cloudState?.updatedAt
                 )
                 Log.d(
                     "QuestCloudSync",
-                    "initial merge result userId=$safeOwnerId mergedLikes=${mergedState.socialLikesGivenCount} mergedComments=${mergedState.socialCommentsWrittenCount} mergedHitFindingIdCount=${mergedState.dailyAnimalQuestHitFindingIds.size}"
+                    "initial merge result userId=$safeOwnerId mergedLikes=${mergedState.socialLikesGivenCount} mergedComments=${mergedState.socialCommentsWrittenCount} mergedLikeQuestFindingKeyCount=${mergedState.socialLikeQuestFindingKeys.size} mergedHitFindingIdCount=${mergedState.dailyAnimalQuestHitFindingIds.size}"
                 )
                 applyHydratedQuestState(
                     ownerId = safeOwnerId,
@@ -10186,10 +10278,13 @@ fun FriendsScreen(
                                                                 prefs,
                                                                 currentUserId.orEmpty()
                                                             )
-                                                            val currentLikesGivenCount = incrementSocialLikesGivenCount(
-                                                                prefs,
-                                                                currentUserId.orEmpty()
+                                                            val likeQuestUpdate = recordSocialLikeQuestFindingIfNeeded(
+                                                                prefs = prefs,
+                                                                ownerId = currentUserId.orEmpty(),
+                                                                findingOwnerId = feedItem.friendUserId,
+                                                                findingId = feedItem.findingId
                                                             )
+                                                            val currentLikesGivenCount = likeQuestUpdate.count
                                                             onQuestStateChanged()
                                                             val xpPopup = grantSocialXpIfEligible(
                                                                 prefs = prefs,
@@ -10201,11 +10296,11 @@ fun FriendsScreen(
                                                                 previousSocialQuestProgress = SocialQuestProgress(
                                                                     friendCount = friends.size,
                                                                     likesGivenCount = previousLikesGivenCount,
-                                                                    commentsWrittenCount = loadSocialCommentsWrittenCount(prefs, currentUserId.orEmpty())
-                                                                ),
-                                                                currentSocialQuestProgress = SocialQuestProgress(
-                                                                    friendCount = friends.size,
-                                                                    likesGivenCount = currentLikesGivenCount,
+                                                                        commentsWrittenCount = loadSocialCommentsWrittenCount(prefs, currentUserId.orEmpty())
+                                                                    ),
+                                                                    currentSocialQuestProgress = SocialQuestProgress(
+                                                                        friendCount = friends.size,
+                                                                        likesGivenCount = currentLikesGivenCount,
                                                                     commentsWrittenCount = loadSocialCommentsWrittenCount(prefs, currentUserId.orEmpty())
                                                                 )
                                                             )
@@ -14545,10 +14640,13 @@ fun AnimalDetailScreen(
                                                                             prefs,
                                                                             currentUserId.orEmpty()
                                                                         )
-                                                                        val currentLikesGivenCount = incrementSocialLikesGivenCount(
-                                                                            prefs,
-                                                                            currentUserId.orEmpty()
+                                                                        val likeQuestUpdate = recordSocialLikeQuestFindingIfNeeded(
+                                                                            prefs = prefs,
+                                                                            ownerId = currentUserId.orEmpty(),
+                                                                            findingOwnerId = feedItem.friendUserId,
+                                                                            findingId = feedItem.findingId
                                                                         )
+                                                                        val currentLikesGivenCount = likeQuestUpdate.count
                                                                         onQuestStateChanged()
                                                                         val xpPopup = grantSocialXpIfEligible(
                                                                             prefs = prefs,

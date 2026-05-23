@@ -10,6 +10,7 @@ import com.google.firebase.firestore.SetOptions
 data class QuestCloudState(
     val socialLikesGivenCount: Int,
     val socialCommentsWrittenCount: Int,
+    val socialLikeQuestFindingKeys: Set<String>,
     val dailyAnimalQuestHitFindingIds: Set<String>,
     val updatedAt: Timestamp? = null,
     val schemaVersion: Int = 1
@@ -18,6 +19,7 @@ data class QuestCloudState(
 object QuestCloudSyncRepository {
     private const val TAG = "QuestCloudSyncRepository"
     private const val QUEST_CLOUD_SCHEMA_VERSION = 1
+    private const val MAX_SOCIAL_LIKE_QUEST_FINDING_KEYS = 5000
 
     private val firestore: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
 
@@ -70,6 +72,15 @@ object QuestCloudSyncRepository {
                     document.getLong("socialLikesGivenCount")?.toInt()?.coerceAtLeast(0) ?: 0
                 val socialCommentsWrittenCount =
                     document.getLong("socialCommentsWrittenCount")?.toInt()?.coerceAtLeast(0) ?: 0
+                val socialLikeQuestFindingKeys =
+                    (document.get("socialLikeQuestFindingKeys") as? List<*>)
+                        .orEmpty()
+                        .mapNotNull { value -> (value as? String)?.trim() }
+                        .filter { it.isNotBlank() }
+                        .distinct()
+                        .sorted()
+                        .take(MAX_SOCIAL_LIKE_QUEST_FINDING_KEYS)
+                        .toSet()
                 val dailyAnimalQuestHitFindingIds =
                     (document.get("dailyAnimalQuestHitFindingIds") as? List<*>)
                         .orEmpty()
@@ -81,13 +92,14 @@ object QuestCloudSyncRepository {
 
                 Log.d(
                     TAG,
-                    "loadQuestState userId=$cleanUid exists=true likes=$socialLikesGivenCount comments=$socialCommentsWrittenCount hitFindingIdCount=${dailyAnimalQuestHitFindingIds.size} schemaVersion=$schemaVersion"
+                    "loadQuestState userId=$cleanUid exists=true likes=$socialLikesGivenCount comments=$socialCommentsWrittenCount likeQuestFindingKeyCount=${socialLikeQuestFindingKeys.size} hitFindingIdCount=${dailyAnimalQuestHitFindingIds.size} schemaVersion=$schemaVersion"
                 )
 
                 onResult(
                     QuestCloudState(
                         socialLikesGivenCount = socialLikesGivenCount,
                         socialCommentsWrittenCount = socialCommentsWrittenCount,
+                        socialLikeQuestFindingKeys = socialLikeQuestFindingKeys,
                         dailyAnimalQuestHitFindingIds = dailyAnimalQuestHitFindingIds,
                         updatedAt = document.getTimestamp("updatedAt"),
                         schemaVersion = schemaVersion
@@ -120,6 +132,12 @@ object QuestCloudSyncRepository {
         val data = hashMapOf<String, Any>(
             "socialLikesGivenCount" to state.socialLikesGivenCount.coerceAtLeast(0),
             "socialCommentsWrittenCount" to state.socialCommentsWrittenCount.coerceAtLeast(0),
+            "socialLikeQuestFindingKeys" to state.socialLikeQuestFindingKeys
+                .map { it.trim() }
+                .filter { it.isNotBlank() }
+                .distinct()
+                .sorted()
+                .take(MAX_SOCIAL_LIKE_QUEST_FINDING_KEYS),
             "dailyAnimalQuestHitFindingIds" to state.dailyAnimalQuestHitFindingIds
                 .map { it.trim() }
                 .filter { it.isNotBlank() }
@@ -134,7 +152,7 @@ object QuestCloudSyncRepository {
             .addOnSuccessListener {
                 Log.d(
                     TAG,
-                    "saveQuestState success userId=$cleanUid likes=${state.socialLikesGivenCount} comments=${state.socialCommentsWrittenCount} hitFindingIdCount=${state.dailyAnimalQuestHitFindingIds.size} path=users/$cleanUid/private/meta/questState/state"
+                    "saveQuestState success userId=$cleanUid likes=${state.socialLikesGivenCount} comments=${state.socialCommentsWrittenCount} likeQuestFindingKeyCount=${state.socialLikeQuestFindingKeys.size} hitFindingIdCount=${state.dailyAnimalQuestHitFindingIds.size} path=users/$cleanUid/private/meta/questState/state"
                 )
                 onResult(true, null)
             }
