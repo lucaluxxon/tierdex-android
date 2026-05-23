@@ -4172,6 +4172,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         onError: (String?) -> Unit
     ) {
         val firestore = FirebaseFirestore.getInstance()
+        val displayNameCache = mutableMapOf<String, String>()
 
         firestore.collection("users")
             .document(currentUserId)
@@ -4216,38 +4217,49 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                     findingDocument.reference.collection("likes")
                         .get()
                         .addOnSuccessListener { likeSnapshot ->
-                            likeSnapshot.documents.forEach { likeDocument ->
+                            val relevantLikeDocuments = likeSnapshot.documents.filter { likeDocument ->
                                 val likerUid = likeDocument.getString("likerUid").orEmpty()
-                                if (likerUid.isBlank() || likerUid == currentUserId) return@forEach
-
-                                val createdAt = likeDocument.getTimestamp("createdAt")
-                                val likerDisplayName = likeDocument.getString("likerDisplayName").orEmpty()
-                                val notificationId = likeNotificationId(
-                                    ownerUserId = currentUserId,
-                                    stableFindingId = stableFindingId,
-                                    likerUid = likerUid,
-                                    fallbackLikeId = likeDocument.id
-                                )
-                                val legacyNotificationId = legacyLikeNotificationId(
-                                    findingId = findingId,
-                                    likeDocumentId = likeDocument.id
-                                )
-                                interactionNotifications += TierdexNotification(
-                                    id = notificationId,
-                                    type = "like",
-                                    title = "Neuer Like",
-                                    message = "${likerDisplayName.ifBlank { "Jemand" }} gefällt dein Fund.",
-                                    createdAtText = formatNotificationTimestamp(createdAt),
-                                    createdAt = createdAt,
-                                    isRead = false,
-                                    readAliases = setOf(legacyNotificationId),
-                                    relatedUserId = likerUid,
-                                    relatedOwnerUserId = currentUserId,
-                                    relatedFindingId = stableFindingId,
-                                    relatedAnimalId = findingDocument.getString("animalId")
-                                )
+                                likerUid.isNotBlank() && likerUid != currentUserId
                             }
-                            finishLoad()
+                            val uncachedLikerUids = relevantLikeDocuments
+                                .map { it.getString("likerUid").orEmpty() }
+                                .filter { it.isNotBlank() && it !in displayNameCache }
+                                .distinct()
+
+                            FriendRepository.loadDisplayNamesForUserIds(uncachedLikerUids) { loadedDisplayNames ->
+                                displayNameCache.putAll(loadedDisplayNames)
+
+                                relevantLikeDocuments.forEach { likeDocument ->
+                                    val likerUid = likeDocument.getString("likerUid").orEmpty()
+                                    val createdAt = likeDocument.getTimestamp("createdAt")
+                                    val actorDisplayName = displayNameCache[likerUid].orEmpty()
+                                    val notificationId = likeNotificationId(
+                                        ownerUserId = currentUserId,
+                                        stableFindingId = stableFindingId,
+                                        likerUid = likerUid,
+                                        fallbackLikeId = likeDocument.id
+                                    )
+                                    val legacyNotificationId = legacyLikeNotificationId(
+                                        findingId = findingId,
+                                        likeDocumentId = likeDocument.id
+                                    )
+                                    interactionNotifications += TierdexNotification(
+                                        id = notificationId,
+                                        type = "like",
+                                        title = "Neuer Like",
+                                        message = "${actorDisplayName.ifBlank { "Jemand" }} gefällt dein Fund.",
+                                        createdAtText = formatNotificationTimestamp(createdAt),
+                                        createdAt = createdAt,
+                                        isRead = false,
+                                        readAliases = setOf(legacyNotificationId),
+                                        relatedUserId = likerUid,
+                                        relatedOwnerUserId = currentUserId,
+                                        relatedFindingId = stableFindingId,
+                                        relatedAnimalId = findingDocument.getString("animalId")
+                                    )
+                                }
+                                finishLoad()
+                            }
                         }
                         .addOnFailureListener { exception ->
                             if (firstError == null) {
@@ -4259,39 +4271,49 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                     findingDocument.reference.collection("comments")
                         .get()
                         .addOnSuccessListener { commentSnapshot ->
-                            commentSnapshot.documents.forEach { commentDocument ->
+                            val relevantCommentDocuments = commentSnapshot.documents.filter { commentDocument ->
                                 val commenterUid = commentDocument.getString("commenterUid").orEmpty()
-                                if (commenterUid.isBlank() || commenterUid == currentUserId) return@forEach
-
-                                val createdAt = commentDocument.getTimestamp("createdAt")
-                                val commenterDisplayName =
-                                    commentDocument.getString("commenterDisplayName").orEmpty()
-                                val commentText = commentDocument.getString("text").orEmpty().trim()
-                                val notificationId = commentNotificationId(
-                                    ownerUserId = currentUserId,
-                                    stableFindingId = stableFindingId,
-                                    commentDocumentId = commentDocument.id
-                                )
-                                val legacyNotificationId = legacyCommentNotificationId(
-                                    findingId = findingId,
-                                    commentDocumentId = commentDocument.id
-                                )
-                                interactionNotifications += TierdexNotification(
-                                    id = notificationId,
-                                    type = "comment",
-                                    title = "Neuer Kommentar",
-                                    message = "${commenterDisplayName.ifBlank { "Jemand" }}: $commentText",
-                                    createdAtText = formatNotificationTimestamp(createdAt),
-                                    createdAt = createdAt,
-                                    isRead = false,
-                                    readAliases = setOf(legacyNotificationId),
-                                    relatedUserId = commenterUid,
-                                    relatedOwnerUserId = currentUserId,
-                                    relatedFindingId = stableFindingId,
-                                    relatedAnimalId = findingDocument.getString("animalId")
-                                )
+                                commenterUid.isNotBlank() && commenterUid != currentUserId
                             }
-                            finishLoad()
+                            val uncachedCommenterUids = relevantCommentDocuments
+                                .map { it.getString("commenterUid").orEmpty() }
+                                .filter { it.isNotBlank() && it !in displayNameCache }
+                                .distinct()
+
+                            FriendRepository.loadDisplayNamesForUserIds(uncachedCommenterUids) { loadedDisplayNames ->
+                                displayNameCache.putAll(loadedDisplayNames)
+
+                                relevantCommentDocuments.forEach { commentDocument ->
+                                    val commenterUid = commentDocument.getString("commenterUid").orEmpty()
+                                    val createdAt = commentDocument.getTimestamp("createdAt")
+                                    val actorDisplayName = displayNameCache[commenterUid].orEmpty()
+                                    val commentText = commentDocument.getString("text").orEmpty().trim()
+                                    val notificationId = commentNotificationId(
+                                        ownerUserId = currentUserId,
+                                        stableFindingId = stableFindingId,
+                                        commentDocumentId = commentDocument.id
+                                    )
+                                    val legacyNotificationId = legacyCommentNotificationId(
+                                        findingId = findingId,
+                                        commentDocumentId = commentDocument.id
+                                    )
+                                    interactionNotifications += TierdexNotification(
+                                        id = notificationId,
+                                        type = "comment",
+                                        title = "Neuer Kommentar",
+                                        message = "${actorDisplayName.ifBlank { "Jemand" }}: $commentText",
+                                        createdAtText = formatNotificationTimestamp(createdAt),
+                                        createdAt = createdAt,
+                                        isRead = false,
+                                        readAliases = setOf(legacyNotificationId),
+                                        relatedUserId = commenterUid,
+                                        relatedOwnerUserId = currentUserId,
+                                        relatedFindingId = stableFindingId,
+                                        relatedAnimalId = findingDocument.getString("animalId")
+                                    )
+                                }
+                                finishLoad()
+                            }
                         }
                         .addOnFailureListener { exception ->
                             if (firstError == null) {
