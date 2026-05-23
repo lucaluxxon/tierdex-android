@@ -59,6 +59,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -852,6 +853,19 @@ private data class LikeRenderOverride(
     val likedByCurrentUser: Boolean,
     val likeCount: Int
 )
+
+data class FindingSaveActionResult(
+    val success: Boolean,
+    val successAnimationHasPhoto: Boolean = false
+)
+
+private const val FINDING_BUTTON_MIN_LOADING_MS = 1000L
+
+private enum class FindingButtonAction {
+    SAVE_NEW,
+    SAVE_EDIT,
+    DELETE
+}
 
 private fun applyLikeToggleToFeedItems(
     items: List<FriendFeedItem>,
@@ -5165,354 +5179,364 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                 openCreateFindingMode = false
                             }
                         },
-                        onSaveFinding = { finding ->
+                        onSaveFinding = { finding, onCompleted ->
                             scope.launch {
-                                val saveStartedAt = SystemClock.elapsedRealtime()
-                                val localPhotoCountBeforeUpload = effectiveLocalPhotoUris(finding).size
-                                Log.d(
-                                    "FindingSaveTiming",
-                                    "onSaveFinding start animalId=${finding.animalId} localPhotoCount=$localPhotoCountBeforeUpload"
-                                )
-                                val ownerIdForUpload = currentOwnerId
-                                val localFinding = finding.copy(
-                                    ownerId = ownerIdForUpload,
-                                    photoUri = effectiveLocalPhotoUris(finding).firstOrNull().orEmpty(),
-                                    remotePhotoPath = effectiveRemotePhotoPaths(finding).firstOrNull().orEmpty(),
-                                    thumbnailRemotePhotoPath = finding.thumbnailRemotePhotoPath,
-                                    photoUris = effectiveLocalPhotoUris(finding),
-                                    remotePhotoPaths = effectiveRemotePhotoPaths(finding)
-                                )
-                                val previousFindings = findingsFromRoom
-                                val previousDailyAnimalQuestProgress = countDailyAnimalQuestHits(
-                                    prefs = prefs,
-                                    ownerId = preferenceOwnerId
-                                )
-                                val previousPerfectFindingQuestProgress = countPerfectFindingQuestProgress(
-                                    findings = previousFindings,
-                                    prefs = prefs,
-                                    ownerId = preferenceOwnerId
-                                )
-                                val xpSnapshotBeforeSave = XpProgressRepository.buildSnapshot(
-                                    prefs = prefs,
-                                    userId = currentOwnerId
-                                )
-                                val baseFindingAwards = buildBaseFindingXpAwards(
-                                    previousFindings = previousFindings,
-                                    newFinding = localFinding
-                                )
-
-                                val roomInsertStartedAt = SystemClock.elapsedRealtime()
-                                Log.d(
-                                    "FindingSaveTiming",
-                                    "dao.insertFinding start animalId=${localFinding.animalId}"
-                                )
-                                val insertedRowId = dao.insertFinding(
-                                    localFinding.toEntity(ownerIdOverride = currentOwnerId)
-                                )
-                                Log.d(
-                                    "FindingSaveTiming",
-                                    "dao.insertFinding end animalId=${localFinding.animalId} durationMs=${SystemClock.elapsedRealtime() - roomInsertStartedAt} rowId=$insertedRowId"
-                                )
-                                latestCreatedFindingRoomId = insertedRowId.toInt()
-                                latestCreatedFindingOwnerId = currentOwnerId
-                                Log.d(
-                                    "FindingUiState",
-                                    "localInsert roomId=${insertedRowId.toInt()} animalId=${localFinding.animalId}"
-                                )
-                                val localFindingWithRoomId = localFinding.copy(roomId = insertedRowId.toInt())
-                                findingSuccessAnimationHasPhoto =
-                                    effectiveLocalPhotoUris(localFindingWithRoomId).isNotEmpty()
-                                showFindingSuccessAnimation = true
-                                val dailyAnimalQuestHitRecorded = recordDailyAnimalQuestHitIfEligible(
-                                    prefs = prefs,
-                                    ownerId = preferenceOwnerId,
-                                    finding = localFindingWithRoomId
-                                )
-                                val currentFindingsForQuestCheck = previousFindings + localFindingWithRoomId
-                                if (dailyAnimalQuestHitRecorded) {
-                                    handleLocalQuestStateChanged(
-                                        userId = currentOwnerId,
-                                        findings = currentFindingsForQuestCheck
-                                    )
-                                }
-                                val currentDailyAnimalQuestProgress = countDailyAnimalQuestHits(
-                                    prefs = prefs,
-                                    ownerId = preferenceOwnerId
-                                )
-                                val currentPerfectFindingQuestProgress = countPerfectFindingQuestProgress(
-                                    findings = currentFindingsForQuestCheck,
-                                    prefs = prefs,
-                                    ownerId = preferenceOwnerId
-                                )
-                                val newlyCompletedQuestStages = detectNewlyCompletedQuestStages(
-                                    previousFindings = previousFindings,
-                                    currentFindings = currentFindingsForQuestCheck,
-                                    animals = animals,
-                                    dailyAnimal = dailyAnimal,
-                                    previousDailyAnimalQuestProgress = previousDailyAnimalQuestProgress,
-                                    currentDailyAnimalQuestProgress = currentDailyAnimalQuestProgress,
-                                    previousPerfectFindingQuestProgress = previousPerfectFindingQuestProgress,
-                                    currentPerfectFindingQuestProgress = currentPerfectFindingQuestProgress,
-                                    wishlistAnimalId = wishlistAnimalId
-                                )
-                                val awardedXpResult = XpProgressRepository.grantXpAwardsIfAbsent(
-                                    prefs = prefs,
-                                    userId = currentOwnerId,
-                                    awards = baseFindingAwards +
-                                        newlyCompletedQuestStages.mapNotNull { quest ->
-                                            quest.xpReward?.let { xpReward ->
-                                                quest.awardKey to xpReward
-                                            }
-                                        }
-                                )
-                                val grantedQuestStages = newlyCompletedQuestStages.filter { quest ->
-                                    quest.awardKey in awardedXpResult.grantedKeys
-                                }
-                                val xpSnapshotAfterSave = XpProgressRepository.buildSnapshot(
-                                    prefs = prefs,
-                                    userId = currentOwnerId
-                                )
-                                val xpGainPopup = buildXpAwardPopupMessage(
-                                    awardedXp = awardedXpResult.awardedXp,
-                                    grantedKeys = awardedXpResult.grantedKeys,
-                                    baseFindingAwards = baseFindingAwards,
-                                    grantedQuestStages = grantedQuestStages,
-                                    previousSnapshot = xpSnapshotBeforeSave,
-                                    currentSnapshot = xpSnapshotAfterSave
-                                )
-                                if (awardedXpResult.grantedKeys.isNotEmpty()) {
-                                    handleLocalXpStateChanged(currentOwnerId)
-                                }
-
-                                if (wishlistAnimalId == localFindingWithRoomId.animalId) {
-                                    wishlistAnimalId = null
-                                    prefs.edit().remove(wishlistAnimalKey(preferenceOwnerId)).apply()
-                                    wishlistCelebrationMessage = CelebrationMessage(
-                                        title = "Wunsch-Fund entdeckt!",
-                                        subtitle = "Dein Wunsch-Tier ist jetzt gefunden."
-                                    )
-                                }
-
-                                xpPopupMessage = xpGainPopup
-                                Log.d(
-                                    "FindingSaveTiming",
-                                    "xpPopupMessage set animalId=${localFindingWithRoomId.animalId} hasXpPopup=${xpGainPopup != null} elapsedMs=${SystemClock.elapsedRealtime() - saveStartedAt}"
-                                )
-                                Log.d(
-                                    "FindingSaveTiming",
-                                    "local visible end animalId=${localFindingWithRoomId.animalId} durationMs=${SystemClock.elapsedRealtime() - saveStartedAt}"
-                                )
-
-                                if (currentOwnerId != null) {
-                                    val cloudSyncStartedAt = SystemClock.elapsedRealtime()
+                                try {
+                                    val saveStartedAt = SystemClock.elapsedRealtime()
+                                    val localPhotoCountBeforeUpload = effectiveLocalPhotoUris(finding).size
                                     Log.d(
                                         "FindingSaveTiming",
-                                        "background/cloud sync start animalId=${localFindingWithRoomId.animalId}"
+                                        "onSaveFinding start animalId=${finding.animalId} localPhotoCount=$localPhotoCountBeforeUpload"
                                     )
-                                    val cloudReadyFinding = if (
-                                        !ownerIdForUpload.isNullOrBlank() &&
+                                    val ownerIdForUpload = currentOwnerId
+                                    val localFinding = finding.copy(
+                                        ownerId = ownerIdForUpload,
+                                        photoUri = effectiveLocalPhotoUris(finding).firstOrNull().orEmpty(),
+                                        remotePhotoPath = effectiveRemotePhotoPaths(finding).firstOrNull().orEmpty(),
+                                        thumbnailRemotePhotoPath = finding.thumbnailRemotePhotoPath,
+                                        photoUris = effectiveLocalPhotoUris(finding),
+                                        remotePhotoPaths = effectiveRemotePhotoPaths(finding)
+                                    )
+                                    val previousFindings = findingsFromRoom
+                                    val previousDailyAnimalQuestProgress = countDailyAnimalQuestHits(
+                                        prefs = prefs,
+                                        ownerId = preferenceOwnerId
+                                    )
+                                    val previousPerfectFindingQuestProgress = countPerfectFindingQuestProgress(
+                                        findings = previousFindings,
+                                        prefs = prefs,
+                                        ownerId = preferenceOwnerId
+                                    )
+                                    val xpSnapshotBeforeSave = XpProgressRepository.buildSnapshot(
+                                        prefs = prefs,
+                                        userId = currentOwnerId
+                                    )
+                                    val baseFindingAwards = buildBaseFindingXpAwards(
+                                        previousFindings = previousFindings,
+                                        newFinding = localFinding
+                                    )
+
+                                    val roomInsertStartedAt = SystemClock.elapsedRealtime()
+                                    Log.d(
+                                        "FindingSaveTiming",
+                                        "dao.insertFinding start animalId=${localFinding.animalId}"
+                                    )
+                                    val insertedRowId = dao.insertFinding(
+                                        localFinding.toEntity(ownerIdOverride = currentOwnerId)
+                                    )
+                                    Log.d(
+                                        "FindingSaveTiming",
+                                        "dao.insertFinding end animalId=${localFinding.animalId} durationMs=${SystemClock.elapsedRealtime() - roomInsertStartedAt} rowId=$insertedRowId"
+                                    )
+                                    latestCreatedFindingRoomId = insertedRowId.toInt()
+                                    latestCreatedFindingOwnerId = currentOwnerId
+                                    Log.d(
+                                        "FindingUiState",
+                                        "localInsert roomId=${insertedRowId.toInt()} animalId=${localFinding.animalId}"
+                                    )
+                                    val localFindingWithRoomId = localFinding.copy(roomId = insertedRowId.toInt())
+                                    val successAnimationHasPhoto =
                                         effectiveLocalPhotoUris(localFindingWithRoomId).isNotEmpty()
-                                    ) {
-                                        val uploadStartedAt = SystemClock.elapsedRealtime()
-                                        Log.d(
-                                            "FindingSaveTiming",
-                                            "uploadFindingPhotos start animalId=${localFindingWithRoomId.animalId} localPhotoCount=$localPhotoCountBeforeUpload"
+                                    val dailyAnimalQuestHitRecorded = recordDailyAnimalQuestHitIfEligible(
+                                        prefs = prefs,
+                                        ownerId = preferenceOwnerId,
+                                        finding = localFindingWithRoomId
+                                    )
+                                    val currentFindingsForQuestCheck = previousFindings + localFindingWithRoomId
+                                    if (dailyAnimalQuestHitRecorded) {
+                                        handleLocalQuestStateChanged(
+                                            userId = currentOwnerId,
+                                            findings = currentFindingsForQuestCheck
                                         )
-                                        val remotePhotoPaths = FindingPhotoStorageRepository.uploadFindingPhotos(
-                                            context = appContext,
-                                            userId = ownerIdForUpload,
-                                            finding = localFindingWithRoomId
-                                        )
-                                        Log.d(
-                                            "FindingSaveTiming",
-                                            "uploadFindingPhotos end animalId=${localFindingWithRoomId.animalId} durationMs=${SystemClock.elapsedRealtime() - uploadStartedAt} remotePhotoCount=${remotePhotoPaths.size}"
-                                        )
-                                        val thumbnailUploadStartedAt = SystemClock.elapsedRealtime()
-                                        var thumbnailSizeKb: Int? = null
-                                        Log.d(
-                                            "FindingSaveTiming",
-                                            "thumbnail upload start animalId=${localFindingWithRoomId.animalId}"
-                                        )
-                                        val uploadedThumbnailPath = FindingPhotoStorageRepository.uploadFindingThumbnail(
-                                            context = appContext,
-                                            userId = ownerIdForUpload,
-                                            finding = localFindingWithRoomId,
-                                            onPrepared = { preparedSizeKb ->
-                                                thumbnailSizeKb = preparedSizeKb
+                                    }
+                                    val currentDailyAnimalQuestProgress = countDailyAnimalQuestHits(
+                                        prefs = prefs,
+                                        ownerId = preferenceOwnerId
+                                    )
+                                    val currentPerfectFindingQuestProgress = countPerfectFindingQuestProgress(
+                                        findings = currentFindingsForQuestCheck,
+                                        prefs = prefs,
+                                        ownerId = preferenceOwnerId
+                                    )
+                                    val newlyCompletedQuestStages = detectNewlyCompletedQuestStages(
+                                        previousFindings = previousFindings,
+                                        currentFindings = currentFindingsForQuestCheck,
+                                        animals = animals,
+                                        dailyAnimal = dailyAnimal,
+                                        previousDailyAnimalQuestProgress = previousDailyAnimalQuestProgress,
+                                        currentDailyAnimalQuestProgress = currentDailyAnimalQuestProgress,
+                                        previousPerfectFindingQuestProgress = previousPerfectFindingQuestProgress,
+                                        currentPerfectFindingQuestProgress = currentPerfectFindingQuestProgress,
+                                        wishlistAnimalId = wishlistAnimalId
+                                    )
+                                    val awardedXpResult = XpProgressRepository.grantXpAwardsIfAbsent(
+                                        prefs = prefs,
+                                        userId = currentOwnerId,
+                                        awards = baseFindingAwards +
+                                            newlyCompletedQuestStages.mapNotNull { quest ->
+                                                quest.xpReward?.let { xpReward ->
+                                                    quest.awardKey to xpReward
+                                                }
                                             }
+                                    )
+                                    val grantedQuestStages = newlyCompletedQuestStages.filter { quest ->
+                                        quest.awardKey in awardedXpResult.grantedKeys
+                                    }
+                                    val xpSnapshotAfterSave = XpProgressRepository.buildSnapshot(
+                                        prefs = prefs,
+                                        userId = currentOwnerId
+                                    )
+                                    val xpGainPopup = buildXpAwardPopupMessage(
+                                        awardedXp = awardedXpResult.awardedXp,
+                                        grantedKeys = awardedXpResult.grantedKeys,
+                                        baseFindingAwards = baseFindingAwards,
+                                        grantedQuestStages = grantedQuestStages,
+                                        previousSnapshot = xpSnapshotBeforeSave,
+                                        currentSnapshot = xpSnapshotAfterSave
+                                    )
+                                    if (awardedXpResult.grantedKeys.isNotEmpty()) {
+                                        handleLocalXpStateChanged(currentOwnerId)
+                                    }
+
+                                    if (wishlistAnimalId == localFindingWithRoomId.animalId) {
+                                        wishlistAnimalId = null
+                                        prefs.edit().remove(wishlistAnimalKey(preferenceOwnerId)).apply()
+                                        wishlistCelebrationMessage = CelebrationMessage(
+                                            title = "Wunsch-Fund entdeckt!",
+                                            subtitle = "Dein Wunsch-Tier ist jetzt gefunden."
+                                        )
+                                    }
+
+                                    xpPopupMessage = xpGainPopup
+                                    Log.d(
+                                        "FindingSaveTiming",
+                                        "xpPopupMessage set animalId=${localFindingWithRoomId.animalId} hasXpPopup=${xpGainPopup != null} elapsedMs=${SystemClock.elapsedRealtime() - saveStartedAt}"
+                                    )
+                                    Log.d(
+                                        "FindingSaveTiming",
+                                        "local visible end animalId=${localFindingWithRoomId.animalId} durationMs=${SystemClock.elapsedRealtime() - saveStartedAt}"
+                                    )
+                                    onCompleted(
+                                        FindingSaveActionResult(
+                                            success = true,
+                                            successAnimationHasPhoto = successAnimationHasPhoto
+                                        )
+                                    )
+
+                                    if (currentOwnerId != null) {
+                                        val cloudSyncStartedAt = SystemClock.elapsedRealtime()
+                                        Log.d(
+                                            "FindingSaveTiming",
+                                            "background/cloud sync start animalId=${localFindingWithRoomId.animalId}"
+                                        )
+                                        val cloudReadyFinding = if (
+                                            !ownerIdForUpload.isNullOrBlank() &&
+                                            effectiveLocalPhotoUris(localFindingWithRoomId).isNotEmpty()
+                                        ) {
+                                            val uploadStartedAt = SystemClock.elapsedRealtime()
+                                            Log.d(
+                                                "FindingSaveTiming",
+                                                "uploadFindingPhotos start animalId=${localFindingWithRoomId.animalId} localPhotoCount=$localPhotoCountBeforeUpload"
+                                            )
+                                            val remotePhotoPaths = FindingPhotoStorageRepository.uploadFindingPhotos(
+                                                context = appContext,
+                                                userId = ownerIdForUpload,
+                                                finding = localFindingWithRoomId
+                                            )
+                                            Log.d(
+                                                "FindingSaveTiming",
+                                                "uploadFindingPhotos end animalId=${localFindingWithRoomId.animalId} durationMs=${SystemClock.elapsedRealtime() - uploadStartedAt} remotePhotoCount=${remotePhotoPaths.size}"
+                                            )
+                                            val thumbnailUploadStartedAt = SystemClock.elapsedRealtime()
+                                            var thumbnailSizeKb: Int? = null
+                                            Log.d(
+                                                "FindingSaveTiming",
+                                                "thumbnail upload start animalId=${localFindingWithRoomId.animalId}"
+                                            )
+                                            val uploadedThumbnailPath = FindingPhotoStorageRepository.uploadFindingThumbnail(
+                                                context = appContext,
+                                                userId = ownerIdForUpload,
+                                                finding = localFindingWithRoomId,
+                                                onPrepared = { preparedSizeKb ->
+                                                    thumbnailSizeKb = preparedSizeKb
+                                                }
+                                            )
+                                            Log.d(
+                                                "FindingSaveTiming",
+                                                "thumbnail upload end animalId=${localFindingWithRoomId.animalId} durationMs=${SystemClock.elapsedRealtime() - thumbnailUploadStartedAt} success=${uploadedThumbnailPath.isNotBlank()} sizeKb=${thumbnailSizeKb ?: -1}"
+                                            )
+                                            localFindingWithRoomId.copy(
+                                                remotePhotoPath = remotePhotoPaths.firstOrNull().orEmpty(),
+                                                thumbnailRemotePhotoPath = uploadedThumbnailPath,
+                                                remotePhotoPaths = remotePhotoPaths
+                                            )
+                                        } else {
+                                            Log.d(
+                                                "FindingSaveTiming",
+                                                "uploadFindingPhotos skipped animalId=${localFindingWithRoomId.animalId} loggedIn=${!ownerIdForUpload.isNullOrBlank()} localPhotoCount=$localPhotoCountBeforeUpload"
+                                            )
+                                            localFindingWithRoomId
+                                        }
+
+                                        val roomRemoteUpdateStartedAt = SystemClock.elapsedRealtime()
+                                        Log.d(
+                                            "FindingSaveTiming",
+                                            "local remote fields update start animalId=${cloudReadyFinding.animalId}"
+                                        )
+                                        dao.updateFinding(
+                                            cloudReadyFinding.toEntity(
+                                                ownerIdOverride = currentOwnerId,
+                                                roomIdOverride = insertedRowId.toInt()
+                                            )
                                         )
                                         Log.d(
                                             "FindingSaveTiming",
-                                            "thumbnail upload end animalId=${localFindingWithRoomId.animalId} durationMs=${SystemClock.elapsedRealtime() - thumbnailUploadStartedAt} success=${uploadedThumbnailPath.isNotBlank()} sizeKb=${thumbnailSizeKb ?: -1}"
+                                            "local remote fields update end animalId=${cloudReadyFinding.animalId} durationMs=${SystemClock.elapsedRealtime() - roomRemoteUpdateStartedAt}"
                                         )
-                                        localFindingWithRoomId.copy(
-                                            remotePhotoPath = remotePhotoPaths.firstOrNull().orEmpty(),
-                                            thumbnailRemotePhotoPath = uploadedThumbnailPath,
-                                            remotePhotoPaths = remotePhotoPaths
+
+                                        val firestoreSaveStartedAt = SystemClock.elapsedRealtime()
+                                        Log.d(
+                                            "FindingSaveTiming",
+                                            "Firestore save start animalId=${cloudReadyFinding.animalId} remotePhotoCount=${effectiveRemotePhotoPaths(cloudReadyFinding).size}"
                                         )
+                                        FirestoreFindingRepository.saveCurrentUserFinding(cloudReadyFinding) { success, result ->
+                                            Log.d(
+                                                "FindingSaveTiming",
+                                                "Firestore save end animalId=${cloudReadyFinding.animalId} success=$success durationMs=${SystemClock.elapsedRealtime() - firestoreSaveStartedAt}"
+                                            )
+                                            if (!success) {
+                                                Log.e(
+                                                    "CloudWrite",
+                                                    "Firestore save on create failed: $result"
+                                                )
+                                                Log.d(
+                                                    "FindingSaveTiming",
+                                                    "cloud sync total end animalId=${cloudReadyFinding.animalId} durationMs=${SystemClock.elapsedRealtime() - cloudSyncStartedAt} firestoreSaveFailed=true"
+                                                )
+                                            } else {
+                                                Log.d(
+                                                    "GlobalFindingStats",
+                                                    "create queued for server sync findingId=${FirestoreFindingRepository.documentIdForFinding(cloudReadyFinding)} animalId=${cloudReadyFinding.animalId}"
+                                                )
+                                                scheduleGlobalFindingCountRefresh()
+                                                Log.d(
+                                                    "FindingSaveTiming",
+                                                    "cloud sync total end animalId=${cloudReadyFinding.animalId} durationMs=${SystemClock.elapsedRealtime() - cloudSyncStartedAt}"
+                                                )
+                                            }
+                                        }
                                     } else {
                                         Log.d(
                                             "FindingSaveTiming",
                                             "uploadFindingPhotos skipped animalId=${localFindingWithRoomId.animalId} loggedIn=${!ownerIdForUpload.isNullOrBlank()} localPhotoCount=$localPhotoCountBeforeUpload"
                                         )
-                                        localFindingWithRoomId
-                                    }
-
-                                    val roomRemoteUpdateStartedAt = SystemClock.elapsedRealtime()
-                                    Log.d(
-                                        "FindingSaveTiming",
-                                        "local remote fields update start animalId=${cloudReadyFinding.animalId}"
-                                    )
-                                    dao.updateFinding(
-                                        cloudReadyFinding.toEntity(
-                                            ownerIdOverride = currentOwnerId,
-                                            roomIdOverride = insertedRowId.toInt()
-                                        )
-                                    )
-                                    Log.d(
-                                        "FindingSaveTiming",
-                                        "local remote fields update end animalId=${cloudReadyFinding.animalId} durationMs=${SystemClock.elapsedRealtime() - roomRemoteUpdateStartedAt}"
-                                    )
-
-                                    val firestoreSaveStartedAt = SystemClock.elapsedRealtime()
-                                    Log.d(
-                                        "FindingSaveTiming",
-                                        "Firestore save start animalId=${cloudReadyFinding.animalId} remotePhotoCount=${effectiveRemotePhotoPaths(cloudReadyFinding).size}"
-                                    )
-                                    FirestoreFindingRepository.saveCurrentUserFinding(cloudReadyFinding) { success, result ->
                                         Log.d(
                                             "FindingSaveTiming",
-                                            "Firestore save end animalId=${cloudReadyFinding.animalId} success=$success durationMs=${SystemClock.elapsedRealtime() - firestoreSaveStartedAt}"
+                                            "cloud sync skipped animalId=${localFindingWithRoomId.animalId} firestoreSkipped=true"
                                         )
-                                        if (!success) {
-                                            Log.e(
-                                                "CloudWrite",
-                                                "Firestore save on create failed: $result"
-                                            )
-                                            Log.d(
-                                                "FindingSaveTiming",
-                                                "cloud sync total end animalId=${cloudReadyFinding.animalId} durationMs=${SystemClock.elapsedRealtime() - cloudSyncStartedAt} firestoreSaveFailed=true"
-                                            )
-                                        } else {
-                                            Log.d(
-                                                "GlobalFindingStats",
-                                                "create queued for server sync findingId=${FirestoreFindingRepository.documentIdForFinding(cloudReadyFinding)} animalId=${cloudReadyFinding.animalId}"
-                                            )
-                                            scheduleGlobalFindingCountRefresh()
-                                            Log.d(
-                                                "FindingSaveTiming",
-                                                "cloud sync total end animalId=${cloudReadyFinding.animalId} durationMs=${SystemClock.elapsedRealtime() - cloudSyncStartedAt}"
-                                            )
-                                        }
                                     }
-                                } else {
-                                    Log.d(
-                                        "FindingSaveTiming",
-                                        "cloud sync skipped animalId=${localFindingWithRoomId.animalId} firestoreSkipped=true"
+                                } catch (exception: Exception) {
+                                    Log.e(
+                                        "BlockingLoading",
+                                        "Save finding failed animalId=${finding.animalId} error=${exception.message ?: "Unbekannter Fehler"}",
+                                        exception
                                     )
+                                    onCompleted(FindingSaveActionResult(success = false))
                                 }
                             }
                         },
-                        onDeleteFinding = { finding ->
+                        onDeleteFinding = { finding, onCompleted ->
                             scope.launch {
-                                val roomMatch = if (finding.roomId != null) {
-                                    allFindings.lastOrNull { it.id == finding.roomId }
-                                } else {
-                                    allFindings.lastOrNull {
-                                        it.animalId == finding.animalId &&
-                                                it.date == finding.date &&
-                                                it.location == finding.location &&
-                                                it.note == finding.note &&
-                                                it.photoUri == finding.photoUri
-                                    }
-                                }
-
-                                if (roomMatch != null) {
-                                    dao.deleteFinding(roomMatch)
-                                    Log.d(
-                                        "CloudSyncDelete",
-                                        "Deleted local finding: animalId=${finding.animalId}, date=${finding.date}, location=${finding.location}"
-                                    )
-
-                                    val returnSource = findingEditReturnSource
-                                    selectedFindingDetail = null
-                                    selectedFindingDetailSource = null
-                                    selectedFindingToEdit = null
-                                    startInFindingEditMode = false
-                                    openCreateFindingMode = false
-                                    if (returnSource == FINDING_NAV_SOURCE_ANIMAL_DETAIL) {
-                                        selectedAnimalId = finding.animalId
+                                try {
+                                    val roomMatch = if (finding.roomId != null) {
+                                        allFindings.lastOrNull { it.id == finding.roomId }
                                     } else {
-                                        selectedAnimalId = null
-                                        returnSource
-                                            ?.takeIf { it.isNotBlank() }
-                                            ?.runCatching { AppTab.valueOf(this) }
-                                            ?.getOrNull()
-                                            ?.let { returnTab ->
-                                                currentTab = returnTab
-                                            }
-                                    }
-                                    findingEditReturnSource = null
-
-                                    if (currentOwnerId != null) {
-                                        val ownerIdForCleanup = currentOwnerId.orEmpty()
-                                        FindingPhotoStorageRepository.deleteFindingRemotePhotosBestEffort(
-                                            userId = ownerIdForCleanup,
-                                            finding = finding
-                                        )
-                                        FirestoreFindingRepository.deleteCurrentUserFinding(finding) { success, result ->
-                                            if (success) {
-                                                Log.d(
-                                                    "CloudSyncDelete",
-                                                    "Deleted Firestore finding: documentId=$result"
-                                                )
-                                                Log.d(
-                                                    "GlobalFindingStats",
-                                                    "delete queued for server sync findingId=${FirestoreFindingRepository.documentIdForFinding(finding)} animalId=${finding.animalId}"
-                                                )
-                                                scheduleGlobalFindingCountRefresh()
-                                            } else {
-                                                Log.e(
-                                                    "CloudSyncDelete",
-                                                    "Delete in Firestore failed: $result"
-                                                )
-                                            }
+                                        allFindings.lastOrNull {
+                                            it.animalId == finding.animalId &&
+                                                    it.date == finding.date &&
+                                                    it.location == finding.location &&
+                                                    it.note == finding.note &&
+                                                    it.photoUri == finding.photoUri
                                         }
-                                    } else {
+                                    }
+
+                                    if (roomMatch != null) {
+                                        dao.deleteFinding(roomMatch)
                                         Log.d(
                                             "CloudSyncDelete",
-                                            "Skipped Firestore delete because no user is logged in"
+                                            "Deleted local finding: animalId=${finding.animalId}, date=${finding.date}, location=${finding.location}"
                                         )
-                                    }
+
+                                        if (currentOwnerId != null) {
+                                            val ownerIdForCleanup = currentOwnerId.orEmpty()
+                                            FindingPhotoStorageRepository.deleteFindingRemotePhotosBestEffort(
+                                                userId = ownerIdForCleanup,
+                                                finding = finding
+                                            )
+                                            FirestoreFindingRepository.deleteCurrentUserFinding(finding) { success, result ->
+                                                if (success) {
+                                                    Log.d(
+                                                        "CloudSyncDelete",
+                                                        "Deleted Firestore finding: documentId=$result"
+                                                    )
+                                                    Log.d(
+                                                        "GlobalFindingStats",
+                                                        "delete queued for server sync findingId=${FirestoreFindingRepository.documentIdForFinding(finding)} animalId=${finding.animalId}"
+                                                    )
+                                                    scheduleGlobalFindingCountRefresh()
+                                                } else {
+                                                    Log.e(
+                                                        "CloudSyncDelete",
+                                                        "Delete in Firestore failed: $result"
+                                                    )
+                                                }
+                                            }
+                                        } else {
+                                            Log.d(
+                                                "CloudSyncDelete",
+                                                "Skipped Firestore delete because no user is logged in"
+                                            )
+                                        }
+                                        onCompleted(true)
                                 } else {
                                     Log.d(
                                         "CloudSyncDelete",
                                         "Skipped local delete because no matching Room finding was found"
                                     )
+                                    onCompleted(false)
                                 }
+                            } catch (exception: Exception) {
+                                Log.e(
+                                    "BlockingLoading",
+                                    "Delete finding failed animalId=${finding.animalId} error=${exception.message ?: "Unbekannter Fehler"}",
+                                    exception
+                                )
+                                onCompleted(false)
+                            }
                             }
                         },
-                        onUpdateFinding = { oldFinding, newFinding ->
+                        onUpdateFinding = { oldFinding, newFinding, onCompleted ->
                             scope.launch {
-                                val updateStartedAt = SystemClock.elapsedRealtime()
-                                val oldLocalPhotoCount = effectiveLocalPhotoUris(oldFinding).size
-                                val newLocalPhotoCount = effectiveLocalPhotoUris(newFinding).size
-                                val oldRemotePhotoCount = effectiveRemotePhotoPaths(oldFinding).size
-                                Log.d(
-                                    "FindingUpdateTiming",
-                                    "onUpdateFinding start animalId=${oldFinding.animalId} oldLocalPhotoCount=$oldLocalPhotoCount newLocalPhotoCount=$newLocalPhotoCount oldRemotePhotoCount=$oldRemotePhotoCount"
-                                )
-                                val ownerIdForUpload = currentOwnerId
-                                val oldOwnedRemotePhotoPaths = ownerIdForUpload?.let { ownerId ->
-                                    FindingPhotoStorageRepository.collectOwnedFindingRemoteStoragePaths(
-                                        userId = ownerId,
-                                        finding = oldFinding
+                                try {
+                                    val updateStartedAt = SystemClock.elapsedRealtime()
+                                    val oldLocalPhotoCount = effectiveLocalPhotoUris(oldFinding).size
+                                    val newLocalPhotoCount = effectiveLocalPhotoUris(newFinding).size
+                                    val oldRemotePhotoCount = effectiveRemotePhotoPaths(oldFinding).size
+                                    Log.d(
+                                        "FindingUpdateTiming",
+                                        "onUpdateFinding start animalId=${oldFinding.animalId} oldLocalPhotoCount=$oldLocalPhotoCount newLocalPhotoCount=$newLocalPhotoCount oldRemotePhotoCount=$oldRemotePhotoCount"
                                     )
-                                }.orEmpty()
-                                val preparedNewFinding = if (
-                                    !ownerIdForUpload.isNullOrBlank() &&
-                                    effectiveLocalPhotoUris(newFinding).isNotEmpty()
-                                ) {
+                                    val ownerIdForUpload = currentOwnerId
+                                    val oldOwnedRemotePhotoPaths = ownerIdForUpload?.let { ownerId ->
+                                        FindingPhotoStorageRepository.collectOwnedFindingRemoteStoragePaths(
+                                            userId = ownerId,
+                                            finding = oldFinding
+                                        )
+                                    }.orEmpty()
+                                    val preparedNewFinding = if (
+                                        !ownerIdForUpload.isNullOrBlank() &&
+                                        effectiveLocalPhotoUris(newFinding).isNotEmpty()
+                                    ) {
                                     val newLocalPhotoUris = effectiveLocalPhotoUris(newFinding)
                                     val oldLocalPhotoUris = effectiveLocalPhotoUris(oldFinding)
                                     val shouldUploadPhoto =
@@ -5695,11 +5719,21 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                             "onUpdateFinding end animalId=${preparedNewFinding.animalId} durationMs=${SystemClock.elapsedRealtime() - updateStartedAt} firestoreSkipped=true"
                                         )
                                     }
+                                    onCompleted(true)
                                 } else {
                                     Log.w(
                                         "FindingUpdateTiming",
                                         "onUpdateFinding skipped because no Room match was found animalId=${oldFinding.animalId}"
                                     )
+                                    onCompleted(false)
+                                }
+                                } catch (exception: Exception) {
+                                    Log.e(
+                                        "BlockingLoading",
+                                        "Update finding failed animalId=${oldFinding.animalId} error=${exception.message ?: "Unbekannter Fehler"}",
+                                        exception
+                                    )
+                                    onCompleted(false)
                                 }
                             }
                         },
@@ -5723,6 +5757,31 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             }
                         },
                         currentWishlistAnimalId = wishlistAnimalId,
+                        onShowFindingSuccessAnimation = { hasPhoto ->
+                            findingSuccessAnimationHasPhoto = hasPhoto
+                            showFindingSuccessAnimation = true
+                        },
+                        onDeleteFindingCompleted = { finding ->
+                            val returnSource = findingEditReturnSource
+                            selectedFindingDetail = null
+                            selectedFindingDetailSource = null
+                            selectedFindingToEdit = null
+                            startInFindingEditMode = false
+                            openCreateFindingMode = false
+                            if (returnSource == FINDING_NAV_SOURCE_ANIMAL_DETAIL) {
+                                selectedAnimalId = finding.animalId
+                            } else {
+                                selectedAnimalId = null
+                                returnSource
+                                    ?.takeIf { it.isNotBlank() }
+                                    ?.runCatching { AppTab.valueOf(this) }
+                                    ?.getOrNull()
+                                    ?.let { returnTab ->
+                                        currentTab = returnTab
+                                    }
+                            }
+                            findingEditReturnSource = null
+                        },
                     )
                 }
 
@@ -14079,20 +14138,28 @@ fun AnimalDetailScreen(
     onOpenFindingDetail: (AnimalFinding) -> Unit,
     onReturnToFindingDetail: (AnimalFinding) -> Unit,
     onBackClick: () -> Unit,
-    onSaveFinding: (AnimalFinding) -> Unit,
-    onDeleteFinding: (AnimalFinding) -> Unit,
-    onUpdateFinding: (AnimalFinding, AnimalFinding) -> Unit,
+    onSaveFinding: (AnimalFinding, (FindingSaveActionResult) -> Unit) -> Unit,
+    onDeleteFinding: (AnimalFinding, (Boolean) -> Unit) -> Unit,
+    onUpdateFinding: (AnimalFinding, AnimalFinding, (Boolean) -> Unit) -> Unit,
     onSetFavoriteFindingAnimal: (AnimalEntry) -> Unit,
     currentFavoriteAnimalId: String?,
     onSetWishlistAnimal: (AnimalEntry) -> Unit,
     currentWishlistAnimalId: String?,
+    onShowFindingSuccessAnimation: (Boolean) -> Unit,
+    onDeleteFindingCompleted: (AnimalFinding) -> Unit,
     extraTopPadding: Dp = 0.dp,
     extraBottomPadding: Dp = 0.dp
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val prefs = remember(context) {
         context.getSharedPreferences("tierdex_prefs", android.content.Context.MODE_PRIVATE)
     }
+    var activeFindingButtonAction by remember { mutableStateOf<FindingButtonAction?>(null) }
+    val isAnyFindingActionRunning = activeFindingButtonAction != null
+    val isSavingNewFinding = activeFindingButtonAction == FindingButtonAction.SAVE_NEW
+    val isSavingEditedFinding = activeFindingButtonAction == FindingButtonAction.SAVE_EDIT
+    val isDeletingFinding = activeFindingButtonAction == FindingButtonAction.DELETE
     val initial = initialFinding
     var date by rememberSaveable(initial?.roomId) {
         mutableStateOf(initial?.date ?: currentAppDateText())
@@ -14154,6 +14221,45 @@ fun AnimalDetailScreen(
         "Aktivität" to animal.activity,
         "Beste Beobachtungszeit" to animal.season
     ).filter { (_, value) -> value.isNotBlank() }
+
+    suspend fun enforceFindingButtonMinimumDuration(startedAt: Long) {
+        val elapsedMs = SystemClock.elapsedRealtime() - startedAt
+        val remainingMs = FINDING_BUTTON_MIN_LOADING_MS - elapsedMs
+        if (remainingMs > 0) {
+            delay(remainingMs)
+        }
+    }
+
+    suspend fun awaitSaveFindingResult(
+        finding: AnimalFinding
+    ): FindingSaveActionResult = suspendCancellableCoroutine { continuation ->
+        onSaveFinding(finding) { result ->
+            if (continuation.isActive) {
+                continuation.resume(result)
+            }
+        }
+    }
+
+    suspend fun awaitUpdateFindingResult(
+        oldFinding: AnimalFinding,
+        newFinding: AnimalFinding
+    ): Boolean = suspendCancellableCoroutine { continuation ->
+        onUpdateFinding(oldFinding, newFinding) { success ->
+            if (continuation.isActive) {
+                continuation.resume(success)
+            }
+        }
+    }
+
+    suspend fun awaitDeleteFindingResult(
+        finding: AnimalFinding
+    ): Boolean = suspendCancellableCoroutine { continuation ->
+        onDeleteFinding(finding) { success ->
+            if (continuation.isActive) {
+                continuation.resume(success)
+            }
+        }
+    }
 
     val requestCurrentLocation = {
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
@@ -15554,124 +15660,162 @@ fun AnimalDetailScreen(
                         ) {
                             Button(
                                 onClick = {
+                                    if (isAnyFindingActionRunning) return@Button
                                     if (
                                         date.isNotBlank() ||
                                         location.isNotBlank() ||
                                         note.isNotBlank() ||
                                         selectedPhotoUris.isNotEmpty()
                                     ) {
-                                        val existingLocalPhotoUris = currentFinding
-                                            ?.let(::effectiveLocalPhotoUris)
-                                            .orEmpty()
-                                        val selectedLocalPhotoUris = selectedPhotoUris
-                                            .map { it.trim() }
-                                            .filter { it.isNotBlank() }
-                                            .distinct()
-                                            .take(3)
-                                        val rawLocalPhotoUris = when {
-                                            selectedLocalPhotoUris.isNotEmpty() -> selectedLocalPhotoUris
-                                            editingFinding != null -> existingLocalPhotoUris
-                                            else -> emptyList()
-                                        }
-                                        val storedPhotoUris = rawLocalPhotoUris
-                                            .map { photoValue ->
-                                                persistPhotoForFinding(context, photoValue)
+                                        scope.launch {
+                                            val findingToEdit = editingFinding
+                                            activeFindingButtonAction = if (findingToEdit == null) {
+                                                FindingButtonAction.SAVE_NEW
+                                            } else {
+                                                FindingButtonAction.SAVE_EDIT
                                             }
-                                            .map { it.trim() }
-                                            .filter { it.isNotBlank() }
-                                            .distinct()
-                                            .take(3)
-                                        val existingRemotePhotoPaths = currentFinding
-                                            ?.let(::effectiveRemotePhotoPaths)
-                                            .orEmpty()
-                                        val synchronizedRemotePhotoPaths = if (
-                                            editingFinding != null &&
-                                            selectedLocalPhotoUris == existingLocalPhotoUris
-                                        ) {
-                                            existingRemotePhotoPaths
-                                        } else {
-                                            emptyList()
-                                        }
-                                        val synchronizedThumbnailRemotePhotoPath = if (
-                                            editingFinding != null &&
-                                            selectedLocalPhotoUris == existingLocalPhotoUris
-                                        ) {
-                                            currentFinding?.thumbnailRemotePhotoPath.orEmpty()
-                                        } else {
-                                            ""
-                                        }
+                                            val actionStartedAt = SystemClock.elapsedRealtime()
+                                            try {
+                                                val existingLocalPhotoUris = currentFinding
+                                                    ?.let(::effectiveLocalPhotoUris)
+                                                    .orEmpty()
+                                                val selectedLocalPhotoUris = selectedPhotoUris
+                                                    .map { it.trim() }
+                                                    .filter { it.isNotBlank() }
+                                                    .distinct()
+                                                    .take(3)
+                                                val rawLocalPhotoUris = when {
+                                                    selectedLocalPhotoUris.isNotEmpty() -> selectedLocalPhotoUris
+                                                    findingToEdit != null -> existingLocalPhotoUris
+                                                    else -> emptyList()
+                                                }
+                                                val storedPhotoUris = rawLocalPhotoUris
+                                                    .map { photoValue ->
+                                                        persistPhotoForFinding(context, photoValue)
+                                                    }
+                                                    .map { it.trim() }
+                                                    .filter { it.isNotBlank() }
+                                                    .distinct()
+                                                    .take(3)
+                                                val existingRemotePhotoPaths = currentFinding
+                                                    ?.let(::effectiveRemotePhotoPaths)
+                                                    .orEmpty()
+                                                val synchronizedRemotePhotoPaths = if (
+                                                    findingToEdit != null &&
+                                                    selectedLocalPhotoUris == existingLocalPhotoUris
+                                                ) {
+                                                    existingRemotePhotoPaths
+                                                } else {
+                                                    emptyList()
+                                                }
+                                                val synchronizedThumbnailRemotePhotoPath = if (
+                                                    findingToEdit != null &&
+                                                    selectedLocalPhotoUris == existingLocalPhotoUris
+                                                ) {
+                                                    currentFinding?.thumbnailRemotePhotoPath.orEmpty()
+                                                } else {
+                                                    ""
+                                                }
 
-                                        val newFinding = AnimalFinding(
-                                            roomId = editingFinding?.roomId,
-                                            animalId = animal.id,
-                                            date = date.trim(),
-                                            location = location.trim(),
-                                            note = note.trim(),
-                                            photoUri = storedPhotoUris.firstOrNull().orEmpty(),
-                                            remotePhotoPath = synchronizedRemotePhotoPaths.firstOrNull().orEmpty(),
-                                            thumbnailRemotePhotoPath = synchronizedThumbnailRemotePhotoPath,
-                                            photoUris = storedPhotoUris,
-                                            remotePhotoPaths = synchronizedRemotePhotoPaths,
-                                            latitude = latitude,
-                                            longitude = longitude,
-                                            locationSource = locationSource,
-                                            ownerId = editingFinding?.ownerId,
-                                            taggedFriendIds = (
-                                                hiddenTaggedFriendIds +
-                                                    availableFriends
-                                                        .map { it.userId }
-                                                        .filter { it in selectedTaggedFriendIds }
-                                            ).distinct()
-                                        )
+                                                val newFinding = AnimalFinding(
+                                                    roomId = findingToEdit?.roomId,
+                                                    animalId = animal.id,
+                                                    date = date.trim(),
+                                                    location = location.trim(),
+                                                    note = note.trim(),
+                                                    photoUri = storedPhotoUris.firstOrNull().orEmpty(),
+                                                    remotePhotoPath = synchronizedRemotePhotoPaths.firstOrNull().orEmpty(),
+                                                    thumbnailRemotePhotoPath = synchronizedThumbnailRemotePhotoPath,
+                                                    photoUris = storedPhotoUris,
+                                                    remotePhotoPaths = synchronizedRemotePhotoPaths,
+                                                    latitude = latitude,
+                                                    longitude = longitude,
+                                                    locationSource = locationSource,
+                                                    ownerId = findingToEdit?.ownerId,
+                                                    taggedFriendIds = (
+                                                        hiddenTaggedFriendIds +
+                                                            availableFriends
+                                                                .map { it.userId }
+                                                                .filter { it in selectedTaggedFriendIds }
+                                                    ).distinct()
+                                                )
 
-                                        if (editingFinding == null) {
-                                            onSaveFinding(newFinding)
-                                            onBackClick()
-
-                                            date = ""
-                                            location = ""
-                                            note = ""
-                                            selectedPhotoUris = emptyList()
-                                            selectedPhotoPage = 0
-                                            cropPhotoIndex = null
-                                            cropPhotoUri = null
-                                            draggingPhotoUri = null
-                                            draggingPhotoOffsetX = 0f
-                                            selectedTaggedFriendIds = emptyList()
-                                            latitude = null
-                                            longitude = null
-                                            locationSource = null
-                                            locationStatusMessage = ""
-                                            editingFinding = null
-                                        } else {
-                                            onUpdateFinding(
-                                                editingFinding!!,
-                                                newFinding
-                                            )
-                                            editingFinding = newFinding
-                                            selectedPhotoUris = storedPhotoUris
-                                            selectedPhotoPage = 0
-                                            cropPhotoIndex = null
-                                            cropPhotoUri = null
-                                            draggingPhotoUri = null
-                                            draggingPhotoOffsetX = 0f
-                                            if (!startInFindingEditMode) {
-                                                isEditMode = false
+                                                if (findingToEdit == null) {
+                                                    val saveResult = awaitSaveFindingResult(newFinding)
+                                                    enforceFindingButtonMinimumDuration(actionStartedAt)
+                                                    activeFindingButtonAction = null
+                                                    if (saveResult.success) {
+                                                        onBackClick()
+                                                        date = ""
+                                                        location = ""
+                                                        note = ""
+                                                        selectedPhotoUris = emptyList()
+                                                        selectedPhotoPage = 0
+                                                        cropPhotoIndex = null
+                                                        cropPhotoUri = null
+                                                        draggingPhotoUri = null
+                                                        draggingPhotoOffsetX = 0f
+                                                        selectedTaggedFriendIds = emptyList()
+                                                        latitude = null
+                                                        longitude = null
+                                                        locationSource = null
+                                                        locationStatusMessage = ""
+                                                        editingFinding = null
+                                                        onShowFindingSuccessAnimation(saveResult.successAnimationHasPhoto)
+                                                    }
+                                                } else {
+                                                    val updateSucceeded = awaitUpdateFindingResult(
+                                                        findingToEdit,
+                                                        newFinding
+                                                    )
+                                                    enforceFindingButtonMinimumDuration(actionStartedAt)
+                                                    activeFindingButtonAction = null
+                                                    if (updateSucceeded) {
+                                                        editingFinding = newFinding
+                                                        selectedPhotoUris = storedPhotoUris
+                                                        selectedPhotoPage = 0
+                                                        cropPhotoIndex = null
+                                                        cropPhotoUri = null
+                                                        draggingPhotoUri = null
+                                                        draggingPhotoOffsetX = 0f
+                                                        if (!startInFindingEditMode) {
+                                                            isEditMode = false
+                                                        }
+                                                    }
+                                                }
+                                            } catch (exception: Exception) {
+                                                Log.e(
+                                                    "FindingButtonLoading",
+                                                    "Save/update button flow failed animalId=${animal.id} error=${exception.message ?: "Unbekannter Fehler"}",
+                                                    exception
+                                                )
+                                                enforceFindingButtonMinimumDuration(actionStartedAt)
+                                                activeFindingButtonAction = null
                                             }
                                         }
                                     }
                                 },
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth(),
+                                enabled = !isAnyFindingActionRunning
                             ) {
-                                Text(
-                                    if (editingFinding == null) "Fund speichern"
-                                    else "Änderungen speichern"
-                                )
+                                if (isSavingNewFinding || isSavingEditedFinding) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier.size(20.dp),
+                                        strokeWidth = 2.5.dp,
+                                        color = Color.White
+                                    )
+                                } else {
+                                    Text(
+                                        if (editingFinding == null) "Fund speichern"
+                                        else "Änderungen speichern"
+                                    )
+                                }
                             }
 
                             if (editingFinding != null) {
                                 OutlinedButton(
                                     onClick = {
+                                        if (isAnyFindingActionRunning) return@OutlinedButton
                                         date = currentFinding?.date.orEmpty()
                                         location = currentFinding?.location.orEmpty()
                                         note = currentFinding?.note.orEmpty()
@@ -15694,7 +15838,8 @@ fun AnimalDetailScreen(
                                         }
                                     },
                                     modifier = Modifier.fillMaxWidth(),
-                                    border = BorderStroke(1.dp, BorderColor)
+                                    border = BorderStroke(1.dp, BorderColor),
+                                    enabled = !isAnyFindingActionRunning
                                 ) {
                                     Text("Abbrechen")
                                 }
@@ -15709,14 +15854,43 @@ fun AnimalDetailScreen(
             item {
                 OutlinedButton(
                     onClick = {
-                        editingFinding?.let {
-                            onDeleteFinding(it)
+                        if (isAnyFindingActionRunning) return@OutlinedButton
+                        editingFinding?.let { findingToDelete ->
+                            scope.launch {
+                                activeFindingButtonAction = FindingButtonAction.DELETE
+                                val actionStartedAt = SystemClock.elapsedRealtime()
+                                try {
+                                    val deleteSucceeded = awaitDeleteFindingResult(findingToDelete)
+                                    enforceFindingButtonMinimumDuration(actionStartedAt)
+                                    activeFindingButtonAction = null
+                                    if (deleteSucceeded) {
+                                        onDeleteFindingCompleted(findingToDelete)
+                                    }
+                                } catch (exception: Exception) {
+                                    Log.e(
+                                        "FindingButtonLoading",
+                                        "Delete button flow failed animalId=${findingToDelete.animalId} error=${exception.message ?: "Unbekannter Fehler"}",
+                                        exception
+                                    )
+                                    enforceFindingButtonMinimumDuration(actionStartedAt)
+                                    activeFindingButtonAction = null
+                                }
+                            }
                         }
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    border = BorderStroke(1.dp, BorderColor)
+                    border = BorderStroke(1.dp, BorderColor),
+                    enabled = !isAnyFindingActionRunning
                 ) {
-                    Text("Fund löschen")
+                    if (isDeletingFinding) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            strokeWidth = 2.5.dp,
+                            color = TextPrimary
+                        )
+                    } else {
+                        Text("Fund löschen")
+                    }
                 }
             }
         }
