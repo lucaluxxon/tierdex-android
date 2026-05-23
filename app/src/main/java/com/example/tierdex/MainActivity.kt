@@ -761,6 +761,32 @@ private data class SocialQuestProgress(
     val commentsWrittenCount: Int = 0
 )
 
+private fun applyLikeToggleToFeedItems(
+    items: List<FriendFeedItem>,
+    friendUserId: String,
+    findingId: String,
+    wasLikedBeforeToggle: Boolean,
+    isNowLiked: Boolean
+): List<FriendFeedItem> {
+    return items.map { existingItem ->
+        if (existingItem.friendUserId == friendUserId &&
+            existingItem.findingId == findingId
+        ) {
+            val updatedLikeCount = when {
+                !wasLikedBeforeToggle && isNowLiked -> existingItem.likeCount + 1
+                wasLikedBeforeToggle && !isNowLiked -> max(0, existingItem.likeCount - 1)
+                else -> existingItem.likeCount
+            }
+            existingItem.copy(
+                likedByCurrentUser = isNowLiked,
+                likeCount = updatedLikeCount
+            )
+        } else {
+            existingItem
+        }
+    }
+}
+
 private fun recordDailyAnimalQuestHitIfEligible(
     prefs: android.content.SharedPreferences,
     ownerId: String,
@@ -10252,22 +10278,13 @@ fun FriendsScreen(
                                                     currentDisplayName = currentDisplayName,
                                                     currentlyLiked = feedItem.likedByCurrentUser,
                                                     onResult = { isNowLiked ->
-                                                        friendFeed = friendFeed.map { existingItem ->
-                                                            if (existingItem.friendUserId == feedItem.friendUserId &&
-                                                                existingItem.findingId == feedItem.findingId
-                                                            ) {
-                                                                existingItem.copy(
-                                                                    likedByCurrentUser = isNowLiked,
-                                                                    likeCount = if (isNowLiked) {
-                                                                        existingItem.likeCount + 1
-                                                                    } else {
-                                                                        max(0, existingItem.likeCount - 1)
-                                                                    }
-                                                                )
-                                                            } else {
-                                                                existingItem
-                                                            }
-                                                        }
+                                                        friendFeed = applyLikeToggleToFeedItems(
+                                                            items = friendFeed,
+                                                            friendUserId = feedItem.friendUserId,
+                                                            findingId = feedItem.findingId,
+                                                            wasLikedBeforeToggle = feedItem.likedByCurrentUser,
+                                                            isNowLiked = isNowLiked
+                                                        )
                                                         infoMessage = if (isNowLiked) {
                                                             "Gefällt mir gesetzt."
                                                         } else {
@@ -14619,22 +14636,13 @@ fun AnimalDetailScreen(
                                                                 currentDisplayName = currentDisplayName,
                                                                 currentlyLiked = feedItem.likedByCurrentUser,
                                                                 onResult = { isNowLiked ->
-                                                                    friendFindings = friendFindings.map { existingItem ->
-                                                                        if (existingItem.friendUserId == feedItem.friendUserId &&
-                                                                            existingItem.findingId == feedItem.findingId
-                                                                        ) {
-                                                                            existingItem.copy(
-                                                                                likedByCurrentUser = isNowLiked,
-                                                                                likeCount = if (isNowLiked) {
-                                                                                    existingItem.likeCount + 1
-                                                                                } else {
-                                                                                    max(0, existingItem.likeCount - 1)
-                                                                                }
-                                                                            )
-                                                                        } else {
-                                                                            existingItem
-                                                                        }
-                                                                    }
+                                                                    friendFindings = applyLikeToggleToFeedItems(
+                                                                        items = friendFindings,
+                                                                        friendUserId = feedItem.friendUserId,
+                                                                        findingId = feedItem.findingId,
+                                                                        wasLikedBeforeToggle = feedItem.likedByCurrentUser,
+                                                                        isNowLiked = isNowLiked
+                                                                    )
                                                                     if (isNowLiked) {
                                                                         val previousLikesGivenCount = loadSocialLikesGivenCount(
                                                                             prefs,
