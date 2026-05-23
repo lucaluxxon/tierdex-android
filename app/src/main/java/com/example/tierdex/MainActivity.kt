@@ -761,6 +761,11 @@ private data class SocialQuestProgress(
     val commentsWrittenCount: Int = 0
 )
 
+private data class LikeRenderOverride(
+    val likedByCurrentUser: Boolean,
+    val likeCount: Int
+)
+
 private fun applyLikeToggleToFeedItems(
     items: List<FriendFeedItem>,
     friendUserId: String,
@@ -9453,6 +9458,7 @@ fun FriendsScreen(
     var isSearching by remember { mutableStateOf(false) }
     var isRefreshing by remember { mutableStateOf(false) }
     var isShowingCachedFeed by remember(currentUserId) { mutableStateOf(false) }
+    var likeRenderOverrides by remember(currentUserId) { mutableStateOf<Map<String, LikeRenderOverride>>(emptyMap()) }
     var friendToRemove by remember { mutableStateOf<FriendUser?>(null) }
     var isFriendsListExpanded by rememberSaveable { mutableStateOf(false) }
     val animalById = remember(allAnimals) { allAnimals.associateBy { it.id } }
@@ -9644,6 +9650,7 @@ fun FriendsScreen(
         commentsByFeedKey = emptyMap()
         loadingCommentKeys = emptySet()
         commentInputs = emptyMap()
+        likeRenderOverrides = emptyMap()
         incomingRequests = emptyList()
         onIncomingRequestsChanged()
         outgoingRequestIds = emptySet()
@@ -10182,6 +10189,11 @@ fun FriendsScreen(
                     items(friendFeed, key = { it.friendUserId + "_" + it.findingId }) { feedItem ->
                         val animal = animalById[feedItem.finding.animalId]
                         val feedItemKey = feedKey(feedItem)
+                        val likeRenderOverride = likeRenderOverrides[feedItemKey]
+                        val renderedLikedByCurrentUser =
+                            likeRenderOverride?.likedByCurrentUser ?: feedItem.likedByCurrentUser
+                        val renderedLikeCount =
+                            likeRenderOverride?.likeCount ?: feedItem.likeCount
                         val isCommentsExpanded = feedItemKey in expandedCommentKeys
                         val comments = commentsByFeedKey[feedItemKey].orEmpty()
                         val isLoadingComments = feedItemKey in loadingCommentKeys
@@ -10203,6 +10215,12 @@ fun FriendsScreen(
                         )
                         val hasFindingMeta = feedItem.finding.date.isNotBlank() ||
                             feedItem.finding.location.isNotBlank()
+                        LaunchedEffect(feedItemKey, renderedLikeCount, renderedLikedByCurrentUser) {
+                            Log.d(
+                                "LikeToggleDebug",
+                                "render stateLabel=friendFeed ownerUserId=${feedItem.friendUserId} findingId=${feedItem.findingId} renderedLikeCount=$renderedLikeCount renderedLikedByCurrentUser=$renderedLikedByCurrentUser overridePresent=${likeRenderOverride != null}"
+                            )
+                        }
                         Card(
                             modifier = Modifier.fillMaxWidth(),
                             shape = RoundedCornerShape(16.dp),
@@ -10281,7 +10299,7 @@ fun FriendsScreen(
                                     }
                                     Spacer(modifier = Modifier.width(12.dp))
                                     FriendFindingEngagementSummary(
-                                        likeCount = feedItem.likeCount,
+                                        likeCount = renderedLikeCount,
                                         commentCount = feedItem.commentCount
                                     )
                                 }
@@ -10315,13 +10333,27 @@ fun FriendsScreen(
                                                     findingId = feedItem.findingId,
                                                     currentUserId = currentUserId.orEmpty(),
                                                     currentDisplayName = currentDisplayName,
-                                                    currentlyLiked = feedItem.likedByCurrentUser,
+                                                    currentlyLiked = renderedLikedByCurrentUser,
                                                     onResult = { isNowLiked ->
+                                                        val optimisticLikeCount = when {
+                                                            !renderedLikedByCurrentUser && isNowLiked ->
+                                                                renderedLikeCount + 1
+                                                            renderedLikedByCurrentUser && !isNowLiked ->
+                                                                (renderedLikeCount - 1).coerceAtLeast(0)
+                                                            else -> renderedLikeCount
+                                                        }
+                                                        likeRenderOverrides =
+                                                            likeRenderOverrides + (
+                                                                feedItemKey to LikeRenderOverride(
+                                                                    likedByCurrentUser = isNowLiked,
+                                                                    likeCount = optimisticLikeCount
+                                                                )
+                                                            )
                                                         friendFeed = applyLikeToggleToFeedItems(
                                                             items = friendFeed,
                                                             friendUserId = feedItem.friendUserId,
                                                             findingId = feedItem.findingId,
-                                                            wasLikedBeforeToggle = feedItem.likedByCurrentUser,
+                                                            wasLikedBeforeToggle = renderedLikedByCurrentUser,
                                                             isNowLiked = isNowLiked
                                                         )
                                                         FriendRepository.loadLikeInfoForFinding(
@@ -10330,6 +10362,13 @@ fun FriendsScreen(
                                                             currentUserId = currentUserId.orEmpty(),
                                                             forceFreshCollectionRead = true,
                                                             onResult = { loadedLikeCount, loadedLikedByCurrentUser ->
+                                                                likeRenderOverrides =
+                                                                    likeRenderOverrides + (
+                                                                        feedItemKey to LikeRenderOverride(
+                                                                            likedByCurrentUser = loadedLikedByCurrentUser,
+                                                                            likeCount = loadedLikeCount.coerceAtLeast(0)
+                                                                        )
+                                                                    )
                                                                 friendFeed = replaceLikeStateInFeedItems(
                                                                     items = friendFeed,
                                                                     friendUserId = feedItem.friendUserId,
