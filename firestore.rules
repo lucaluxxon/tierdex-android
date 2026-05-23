@@ -390,6 +390,7 @@ service cloud.firestore {
           'socialLikesGivenCount',
           'socialCommentsWrittenCount',
           'socialLikeQuestFindingKeys',
+          'socialCommentQuestFindingKeys',
           'dailyAnimalQuestHitFindingIds',
           'schemaVersion',
           'updatedAt'
@@ -402,6 +403,8 @@ service cloud.firestore {
         && request.resource.data.socialCommentsWrittenCount <= 100000
         && request.resource.data.socialLikeQuestFindingKeys is list
         && request.resource.data.socialLikeQuestFindingKeys.size() <= 5000
+        && request.resource.data.socialCommentQuestFindingKeys is list
+        && request.resource.data.socialCommentQuestFindingKeys.size() <= 5000
         && request.resource.data.dailyAnimalQuestHitFindingIds is list
         && request.resource.data.dailyAnimalQuestHitFindingIds.size() <= 5000
         && request.resource.data.schemaVersion is int
