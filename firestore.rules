@@ -122,36 +122,75 @@ service cloud.firestore {
       ];
     }
 
+    function isNullableStringWithMaxLength(value, maxLength) {
+      return value == null ||
+        (value is string && value.size() <= maxLength);
+    }
+
+    function isNullableTimestamp(value) {
+      return value == null || value is timestamp;
+    }
+
+    function isNullableLatitude(value) {
+      return value == null ||
+        (value is number && value >= -90 && value <= 90);
+    }
+
+    function isNullableLongitude(value) {
+      return value == null ||
+        (value is number && value >= -180 && value <= 180);
+    }
+
+    function isOptionalOwnedFindingStoragePath(ownerUid, value) {
+      return value == null ||
+        (value is string &&
+          value.size() <= 500 &&
+          (
+            value.size() == 0 ||
+            value.matches('^(storage://)?users/' + ownerUid + '/findings/.+')
+          ));
+    }
+
     function isValidFindingShape(ownerUid) {
       return (!('ownerId' in request.resource.data) ||
           (request.resource.data.ownerId is string &&
-            request.resource.data.ownerId == ownerUid))
+            request.resource.data.ownerId == ownerUid &&
+            request.resource.data.ownerId.size() <= 128))
         && request.resource.data.animalId is string
+        && request.resource.data.animalId.size() > 0
+        && request.resource.data.animalId.size() <= 120
         && request.resource.data.date is string
+        && request.resource.data.date.size() > 0
+        && request.resource.data.date.size() <= 40
         && request.resource.data.location is string
+        && request.resource.data.location.size() <= 200
         && request.resource.data.note is string
+        && request.resource.data.note.size() <= 2000
         && (!('latitude' in request.resource.data) ||
-          request.resource.data.latitude is number)
+          isNullableLatitude(request.resource.data.latitude))
         && (!('longitude' in request.resource.data) ||
-          request.resource.data.longitude is number)
+          isNullableLongitude(request.resource.data.longitude))
         && (!('locationSource' in request.resource.data) ||
-          request.resource.data.locationSource is string)
+          isNullableStringWithMaxLength(request.resource.data.locationSource, 40))
         && (!('photoUri' in request.resource.data) ||
-          request.resource.data.photoUri is string)
+          isNullableStringWithMaxLength(request.resource.data.photoUri, 2000))
         && (!('photoUris' in request.resource.data) ||
-          request.resource.data.photoUris is list)
+          (request.resource.data.photoUris is list &&
+            request.resource.data.photoUris.size() <= 3))
         && (!('remotePhotoPath' in request.resource.data) ||
-          request.resource.data.remotePhotoPath is string)
+          isOptionalOwnedFindingStoragePath(ownerUid, request.resource.data.remotePhotoPath))
         && (!('remotePhotoPaths' in request.resource.data) ||
-          request.resource.data.remotePhotoPaths is list)
+          (request.resource.data.remotePhotoPaths is list &&
+            request.resource.data.remotePhotoPaths.size() <= 3))
         && (!('thumbnailRemotePhotoPath' in request.resource.data) ||
-          request.resource.data.thumbnailRemotePhotoPath is string)
+          isOptionalOwnedFindingStoragePath(ownerUid, request.resource.data.thumbnailRemotePhotoPath))
         && (!('taggedFriendIds' in request.resource.data) ||
-          request.resource.data.taggedFriendIds is list)
+          (request.resource.data.taggedFriendIds is list &&
+            request.resource.data.taggedFriendIds.size() <= 10))
         && (!('createdAt' in request.resource.data) ||
-          request.resource.data.createdAt is timestamp)
+          isNullableTimestamp(request.resource.data.createdAt))
         && (!('updatedAt' in request.resource.data) ||
-          request.resource.data.updatedAt is timestamp);
+          isNullableTimestamp(request.resource.data.updatedAt));
     }
 
     function isValidFindingCreate(ownerUid) {
