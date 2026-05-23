@@ -779,7 +779,7 @@ private fun applyLikeToggleToFeedItems(
                 else -> existingItem.likeCount
             }
             Log.d(
-                "LikeToggleState",
+                "LikeToggleDebug",
                 "optimisticUpdate ownerUserId=$friendUserId findingId=$findingId wasLikedBefore=$wasLikedBeforeToggle isNowLiked=$isNowLiked oldCount=$oldCount newCount=$updatedLikeCount"
             )
             existingItem.copy(
@@ -801,13 +801,20 @@ private fun replaceLikeStateInFeedItems(
     stateLabel: String
 ): List<FriendFeedItem> {
     val normalizedLikeCount = likeCount.coerceAtLeast(0)
+    val matchedItemCount = items.count { existingItem ->
+        existingItem.friendUserId == friendUserId && existingItem.findingId == findingId
+    }
+    Log.d(
+        "LikeToggleDebug",
+        "stateReconcileStart stateLabel=$stateLabel ownerUserId=$friendUserId findingId=$findingId loadedLikedByCurrentUser=$likedByCurrentUser loadedLikeCount=$normalizedLikeCount matchedItemCount=$matchedItemCount"
+    )
     return items.map { existingItem ->
         if (existingItem.friendUserId == friendUserId &&
             existingItem.findingId == findingId
         ) {
             Log.d(
-                "LikeToggleState",
-                "reconcileUpdate state=$stateLabel ownerUserId=$friendUserId findingId=$findingId oldLiked=${existingItem.likedByCurrentUser} newLiked=$likedByCurrentUser oldCount=${existingItem.likeCount} newCount=$normalizedLikeCount"
+                "LikeToggleDebug",
+                "stateReconcileApply stateLabel=$stateLabel ownerUserId=$friendUserId findingId=$findingId oldLiked=${existingItem.likedByCurrentUser} newLiked=$likedByCurrentUser oldCount=${existingItem.likeCount} newCount=$normalizedLikeCount matchedItemCount=$matchedItemCount"
             )
             existingItem.copy(
                 likedByCurrentUser = likedByCurrentUser,
@@ -10321,6 +10328,7 @@ fun FriendsScreen(
                                                             ownerUserId = feedItem.friendUserId,
                                                             findingId = feedItem.findingId,
                                                             currentUserId = currentUserId.orEmpty(),
+                                                            forceFreshCollectionRead = true,
                                                             onResult = { loadedLikeCount, loadedLikedByCurrentUser ->
                                                                 friendFeed = replaceLikeStateInFeedItems(
                                                                     items = friendFeed,
@@ -10333,8 +10341,8 @@ fun FriendsScreen(
                                                             },
                                                             onError = { exception ->
                                                                 Log.w(
-                                                                    "LikeToggleState",
-                                                                    "reconcileFailed state=friendFeed ownerUserId=${feedItem.friendUserId} findingId=${feedItem.findingId} error=${exception.message ?: "Unbekannter Fehler"}",
+                                                                    "LikeToggleDebug",
+                                                                    "stateReconcileFailed stateLabel=friendFeed ownerUserId=${feedItem.friendUserId} findingId=${feedItem.findingId} error=${exception.message ?: "Unbekannter Fehler"}",
                                                                     exception
                                                                 )
                                                             }
@@ -14701,6 +14709,7 @@ fun AnimalDetailScreen(
                                                                         ownerUserId = feedItem.friendUserId,
                                                                         findingId = feedItem.findingId,
                                                                         currentUserId = currentUserId.orEmpty(),
+                                                                        forceFreshCollectionRead = true,
                                                                         onResult = { loadedLikeCount, loadedLikedByCurrentUser ->
                                                                             friendFindings = replaceLikeStateInFeedItems(
                                                                                 items = friendFindings,
@@ -14713,8 +14722,8 @@ fun AnimalDetailScreen(
                                                                         },
                                                                         onError = { exception ->
                                                                             Log.w(
-                                                                                "LikeToggleState",
-                                                                                "reconcileFailed state=friendFindings ownerUserId=${feedItem.friendUserId} findingId=${feedItem.findingId} error=${exception.message ?: "Unbekannter Fehler"}",
+                                                                                "LikeToggleDebug",
+                                                                                "stateReconcileFailed stateLabel=friendFindings ownerUserId=${feedItem.friendUserId} findingId=${feedItem.findingId} error=${exception.message ?: "Unbekannter Fehler"}",
                                                                                 exception
                                                                             )
                                                                         }

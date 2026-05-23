@@ -8,6 +8,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.Source
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -258,6 +259,7 @@ object FriendRepository {
         ownerUserId: String,
         findingId: String,
         currentUserId: String,
+        forceFreshCollectionRead: Boolean = false,
         onResult: (likeCount: Int, likedByCurrentUser: Boolean) -> Unit,
         onError: (Exception) -> Unit
     ) {
@@ -267,6 +269,41 @@ object FriendRepository {
         }
 
         val likesCollection = findingLikesCollection(ownerUserId, findingId)
+        if (forceFreshCollectionRead) {
+            val likesPath = "users/$ownerUserId/findings/$findingId/likes"
+            Log.d(
+                "LikeToggleDebug",
+                "loadLikeInfo start source=serverFullRead ownerUserId=$ownerUserId findingId=$findingId currentUserId=$currentUserId path=$likesPath"
+            )
+            likesCollection
+                .get(Source.SERVER)
+                .addOnSuccessListener { snapshot ->
+                    val likeCount = snapshot.size()
+                    val likedByCurrentUser = snapshot.documents.any { it.id == currentUserId }
+                    Log.d(
+                        "LikeToggleDebug",
+                        "loadLikeInfo success source=serverFullRead ownerUserId=$ownerUserId findingId=$findingId currentUserId=$currentUserId loadedLikeCount=$likeCount loadedLikedByCurrentUser=$likedByCurrentUser path=$likesPath"
+                    )
+                    onResult(likeCount, likedByCurrentUser)
+                }
+                .addOnFailureListener { exception ->
+                    Log.w(
+                        "LikeToggleDebug",
+                        "loadLikeInfo failed source=serverFullRead ownerUserId=$ownerUserId findingId=$findingId currentUserId=$currentUserId error=${exception.message ?: "Unbekannter Fehler"} path=$likesPath",
+                        exception
+                    )
+                    triggerLegacyLikeInfoFallback(
+                        ownerUserId = ownerUserId,
+                        findingId = findingId,
+                        currentUserId = currentUserId,
+                        exception = exception,
+                        onResult = onResult,
+                        onError = onError
+                    )
+                }
+            return
+        }
+
         var aggregateCount: Int? = null
         var likedByCurrentUser: Boolean? = null
         var fallbackTriggered = false
@@ -288,15 +325,11 @@ object FriendRepository {
         fun triggerLegacyFallback(exception: Exception) {
             if (fallbackTriggered) return
             fallbackTriggered = true
-            Log.w(
-                "SocialCountsPerformance",
-                "likeCount source=legacyFallback ownerUserId=$ownerUserId findingId=$findingId reason=${exception.message}",
-                exception
-            )
-            loadLikeInfoForFindingLegacy(
+            triggerLegacyLikeInfoFallback(
                 ownerUserId = ownerUserId,
                 findingId = findingId,
                 currentUserId = currentUserId,
+                exception = exception,
                 onResult = onResult,
                 onError = onError
             )
@@ -323,6 +356,33 @@ object FriendRepository {
             }
     }
 
+    private fun triggerLegacyLikeInfoFallback(
+        ownerUserId: String,
+        findingId: String,
+        currentUserId: String,
+        exception: Exception,
+        onResult: (likeCount: Int, likedByCurrentUser: Boolean) -> Unit,
+        onError: (Exception) -> Unit
+    ) {
+        Log.w(
+            "SocialCountsPerformance",
+            "likeCount source=legacyFallback ownerUserId=$ownerUserId findingId=$findingId reason=${exception.message}",
+            exception
+        )
+        Log.w(
+            "LikeToggleDebug",
+            "loadLikeInfo fallback source=legacyFallback ownerUserId=$ownerUserId findingId=$findingId currentUserId=$currentUserId error=${exception.message ?: "Unbekannter Fehler"} path=users/$ownerUserId/findings/$findingId/likes",
+            exception
+        )
+        loadLikeInfoForFindingLegacy(
+            ownerUserId = ownerUserId,
+            findingId = findingId,
+            currentUserId = currentUserId,
+            onResult = onResult,
+            onError = onError
+        )
+    }
+
     fun toggleLikeForFinding(
         ownerUserId: String,
         findingId: String,
@@ -338,12 +398,21 @@ object FriendRepository {
         }
 
         val likeDocument = findingLikesCollection(ownerUserId, findingId).document(currentUserId)
+        val likePath = "users/$ownerUserId/findings/$findingId/likes/$currentUserId"
         if (currentlyLiked) {
+            Log.d(
+                "LikeToggleDebug",
+                "toggle start operation=unlike currentUserId=$currentUserId findingOwnerId=$ownerUserId findingId=$findingId path=$likePath"
+            )
             likeDocument.delete()
                 .addOnSuccessListener {
                     Log.d(
                         "SocialCountsPerformance",
                         "likeToggle action=unlike ownerUserId=$ownerUserId findingId=$findingId countBefore=unknown countAfter=unknown"
+                    )
+                    Log.d(
+                        "LikeToggleDebug",
+                        "toggle success operation=unlike currentUserId=$currentUserId findingOwnerId=$ownerUserId findingId=$findingId path=$likePath returnedIsNowLiked=false"
                     )
                     onResult(false)
                 }
@@ -359,9 +428,18 @@ object FriendRepository {
                         wrappedException.message ?: "Failed to unlike finding",
                         wrappedException
                     )
+                    Log.e(
+                        "LikeToggleDebug",
+                        "toggle failed operation=unlike currentUserId=$currentUserId findingOwnerId=$ownerUserId findingId=$findingId path=$likePath error=${wrappedException.message ?: "Unbekannter Fehler"}",
+                        wrappedException
+                    )
                     onError(wrappedException)
                 }
         } else {
+            Log.d(
+                "LikeToggleDebug",
+                "toggle start operation=like currentUserId=$currentUserId findingOwnerId=$ownerUserId findingId=$findingId path=$likePath"
+            )
             val likeData = hashMapOf<String, Any>(
                 "likerUid" to currentUserId,
                 "createdAt" to FieldValue.serverTimestamp()
@@ -372,6 +450,10 @@ object FriendRepository {
                     Log.d(
                         "SocialCountsPerformance",
                         "likeToggle action=like ownerUserId=$ownerUserId findingId=$findingId countBefore=unknown countAfter=unknown"
+                    )
+                    Log.d(
+                        "LikeToggleDebug",
+                        "toggle success operation=like currentUserId=$currentUserId findingOwnerId=$ownerUserId findingId=$findingId path=$likePath returnedIsNowLiked=true"
                     )
                     onResult(true)
                 }
@@ -385,6 +467,11 @@ object FriendRepository {
                     Log.e(
                         TAG,
                         wrappedException.message ?: "Failed to like finding",
+                        wrappedException
+                    )
+                    Log.e(
+                        "LikeToggleDebug",
+                        "toggle failed operation=like currentUserId=$currentUserId findingOwnerId=$ownerUserId findingId=$findingId path=$likePath error=${wrappedException.message ?: "Unbekannter Fehler"}",
                         wrappedException
                     )
                     onError(wrappedException)
@@ -539,6 +626,10 @@ object FriendRepository {
             .addOnSuccessListener { snapshot ->
                 val likeCount = snapshot.size()
                 val likedByCurrentUser = snapshot.documents.any { it.id == currentUserId }
+                Log.d(
+                    "LikeToggleDebug",
+                    "loadLikeInfo success source=legacyFullRead ownerUserId=$ownerUserId findingId=$findingId currentUserId=$currentUserId loadedLikeCount=$likeCount loadedLikedByCurrentUser=$likedByCurrentUser path=users/$ownerUserId/findings/$findingId/likes"
+                )
                 Log.d(
                     "SocialCountsPerformance",
                     "likeCount source=legacyFullRead ownerUserId=$ownerUserId findingId=$findingId likeCount=$likeCount likedByCurrentUser=$likedByCurrentUser"
