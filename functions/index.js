@@ -732,8 +732,7 @@ exports.syncLikeNotification = onDocumentWritten(
         return;
       }
 
-      const actorDisplayName = normalizeString(afterData.likerDisplayName) ||
-        await loadPublicDisplayName(likerUid);
+      const actorDisplayName = await loadPublicDisplayName(likerUid);
       await upsertNotificationDocument(ownerUid, notificationId, {
         type: "like",
         title: "Neuer Like",
@@ -825,8 +824,7 @@ exports.syncCommentNotification = onDocumentWritten(
         return;
       }
 
-      const actorDisplayName = normalizeString(afterData.commenterDisplayName) ||
-        await loadPublicDisplayName(commentActorUid);
+      const actorDisplayName = await loadPublicDisplayName(commentActorUid);
       const commentText = normalizeString(afterData.text);
       await upsertNotificationDocument(ownerUid, notificationId, {
         type: "comment",
