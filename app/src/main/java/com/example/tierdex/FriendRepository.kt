@@ -503,7 +503,28 @@ object FriendRepository {
                     )
                 }.filter { it.text.isNotBlank() }
                     .sortedBy { it.createdAt?.seconds ?: Long.MIN_VALUE }
-                onResult(comments)
+
+                val commenterUids = comments
+                    .map(FriendFindingComment::commenterUid)
+                    .map(::cleanDisplayName)
+                    .filter { it.isNotBlank() }
+                    .distinct()
+
+                loadDisplayNamesForUserIds(commenterUids) { displayNamesByUserId ->
+                    val resolvedComments = comments.map { comment ->
+                        val profileDisplayName =
+                            cleanDisplayName(displayNamesByUserId[comment.commenterUid])
+                        val legacyDisplayName = cleanDisplayName(comment.commenterDisplayName)
+                        comment.copy(
+                            commenterDisplayName = when {
+                                profileDisplayName.isNotBlank() -> profileDisplayName
+                                legacyDisplayName.isNotBlank() -> legacyDisplayName
+                                else -> "Jemand"
+                            }
+                        )
+                    }
+                    onResult(resolvedComments)
+                }
             }
             .addOnFailureListener { exception ->
                 val wrappedException = toFirestoreException(
