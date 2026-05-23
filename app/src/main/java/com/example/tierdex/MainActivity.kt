@@ -34,6 +34,7 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -106,6 +107,8 @@ import kotlin.math.min
 import kotlin.math.roundToInt
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FabPosition
 import androidx.compose.material.icons.Icons
@@ -172,6 +175,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.TextButton
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.Help
@@ -190,6 +194,7 @@ import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -218,6 +223,7 @@ private const val ANIMALS_JSON_FILE_NAME = "animals.json"
 private const val ANIMALS_CSV_FILE_NAME = "tierlistegesamt.csv"
 private const val FINDING_IMAGES_DIR = "finding_images"
 private const val STARTUP_HINT_SHOWN_KEY_PREFIX = "startup_hint_shown_"
+private const val FINDING_SUCCESS_OVERLAY_DURATION_MS = 2700L
 private const val INTRO_PENDING_KEY_PREFIX = "intro_pending_"
 private const val INTRO_SEEN_KEY_PREFIX = "intro_seen_"
 private const val RULES_ACCEPTED_KEY_PREFIX = "rules_accepted_"
@@ -2080,6 +2086,8 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     var showTierdexMapScreen by rememberSaveable { mutableStateOf(false) }
     var openCreateFindingMode by rememberSaveable { mutableStateOf(false) }
     var startInFindingEditMode by rememberSaveable { mutableStateOf(false) }
+    var showFindingSuccessAnimation by remember { mutableStateOf(false) }
+    var findingSuccessAnimationHasPhoto by remember { mutableStateOf(false) }
     val resetSearchState = {
         searchText = ""
     }
@@ -4729,6 +4737,15 @@ fun TierdexApp(database: AnimalFindingDatabase) {
     }
 
     Scaffold(
+        modifier = Modifier
+            .fillMaxSize()
+            .then(
+                if (showFindingSuccessAnimation) {
+                    Modifier.blur(10.dp)
+                } else {
+                    Modifier
+                }
+            ),
         containerColor = Color.White,
         topBar = {
             if (!shouldHideTopBar) {
@@ -5203,6 +5220,9 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                     "localInsert roomId=${insertedRowId.toInt()} animalId=${localFinding.animalId}"
                                 )
                                 val localFindingWithRoomId = localFinding.copy(roomId = insertedRowId.toInt())
+                                findingSuccessAnimationHasPhoto =
+                                    effectiveLocalPhotoUris(localFindingWithRoomId).isNotEmpty()
+                                showFindingSuccessAnimation = true
                                 val dailyAnimalQuestHitRecorded = recordDailyAnimalQuestHitIfEligible(
                                     prefs = prefs,
                                     ownerId = preferenceOwnerId,
@@ -5997,7 +6017,6 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         end = 16.dp
                     )
             )
-
             if (isMainAppContentVisibleForDailyAnimal && showDailyAnimalScreen && dailyAnimal != null) {
                 Dialog(
                     onDismissRequest = {},
@@ -6031,6 +6050,12 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                 }
             }
         }
+    }
+    if (showFindingSuccessAnimation) {
+        FindingSuccessAnimationOverlay(
+            hasPhoto = findingSuccessAnimationHasPhoto,
+            onFinished = { showFindingSuccessAnimation = false }
+        )
     }
 }
 
@@ -13766,6 +13791,269 @@ fun FundDetailScreen(
                             text = it,
                             style = MaterialTheme.typography.bodySmall,
                             color = TextSecondary
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun FindingSuccessAnimationOverlay(
+    hasPhoto: Boolean,
+    onFinished: () -> Unit
+) {
+    val progress = remember { Animatable(0f) }
+    var showOverlay by remember { mutableStateOf(false) }
+    var showCheckmark by remember { mutableStateOf(false) }
+    var showPhotoAccent by remember(hasPhoto) { mutableStateOf(false) }
+
+    val overlayAlpha by animateFloatAsState(
+        targetValue = if (showOverlay) 1f else 0f,
+        animationSpec = tween(durationMillis = 280),
+        label = "findingSuccessOverlayAlpha"
+    )
+    val cardAlpha by animateFloatAsState(
+        targetValue = if (showOverlay) 1f else 0f,
+        animationSpec = tween(durationMillis = 320),
+        label = "findingSuccessCardAlpha"
+    )
+    val cardScale by animateFloatAsState(
+        targetValue = if (showOverlay) 1f else 0.92f,
+        animationSpec = tween(durationMillis = 420),
+        label = "findingSuccessCardScale"
+    )
+    val checkAlpha by animateFloatAsState(
+        targetValue = if (showCheckmark) 1f else 0f,
+        animationSpec = tween(durationMillis = 260),
+        label = "findingSuccessCheckAlpha"
+    )
+    val checkScale by animateFloatAsState(
+        targetValue = if (showCheckmark) 1f else 0.72f,
+        animationSpec = tween(durationMillis = 280),
+        label = "findingSuccessCheckScale"
+    )
+    val photoAccentAlpha by animateFloatAsState(
+        targetValue = if (showPhotoAccent) 1f else 0f,
+        animationSpec = tween(durationMillis = 220),
+        label = "findingSuccessPhotoAlpha"
+    )
+    val photoAccentScale by animateFloatAsState(
+        targetValue = if (showPhotoAccent) 1f else 0.82f,
+        animationSpec = tween(durationMillis = 260),
+        label = "findingSuccessPhotoScale"
+    )
+
+    LaunchedEffect(hasPhoto) {
+        showOverlay = false
+        progress.snapTo(0f)
+        showCheckmark = false
+        showPhotoAccent = false
+        delay(40)
+        showOverlay = true
+
+        progress.animateTo(
+            targetValue = 1f,
+            animationSpec = tween(durationMillis = 1600)
+        )
+        delay(120)
+        showCheckmark = true
+
+        if (hasPhoto) {
+            delay(120)
+            showPhotoAccent = true
+        }
+
+        delay(FINDING_SUCCESS_OVERLAY_DURATION_MS - 1880L)
+        showOverlay = false
+        delay(280)
+        onFinished()
+    }
+
+    Dialog(
+        onDismissRequest = {},
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false
+        )
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(20f)
+                .background(Color.Black.copy(alpha = 0.52f * overlayAlpha)),
+            contentAlignment = Alignment.Center
+        ) {
+            Card(
+                modifier = Modifier
+                    .padding(horizontal = 32.dp)
+                    .widthIn(min = 264.dp, max = 296.dp)
+                    .graphicsLayer {
+                        alpha = cardAlpha
+                        scaleX = cardScale
+                        scaleY = cardScale
+                    },
+                shape = RoundedCornerShape(30.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 26.dp),
+                border = BorderStroke(1.dp, Color.White.copy(alpha = 0.65f)),
+                colors = CardDefaults.cardColors(containerColor = Color.Transparent)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .heightIn(min = 228.dp, max = 252.dp)
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    Color(0xFFFDFEFB),
+                                    Color(0xFFF6FAF3),
+                                    CardBackground
+                                )
+                            )
+                        )
+                ) {
+                    Canvas(modifier = Modifier.matchParentSize()) {
+                        drawRect(
+                            brush = Brush.verticalGradient(
+                                colors = listOf(
+                                    Color.White.copy(alpha = 0.18f),
+                                    Color.Transparent,
+                                    PrimaryGreen.copy(alpha = 0.04f)
+                                )
+                            )
+                        )
+                    }
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 26.dp, vertical = 24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Box(
+                            modifier = Modifier.size(116.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Canvas(modifier = Modifier.fillMaxSize()) {
+                                drawCircle(
+                                    brush = Brush.radialGradient(
+                                        colors = listOf(
+                                            PrimaryGreen.copy(alpha = 0.18f),
+                                            Color.Transparent
+                                        )
+                                    ),
+                                    radius = size.minDimension * 0.54f
+                                )
+                                drawCircle(
+                                    color = Color.White.copy(alpha = 0.82f),
+                                    radius = size.minDimension * 0.37f
+                                )
+                                drawCircle(
+                                    brush = Brush.radialGradient(
+                                        colors = listOf(
+                                            Color.White.copy(alpha = 0.82f),
+                                            PrimaryGreen.copy(alpha = 0.06f),
+                                            Color.Transparent
+                                        )
+                                    ),
+                                    radius = size.minDimension * 0.40f
+                                )
+                                drawCircle(
+                                    color = PrimaryGreen.copy(alpha = 0.14f),
+                                    style = Stroke(width = 16.dp.toPx())
+                                )
+                                drawCircle(
+                                    brush = Brush.sweepGradient(
+                                        colors = listOf(
+                                            PrimaryGreen.copy(alpha = 0.24f),
+                                            PrimaryGreen.copy(alpha = 0.48f),
+                                            Color(0xFF7BCB8A),
+                                            PrimaryGreen.copy(alpha = 0.30f)
+                                        )
+                                    ),
+                                    style = Stroke(width = 15.dp.toPx())
+                                )
+                                drawArc(
+                                    brush = Brush.sweepGradient(
+                                        colors = listOf(
+                                            Color(0xFF9FE0A6),
+                                            PrimaryGreen,
+                                            Color(0xFF5AA76D),
+                                            Color(0xFF9FE0A6)
+                                        )
+                                    ),
+                                    startAngle = -90f,
+                                    sweepAngle = 360f * progress.value,
+                                    useCenter = false,
+                                    style = Stroke(
+                                        width = 15.dp.toPx(),
+                                        cap = StrokeCap.Round
+                                    )
+                                )
+                            }
+
+                            Icon(
+                                imageVector = Icons.Filled.Done,
+                                contentDescription = null,
+                                tint = PrimaryGreen,
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .graphicsLayer {
+                                        alpha = checkAlpha
+                                        scaleX = checkScale
+                                        scaleY = checkScale
+                                    }
+                            )
+
+                            if (hasPhoto) {
+                                Box(
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .offset(x = 10.dp, y = (-8).dp)
+                                        .size(26.dp)
+                                        .zIndex(3f)
+                                        .clip(CircleShape)
+                                        .background(Color.White.copy(alpha = 0.98f))
+                                        .border(
+                                            width = 1.dp,
+                                            color = PrimaryGreen.copy(alpha = 0.22f),
+                                            shape = CircleShape
+                                        )
+                                        .graphicsLayer {
+                                            alpha = photoAccentAlpha
+                                            scaleX = photoAccentScale
+                                            scaleY = photoAccentScale
+                                        },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Filled.PhotoCamera,
+                                        contentDescription = null,
+                                        tint = PrimaryGreen,
+                                        modifier = Modifier.size(13.dp)
+                                    )
+                                }
+                            }
+                        }
+
+                        Spacer(modifier = Modifier.height(14.dp))
+
+                        Text(
+                            text = "Fund eingetragen",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = TextPrimary,
+                            textAlign = TextAlign.Center
+                        )
+
+                        Spacer(modifier = Modifier.height(6.dp))
+
+                        Text(
+                            text = "Erfolgreich im Tierdex vermerkt",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = TextSecondary.copy(alpha = 0.92f),
+                            textAlign = TextAlign.Center
                         )
                     }
                 }
