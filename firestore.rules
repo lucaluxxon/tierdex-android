@@ -111,8 +111,6 @@ service cloud.firestore {
         'latitude',
         'longitude',
         'locationSource',
-        'photoUri',
-        'photoUris',
         'remotePhotoPath',
         'remotePhotoPaths',
         'thumbnailRemotePhotoPath',
@@ -172,11 +170,6 @@ service cloud.firestore {
           isNullableLongitude(request.resource.data.longitude))
         && (!('locationSource' in request.resource.data) ||
           isNullableStringWithMaxLength(request.resource.data.locationSource, 40))
-        && (!('photoUri' in request.resource.data) ||
-          isNullableStringWithMaxLength(request.resource.data.photoUri, 2000))
-        && (!('photoUris' in request.resource.data) ||
-          (request.resource.data.photoUris is list &&
-            request.resource.data.photoUris.size() <= 3))
         && (!('remotePhotoPath' in request.resource.data) ||
           isOptionalOwnedFindingStoragePath(ownerUid, request.resource.data.remotePhotoPath))
         && (!('remotePhotoPaths' in request.resource.data) ||
