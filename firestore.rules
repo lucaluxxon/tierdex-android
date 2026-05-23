@@ -199,7 +199,6 @@ service cloud.firestore {
     function allowedLikeKeys() {
       return [
         'likerUid',
-        'likerDisplayName',
         'createdAt'
       ];
     }
@@ -208,8 +207,6 @@ service cloud.firestore {
       return request.resource.data.keys().hasOnly(allowedLikeKeys())
         && request.resource.data.likerUid is string
         && request.resource.data.likerUid == likerUid
-        && (!('likerDisplayName' in request.resource.data) ||
-          request.resource.data.likerDisplayName is string)
         && (!('createdAt' in request.resource.data) ||
           request.resource.data.createdAt is timestamp);
     }
@@ -217,7 +214,6 @@ service cloud.firestore {
     function allowedCommentKeys() {
       return [
         'commenterUid',
-        'commenterDisplayName',
         'text',
         'createdAt'
       ];
@@ -230,8 +226,6 @@ service cloud.firestore {
         && request.resource.data.text is string
         && request.resource.data.text.size() > 0
         && request.resource.data.text.size() <= 500
-        && (!('commenterDisplayName' in request.resource.data) ||
-          request.resource.data.commenterDisplayName is string)
         && (!('createdAt' in request.resource.data) ||
           request.resource.data.createdAt is timestamp);
     }

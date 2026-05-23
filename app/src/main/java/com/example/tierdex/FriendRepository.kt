@@ -100,17 +100,6 @@ object FriendRepository {
         }
     }
 
-    private fun putActorDisplayName(
-        target: MutableMap<String, Any>,
-        fieldName: String,
-        displayName: String?
-    ) {
-        val normalizedDisplayName = cleanDisplayName(displayName)
-        if (normalizedDisplayName.isNotBlank()) {
-            target[fieldName] = normalizedDisplayName
-        }
-    }
-
     fun resolvePreferredFriendFeedDisplayName(
         currentProfileDisplayName: String?,
         freshFeedDisplayName: String?,
@@ -444,7 +433,6 @@ object FriendRepository {
                 "likerUid" to currentUserId,
                 "createdAt" to FieldValue.serverTimestamp()
             )
-            putActorDisplayName(likeData, "likerDisplayName", currentDisplayName)
             likeDocument.set(likeData)
                 .addOnSuccessListener {
                     Log.d(
@@ -607,7 +595,6 @@ object FriendRepository {
             "text" to trimmedText,
             "createdAt" to FieldValue.serverTimestamp()
         )
-        putActorDisplayName(commentData, "commenterDisplayName", currentDisplayName)
 
         findingCommentsCollection(ownerUserId, findingId)
             .document()
