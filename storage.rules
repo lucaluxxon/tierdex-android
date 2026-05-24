@@ -54,7 +54,9 @@ service firebase.storage {
     }
 
     match /users/{ownerUserId}/profile/{fileName} {
-      allow read: if isSignedIn();
+      allow read: if (fileName == 'photo.jpg' && isSignedIn())
+        || (fileName == 'background.jpg' &&
+          (isOwner(ownerUserId) || isAcceptedFriend(ownerUserId, request.auth.uid)));
       allow write: if isOwner(ownerUserId) && isAllowedProfileWrite(fileName);
       allow delete: if isOwner(ownerUserId);
     }
