@@ -5008,6 +5008,25 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                             showSettingsScreen = false
                         },
                         onLogout = {
+                            val logoutUserId = currentOwnerId?.trim().orEmpty()
+                            if (logoutUserId.isNotBlank()) {
+                                scope.launch {
+                                    runCatching {
+                                        friendFeedCacheDao.clearFeedCacheForUser(logoutUserId)
+                                    }.onSuccess {
+                                        Log.d(
+                                            "FriendFeedCache",
+                                            "cache cleared on logout cacheOwnerUserId=$logoutUserId"
+                                        )
+                                    }.onFailure { error ->
+                                        Log.w(
+                                            "FriendFeedCache",
+                                            "cache clear failed on logout cacheOwnerUserId=$logoutUserId error=${error.message ?: "Unbekannter Fehler"}",
+                                            error
+                                        )
+                                    }
+                                }
+                            }
                             resetSearchState()
                             currentOwnerId = null
                             currentDisplayName = null
