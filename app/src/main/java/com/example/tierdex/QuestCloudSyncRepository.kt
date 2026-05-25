@@ -47,7 +47,7 @@ object QuestCloudSyncRepository {
         } else {
             exception.message ?: "Unbekannter Fehler"
         }
-        return "$functionName: $operation $path fehlgeschlagen ($reason)"
+        return "$functionName: $operation fehlgeschlagen (pathPresent=${path.isNotBlank()}, $reason)"
     }
 
     fun loadQuestState(
@@ -65,7 +65,7 @@ object QuestCloudSyncRepository {
             .get()
             .addOnSuccessListener { document ->
                 if (!document.exists()) {
-                    Log.d(TAG, "loadQuestState userId=$cleanUid exists=false")
+                    Log.d(TAG, "loadQuestState userPresent=${cleanUid.isNotBlank()} exists=false")
                     onResult(null)
                     return@addOnSuccessListener
                 }
@@ -103,7 +103,7 @@ object QuestCloudSyncRepository {
 
                 Log.d(
                     TAG,
-                    "loadQuestState userId=$cleanUid exists=true likes=$socialLikesGivenCount comments=$socialCommentsWrittenCount likeQuestFindingKeyCount=${socialLikeQuestFindingKeys.size} commentQuestFindingKeyCount=${socialCommentQuestFindingKeys.size} hitFindingIdCount=${dailyAnimalQuestHitFindingIds.size} schemaVersion=$schemaVersion"
+                    "loadQuestState userPresent=${cleanUid.isNotBlank()} exists=true likes=$socialLikesGivenCount comments=$socialCommentsWrittenCount likeQuestFindingKeyCount=${socialLikeQuestFindingKeys.size} commentQuestFindingKeyCount=${socialCommentQuestFindingKeys.size} hitFindingIdCount=${dailyAnimalQuestHitFindingIds.size} schemaVersion=$schemaVersion"
                 )
 
                 onResult(
@@ -170,7 +170,7 @@ object QuestCloudSyncRepository {
             .addOnSuccessListener {
                 Log.d(
                     TAG,
-                    "saveQuestState success userId=$cleanUid likes=${state.socialLikesGivenCount} comments=${state.socialCommentsWrittenCount} likeQuestFindingKeyCount=${state.socialLikeQuestFindingKeys.size} commentQuestFindingKeyCount=${state.socialCommentQuestFindingKeys.size} hitFindingIdCount=${state.dailyAnimalQuestHitFindingIds.size} path=users/$cleanUid/private/meta/questState/state"
+                    "saveQuestState success userPresent=${cleanUid.isNotBlank()} likes=${state.socialLikesGivenCount} comments=${state.socialCommentsWrittenCount} likeQuestFindingKeyCount=${state.socialLikeQuestFindingKeys.size} commentQuestFindingKeyCount=${state.socialCommentQuestFindingKeys.size} hitFindingIdCount=${state.dailyAnimalQuestHitFindingIds.size} pathPresent=true"
                 )
                 onResult(true, null)
             }

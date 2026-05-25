@@ -120,7 +120,7 @@ object FirestoreFindingRepository {
             .document(uid)
             .collection("findings")
             .document(documentId)
-        Log.d(TAG, "Generated hashed Firestore documentId for finding: $documentId")
+        Log.d(TAG, "Generated hashed Firestore documentId documentIdPresent=${documentId.isNotBlank()}")
 
         documentRef
             .get()
@@ -149,7 +149,7 @@ object FirestoreFindingRepository {
                 documentRef
                     .set(findingData)
                     .addOnSuccessListener {
-                        Log.d(TAG, "Saved finding $documentId for user $uid")
+                        Log.d(TAG, "Saved finding documentIdPresent=${documentId.isNotBlank()} userPresent=${uid.isNotBlank()}")
                         onResult(true, documentId)
                     }
                     .addOnFailureListener { exception ->
@@ -186,7 +186,7 @@ object FirestoreFindingRepository {
             .document(uid)
             .collection("findings")
 
-        Log.d("CloudSyncDelete", "Hash-delete attempted: $documentId")
+        Log.d("CloudSyncDelete", "Hash-delete attempted documentIdPresent=${documentId.isNotBlank()}")
 
         findingsCollection
             .document(documentId)
@@ -213,7 +213,7 @@ object FirestoreFindingRepository {
 
                         if (legacyMatches.isEmpty()) {
                             Log.d("CloudSyncDelete", "No matching legacy cloud documents found")
-                            Log.d("CloudSyncDelete", "Delete finished for finding $documentId")
+                            Log.d("CloudSyncDelete", "Delete finished documentIdPresent=${documentId.isNotBlank()}")
                             onResult(true, documentId)
                             return@addOnSuccessListener
                         }
@@ -228,11 +228,11 @@ object FirestoreFindingRepository {
                                 .addOnSuccessListener {
                                     Log.d(
                                         "CloudSyncDelete",
-                                        "Legacy cloud document deleted: ${document.id}"
+                                        "Legacy cloud document deleted documentIdPresent=${document.id.isNotBlank()}"
                                     )
                                     pendingDeletes -= 1
                                     if (pendingDeletes == 0) {
-                                        Log.d("CloudSyncDelete", "Delete finished for finding $documentId")
+                                        Log.d("CloudSyncDelete", "Delete finished documentIdPresent=${documentId.isNotBlank()}")
                                         onResult(!hasFailure, documentId)
                                     }
                                 }
@@ -241,11 +241,11 @@ object FirestoreFindingRepository {
                                     pendingDeletes -= 1
                                     Log.e(
                                         "CloudSyncDelete",
-                                        "Legacy cloud delete failed for ${document.id}: ${exception.message ?: "Unbekannter Fehler"}",
+                                        "Legacy cloud delete failed documentIdPresent=${document.id.isNotBlank()} reason=${exception.message ?: "Unbekannter Fehler"}",
                                         exception
                                     )
                                     if (pendingDeletes == 0) {
-                                        Log.d("CloudSyncDelete", "Delete finished for finding $documentId")
+                                        Log.d("CloudSyncDelete", "Delete finished documentIdPresent=${documentId.isNotBlank()}")
                                         onResult(false, exception.message)
                                     }
                                 }
@@ -329,7 +329,7 @@ object FirestoreFindingRepository {
                     )
                 }
 
-                Log.d(TAG, "Loaded ${findings.size} findings for user $uid from Firestore")
+                Log.d(TAG, "Loaded ${findings.size} findings from Firestore userPresent=${uid.isNotBlank()}")
                 onResult(findings)
             }
             .addOnFailureListener { exception ->

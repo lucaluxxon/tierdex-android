@@ -65,7 +65,7 @@ object XpCloudSyncRepository {
         } else {
             exception.message ?: "Unbekannter Fehler"
         }
-        return "$functionName: $operation $path fehlgeschlagen ($reason)"
+        return "$functionName: $operation fehlgeschlagen (pathPresent=${path.isNotBlank()}, $reason)"
     }
 
     fun loadXpState(
@@ -83,7 +83,7 @@ object XpCloudSyncRepository {
             .get()
             .addOnSuccessListener { document ->
                 if (!document.exists()) {
-                    Log.d(TAG, "loadXpState userId=$cleanUid exists=false")
+                    Log.d(TAG, "loadXpState userPresent=${cleanUid.isNotBlank()} exists=false")
                     onResult(null)
                     return@addOnSuccessListener
                 }
@@ -99,7 +99,7 @@ object XpCloudSyncRepository {
 
                 Log.d(
                     TAG,
-                    "loadXpState userId=$cleanUid exists=true totalXp=$totalXp awardedKeyCount=${awardedXpKeys.size} backfillV1Done=$backfillV1Done schemaVersion=$schemaVersion"
+                    "loadXpState userPresent=${cleanUid.isNotBlank()} exists=true totalXp=$totalXp awardedKeyCount=${awardedXpKeys.size} backfillV1Done=$backfillV1Done schemaVersion=$schemaVersion"
                 )
 
                 onResult(
@@ -145,7 +145,7 @@ object XpCloudSyncRepository {
         if (state.totalXp != authoritativeTotalXp) {
             Log.w(
                 TAG,
-                "saveXpState totalXp mismatch userId=$cleanUid providedTotalXp=${state.totalXp} authoritativeTotalXp=$authoritativeTotalXp"
+                "saveXpState totalXp mismatch userPresent=${cleanUid.isNotBlank()} providedTotalXp=${state.totalXp} authoritativeTotalXp=$authoritativeTotalXp"
             )
         }
 
@@ -162,7 +162,7 @@ object XpCloudSyncRepository {
             .addOnSuccessListener {
                 Log.d(
                     TAG,
-                    "saveXpState success userId=$cleanUid totalXp=$authoritativeTotalXp awardedKeyCount=${normalizedAwardedXpKeys.size} backfillV1Done=${state.backfillV1Done} path=users/$cleanUid/private/meta/xpState/state"
+                    "saveXpState success userPresent=${cleanUid.isNotBlank()} totalXp=$authoritativeTotalXp awardedKeyCount=${normalizedAwardedXpKeys.size} backfillV1Done=${state.backfillV1Done} pathPresent=true"
                 )
                 onResult(true, null)
             }
@@ -198,7 +198,7 @@ object XpCloudSyncRepository {
                 val localState = buildLocalXpState(cleanUid, prefs)
                 Log.d(
                     TAG,
-                    "merge start userId=$cleanUid localTotalXp=${localState.totalXp} localAwardedKeyCount=${localState.awardedXpKeys.size} localBackfillV1Done=${localState.backfillV1Done} cloudTotalXp=${cloudState?.totalXp ?: 0} cloudAwardedKeyCount=${cloudState?.awardedXpKeys?.size ?: 0} cloudBackfillV1Done=${cloudState?.backfillV1Done ?: false}"
+                    "merge start userPresent=${cleanUid.isNotBlank()} localTotalXp=${localState.totalXp} localAwardedKeyCount=${localState.awardedXpKeys.size} localBackfillV1Done=${localState.backfillV1Done} cloudTotalXp=${cloudState?.totalXp ?: 0} cloudAwardedKeyCount=${cloudState?.awardedXpKeys?.size ?: 0} cloudBackfillV1Done=${cloudState?.backfillV1Done ?: false}"
                 )
                 val mergedAwardedKeys = (localState.awardedXpKeys + (cloudState?.awardedXpKeys ?: emptySet()))
                     .map { it.trim() }
@@ -215,7 +215,7 @@ object XpCloudSyncRepository {
                 )
                 Log.d(
                     TAG,
-                    "merge result userId=$cleanUid mergedTotalXp=${mergedState.totalXp} mergedAwardedKeyCount=${mergedState.awardedXpKeys.size} mergedBackfillV1Done=${mergedState.backfillV1Done}"
+                    "merge result userPresent=${cleanUid.isNotBlank()} mergedTotalXp=${mergedState.totalXp} mergedAwardedKeyCount=${mergedState.awardedXpKeys.size} mergedBackfillV1Done=${mergedState.backfillV1Done}"
                 )
 
                 XpProgressRepository.storeAwardedXpKeys(

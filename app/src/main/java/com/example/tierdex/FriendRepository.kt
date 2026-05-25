@@ -149,7 +149,7 @@ object FriendRepository {
                 onError = { error ->
                     Log.w(
                         TAG,
-                        "loadDisplayNamesForUserIds failed for userId=$userId: ${error ?: "Unbekannter Fehler"}"
+                        "loadDisplayNamesForUserIds failed userPresent=${userId.isNotBlank()} reason=${error ?: "Unbekannter Fehler"}"
                     )
                     finish()
                 }
@@ -178,7 +178,7 @@ object FriendRepository {
         } else {
             exception.message ?: "Unbekannter Fehler"
         }
-        return "$functionName: $operation $path fehlgeschlagen ($reason)"
+        return "$functionName: $operation fehlgeschlagen (pathPresent=${path.isNotBlank()}, $reason)"
     }
 
     private fun toFirestoreException(
@@ -262,7 +262,7 @@ object FriendRepository {
             val likesPath = "users/$ownerUserId/findings/$findingId/likes"
             Log.d(
                 "LikeToggleDebug",
-                "loadLikeInfo start source=serverFullRead ownerUserId=$ownerUserId findingId=$findingId currentUserId=$currentUserId path=$likesPath"
+                "loadLikeInfo start source=serverFullRead ownerPresent=${ownerUserId.isNotBlank()} findingPresent=${findingId.isNotBlank()} currentUserPresent=${currentUserId.isNotBlank()} pathPresent=${likesPath.isNotBlank()}"
             )
             likesCollection
                 .get(Source.SERVER)
@@ -271,14 +271,14 @@ object FriendRepository {
                     val likedByCurrentUser = snapshot.documents.any { it.id == currentUserId }
                     Log.d(
                         "LikeToggleDebug",
-                        "loadLikeInfo success source=serverFullRead ownerUserId=$ownerUserId findingId=$findingId currentUserId=$currentUserId loadedLikeCount=$likeCount loadedLikedByCurrentUser=$likedByCurrentUser path=$likesPath"
+                        "loadLikeInfo success source=serverFullRead ownerPresent=${ownerUserId.isNotBlank()} findingPresent=${findingId.isNotBlank()} currentUserPresent=${currentUserId.isNotBlank()} loadedLikeCount=$likeCount loadedLikedByCurrentUser=$likedByCurrentUser pathPresent=${likesPath.isNotBlank()}"
                     )
                     onResult(likeCount, likedByCurrentUser)
                 }
                 .addOnFailureListener { exception ->
                     Log.w(
                         "LikeToggleDebug",
-                        "loadLikeInfo failed source=serverFullRead ownerUserId=$ownerUserId findingId=$findingId currentUserId=$currentUserId error=${exception.message ?: "Unbekannter Fehler"} path=$likesPath",
+                        "loadLikeInfo failed source=serverFullRead ownerPresent=${ownerUserId.isNotBlank()} findingPresent=${findingId.isNotBlank()} currentUserPresent=${currentUserId.isNotBlank()} error=${exception.message ?: "Unbekannter Fehler"} pathPresent=${likesPath.isNotBlank()}",
                         exception
                     )
                     triggerLegacyLikeInfoFallback(
@@ -305,7 +305,7 @@ object FriendRepository {
                 val finalLiked = likedByCurrentUser ?: false
                 Log.d(
                     "SocialCountsPerformance",
-                    "likeCount source=findingLikesAggregate ownerUserId=$ownerUserId findingId=$findingId likeCount=$finalCount likedByCurrentUser=$finalLiked"
+                    "likeCount source=findingLikesAggregate ownerPresent=${ownerUserId.isNotBlank()} findingPresent=${findingId.isNotBlank()} likeCount=$finalCount likedByCurrentUser=$finalLiked"
                 )
                 onResult(finalCount, finalLiked)
             }
@@ -355,12 +355,12 @@ object FriendRepository {
     ) {
         Log.w(
             "SocialCountsPerformance",
-            "likeCount source=legacyFallback ownerUserId=$ownerUserId findingId=$findingId reason=${exception.message}",
+            "likeCount source=legacyFallback ownerPresent=${ownerUserId.isNotBlank()} findingPresent=${findingId.isNotBlank()} reason=${exception.message}",
             exception
         )
         Log.w(
             "LikeToggleDebug",
-            "loadLikeInfo fallback source=legacyFallback ownerUserId=$ownerUserId findingId=$findingId currentUserId=$currentUserId error=${exception.message ?: "Unbekannter Fehler"} path=users/$ownerUserId/findings/$findingId/likes",
+            "loadLikeInfo fallback source=legacyFallback ownerPresent=${ownerUserId.isNotBlank()} findingPresent=${findingId.isNotBlank()} currentUserPresent=${currentUserId.isNotBlank()} error=${exception.message ?: "Unbekannter Fehler"} pathPresent=true",
             exception
         )
         loadLikeInfoForFindingLegacy(
@@ -391,17 +391,17 @@ object FriendRepository {
         if (currentlyLiked) {
             Log.d(
                 "LikeToggleDebug",
-                "toggle start operation=unlike currentUserId=$currentUserId findingOwnerId=$ownerUserId findingId=$findingId path=$likePath"
+                "toggle start operation=unlike currentUserPresent=${currentUserId.isNotBlank()} ownerPresent=${ownerUserId.isNotBlank()} findingPresent=${findingId.isNotBlank()} pathPresent=${likePath.isNotBlank()}"
             )
             likeDocument.delete()
                 .addOnSuccessListener {
                     Log.d(
                         "SocialCountsPerformance",
-                        "likeToggle action=unlike ownerUserId=$ownerUserId findingId=$findingId countBefore=unknown countAfter=unknown"
+                        "likeToggle action=unlike ownerPresent=${ownerUserId.isNotBlank()} findingPresent=${findingId.isNotBlank()} countBefore=unknown countAfter=unknown"
                     )
                     Log.d(
                         "LikeToggleDebug",
-                        "toggle success operation=unlike currentUserId=$currentUserId findingOwnerId=$ownerUserId findingId=$findingId path=$likePath returnedIsNowLiked=false"
+                        "toggle success operation=unlike currentUserPresent=${currentUserId.isNotBlank()} ownerPresent=${ownerUserId.isNotBlank()} findingPresent=${findingId.isNotBlank()} pathPresent=${likePath.isNotBlank()} returnedIsNowLiked=false"
                     )
                     onResult(false)
                 }
@@ -419,7 +419,7 @@ object FriendRepository {
                     )
                     Log.e(
                         "LikeToggleDebug",
-                        "toggle failed operation=unlike currentUserId=$currentUserId findingOwnerId=$ownerUserId findingId=$findingId path=$likePath error=${wrappedException.message ?: "Unbekannter Fehler"}",
+                        "toggle failed operation=unlike currentUserPresent=${currentUserId.isNotBlank()} ownerPresent=${ownerUserId.isNotBlank()} findingPresent=${findingId.isNotBlank()} pathPresent=${likePath.isNotBlank()} error=${wrappedException.message ?: "Unbekannter Fehler"}",
                         wrappedException
                     )
                     onError(wrappedException)
@@ -427,7 +427,7 @@ object FriendRepository {
         } else {
             Log.d(
                 "LikeToggleDebug",
-                "toggle start operation=like currentUserId=$currentUserId findingOwnerId=$ownerUserId findingId=$findingId path=$likePath"
+                "toggle start operation=like currentUserPresent=${currentUserId.isNotBlank()} ownerPresent=${ownerUserId.isNotBlank()} findingPresent=${findingId.isNotBlank()} pathPresent=${likePath.isNotBlank()}"
             )
             val likeData = hashMapOf<String, Any>(
                 "likerUid" to currentUserId,
@@ -437,11 +437,11 @@ object FriendRepository {
                 .addOnSuccessListener {
                     Log.d(
                         "SocialCountsPerformance",
-                        "likeToggle action=like ownerUserId=$ownerUserId findingId=$findingId countBefore=unknown countAfter=unknown"
+                        "likeToggle action=like ownerPresent=${ownerUserId.isNotBlank()} findingPresent=${findingId.isNotBlank()} countBefore=unknown countAfter=unknown"
                     )
                     Log.d(
                         "LikeToggleDebug",
-                        "toggle success operation=like currentUserId=$currentUserId findingOwnerId=$ownerUserId findingId=$findingId path=$likePath returnedIsNowLiked=true"
+                        "toggle success operation=like currentUserPresent=${currentUserId.isNotBlank()} ownerPresent=${ownerUserId.isNotBlank()} findingPresent=${findingId.isNotBlank()} pathPresent=${likePath.isNotBlank()} returnedIsNowLiked=true"
                     )
                     onResult(true)
                 }
@@ -459,7 +459,7 @@ object FriendRepository {
                     )
                     Log.e(
                         "LikeToggleDebug",
-                        "toggle failed operation=like currentUserId=$currentUserId findingOwnerId=$ownerUserId findingId=$findingId path=$likePath error=${wrappedException.message ?: "Unbekannter Fehler"}",
+                        "toggle failed operation=like currentUserPresent=${currentUserId.isNotBlank()} ownerPresent=${ownerUserId.isNotBlank()} findingPresent=${findingId.isNotBlank()} pathPresent=${likePath.isNotBlank()} error=${wrappedException.message ?: "Unbekannter Fehler"}",
                         wrappedException
                     )
                     onError(wrappedException)
@@ -548,14 +548,14 @@ object FriendRepository {
                 val commentCount = snapshot.count.toInt()
                 Log.d(
                     "SocialCountsPerformance",
-                    "commentCount source=findingCommentsAggregate ownerUserId=$ownerUserId findingId=$findingId commentCount=$commentCount"
+                    "commentCount source=findingCommentsAggregate ownerPresent=${ownerUserId.isNotBlank()} findingPresent=${findingId.isNotBlank()} commentCount=$commentCount"
                 )
                 onResult(commentCount)
             }
             .addOnFailureListener { exception ->
                 Log.w(
                     "SocialCountsPerformance",
-                    "commentCount source=legacyFallback ownerUserId=$ownerUserId findingId=$findingId reason=${exception.message}",
+                    "commentCount source=legacyFallback ownerPresent=${ownerUserId.isNotBlank()} findingPresent=${findingId.isNotBlank()} reason=${exception.message}",
                     exception
                 )
                 loadCommentCountForFindingLegacy(
@@ -602,7 +602,7 @@ object FriendRepository {
             .addOnSuccessListener {
                 Log.d(
                     "SocialCountsPerformance",
-                    "commentCreate ownerUserId=$ownerUserId findingId=$findingId countBefore=unknown countAfter=unknown"
+                    "commentCreate ownerPresent=${ownerUserId.isNotBlank()} findingPresent=${findingId.isNotBlank()} countBefore=unknown countAfter=unknown"
                 )
                 onResult(true)
             }
@@ -636,11 +636,11 @@ object FriendRepository {
                 val likedByCurrentUser = snapshot.documents.any { it.id == currentUserId }
                 Log.d(
                     "LikeToggleDebug",
-                    "loadLikeInfo success source=legacyFullRead ownerUserId=$ownerUserId findingId=$findingId currentUserId=$currentUserId loadedLikeCount=$likeCount loadedLikedByCurrentUser=$likedByCurrentUser path=users/$ownerUserId/findings/$findingId/likes"
+                    "loadLikeInfo success source=legacyFullRead ownerPresent=${ownerUserId.isNotBlank()} findingPresent=${findingId.isNotBlank()} currentUserPresent=${currentUserId.isNotBlank()} loadedLikeCount=$likeCount loadedLikedByCurrentUser=$likedByCurrentUser pathPresent=true"
                 )
                 Log.d(
                     "SocialCountsPerformance",
-                    "likeCount source=legacyFullRead ownerUserId=$ownerUserId findingId=$findingId likeCount=$likeCount likedByCurrentUser=$likedByCurrentUser"
+                    "likeCount source=legacyFullRead ownerPresent=${ownerUserId.isNotBlank()} findingPresent=${findingId.isNotBlank()} likeCount=$likeCount likedByCurrentUser=$likedByCurrentUser"
                 )
                 onResult(likeCount, likedByCurrentUser)
             }
@@ -672,7 +672,7 @@ object FriendRepository {
                 val commentCount = snapshot.documents.count { !it.getString("text").isNullOrBlank() }
                 Log.d(
                     "SocialCountsPerformance",
-                    "commentCount source=legacyFullRead ownerUserId=$ownerUserId findingId=$findingId commentCount=$commentCount"
+                    "commentCount source=legacyFullRead ownerPresent=${ownerUserId.isNotBlank()} findingPresent=${findingId.isNotBlank()} commentCount=$commentCount"
                 )
                 onResult(commentCount)
             }
@@ -717,7 +717,7 @@ object FriendRepository {
                 userDocument
                     .set(profileData, com.google.firebase.firestore.SetOptions.merge())
                     .addOnSuccessListener {
-                        Log.d(TAG, "User profile ensured for $userId")
+                        Log.d(TAG, "User profile ensured userPresent=${userId.isNotBlank()}")
                         onResult(true, null)
                     }
                     .addOnFailureListener { exception ->
@@ -784,12 +784,12 @@ object FriendRepository {
 
         Log.d(
             "ProfileBackgroundUpload",
-            "updatePublicUserProfile keys=${profileData.keys.sorted()} userId=$userId"
+            "updatePublicUserProfile keyCount=${profileData.keys.size} userPresent=${userId.isNotBlank()}"
         )
         profileData.toSortedMap().forEach { (key, value) ->
             Log.d(
                 "ProfileBackgroundUpload",
-                "updatePublicUserProfile field=$key type=${value::class.java.simpleName} value=$value"
+                "updatePublicUserProfile field=$key type=${value::class.java.simpleName} valuePresent=${value.toString().isNotBlank()}"
             )
         }
 
@@ -1466,7 +1466,7 @@ object FriendRepository {
                         val sortedFeedItems = sortFriendFeedItems(feedItems)
                         Log.d(
                             "FriendFeedPerformance",
-                            "path=cloud friendCount=${snapshot.documents.size} loadedCloudFindings=$loadedCloudFindingCount feedItemCount=${sortedFeedItems.size} sortField=$FRIEND_FEED_SORT_FIELD fallbackLegacyFriendCount=$fallbackFriendCount"
+                            "source=cloud friendCount=${snapshot.documents.size} loadedCloudFindings=$loadedCloudFindingCount feedItemCount=${sortedFeedItems.size} fallbackLegacyFriendCount=$fallbackFriendCount"
                         )
                         Log.d(
                             "FriendFeedTiming",
@@ -1488,7 +1488,7 @@ object FriendRepository {
                         onResult = { profile ->
                             Log.d(
                                 "FriendFeedTiming",
-                                "friend profile loaded friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - profileLoadStartedAt}"
+                                "friend profile loaded friendPresent=${friendUserId.isNotBlank()} durationMs=${SystemClock.elapsedRealtime() - profileLoadStartedAt}"
                             )
                             val friendDisplayName = profile?.displayName.orEmpty()
                             val friendProfilePhotoPath = profile?.profilePhotoPath.orEmpty()
@@ -1505,11 +1505,11 @@ object FriendRepository {
                                         loadedCloudFindingCount += orderedDocuments.size
                                         Log.d(
                                             "FriendFeedPerformance",
-                                            "friend=*${safeFriendId} path=cloud sortField=$FRIEND_FEED_SORT_FIELD fallbackUsed=false loadedFindings=${orderedDocuments.size}"
+                                            "friendPresent=${friendUserId.isNotBlank()} source=cloud fallbackUsed=false loadedFindings=${orderedDocuments.size}"
                                         )
                                         Log.d(
                                             "FriendFeedTiming",
-                                            "friend findings loaded friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - findingsLoadStartedAt} findingCount=${orderedDocuments.size}"
+                                            "friend findings loaded friendPresent=${friendUserId.isNotBlank()} durationMs=${SystemClock.elapsedRealtime() - findingsLoadStartedAt} findingCount=${orderedDocuments.size}"
                                         )
                                         processFriendFeedFindingDocuments(
                                             findingDocuments = orderedDocuments,
@@ -1545,11 +1545,11 @@ object FriendRepository {
                                             }
                                             Log.d(
                                                 "FriendFeedPerformance",
-                                                "friend=*${safeFriendId} path=cloud sortField=$FRIEND_FEED_SORT_FIELD fallbackUsed=${fallbackDocuments.isNotEmpty()} loadedFindings=${fallbackDocuments.size}"
+                                                "friendPresent=${friendUserId.isNotBlank()} source=cloud fallbackUsed=${fallbackDocuments.isNotEmpty()} loadedFindings=${fallbackDocuments.size}"
                                             )
                                             Log.d(
                                                 "FriendFeedTiming",
-                                                "friend findings loaded friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - findingsLoadStartedAt} findingCount=${fallbackDocuments.size}"
+                                                "friend findings loaded friendPresent=${friendUserId.isNotBlank()} durationMs=${SystemClock.elapsedRealtime() - findingsLoadStartedAt} findingCount=${fallbackDocuments.size}"
                                             )
                                             if (fallbackDocuments.isEmpty()) {
                                                 finishIfReady()
@@ -1609,7 +1609,7 @@ object FriendRepository {
                         onError = { error ->
                             Log.w(
                                 "FriendFeedTiming",
-                                "friend profile failed friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - profileLoadStartedAt} error=${error ?: "Unbekannter Fehler"}"
+                                "friend profile failed friendPresent=${friendUserId.isNotBlank()} durationMs=${SystemClock.elapsedRealtime() - profileLoadStartedAt} error=${error ?: "Unbekannter Fehler"}"
                             )
                             if (firstError == null) {
                                 firstError = Exception(error ?: "Freundesprofil konnte nicht geladen werden")
@@ -1687,7 +1687,7 @@ object FriendRepository {
             )
             Log.d(
                 "FriendFeedTiming",
-                "finding meta friend=*${safeFriendId} hasThumbnailRemotePhotoPath=${thumbnailRemotePhotoPath.isNotBlank()} hasRemotePhotoPaths=$hasRemotePhotoPaths remotePhotoPathCount=${effectiveRemotePhotoPaths(finding).size}"
+                "finding meta friendPresent=${friendUserId.isNotBlank()} hasThumbnailRemotePhotoPath=${thumbnailRemotePhotoPath.isNotBlank()} hasRemotePhotoPaths=$hasRemotePhotoPaths remotePhotoPathCount=${effectiveRemotePhotoPaths(finding).size}"
             )
             val likeLoadStartedAt = SystemClock.elapsedRealtime()
             loadLikeInfoForFinding(
@@ -1697,7 +1697,7 @@ object FriendRepository {
                 onResult = { likeCount, likedByCurrentUser ->
                     Log.d(
                         "FriendFeedTiming",
-                        "like info loaded friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - likeLoadStartedAt}"
+                        "like info loaded friendPresent=${friendUserId.isNotBlank()} durationMs=${SystemClock.elapsedRealtime() - likeLoadStartedAt}"
                     )
                     val commentCountStartedAt = SystemClock.elapsedRealtime()
                     loadCommentCountForFinding(
@@ -1706,7 +1706,7 @@ object FriendRepository {
                         onResult = { commentCount ->
                             Log.d(
                                 "FriendFeedTiming",
-                                "comment count loaded friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - commentCountStartedAt}"
+                                "comment count loaded friendPresent=${friendUserId.isNotBlank()} durationMs=${SystemClock.elapsedRealtime() - commentCountStartedAt}"
                             )
                             feedItems += FriendFeedItem(
                                 friendUserId = friendUserId,
@@ -1723,7 +1723,7 @@ object FriendRepository {
                         onError = { exception ->
                             Log.w(
                                 "FriendFeedTiming",
-                                "comment count failed friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - commentCountStartedAt} error=${exception.message ?: "Unbekannter Fehler"}"
+                                "comment count failed friendPresent=${friendUserId.isNotBlank()} durationMs=${SystemClock.elapsedRealtime() - commentCountStartedAt} error=${exception.message ?: "Unbekannter Fehler"}"
                             )
                             onFirstError(exception)
                             feedItems += FriendFeedItem(
@@ -1742,7 +1742,7 @@ object FriendRepository {
                 onError = { exception ->
                     Log.w(
                         "FriendFeedTiming",
-                        "like info failed friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - likeLoadStartedAt} error=${exception.message ?: "Unbekannter Fehler"}"
+                        "like info failed friendPresent=${friendUserId.isNotBlank()} durationMs=${SystemClock.elapsedRealtime() - likeLoadStartedAt} error=${exception.message ?: "Unbekannter Fehler"}"
                     )
                     onFirstError(exception)
                     val commentCountStartedAt = SystemClock.elapsedRealtime()
@@ -1752,7 +1752,7 @@ object FriendRepository {
                         onResult = { commentCount ->
                             Log.d(
                                 "FriendFeedTiming",
-                                "comment count loaded after like failure friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - commentCountStartedAt}"
+                                "comment count loaded after like failure friendPresent=${friendUserId.isNotBlank()} durationMs=${SystemClock.elapsedRealtime() - commentCountStartedAt}"
                             )
                             feedItems += FriendFeedItem(
                                 friendUserId = friendUserId,
@@ -1767,7 +1767,7 @@ object FriendRepository {
                         onError = {
                             Log.w(
                                 "FriendFeedTiming",
-                                "comment count failed after like failure friend=*${safeFriendId} durationMs=${SystemClock.elapsedRealtime() - commentCountStartedAt}"
+                                "comment count failed after like failure friendPresent=${friendUserId.isNotBlank()} durationMs=${SystemClock.elapsedRealtime() - commentCountStartedAt}"
                             )
                             feedItems += FriendFeedItem(
                                 friendUserId = friendUserId,
