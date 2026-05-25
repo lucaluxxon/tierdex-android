@@ -166,13 +166,13 @@ object FindingPhotoStorageRepository {
             remotePaths.forEach { remotePath ->
                 Log.d(
                     "FindingPhotoCleanup",
-                    "delete start roomId=${finding.roomId?.toString() ?: "-"} animalId=${finding.animalId} path=$remotePath"
+                    "delete start roomId=${finding.roomId?.toString() ?: "-"} animalId=${finding.animalId} pathPresent=${remotePath.isNotBlank()}"
                 )
                 runCatching {
                     Tasks.await(storage.reference.child(remotePath).delete())
                     Log.d(
                         "FindingPhotoCleanup",
-                        "delete success roomId=${finding.roomId?.toString() ?: "-"} animalId=${finding.animalId} path=$remotePath"
+                        "delete success roomId=${finding.roomId?.toString() ?: "-"} animalId=${finding.animalId} pathPresent=${remotePath.isNotBlank()}"
                     )
                 }.getOrElse { exception ->
                     val lowerMessage = exception.message.orEmpty().lowercase()
@@ -183,12 +183,12 @@ object FindingPhotoStorageRepository {
                     if (fileMissing) {
                         Log.d(
                             "FindingPhotoCleanup",
-                            "delete missing roomId=${finding.roomId?.toString() ?: "-"} animalId=${finding.animalId} path=$remotePath"
+                            "delete missing roomId=${finding.roomId?.toString() ?: "-"} animalId=${finding.animalId} pathPresent=${remotePath.isNotBlank()}"
                         )
                     } else {
                         Log.w(
                             "FindingPhotoCleanup",
-                            "delete error roomId=${finding.roomId?.toString() ?: "-"} animalId=${finding.animalId} path=$remotePath error=${exception.message ?: "Unbekannter Fehler"}",
+                            "delete error roomId=${finding.roomId?.toString() ?: "-"} animalId=${finding.animalId} pathPresent=${remotePath.isNotBlank()} error=${exception.message ?: "Unbekannter Fehler"}",
                             exception
                         )
                     }
@@ -233,7 +233,10 @@ object FindingPhotoStorageRepository {
             normalizedPaths.forEach { remotePath ->
                 runCatching {
                     Tasks.await(storage.reference.child(remotePath).delete())
-                    Log.d("FindingPhotoCleanup", "deleteRemotePaths success path=$remotePath")
+                    Log.d(
+                        "FindingPhotoCleanup",
+                        "deleteRemotePaths success pathPresent=${remotePath.isNotBlank()}"
+                    )
                 }.getOrElse { exception ->
                     val lowerMessage = exception.message.orEmpty().lowercase()
                     val fileMissing =
@@ -241,11 +244,14 @@ object FindingPhotoStorageRepository {
                             lowerMessage.contains("not found") ||
                             lowerMessage.contains("no object exists")
                     if (fileMissing) {
-                        Log.d("FindingPhotoCleanup", "deleteRemotePaths missing path=$remotePath")
+                        Log.d(
+                            "FindingPhotoCleanup",
+                            "deleteRemotePaths missing pathPresent=${remotePath.isNotBlank()}"
+                        )
                     } else {
                         Log.w(
                             "FindingPhotoCleanup",
-                            "deleteRemotePaths error path=$remotePath error=${exception.message ?: "Unbekannter Fehler"}",
+                            "deleteRemotePaths error pathPresent=${remotePath.isNotBlank()} error=${exception.message ?: "Unbekannter Fehler"}",
                             exception
                         )
                     }
@@ -664,7 +670,7 @@ object FindingPhotoStorageRepository {
         if (uploadBytes.size > maxBytes) {
             Log.w(
                 FINDING_PHOTO_STORAGE_TAG,
-                "Prepared JPEG exceeds upload limit: size=${uploadBytes.size} maxBytes=$maxBytes uri=$localPhotoUri"
+                "Prepared JPEG exceeds upload limit: size=${uploadBytes.size} maxBytes=$maxBytes uriPresent=${localPhotoUri.isNotBlank()}"
             )
             return null
         }

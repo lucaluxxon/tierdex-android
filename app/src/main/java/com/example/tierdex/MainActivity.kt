@@ -11944,7 +11944,7 @@ fun ProfileScreen(
             ?: result.data?.data
         Log.d(
             "ProfileBackgroundUpload",
-            "Hintergrundbild-Picker Ergebnis erhalten resultCode=${result.resultCode} uri=${pickedBackgroundUri?.toString().orEmpty()}"
+            "Hintergrundbild-Picker Ergebnis erhalten resultCode=${result.resultCode} uriPresent=${pickedBackgroundUri != null}"
         )
         if (result.resultCode == Activity.RESULT_OK) {
             pickedBackgroundUri?.let {

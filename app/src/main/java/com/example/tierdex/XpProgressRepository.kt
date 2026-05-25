@@ -225,7 +225,7 @@ object XpProgressRepository {
                             if (xpValue != authoritativeXp) {
                                 Log.w(
                                     TAG,
-                                    "grantXpAwardsIfAbsent xp mismatch awardKey=$cleanAwardKey providedXp=$xpValue authoritativeXp=$authoritativeXp"
+                                    "grantXpAwardsIfAbsent xp mismatch awardKeyPresent=true providedXp=$xpValue authoritativeXp=$authoritativeXp"
                                 )
                             }
                             cleanAwardKey to authoritativeXp
@@ -234,7 +234,7 @@ object XpProgressRepository {
                         else -> {
                             Log.w(
                                 TAG,
-                                "grantXpAwardsIfAbsent skipped unknown or zero-xp awardKey=$cleanAwardKey providedXp=$xpValue"
+                                "grantXpAwardsIfAbsent skipped unknown or zero-xp awardKeyPresent=true providedXp=$xpValue"
                             )
                             null
                         }
