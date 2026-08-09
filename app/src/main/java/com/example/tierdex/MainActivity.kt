@@ -2998,6 +2998,18 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         FirestoreFindingRepository.saveCurrentUserFinding(localFinding) { success, result ->
                             if (!success) {
                                 Log.e("CloudSync", "Upload local finding failed: $result")
+                            } else {
+                                val documentId = result?.trim().orEmpty()
+                                val localEntity = localFindingsByFingerprint[fingerprint]
+                                if (documentId.isNotBlank()) {
+                                    localEntity
+                                        ?.takeIf { it.findingId.isNullOrBlank() }
+                                        ?.let { entity ->
+                                            scope.launch {
+                                                dao.updateFinding(entity.copy(findingId = documentId))
+                                            }
+                                        }
+                                }
                             }
                         }
                         uploadedCount += 1
