@@ -277,8 +277,8 @@ object FirestoreFindingRepository {
         newFinding: AnimalFinding,
         onResult: (Boolean, String?) -> Unit
     ) {
-        val oldDocumentId = hashedDocumentIdForFinding(oldFinding)
-        val newDocumentId = hashedDocumentIdForFinding(newFinding)
+        val oldDocumentId = documentIdForFinding(oldFinding)
+        val newDocumentId = documentIdForFinding(newFinding)
 
         if (oldDocumentId == newDocumentId) {
             saveCurrentUserFinding(newFinding, onResult)
