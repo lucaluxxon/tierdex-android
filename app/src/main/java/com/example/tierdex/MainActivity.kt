@@ -15790,6 +15790,7 @@ fun AnimalDetailScreen(
 
                                                 val newFinding = AnimalFinding(
                                                     roomId = findingToEdit?.roomId,
+                                                    findingId = findingToEdit?.findingId,
                                                     animalId = animal.id,
                                                     date = date.trim(),
                                                     location = location.trim(),
