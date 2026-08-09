@@ -117,7 +117,7 @@ object FirestoreFindingRepository {
             return
         }
 
-        val documentId = hashedDocumentIdForFinding(finding)
+        val documentId = documentIdForFinding(finding)
         val documentRef = firestore.collection("users")
             .document(uid)
             .collection("findings")
@@ -183,7 +183,7 @@ object FirestoreFindingRepository {
             return
         }
 
-        val documentId = hashedDocumentIdForFinding(finding)
+        val documentId = documentIdForFinding(finding)
         val findingsCollection = firestore.collection("users")
             .document(uid)
             .collection("findings")
