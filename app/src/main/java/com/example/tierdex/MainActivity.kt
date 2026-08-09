@@ -1209,6 +1209,7 @@ class MainActivity : ComponentActivity() {
             .addMigrations(AnimalFindingDatabase.MIGRATION_5_6)
             .addMigrations(AnimalFindingDatabase.MIGRATION_6_7)
             .addMigrations(AnimalFindingDatabase.MIGRATION_7_8)
+            .addMigrations(AnimalFindingDatabase.MIGRATION_8_9)
             .build()
     }
 
@@ -1272,6 +1273,7 @@ data class AnimalEntry(
 
 data class AnimalFinding(
     val roomId: Int? = null,
+    val findingId: String? = null,
     val animalId: String,
     val date: String,
     val location: String,

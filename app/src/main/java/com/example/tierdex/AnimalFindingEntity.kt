@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "animal_findings")
 data class AnimalFindingEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    val findingId: String? = null,
     val animalId: String,
     val date: String,
     val location: String,

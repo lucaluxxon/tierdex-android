@@ -55,6 +55,7 @@ fun AnimalFindingEntity.toDomainFinding(): AnimalFinding {
 
     return AnimalFinding(
         roomId = id,
+        findingId = findingId,
         animalId = animalId,
         date = date,
         location = location,
@@ -86,6 +87,7 @@ fun AnimalFinding.toEntity(ownerIdOverride: String? = ownerId, roomIdOverride: I
 
     return AnimalFindingEntity(
         id = roomIdOverride ?: 0,
+        findingId = findingId,
         animalId = animalId,
         date = date,
         location = location,

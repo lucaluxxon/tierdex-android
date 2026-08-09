@@ -11,7 +11,7 @@ import com.example.tierdex.FriendFeedCacheEntity
 
 @Database(
     entities = [AnimalFindingEntity::class, FriendFeedCacheEntity::class],
-    version = 8,
+    version = 9,
     exportSchema = false
 )
 abstract class AnimalFindingDatabase : RoomDatabase() {
@@ -103,6 +103,12 @@ abstract class AnimalFindingDatabase : RoomDatabase() {
                 database.execSQL(
                     "CREATE INDEX IF NOT EXISTS `index_friend_feed_cache_cacheOwnerUserId` ON `friend_feed_cache` (`cacheOwnerUserId`)"
                 )
+            }
+        }
+
+        val MIGRATION_8_9 = object : Migration(8, 9) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("ALTER TABLE animal_findings ADD COLUMN findingId TEXT")
             }
         }
     }
