@@ -214,11 +214,7 @@ async function loadFindingContext(ownerUid, findingId) {
     const findingSnapshot = await findingRef.get();
     const findingData = findingSnapshot.exists ? findingSnapshot.data() || {} : null;
     return {
-      stableFindingId: findingFingerprintFromData(
-        normalizedOwnerUid,
-        normalizedFindingId,
-        findingData
-      ),
+      stableFindingId: normalizedFindingId,
       relatedAnimalId: normalizeString(findingData?.animalId),
       sourcePath: findingRef.path,
       exists: findingSnapshot.exists,
