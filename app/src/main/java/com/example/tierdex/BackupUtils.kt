@@ -18,6 +18,7 @@ private const val BACKUP_FINDING_IMAGES_DIR = "finding_images"
 
 private data class BackupAnimalFindingDto(
     val roomId: Int? = null,
+    val findingId: String? = null,
     val animalId: String = "",
     val date: String = "",
     val location: String = "",
@@ -245,6 +246,7 @@ private fun parseFindingsJsonOrNull(json: String): List<AnimalFinding>? {
         Gson().fromJson<List<BackupAnimalFindingDto>>(json, type)?.map { dto ->
             AnimalFinding(
                 roomId = dto.roomId,
+                findingId = dto.findingId,
                 animalId = dto.animalId,
                 date = dto.date,
                 location = dto.location,
