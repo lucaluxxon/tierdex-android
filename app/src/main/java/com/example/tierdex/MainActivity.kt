@@ -3019,10 +3019,23 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                         val localEntity = localFindingsByFingerprint[fingerprint]
                         if (localEntity != null) {
                             val localFinding = localEntity.toDomainFinding()
-                            val (enrichedFinding, changedFields) = enrichLocalFindingFromCloudPhotoFields(
+                            val (photoEnrichedFinding, photoChangedFields) = enrichLocalFindingFromCloudPhotoFields(
                                 localFinding = localFinding,
                                 cloudFinding = cloudFinding
                             )
+                            val cloudFindingId = cloudFinding.findingId?.takeIf { it.isNotBlank() }
+                            val shouldAdoptCloudFindingId =
+                                localFinding.findingId.isNullOrBlank() && cloudFindingId != null
+                            val enrichedFinding = if (shouldAdoptCloudFindingId) {
+                                photoEnrichedFinding.copy(findingId = cloudFindingId)
+                            } else {
+                                photoEnrichedFinding
+                            }
+                            val changedFields = if (shouldAdoptCloudFindingId) {
+                                photoChangedFields + "findingId"
+                            } else {
+                                photoChangedFields
+                            }
                             if (changedFields.isNotEmpty() && enrichedFinding != localFinding) {
                                 dao.updateFinding(
                                     enrichedFinding.toEntity(
