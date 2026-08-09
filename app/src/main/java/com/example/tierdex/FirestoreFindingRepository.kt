@@ -69,7 +69,9 @@ object FirestoreFindingRepository {
     }
 
     fun documentIdForFinding(finding: AnimalFinding): String {
-        return hashedDocumentIdForFinding(finding)
+        return finding.findingId
+            ?.takeIf { it.isNotBlank() }
+            ?: hashedDocumentIdForFinding(finding)
     }
 
     private fun matchesStableFindingIdentity(
