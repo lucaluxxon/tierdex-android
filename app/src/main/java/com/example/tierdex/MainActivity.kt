@@ -10,8 +10,12 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.SystemClock
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.os.VibratorManager
 import android.provider.MediaStore
 import android.util.Log
 import android.util.LruCache
@@ -13906,6 +13910,7 @@ fun FindingSuccessAnimationOverlay(
     hasPhoto: Boolean,
     onFinished: () -> Unit
 ) {
+    val context = LocalContext.current
     val progress = remember { Animatable(0f) }
     var showOverlay by remember { mutableStateOf(false) }
     var showCheckmark by remember { mutableStateOf(false) }
@@ -13959,6 +13964,26 @@ fun FindingSuccessAnimationOverlay(
             targetValue = 1f,
             animationSpec = tween(durationMillis = 1600)
         )
+        val vibrator = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            val vibratorManager = context.getSystemService(VibratorManager::class.java)
+            vibratorManager?.defaultVibrator
+        } else {
+            @Suppress("DEPRECATION")
+            context.getSystemService(Context.VIBRATOR_SERVICE) as? Vibrator
+        }
+        if (vibrator?.hasVibrator() == true) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                vibrator.vibrate(
+                    VibrationEffect.createOneShot(
+                        50L,
+                        VibrationEffect.DEFAULT_AMPLITUDE
+                    )
+                )
+            } else {
+                @Suppress("DEPRECATION")
+                vibrator.vibrate(50L)
+            }
+        }
         delay(120)
         showCheckmark = true
 
