@@ -2884,6 +2884,28 @@ fun TierdexApp(database: AnimalFindingDatabase) {
         )
     }
 
+    suspend fun backfillUniqueLegacyFindingIdsForOwner(ownerId: String) {
+        val localRoomFindings = dao.getAllFindingsByOwnerOnce(ownerId)
+        val findingsByFingerprint = localRoomFindings.groupBy { entity ->
+            FirestoreFindingRepository.findingFingerprint(entity.toDomainFinding())
+        }
+
+        localRoomFindings.forEach { entity ->
+            if (!entity.findingId.isNullOrBlank()) {
+                return@forEach
+            }
+
+            val finding = entity.toDomainFinding()
+            val fingerprint = FirestoreFindingRepository.findingFingerprint(finding)
+            if (findingsByFingerprint[fingerprint]?.size == 1) {
+                val legacyId = FirestoreFindingRepository.documentIdForFinding(finding).trim()
+                if (legacyId.isNotBlank()) {
+                    dao.updateFinding(entity.copy(findingId = legacyId))
+                }
+            }
+        }
+    }
+
     LaunchedEffect(ownerId) {
         if (ownerId == null) {
             initialCloudFindingSyncCompletedOwnerId = null
@@ -2943,6 +2965,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                 dao.assignGlobalFindingsToOwner(ownerId)
                 prefs.edit().putBoolean(migrationKey, true).apply()
             }
+            backfillUniqueLegacyFindingIdsForOwner(ownerId)
 
             if (publicProfileHydratedOwnerId != ownerId && !isPublicProfileHydrationRunning) {
                 isPublicProfileHydrationRunning = true
