@@ -312,6 +312,7 @@ object FirestoreFindingRepository {
             .addOnSuccessListener { snapshot ->
                 val findings = snapshot.documents.map { document ->
                     AnimalFinding(
+                        findingId = document.id,
                         animalId = document.getString("animalId").orEmpty(),
                         date = document.getString("date").orEmpty(),
                         location = document.getString("location").orEmpty(),
