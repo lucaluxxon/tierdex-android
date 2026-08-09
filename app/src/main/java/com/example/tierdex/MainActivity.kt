@@ -1339,29 +1339,7 @@ private fun notificationTaggedFriendIds(rawValue: Any?): List<String> {
         .filter { it.isNotBlank() }
 }
 
-private fun stableNotificationFindingId(
-    ownerUserId: String,
-    animalId: String,
-    date: String,
-    location: String,
-    note: String,
-    latitude: Double?,
-    longitude: Double?,
-    taggedFriendIds: List<String>
-): String {
-    return FirestoreFindingRepository.documentIdForFinding(
-        AnimalFinding(
-            animalId = animalId,
-            date = date,
-            location = location,
-            note = note,
-            latitude = latitude,
-            longitude = longitude,
-            ownerId = ownerUserId,
-            taggedFriendIds = taggedFriendIds
-        )
-    )
-}
+private fun stableNotificationFindingId(findingId: String): String = findingId.trim()
 
 private fun likeNotificationId(
     ownerUserId: String,
@@ -4255,18 +4233,7 @@ fun TierdexApp(database: AnimalFindingDatabase) {
 
                 findingsSnapshot.documents.forEach { findingDocument ->
                     val findingId = findingDocument.id
-                    val stableFindingId = stableNotificationFindingId(
-                        ownerUserId = currentUserId,
-                        animalId = findingDocument.getString("animalId").orEmpty(),
-                        date = findingDocument.getString("date").orEmpty(),
-                        location = findingDocument.getString("location").orEmpty(),
-                        note = findingDocument.getString("note").orEmpty(),
-                        latitude = findingDocument.getDouble("latitude"),
-                        longitude = findingDocument.getDouble("longitude"),
-                        taggedFriendIds = notificationTaggedFriendIds(
-                            findingDocument.get("taggedFriendIds")
-                        )
-                    )
+                    val stableFindingId = stableNotificationFindingId(findingId)
 
                     findingDocument.reference.collection("likes")
                         .get()
