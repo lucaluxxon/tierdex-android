@@ -74,29 +74,6 @@ object FirestoreFindingRepository {
             ?: hashedDocumentIdForFinding(finding)
     }
 
-    private fun matchesStableFindingIdentity(
-        finding: AnimalFinding,
-        ownerId: String,
-        animalId: String,
-        date: String,
-        location: String,
-        note: String,
-        latitude: Double?,
-        longitude: Double?,
-        taggedFriendIds: List<String>
-    ): Boolean {
-        return findingFingerprint(finding) == findingFingerprint(
-            ownerId = ownerId,
-            animalId = animalId,
-            date = date,
-            location = location,
-            note = note,
-            latitude = latitude,
-            longitude = longitude,
-            taggedFriendIds = taggedFriendIds
-        )
-    }
-
     private fun globalFindingCountFromValue(rawValue: Any?): Long {
         return when (rawValue) {
             is Long -> rawValue
@@ -194,73 +171,8 @@ object FirestoreFindingRepository {
             .document(documentId)
             .delete()
             .addOnSuccessListener {
-                findingsCollection
-                    .get()
-                    .addOnSuccessListener { snapshot ->
-                        val legacyMatches = snapshot.documents.filter { document ->
-                            matchesStableFindingIdentity(
-                                finding = finding,
-                                ownerId = uid,
-                                animalId = document.getString("animalId").orEmpty(),
-                                date = document.getString("date").orEmpty(),
-                                location = document.getString("location").orEmpty(),
-                                note = document.getString("note").orEmpty(),
-                                latitude = document.getDouble("latitude"),
-                                longitude = document.getDouble("longitude"),
-                                taggedFriendIds = document.getTaggedFriendIdsOrEmpty()
-                            )
-                        }
-
-                        Log.d("CloudSyncDelete", "Legacy cloud matches found: ${legacyMatches.size}")
-
-                        if (legacyMatches.isEmpty()) {
-                            Log.d("CloudSyncDelete", "No matching legacy cloud documents found")
-                            Log.d("CloudSyncDelete", "Delete finished documentIdPresent=${documentId.isNotBlank()}")
-                            onResult(true, documentId)
-                            return@addOnSuccessListener
-                        }
-
-                        var pendingDeletes = legacyMatches.size
-                        var hasFailure = false
-
-                        legacyMatches.forEach { document ->
-                            findingsCollection
-                                .document(document.id)
-                                .delete()
-                                .addOnSuccessListener {
-                                    Log.d(
-                                        "CloudSyncDelete",
-                                        "Legacy cloud document deleted documentIdPresent=${document.id.isNotBlank()}"
-                                    )
-                                    pendingDeletes -= 1
-                                    if (pendingDeletes == 0) {
-                                        Log.d("CloudSyncDelete", "Delete finished documentIdPresent=${documentId.isNotBlank()}")
-                                        onResult(!hasFailure, documentId)
-                                    }
-                                }
-                                .addOnFailureListener { exception ->
-                                    hasFailure = true
-                                    pendingDeletes -= 1
-                                    Log.e(
-                                        "CloudSyncDelete",
-                                        "Legacy cloud delete failed documentIdPresent=${document.id.isNotBlank()} reason=${exception.message ?: "Unbekannter Fehler"}",
-                                        exception
-                                    )
-                                    if (pendingDeletes == 0) {
-                                        Log.d("CloudSyncDelete", "Delete finished documentIdPresent=${documentId.isNotBlank()}")
-                                        onResult(false, exception.message)
-                                    }
-                                }
-                        }
-                    }
-                    .addOnFailureListener { exception ->
-                        Log.e(
-                            "CloudSyncDelete",
-                            "Legacy cloud lookup failed: ${exception.message ?: "Unbekannter Fehler"}",
-                            exception
-                        )
-                        onResult(false, exception.message)
-                    }
+                Log.d("CloudSyncDelete", "Delete finished documentIdPresent=${documentId.isNotBlank()}")
+                onResult(true, documentId)
             }
             .addOnFailureListener { exception ->
                 Log.e(
