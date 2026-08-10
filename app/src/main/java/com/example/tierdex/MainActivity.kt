@@ -2972,16 +2972,43 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                 val cloudFindings = cloudFindingsResult.getOrNull().orEmpty()
                 val localRoomFindings = dao.getAllFindingsByOwnerOnce(ownerId)
                 val localFindings = localRoomFindings.map { entity -> entity.toDomainFinding() }
-                val localFindingsByFingerprint = localRoomFindings.associateBy { entity ->
-                    FirestoreFindingRepository.findingFingerprint(entity.toDomainFinding())
-                }
-
+                val localFindingsById = localRoomFindings
+                    .mapNotNull { entity ->
+                        entity.findingId
+                            ?.trim()
+                            ?.takeIf { it.isNotBlank() }
+                            ?.let { findingId -> findingId to entity }
+                    }
+                    .groupBy({ it.first }, { it.second })
+                val cloudFindingsById = cloudFindings
+                    .mapNotNull { finding ->
+                        finding.findingId
+                            ?.trim()
+                            ?.takeIf { it.isNotBlank() }
+                            ?.let { findingId -> findingId to finding }
+                    }
+                    .groupBy({ it.first }, { it.second })
                 val localFingerprints = localFindings
-                    .map { FirestoreFindingRepository.findingFingerprint(it) }
-                    .toMutableSet()
-                val cloudFingerprints = cloudFindings
-                    .map { FirestoreFindingRepository.findingFingerprint(it) }
-                    .toMutableSet()
+                    .map { finding -> FirestoreFindingRepository.findingFingerprint(finding) }
+                    .toSet()
+                val localLegacyFindingsByFingerprint = localRoomFindings
+                    .filter { entity -> entity.findingId.isNullOrBlank() }
+                    .groupBy { entity ->
+                        FirestoreFindingRepository.findingFingerprint(entity.toDomainFinding())
+                    }
+                val uniqueLocalLegacyFindingsByFingerprint = localLegacyFindingsByFingerprint
+                    .mapNotNull { (fingerprint, entities) ->
+                        entities.singleOrNull()?.let { entity -> fingerprint to entity }
+                    }
+                    .toMap()
+                val cloudFindingsByFingerprint = cloudFindings.groupBy { finding ->
+                    FirestoreFindingRepository.findingFingerprint(finding)
+                }
+                val uniqueCloudFindingsByFingerprint = cloudFindingsByFingerprint
+                    .mapNotNull { (fingerprint, findings) ->
+                        findings.singleOrNull()?.let { finding -> fingerprint to finding }
+                    }
+                    .toMap()
 
                 Log.d(
                     "FindingCloudHydration",
@@ -2990,10 +3017,27 @@ fun TierdexApp(database: AnimalFindingDatabase) {
 
                 var uploadedCount = 0
                 var skippedDuplicateCount = 0
-                localFindings.forEach { localFinding ->
+                localRoomFindings.forEach { localEntity ->
+                    val localFinding = localEntity.toDomainFinding()
+                    val localFindingId = localFinding.findingId?.trim()?.takeIf { it.isNotBlank() }
                     val fingerprint =
                         FirestoreFindingRepository.findingFingerprint(localFinding)
-                    if (fingerprint in cloudFingerprints) {
+                    val hasStableCloudMatch = localFindingId != null &&
+                        cloudFindingsById[localFindingId]?.size == 1
+                    val hasAmbiguousLocalStableId = localFindingId != null &&
+                        localFindingsById[localFindingId].orEmpty().size > 1
+                    val isUniqueLegacyFinding =
+                        uniqueLocalLegacyFindingsByFingerprint[fingerprint]?.id == localEntity.id
+                    val hasUniqueLegacyCloudMatch = localFindingId == null &&
+                        isUniqueLegacyFinding &&
+                        uniqueCloudFindingsByFingerprint.containsKey(fingerprint)
+                    val hasAmbiguousCloudLegacyMatch = localFindingId == null &&
+                        cloudFindingsByFingerprint[fingerprint].orEmpty().isNotEmpty() &&
+                        !hasUniqueLegacyCloudMatch
+
+                    if (hasStableCloudMatch || hasAmbiguousLocalStableId || hasUniqueLegacyCloudMatch ||
+                        (localFindingId == null && (!isUniqueLegacyFinding || hasAmbiguousCloudLegacyMatch))
+                    ) {
                         skippedDuplicateCount += 1
                     } else {
                         FirestoreFindingRepository.saveCurrentUserFinding(localFinding) { success, result ->
@@ -3001,67 +3045,72 @@ fun TierdexApp(database: AnimalFindingDatabase) {
                                 Log.e("CloudSync", "Upload local finding failed: $result")
                             } else {
                                 val documentId = result?.trim().orEmpty()
-                                val localEntity = localFindingsByFingerprint[fingerprint]
-                                if (documentId.isNotBlank()) {
-                                    localEntity
-                                        ?.takeIf { it.findingId.isNullOrBlank() }
-                                        ?.let { entity ->
-                                            scope.launch {
-                                                dao.updateFinding(entity.copy(findingId = documentId))
-                                            }
-                                        }
+                                if (documentId.isNotBlank() && localEntity.findingId.isNullOrBlank()) {
+                                    scope.launch {
+                                        dao.updateFinding(localEntity.copy(findingId = documentId))
+                                    }
                                 }
                             }
                         }
                         uploadedCount += 1
-                        cloudFingerprints.add(fingerprint)
                     }
                 }
 
                 var insertedCount = 0
                 var enrichedCount = 0
                 cloudFindings.forEach { cloudFinding ->
+                    val cloudFindingId = cloudFinding.findingId?.trim()?.takeIf { it.isNotBlank() }
                     val fingerprint =
                         FirestoreFindingRepository.findingFingerprint(cloudFinding)
-                    if (fingerprint !in localFingerprints) {
+                    val stableIdMatches = cloudFindingId
+                        ?.let { findingId -> localFindingsById[findingId] }
+                        .orEmpty()
+                    val hasAmbiguousLocalStableId = stableIdMatches.size > 1
+                    val localEntity = when {
+                        stableIdMatches.size == 1 -> stableIdMatches.single()
+                        stableIdMatches.isNotEmpty() -> null
+                        else -> uniqueLocalLegacyFindingsByFingerprint[fingerprint]
+                            ?.takeIf {
+                                uniqueCloudFindingsByFingerprint[fingerprint]?.findingId == cloudFindingId
+                            }
+                    }
+
+                    if (hasAmbiguousLocalStableId) {
+                        skippedDuplicateCount += 1
+                    } else if (localEntity == null) {
                         dao.insertFinding(cloudFinding.toEntity(ownerIdOverride = ownerId))
                         insertedCount += 1
-                        localFingerprints.add(fingerprint)
                     } else {
                         skippedDuplicateCount += 1
-                        val localEntity = localFindingsByFingerprint[fingerprint]
-                        if (localEntity != null) {
-                            val localFinding = localEntity.toDomainFinding()
-                            val (photoEnrichedFinding, photoChangedFields) = enrichLocalFindingFromCloudPhotoFields(
-                                localFinding = localFinding,
-                                cloudFinding = cloudFinding
+                        val localFinding = localEntity.toDomainFinding()
+                        val (photoEnrichedFinding, photoChangedFields) = enrichLocalFindingFromCloudPhotoFields(
+                            localFinding = localFinding,
+                            cloudFinding = cloudFinding
+                        )
+                        val shouldAdoptCloudFindingId =
+                            localFinding.findingId.isNullOrBlank() && cloudFindingId != null
+                        val enrichedFinding = if (shouldAdoptCloudFindingId) {
+                            photoEnrichedFinding.copy(findingId = cloudFindingId)
+                        } else {
+                            photoEnrichedFinding
+                        }
+                        val changedFields = if (shouldAdoptCloudFindingId) {
+                            photoChangedFields + "findingId"
+                        } else {
+                            photoChangedFields
+                        }
+                        if (changedFields.isNotEmpty() && enrichedFinding != localFinding) {
+                            dao.updateFinding(
+                                enrichedFinding.toEntity(
+                                    ownerIdOverride = ownerId,
+                                    roomIdOverride = localEntity.id
+                                )
                             )
-                            val cloudFindingId = cloudFinding.findingId?.takeIf { it.isNotBlank() }
-                            val shouldAdoptCloudFindingId =
-                                localFinding.findingId.isNullOrBlank() && cloudFindingId != null
-                            val enrichedFinding = if (shouldAdoptCloudFindingId) {
-                                photoEnrichedFinding.copy(findingId = cloudFindingId)
-                            } else {
-                                photoEnrichedFinding
-                            }
-                            val changedFields = if (shouldAdoptCloudFindingId) {
-                                photoChangedFields + "findingId"
-                            } else {
-                                photoChangedFields
-                            }
-                            if (changedFields.isNotEmpty() && enrichedFinding != localFinding) {
-                                dao.updateFinding(
-                                    enrichedFinding.toEntity(
-                                        ownerIdOverride = ownerId,
-                                        roomIdOverride = localEntity.id
-                                    )
-                                )
-                                enrichedCount += 1
-                                Log.d(
-                                    "FindingCloudHydration",
-                                    "enriched roomId=${localEntity.id} animalId=${localEntity.animalId} added=${changedFields.joinToString(",")}"
-                                )
-                            }
+                            enrichedCount += 1
+                            Log.d(
+                                "FindingCloudHydration",
+                                "enriched roomId=${localEntity.id} animalId=${localEntity.animalId} added=${changedFields.joinToString(",")}"
+                            )
                         }
                     }
                 }
